@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Beauty & Blessed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-pink: #ff69b4;
+            --light-pink: #ffb6c1;
+            --dark-pink: #ff1493;
+            --gold: #d4af37;
+            --light-gold: #f7e8c4;
+            --soft-white: #fefefe;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --text-gray: #888;
+            --dark-gray: #555;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe6f2 0%, #ffffff 100%);
+            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--soft-white);
+            box-shadow: 0 2px 10px rgba(255, 105, 180, 0.1);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 105, 180, 0.3);
+            font-size: 18px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .brand-header {
+            text-align: center;
+            flex-grow: 1;
+            padding: 0 20px;
+        }
+
+        .brand-name {
+            color: var(--primary-pink);
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            font-family: 'Cormorant Garamond', serif;
+            margin-bottom: 2px;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInDown 0.8s ease 0.2s forwards;
+        }
+
+        .brand-tagline {
+            color: var(--text-gray);
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 300;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+
+        @keyframes fadeInDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Product Detail Container */
+        .product-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .product-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .product-detail {
+                flex-direction: row;
+            }
+        }
+
+        /* Product Image Section */
+        .product-image-section {
+            flex: 1;
+            position: relative;
+        }
+
+        .product-image-container {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            background-color: var(--soft-white);
+            box-shadow: var(--card-shadow);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, var(--light-pink), var(--light-gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--soft-white);
+            font-size: 60px;
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary-pink);
+        }
+
+        .prev-button {
+            left: 15px;
+        }
+
+        .next-button {
+            right: 15px;
+        }
+
+        /* Product Info Section */
+        .product-info-section {
+            flex: 1;
+            background-color: var(--soft-white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .brand-name-small {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .price {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary-pink);
+            margin-bottom: 20px;
+        }
+
+        .variations {
+            margin-bottom: 25px;
+        }
+
+        .variation-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        .variation-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .variation-option {
+            padding: 8px 18px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: var(--light-gray);
+        }
+
+        .variation-option.active {
+            border-color: var(--primary-pink);
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .like-button, .order-button, .cart-button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .like-button {
+            background: var(--light-gray);
+            border: 1px solid var(--medium-gray);
+            color: var(--text-gray);
+        }
+
+        .like-button.active {
+            background: #fff5f5;
+            border-color: var(--primary-pink);
+            color: var(--primary-pink);
+        }
+
+        .order-button {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+        }
+
+        .cart-button {
+            background: linear-gradient(135deg, var(--gold), #e6c260);
+            color: white;
+        }
+
+        .like-button:hover, .order-button:hover, .cart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Specifications */
+        .specs-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+            font-family: 'Cormorant Garamond', serif;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .specs-list {
+            list-style: none;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .spec-name {
+            color: var(--text-gray);
+        }
+
+        .spec-value {
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+
+        .product-description {
+            color: var(--dark-gray);
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        /* Ratings */
+        .ratings-section {
+            margin-bottom: 25px;
+        }
+
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .average-rating {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--dark-gray);
+            margin-right: 15px;
+        }
+
+        .stars {
+            color: var(--gold);
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .rating-count {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .rating-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .rating-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .rating-date {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .rating-images {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .rating-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+        }
+
+        .rating-text {
+            color: var(--dark-gray);
+            line-height: 1.5;
+        }
+
+        .view-more-reviews {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .view-more-btn {
+            background: none;
+            border: 1px solid var(--primary-pink);
+            color: var(--primary-pink);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .view-more-btn:hover {
+            background: var(--primary-pink);
+            color: white;
+        }
+
+        /* Floating Cart */
+        .floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            cursor: pointer;
+            z-index: 90;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-cart:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--gold);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 767px) {
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .brand-name {
+                font-size: 20px;
+            }
+            
+            .brand-tagline {
+                font-size: 11px;
+            }
+            
+            .back-button {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .product-detail-container {
+                padding: 15px;
+            }
+            
+            .product-info-section {
+                padding: 20px;
+            }
+            
+            /* Action buttons stay horizontal on mobile */
+            .action-buttons {
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .like-button, .order-button, .cart-button {
+                padding: 12px 8px;
+                font-size: 14px;
+            }
+            
+            .like-button span, .order-button span, .cart-button span {
+                display: none; /* Hide text on very small screens */
+            }
+            
+            .like-button i, .order-button i, .cart-button i {
+                margin-right: 0;
+            }
+            
+            .floating-cart {
+                bottom: 20px;
+                right: 15px;
+                width: 55px;
+                height: 55px;
+            }
+        }
+
+        /* For very small screens, show icon-only buttons */
+        @media (max-width: 360px) {
+            .action-buttons {
+                gap: 5px;
+            }
+            
+            .like-button, .order-button, .cart-button {
+                padding: 10px 5px;
+                font-size: 12px;
+            }
+        }
+
+        /* For slightly larger mobile screens, show text */
+        @media (min-width: 400px) and (max-width: 767px) {
+            .like-button span, .order-button span, .cart-button span {
+                display: inline; /* Show text on slightly larger mobile screens */
+            }
+            
+            .like-button, .order-button, .cart-button {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <button class="back-button" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="brand-header">
+            <h1 class="brand-name">Beauty & Blessed</h1>
+            <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+        </div>
+        <!-- Empty div to maintain layout balance -->
+        <div style="width: 44px;"></div>
+    </header>
+
+    <!-- Product Detail -->
+    <div class="product-detail-container">
+        <div class="product-detail">
+            <!-- Product Image Section -->
+            <div class="product-image-section">
+                <div class="product-image-container">
+                    <div class="image-placeholder">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <button class="nav-button prev-button">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="nav-button next-button">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product Info Section -->
+            <div class="product-info-section">
+                <div class="brand-name-small">BEAUTY & BLESSED</div>
+                <h1 class="product-title">Matte Liquid Lipstick - Ruby Red</h1>
+                <div class="price">₱299.00</div>
+
+                <!-- Variations -->
+                <div class="variations">
+                    <div class="variation-title">SHADE</div>
+                    <div class="variation-options">
+                        <div class="variation-option active">Ruby Red</div>
+                        <div class="variation-option">Coral Kiss</div>
+                        <div class="variation-option">Berry Bliss</div>
+                        <div class="variation-option">Nude Pink</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="like-button">
+                        <i class="far fa-heart"></i> <span>Like</span>
+                    </button>
+                    <button class="order-button">
+                        <i class="fas fa-bolt"></i> <span>Order Now</span>
+                    </button>
+                    <button class="cart-button">
+                        <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
+                    </button>
+                </div>
+
+                <!-- Specifications -->
+                <div class="specs-section">
+                    <h2 class="section-title">Product Details</h2>
+                    <ul class="specs-list">
+                        <li class="spec-item">
+                            <span class="spec-name">Type</span>
+                            <span class="spec-value">Liquid Lipstick</span>
+                        </li>
+                        <li class="spec-item">
+                            <span class="spec-name">Finish</span>
+                            <span class="spec-value">Matte</span>
+                        </li>
+                        <li class="spec-item">
+                            <span class="spec-name">Weight</span>
+                            <span class="spec-value">5.5g</span>
+                        </li>
+                        <li class="spec-item">
+                            <span class="spec-name">Longevity</span>
+                            <span class="spec-value">Up to 12 hours</span>
+                        </li>
+                    </ul>
+                    <p class="product-description">
+                        Our bestselling matte liquid lipstick with intense color payoff and a comfortable, 
+                        non-drying formula. Enriched with vitamin E and avocado oil to keep your lips 
+                        hydrated all day long. Transfer-proof and kiss-proof!
+                    </p>
+                </div>
+
+                <!-- Ratings and Reviews -->
+                <div class="ratings-section">
+                    <h2 class="section-title">Customer Reviews</h2>
+                    
+                    <div class="rating-summary">
+                        <div class="average-rating">4.8</div>
+                        <div>
+                            <div class="stars">★★★★★</div>
+                            <div class="rating-count">Based on 124 reviews</div>
+                        </div>
+                    </div>
+
+                    <div class="rating-item">
+                        <div class="rating-header">
+                            <div class="user-name">Sophia R.</div>
+                            <div class="rating-date">2023-10-15</div>
+                        </div>
+                        <div class="stars">★★★★★</div>
+                        <div class="rating-images">
+                            <div class="rating-image">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        </div>
+                        <p class="rating-text">The color is absolutely stunning and it lasts all day without drying my lips. Will definitely repurchase!</p>
+                    </div>
+
+                    <div class="rating-item">
+                        <div class="rating-header">
+                            <div class="user-name">Isabella M.</div>
+                            <div class="rating-date">2023-10-10</div>
+                        </div>
+                        <div class="stars">★★★★☆</div>
+                        <p class="rating-text">Beautiful color but takes a while to dry completely. Otherwise, great product!</p>
+                    </div>
+
+                    <div class="view-more-reviews">
+                        <button class="view-more-btn">View More Reviews</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Cart -->
+    <div class="floating-cart">
+        <i class="fas fa-shopping-cart"></i>
+        <div class="cart-count">3</div>
+    </div>
+
+    <script>
+        // Sample product data
+        const product = {
+            id: 1,
+            name: "Matte Liquid Lipstick - Ruby Red",
+            brand: "BEAUTY & BLESSED",
+            price: 299,
+            variations: ["Ruby Red", "Coral Kiss", "Berry Bliss", "Nude Pink"],
+            liked: false,
+            inCart: false
+        };
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the product page
+            setupProductPage();
+        });
+
+        // Setup product page
+        function setupProductPage() {
+            // Set up like button
+            const likeButton = document.querySelector('.like-button');
+            likeButton.addEventListener('click', function() {
+                product.liked = !product.liked;
+                updateLikeButton();
+            });
+            
+            // Set up variation selection
+            const variationOptions = document.querySelectorAll('.variation-option');
+            variationOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    variationOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update product name with selected variation
+                    const productTitle = document.querySelector('.product-title');
+                    const variation = this.textContent;
+                    productTitle.textContent = `Matte Liquid Lipstick - ${variation}`;
+                });
+            });
+            
+            // Set up add to cart button
+            const cartButton = document.querySelector('.cart-button');
+            cartButton.addEventListener('click', function() {
+                addToCart();
+            });
+            
+            // Set up order button
+            const orderButton = document.querySelector('.order-button');
+            orderButton.addEventListener('click', function() {
+                orderNow();
+            });
+            
+            // Set up navigation buttons
+            const prevButton = document.querySelector('.prev-button');
+            const nextButton = document.querySelector('.next-button');
+            
+            prevButton.addEventListener('click', function() {
+                navigateToPreviousProduct();
+            });
+            
+            nextButton.addEventListener('click', function() {
+                navigateToNextProduct();
+            });
+            
+            // Set up view more reviews button
+            const viewMoreBtn = document.querySelector('.view-more-btn');
+            viewMoreBtn.addEventListener('click', function() {
+                viewAllReviews();
+            });
+        }
+
+        // Update like button state
+        function updateLikeButton() {
+            const likeButton = document.querySelector('.like-button');
+            const likeIcon = likeButton.querySelector('i');
+            
+            if (product.liked) {
+                likeButton.classList.add('active');
+                likeIcon.className = 'fas fa-heart';
+                likeButton.innerHTML = '<i class="fas fa-heart"></i> <span>Liked</span>';
+            } else {
+                likeButton.classList.remove('active');
+                likeIcon.className = 'far fa-heart';
+                likeButton.innerHTML = '<i class="far fa-heart"></i> <span>Like</span>';
+            }
+        }
+
+        // Add product to cart
+        function addToCart() {
+            product.inCart = true;
+            
+            // Update cart count
+            const cartCount = document.querySelector('.cart-count');
+            let currentCount = parseInt(cartCount.textContent);
+            cartCount.textContent = currentCount + 1;
+            
+            // Show confirmation
+            alert(`${product.name} added to cart!`);
+        }
+
+        // Order now functionality
+        function orderNow() {
+            alert(`Redirecting to checkout for ${product.name}`);
+            // In a real app, this would redirect to the checkout page
+        }
+
+        // Navigate to previous product
+        function navigateToPreviousProduct() {
+            alert('Loading previous product...');
+            // In a real app, this would load the previous product details
+        }
+
+        // Navigate to next product
+        function navigateToNextProduct() {
+            alert('Loading next product...');
+            // In a real app, this would load the next product details
+        }
+
+        // View all reviews
+        function viewAllReviews() {
+            alert('Showing all reviews...');
+            // In a real app, this would expand to show all reviews
+        }
+
+        // Go back to previous page
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
