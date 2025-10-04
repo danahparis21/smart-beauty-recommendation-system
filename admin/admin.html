@@ -85,14 +85,15 @@
       font-size: 1.1rem;
     }
     
-    /* Sidebar */
     .sidebar {
       min-height: 100vh;
       background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
       color: white;
       box-shadow: 3px 0 20px rgba(0,0,0,0.15);
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      width: 220px;
       z-index: 100;
       transition: transform 0.3s ease;
     }
@@ -485,6 +486,8 @@
     /* Main content padding */
     main {
       padding: 35px !important;
+      margin-left: 220px;
+      width: calc(100% - 220px);
     }
     
     /* Scrollbar styling */
@@ -1006,6 +1009,30 @@
     .stat-btn:nth-child(4) { animation-delay: 0.4s; }
     .chart-container { animation-delay: 0.5s; }
     .right-panel { animation-delay: 0.6s; }
+
+        @media (max-width: 991px) {
+      .mobile-header {
+        display: block;
+      }
+      
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 280px;
+        transform: translateX(-100%);
+        z-index: 100;
+      }
+      
+      /* ADD THIS LINE */
+      main {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+      
+      /* ... rest of your existing code ... */
+    }
   </style>
 </head>
 <body>
@@ -1208,7 +1235,7 @@
       this.classList.add('active');
     });
   });
-    // Adjust content padding based on mobile header
+    // Adjust content padding based on mo   bile header
   function adjustContentForMobileHeader() {
     const mobileHeader = document.querySelector('.mobile-header');
     const mainContent = document.querySelector('main');

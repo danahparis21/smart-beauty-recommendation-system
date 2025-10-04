@@ -348,9 +348,13 @@
             margin-top: 10px;
         }
 
-        /* Ratings */
+        /* Ratings Section Below Product Image */
         .ratings-section {
-            margin-bottom: 25px;
+            background-color: var(--soft-white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-top: 30px;
         }
 
         .rating-summary {
@@ -380,9 +384,24 @@
             font-size: 14px;
         }
 
+        .featured-reviews {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .featured-reviews {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         .rating-item {
-            padding: 15px 0;
-            border-bottom: 1px solid var(--light-gray);
+            padding: 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            background-color: var(--soft-white);
         }
 
         .rating-header {
@@ -424,25 +443,108 @@
             line-height: 1.5;
         }
 
-        .view-more-reviews {
+        .view-all-reviews {
             text-align: center;
             margin-top: 20px;
         }
 
-        .view-more-btn {
-            background: none;
-            border: 1px solid var(--primary-pink);
-            color: var(--primary-pink);
-            padding: 10px 20px;
+        .view-all-btn {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            border: none;
+            padding: 12px 24px;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .view-more-btn:hover {
-            background: var(--primary-pink);
-            color: white;
+        .view-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            border-radius: 15px 15px 0 0;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--dark-gray);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .all-reviews {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         /* Floating Cart */
@@ -509,6 +611,10 @@
             }
             
             .product-info-section {
+                padding: 20px;
+            }
+            
+            .ratings-section {
                 padding: 20px;
             }
             
@@ -594,6 +700,52 @@
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
+
+                <!-- Ratings Section Moved Below Product Image -->
+                <div class="ratings-section">
+                    <h2 class="section-title">Customer Reviews</h2>
+                    
+                    <div class="rating-summary">
+                        <div class="average-rating">4.8</div>
+                        <div>
+                            <div class="stars">★★★★★</div>
+                            <div class="rating-count">Based on 124 reviews</div>
+                        </div>
+                    </div>
+
+                    <div class="featured-reviews">
+                        <!-- Highest Rating -->
+                        <div class="rating-item">
+                            <div class="rating-header">
+                                <div class="user-name">Sophia R.</div>
+                                <div class="rating-date">2023-10-15</div>
+                            </div>
+                            <div class="stars">★★★★★</div>
+                            <div class="rating-images">
+                                <div class="rating-image">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            </div>
+                            <p class="rating-text">The color is absolutely stunning and it lasts all day without drying my lips. Will definitely repurchase!</p>
+                        </div>
+
+                        <!-- Lowest Rating -->
+                        <div class="rating-item">
+                            <div class="rating-header">
+                                <div class="user-name">Emma L.</div>
+                                <div class="rating-date">2023-09-22</div>
+                            </div>
+                            <div class="stars">★★★☆☆</div>
+                            <p class="rating-text">The color was nice but it felt quite drying on my lips. I expected more hydration from a product with avocado oil.</p>
+                        </div>
+                    </div>
+
+                    <div class="view-all-reviews">
+                        <button class="view-all-btn" id="viewAllReviewsBtn">
+                            <i class="fas fa-list"></i> View All Reviews
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Product Info Section -->
@@ -653,45 +805,20 @@
                         hydrated all day long. Transfer-proof and kiss-proof!
                     </p>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Ratings and Reviews -->
-                <div class="ratings-section">
-                    <h2 class="section-title">Customer Reviews</h2>
-                    
-                    <div class="rating-summary">
-                        <div class="average-rating">4.8</div>
-                        <div>
-                            <div class="stars">★★★★★</div>
-                            <div class="rating-count">Based on 124 reviews</div>
-                        </div>
-                    </div>
-
-                    <div class="rating-item">
-                        <div class="rating-header">
-                            <div class="user-name">Sophia R.</div>
-                            <div class="rating-date">2023-10-15</div>
-                        </div>
-                        <div class="stars">★★★★★</div>
-                        <div class="rating-images">
-                            <div class="rating-image">
-                                <i class="fas fa-image"></i>
-                            </div>
-                        </div>
-                        <p class="rating-text">The color is absolutely stunning and it lasts all day without drying my lips. Will definitely repurchase!</p>
-                    </div>
-
-                    <div class="rating-item">
-                        <div class="rating-header">
-                            <div class="user-name">Isabella M.</div>
-                            <div class="rating-date">2023-10-10</div>
-                        </div>
-                        <div class="stars">★★★★☆</div>
-                        <p class="rating-text">Beautiful color but takes a while to dry completely. Otherwise, great product!</p>
-                    </div>
-
-                    <div class="view-more-reviews">
-                        <button class="view-more-btn">View More Reviews</button>
-                    </div>
+    <!-- All Reviews Modal -->
+    <div class="modal-overlay" id="reviewsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">All Customer Reviews</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="all-reviews" id="allReviews">
+                    <!-- All reviews will be dynamically added here -->
                 </div>
             </div>
         </div>
@@ -715,10 +842,81 @@
             inCart: false
         };
 
+        // Sample reviews data
+        const reviews = [
+            {
+                id: 1,
+                userName: "Sophia R.",
+                date: "2023-10-15",
+                rating: 5,
+                text: "The color is absolutely stunning and it lasts all day without drying my lips. Will definitely repurchase!",
+                hasImage: true
+            },
+            {
+                id: 2,
+                userName: "Emma L.",
+                date: "2023-09-22",
+                rating: 3,
+                text: "The color was nice but it felt quite drying on my lips. I expected more hydration from a product with avocado oil.",
+                hasImage: false
+            },
+            {
+                id: 3,
+                userName: "Isabella M.",
+                date: "2023-10-10",
+                rating: 4,
+                text: "Beautiful color but takes a while to dry completely. Otherwise, great product!",
+                hasImage: false
+            },
+            {
+                id: 4,
+                userName: "Olivia K.",
+                date: "2023-11-05",
+                rating: 5,
+                text: "This is my new favorite lipstick! The color is vibrant and it doesn't transfer. Perfect for all-day wear.",
+                hasImage: true
+            },
+            {
+                id: 5,
+                userName: "Ava S.",
+                date: "2023-09-15",
+                rating: 4,
+                text: "Love the formula and how lightweight it feels. The color payoff is amazing!",
+                hasImage: false
+            },
+            {
+                id: 6,
+                userName: "Mia T.",
+                date: "2023-10-28",
+                rating: 2,
+                text: "Disappointed with the staying power. It faded after just a couple of hours and needed frequent reapplication.",
+                hasImage: false
+            },
+            {
+                id: 7,
+                userName: "Charlotte W.",
+                date: "2023-11-12",
+                rating: 5,
+                text: "Best matte lipstick I've ever tried! Doesn't crack or feel tight on the lips. Highly recommend!",
+                hasImage: true
+            },
+            {
+                id: 8,
+                userName: "Amelia P.",
+                date: "2023-10-02",
+                rating: 4,
+                text: "Great product overall. The color is beautiful and it lasts through meals. Would buy again.",
+                hasImage: false
+            }
+        ];
+
         // DOM Content Loaded
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize the product page
             setupProductPage();
+            
+            // Set up modal functionality
+            setupModal();
         });
 
         // Setup product page
@@ -767,12 +965,75 @@
             nextButton.addEventListener('click', function() {
                 navigateToNextProduct();
             });
+        }
+
+        // Setup modal functionality
+        function setupModal() {
+            const viewAllBtn = document.getElementById('viewAllReviewsBtn');
+            const modal = document.getElementById('reviewsModal');
+            const closeModal = document.getElementById('closeModal');
             
-            // Set up view more reviews button
-            const viewMoreBtn = document.querySelector('.view-more-btn');
-            viewMoreBtn.addEventListener('click', function() {
-                viewAllReviews();
+            viewAllBtn.addEventListener('click', function() {
+                openAllReviewsModal();
             });
+            
+            closeModal.addEventListener('click', function() {
+                closeAllReviewsModal();
+            });
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeAllReviewsModal();
+                }
+            });
+        }
+
+        // Open all reviews modal
+        function openAllReviewsModal() {
+            const modal = document.getElementById('reviewsModal');
+            const allReviewsContainer = document.getElementById('allReviews');
+            
+            // Clear previous content
+            allReviewsContainer.innerHTML = '';
+            
+            // Sort reviews by rating (highest first)
+            const sortedReviews = [...reviews].sort((a, b) => b.rating - a.rating);
+            
+            // Add all reviews to modal
+            sortedReviews.forEach(review => {
+                const reviewElement = document.createElement('div');
+                reviewElement.className = 'rating-item';
+                
+                // Generate star rating
+                const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                
+                reviewElement.innerHTML = `
+                    <div class="rating-header">
+                        <div class="user-name">${review.userName}</div>
+                        <div class="rating-date">${review.date}</div>
+                    </div>
+                    <div class="stars">${stars}</div>
+                    ${review.hasImage ? `
+                    <div class="rating-images">
+                        <div class="rating-image">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <p class="rating-text">${review.text}</p>
+                `;
+                
+                allReviewsContainer.appendChild(reviewElement);
+            });
+            
+            modal.classList.add('active');
+        }
+
+        // Close all reviews modal
+        function closeAllReviewsModal() {
+            const modal = document.getElementById('reviewsModal');
+            modal.classList.remove('active');
         }
 
         // Update like button state
@@ -820,12 +1081,6 @@
         function navigateToNextProduct() {
             alert('Loading next product...');
             // In a real app, this would load the next product details
-        }
-
-        // View all reviews
-        function viewAllReviews() {
-            alert('Showing all reviews...');
-            // In a real app, this would expand to show all reviews
         }
 
         // Go back to previous page
