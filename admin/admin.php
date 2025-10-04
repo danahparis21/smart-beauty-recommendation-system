@@ -153,13 +153,17 @@ $bestsellers_sql = "SELECT
                         p.name as product_name,
                         p.brand,
                         p.category,
+                        p.price,
                         SUM(oi.quantity) as total_sold,
-                        SUM(oi.quantity * oi.price) as total_revenue
+                        SUM(oi.quantity * oi.price) as total_revenue,
+                        COALESCE(AVG(r.stars), 0) as avg_rating,
+                        COUNT(DISTINCT r.rating_id) as review_count
                     FROM OrderItems oi
                     JOIN Products p ON oi.product_id = p.product_id
                     JOIN Orders o ON oi.order_id = o.order_id
+                    LEFT JOIN Ratings r ON p.product_id = r.product_id
                     WHERE o.status = 'completed'
-                    GROUP BY oi.product_id, p.name, p.brand, p.category
+                    GROUP BY oi.product_id, p.name, p.brand, p.category, p.price
                     ORDER BY total_sold DESC
                     LIMIT 5";
 $bestsellers_result = $conn->query($bestsellers_sql);
@@ -170,12 +174,46 @@ if($bestsellers_result) {
     }
 }
 
+// ================== STORE RATINGS ==================
+$store_ratings_sql = "SELECT 
+                          COUNT(*) as total_ratings,
+                          AVG(stars) as average_rating,
+                          SUM(CASE WHEN stars = 5 THEN 1 ELSE 0 END) as five_star,
+                          SUM(CASE WHEN stars = 4 THEN 1 ELSE 0 END) as four_star,
+                          SUM(CASE WHEN stars = 3 THEN 1 ELSE 0 END) as three_star,
+                          SUM(CASE WHEN stars = 2 THEN 1 ELSE 0 END) as two_star,
+                          SUM(CASE WHEN stars = 1 THEN 1 ELSE 0 END) as one_star
+                      FROM Ratings";
+$store_ratings_result = $conn->query($store_ratings_sql);
+$store_ratings = $store_ratings_result->fetch_assoc();
+
+// Recent reviews
+$recent_reviews_sql = "SELECT 
+                          u.name as customer_name,
+                          p.name as product_name,
+                          r.stars,
+                          r.review,
+                          r.rating_id
+                      FROM Ratings r
+                      JOIN Users u ON r.user_id = u.user_id
+                      JOIN Products p ON r.product_id = p.product_id
+                      ORDER BY r.rating_id DESC
+                      LIMIT 3";
+$recent_reviews_result = $conn->query($recent_reviews_sql);
+$recent_reviews = [];
+if($recent_reviews_result) {
+    while($row = $recent_reviews_result->fetch_assoc()) {
+        $recent_reviews[] = $row;
+    }
+}
+
 // ================== TOP CUSTOMERS ==================
 $top_customers_sql = "SELECT 
                           u.name,
                           u.email,
                           COUNT(o.order_id) as total_orders,
-                          SUM(o.total_price) as total_spent
+                          SUM(o.total_price) as total_spent,
+                          MAX(o.order_date) as last_order
                       FROM Orders o
                       JOIN Users u ON o.user_id = u.user_id
                       WHERE o.status = 'completed'
@@ -190,6 +228,64 @@ if($top_customers_result) {
     }
 }
 
+// ================== AI INSIGHTS ==================
+$ai_insights = [];
+
+// Low stock alert (if you have inventory tracking, adjust as needed)
+$low_performing_sql = "SELECT 
+                          p.name,
+                          p.category,
+                          COALESCE(SUM(oi.quantity), 0) as total_sold
+                      FROM Products p
+                      LEFT JOIN OrderItems oi ON p.product_id = oi.product_id
+                      LEFT JOIN Orders o ON oi.order_id = o.order_id AND o.status = 'completed'
+                      GROUP BY p.product_id, p.name, p.category
+                      HAVING total_sold < 5
+                      ORDER BY total_sold ASC
+                      LIMIT 3";
+$low_performing_result = $conn->query($low_performing_sql);
+$low_performing = [];
+if($low_performing_result) {
+    while($row = $low_performing_result->fetch_assoc()) {
+        $low_performing[] = $row;
+    }
+}
+
+// Revenue trend
+$revenue_trend_sql = "SELECT 
+                        SUM(CASE WHEN MONTH(order_date) = MONTH(CURDATE()) THEN total_price ELSE 0 END) as current_month,
+                        SUM(CASE WHEN MONTH(order_date) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) THEN total_price ELSE 0 END) as last_month
+                      FROM Orders
+                      WHERE status = 'completed'
+                      AND order_date >= DATE_SUB(CURDATE(), INTERVAL 2 MONTH)";
+$revenue_trend_result = $conn->query($revenue_trend_sql);
+$revenue_trend = $revenue_trend_result->fetch_assoc();
+
+$current_month_revenue = $revenue_trend['current_month'] ?? 0;
+$last_month_revenue = $revenue_trend['last_month'] ?? 1;
+$revenue_growth = $last_month_revenue > 0 ? (($current_month_revenue - $last_month_revenue) / $last_month_revenue) * 100 : 0;
+
+// Popular category
+$popular_category_sql = "SELECT 
+                            p.category,
+                            COUNT(oi.order_item_id) as order_count,
+                            SUM(oi.quantity * oi.price) as revenue
+                        FROM OrderItems oi
+                        JOIN Products p ON oi.product_id = p.product_id
+                        JOIN Orders o ON oi.order_id = o.order_id
+                        WHERE o.status = 'completed'
+                        GROUP BY p.category
+                        ORDER BY order_count DESC
+                        LIMIT 1";
+$popular_category_result = $conn->query($popular_category_sql);
+$popular_category = $popular_category_result->fetch_assoc();
+
+$ai_insights = [
+    'revenue_growth' => $revenue_growth,
+    'popular_category' => $popular_category,
+    'low_performing' => $low_performing
+];
+
 ?>
 <?php include __DIR__ . '/../admin/admin.html'; ?>
 <script>
@@ -199,6 +295,201 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('.orders-today .stat-value').forEach(e => e.textContent = "<?= $orders_today ?>");
   document.querySelectorAll('.this-week .stat-value').forEach(e => e.textContent = "<?= $orders_week ?>");
   document.querySelectorAll('.total-sales .stat-value').forEach(e => e.textContent = "₱<?= number_format($total_sales, 2) ?>");
+  
+  // ================== BEST SELLING PRODUCTS ==================
+  const bestsellersData = <?= json_encode($bestsellers) ?>;
+  const bestsellersContainer = document.querySelector('.panel-section:nth-child(1) .placeholder-box');
+  
+  if(bestsellersData.length > 0) {
+    let bestsellersHTML = '<div class="list-group list-group-flush">';
+    bestsellersData.forEach((product, index) => {
+      const stars = '★'.repeat(Math.round(product.avg_rating)) + '☆'.repeat(5 - Math.round(product.avg_rating));
+      bestsellersHTML += `
+        <div class="list-group-item border-0 px-0 py-3" style="background: transparent;">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-primary" style="background: linear-gradient(135deg, #e497aa, #db8299) !important;">#${index + 1}</span>
+                <h6 class="mb-0 fw-bold" style="color: #333; font-size: 0.95rem;">${product.product_name}</h6>
+              </div>
+              <div class="text-muted small mb-2">
+                <span class="me-2"><i class="fas fa-tag"></i> ${product.brand}</span>
+                <span><i class="fas fa-folder"></i> ${product.category}</span>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <span class="text-warning small">${stars}</span>
+                <span class="badge bg-light text-dark">${product.total_sold} sold</span>
+                <span class="text-success fw-bold small">₱${parseFloat(product.total_revenue).toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    bestsellersHTML += '</div>';
+    bestsellersContainer.innerHTML = bestsellersHTML;
+  }
+  
+  // ================== STORE RATINGS ==================
+  const storeRatings = <?= json_encode($store_ratings) ?>;
+  const recentReviews = <?= json_encode($recent_reviews) ?>;
+  const ratingsContainer = document.querySelector('.panel-section:nth-child(2) .placeholder-box');
+  
+  const avgRating = parseFloat(storeRatings.average_rating || 0).toFixed(1);
+  const totalRatings = parseInt(storeRatings.total_ratings || 0);
+  const fiveStar = parseInt(storeRatings.five_star || 0);
+  const fourStar = parseInt(storeRatings.four_star || 0);
+  const threeStar = parseInt(storeRatings.three_star || 0);
+  const twoStar = parseInt(storeRatings.two_star || 0);
+  const oneStar = parseInt(storeRatings.one_star || 0);
+  
+  let ratingsHTML = `
+    <div class="text-center mb-4">
+      <div class="display-4 fw-bold" style="color: #e497aa;">${avgRating}</div>
+      <div class="text-warning fs-4 mb-2">${'★'.repeat(Math.round(avgRating))}${'☆'.repeat(5 - Math.round(avgRating))}</div>
+      <div class="text-muted small">${totalRatings} total ratings</div>
+    </div>
+    
+    <div class="mb-3">
+      ${[
+        {stars: 5, count: fiveStar},
+        {stars: 4, count: fourStar},
+        {stars: 3, count: threeStar},
+        {stars: 2, count: twoStar},
+        {stars: 1, count: oneStar}
+      ].map(item => {
+        const percentage = totalRatings > 0 ? (item.count / totalRatings * 100).toFixed(0) : 0;
+        return `
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="small text-nowrap" style="width: 60px;">${item.stars} ★</span>
+            <div class="progress flex-grow-1" style="height: 8px;">
+              <div class="progress-bar" style="width: ${percentage}%; background: linear-gradient(90deg, #e497aa, #db8299);"></div>
+            </div>
+            <span class="small text-muted" style="width: 40px;">${item.count}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  
+  if(recentReviews.length > 0) {
+    ratingsHTML += '<hr class="my-3"><div class="small"><strong>Recent Reviews:</strong></div>';
+    recentReviews.forEach(review => {
+      const stars = '★'.repeat(review.stars) + '☆'.repeat(5 - review.stars);
+      ratingsHTML += `
+        <div class="small mt-2 p-2" style="background: #f8f9fa; border-radius: 8px;">
+          <div class="text-warning">${stars}</div>
+          <div class="fw-bold">${review.customer_name}</div>
+          <div class="text-muted">${review.product_name}</div>
+          ${review.review ? `<div class="mt-1" style="font-size: 0.85rem;">"${review.review.substring(0, 80)}${review.review.length > 80 ? '...' : ''}"</div>` : ''}
+        </div>
+      `;
+    });
+  }
+  
+  ratingsContainer.innerHTML = ratingsHTML;
+  
+  // ================== AI INSIGHTS ==================
+  const aiInsights = <?= json_encode($ai_insights) ?>;
+  const insightsContainer = document.querySelector('.panel-section:nth-child(3) .placeholder-box');
+  
+  let insightsHTML = '<div class="text-start">';
+  
+  // Revenue Growth Insight
+  const growthPercent = parseFloat(aiInsights.revenue_growth).toFixed(1);
+  const growthIcon = growthPercent >= 0 ? 'fa-arrow-trend-up text-success' : 'fa-arrow-trend-down text-danger';
+  const growthColor = growthPercent >= 0 ? 'success' : 'danger';
+  
+  insightsHTML += `
+    <div class="mb-3 p-3" style="background: linear-gradient(135deg, #f8f9fa, #fff); border-radius: 10px; border-left: 4px solid var(--primary-pink);">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <i class="fas ${growthIcon} fs-5"></i>
+        <strong>Revenue Trend</strong>
+      </div>
+      <div class="small">
+        <span class="badge bg-${growthColor}">${growthPercent > 0 ? '+' : ''}${growthPercent}%</span>
+        compared to last month
+      </div>
+    </div>
+  `;
+  
+  // Popular Category
+  if(aiInsights.popular_category) {
+    insightsHTML += `
+      <div class="mb-3 p-3" style="background: linear-gradient(135deg, #f8f9fa, #fff); border-radius: 10px; border-left: 4px solid var(--secondary-pink);">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="fas fa-fire text-warning fs-5"></i>
+          <strong>Trending Category</strong>
+        </div>
+        <div class="small">
+          <span class="badge" style="background: linear-gradient(135deg, #e497aa, #db8299);">${aiInsights.popular_category.category}</span>
+          with ${aiInsights.popular_category.order_count} orders
+        </div>
+      </div>
+    `;
+  }
+  
+  // Low Performing Products
+  if(aiInsights.low_performing && aiInsights.low_performing.length > 0) {
+    insightsHTML += `
+      <div class="mb-3 p-3" style="background: linear-gradient(135deg, #fff3cd, #fff); border-radius: 10px; border-left: 4px solid #ffc107;">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="fas fa-exclamation-triangle text-warning fs-5"></i>
+          <strong>Needs Attention</strong>
+        </div>
+        <div class="small">
+          ${aiInsights.low_performing.map(p => `
+            <div class="mt-2">
+              • <strong>${p.name}</strong> (${p.category})<br>
+              <span class="text-muted ms-3">Only ${p.total_sold} sold</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+  
+  insightsHTML += '</div>';
+  insightsContainer.innerHTML = insightsHTML;
+  
+  // ================== TOP CUSTOMERS ==================
+  const topCustomers = <?= json_encode($top_customers) ?>;
+  const customersContainer = document.querySelector('.panel-section:nth-child(4) .placeholder-box');
+  
+  if(topCustomers.length > 0) {
+    let customersHTML = '<div class="list-group list-group-flush">';
+    topCustomers.forEach((customer, index) => {
+      const initial = customer.name.charAt(0).toUpperCase();
+      const colors = ['#e497aa', '#db8299', '#c36c82', '#b05a70', '#9d4e5f'];
+      const bgColor = colors[index % colors.length];
+      
+      customersHTML += `
+        <div class="list-group-item border-0 px-0 py-3" style="background: transparent;">
+          <div class="d-flex align-items-center gap-3">
+            <div class="flex-shrink-0">
+              <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" 
+                   style="width: 45px; height: 45px; background: ${bgColor}; font-size: 1.2rem;">
+                ${initial}
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">#${index + 1}</span>
+                <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">${customer.name}</h6>
+              </div>
+              <div class="small text-muted mb-1">${customer.email}</div>
+              <div class="d-flex gap-3 small">
+                <span><i class="fas fa-shopping-bag text-primary"></i> ${customer.total_orders} orders</span>
+                <span class="text-success fw-bold"><i class="fas fa-peso-sign"></i> ${parseFloat(customer.total_spent).toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    customersHTML += '</div>';
+    customersContainer.innerHTML = customersHTML;
+  }
   
   // Update chart data with real database values
   const chartData = {
