@@ -318,6 +318,33 @@
       border-top: none;
     }
     
+    /* Cancel Button - Circle with X */
+    .cancel-scan-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 20;
+      transition: all 0.3s ease;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .cancel-scan-btn:hover {
+      background: #dc3545;
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+    
     /* Camera Controls */
     .camera-controls {
       display: flex;
@@ -404,6 +431,22 @@
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
+    }
+    
+    .order-status.pending {
+      background: #ffc107;
+    }
+    
+    .order-status.ready {
+      background: #17a2b8;
+    }
+    
+    .order-status.completed {
+      background: #28a745;
+    }
+    
+    .order-status.cancelled {
+      background: #dc3545;
     }
     
     /* SCROLLABLE Order Content */
@@ -557,6 +600,87 @@
       background: #f8d7da;
       color: #721c24;
       border: 1px solid #f5c6cb;
+    }
+    
+    .scanner-results.info {
+      display: block;
+      background: #cce7ff;
+      color: #004085;
+      border: 1px solid #b3d7ff;
+    }
+    
+    /* Confirmation Modal */
+    .confirmation-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .confirmation-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    
+    .confirmation-content h4 {
+      color: var(--dark-pink);
+      margin-bottom: 15px;
+    }
+    
+    .confirmation-content p {
+      color: #6c757d;
+      margin-bottom: 25px;
+    }
+    
+    .confirmation-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    
+    .confirm-btn {
+      background: var(--primary-pink);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+    
+    .confirm-btn:hover {
+      background: var(--secondary-pink);
+      transform: translateY(-2px);
+    }
+    
+    .cancel-confirm-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+    
+    .cancel-confirm-btn:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
     }
     
     /* Responsive Design */
@@ -875,6 +999,18 @@
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+<!-- Confirmation Modal -->
+<div class="confirmation-modal" id="confirmationModal">
+  <div class="confirmation-content">
+    <h4><i class="fas fa-question-circle"></i> Confirm Order Completion</h4>
+    <p>Are you sure the order has been paid?</p>
+    <div class="confirmation-buttons">
+      <button class="cancel-confirm-btn" id="cancelConfirmBtn">No</button>
+      <button class="confirm-btn" id="confirmOrderBtn">Yes, Order Paid</button>
+    </div>
+  </div>
+</div>
+
 <div class="container-fluid">
   <div class="row">
     <!-- Sidebar -->
@@ -932,6 +1068,11 @@
             </div>
             
             <div class="camera-container">
+              <!-- ADDED: Cancel Scan Button (Circle with X) -->
+              <button class="cancel-scan-btn" id="cancelScanBtn">
+                <i class="fas fa-times"></i>
+              </button>
+              
               <div class="camera-placeholder" id="cameraPlaceholder">
                 <i class="fas fa-camera"></i>
                 <div>Camera will appear here when started</div>
@@ -1028,6 +1169,7 @@
   const cameraPlaceholder = document.getElementById('cameraPlaceholder');
   const startCameraBtn = document.getElementById('startCamera');
   const stopCameraBtn = document.getElementById('stopCamera');
+  const cancelScanBtn = document.getElementById('cancelScanBtn'); // ADDED
   const scannerResults = document.getElementById('scannerResults');
   const orderContent = document.getElementById('orderContent');
   const orderStatus = document.getElementById('orderStatus');
@@ -1035,6 +1177,9 @@
   const totalAmount = document.getElementById('totalAmount');
   const orderActions = document.getElementById('orderActions');
   const orderDoneBtn = document.getElementById('orderDoneBtn');
+  const confirmationModal = document.getElementById('confirmationModal');
+  const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+  const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
   
   let stream = null;
   
@@ -1057,6 +1202,7 @@
       // Enable/disable buttons
       startCameraBtn.disabled = true;
       stopCameraBtn.disabled = false;
+      cancelScanBtn.style.display = 'flex'; // Show cancel button
       
       // Show success message
       scannerResults.textContent = 'Camera started successfully. Point at a QR code to scan.';
@@ -1083,14 +1229,38 @@
     // Enable/disable buttons
     startCameraBtn.disabled = false;
     stopCameraBtn.disabled = true;
+    cancelScanBtn.style.display = 'none'; // Hide cancel button
     
     // Clear scanner results
     scannerResults.textContent = 'Camera stopped.';
     scannerResults.className = 'scanner-results';
   }
-  
-  // Order Done button functionality
-  orderDoneBtn.addEventListener('click', function() {
+
+  // ADDED: Cancel scan process function
+  function cancelScanProcess() {
+    // Stop camera first
+    stopCamera();
+    
+    // Show cancellation message
+    scannerResults.textContent = 'Scanning process cancelled.';
+    scannerResults.className = 'scanner-results info';
+    
+    // Note: This only cancels the scanning process, not any existing order
+    // The order remains unchanged if there was one
+  }
+
+  // ADDED: Show confirmation modal
+  function showConfirmationModal() {
+    confirmationModal.style.display = 'flex';
+  }
+
+  // ADDED: Hide confirmation modal
+  function hideConfirmationModal() {
+    confirmationModal.style.display = 'none';
+  }
+
+  // ADDED: Complete order function
+  function completeOrder() {
     // Reset order details
     orderContent.innerHTML = `
       <div class="no-order">
@@ -1100,13 +1270,38 @@
       </div>
     `;
     orderStatus.textContent = 'No Order';
-    orderStatus.style.background = '#6c757d';
+    orderStatus.className = 'order-status';
     orderTotal.style.display = 'none';
     orderActions.style.display = 'none';
     
-    // Show success message
-    scannerResults.textContent = 'Order marked as completed successfully!';
+    // Show completion message
+    scannerResults.textContent = 'Order completed successfully! Returning to dashboard...';
     scannerResults.className = 'scanner-results success';
+    
+    // Hide confirmation modal
+    hideConfirmationModal();
+    
+    // Simulate auto exit after 2 seconds
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 2000);
+  }
+  
+  // Order Done button functionality - shows confirmation
+  orderDoneBtn.addEventListener('click', showConfirmationModal);
+  
+  // Cancel scan button functionality
+  cancelScanBtn.addEventListener('click', cancelScanProcess);
+  
+  // Confirmation modal buttons
+  confirmOrderBtn.addEventListener('click', completeOrder);
+  cancelConfirmBtn.addEventListener('click', hideConfirmationModal);
+  
+  // Close modal when clicking outside
+  confirmationModal.addEventListener('click', function(e) {
+    if (e.target === confirmationModal) {
+      hideConfirmationModal();
+    }
   });
   
   // Event listeners for camera buttons
