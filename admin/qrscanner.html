@@ -203,7 +203,7 @@
       width: calc(100% - 220px);
     }
     
-    /* QR Scanner Container */
+    /* QR Scanner Container - FIXED POSITION */
     .qr-scanner-container {
       background: white;
       border-radius: 20px;
@@ -212,6 +212,9 @@
       transition: all 0.4s ease;
       border: 1px solid rgba(228, 151, 170, 0.1);
       margin-bottom: 25px;
+      position: sticky;
+      top: 35px;
+      z-index: 10;
     }
     
     .qr-scanner-container:hover {
@@ -356,7 +359,7 @@
       background: #c82333;
     }
     
-    /* Order Details */
+    /* Order Details - SCROLLABLE */
     .order-details {
       background: white;
       border-radius: 20px;
@@ -364,7 +367,11 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.06);
       transition: all 0.4s ease;
       border: 1px solid rgba(228, 151, 170, 0.1);
-      height: 100%;
+      height: calc(100vh - 200px);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 35px;
     }
     
     .order-details:hover {
@@ -397,6 +404,13 @@
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
+    }
+    
+    /* SCROLLABLE Order Content */
+    .order-content {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 20px;
     }
     
     .order-info {
@@ -459,15 +473,55 @@
       color: var(--dark-pink);
     }
     
+    /* FIXED Total and Button */
     .order-total {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 15px;
+      padding: 15px 0;
       border-top: 2px solid rgba(228, 151, 170, 0.15);
       font-size: 1.1rem;
       font-weight: 700;
       color: var(--dark-pink);
+      position: sticky;
+      bottom: 0;
+      background: white;
+    }
+    
+    .order-actions {
+      margin-top: 20px;
+      position: sticky;
+      bottom: 0;
+      background: white;
+      padding-top: 10px;
+    }
+    
+    .order-done-btn {
+      background: var(--primary-pink);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 25px;
+      font-weight: 600;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(228, 151, 170, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .order-done-btn:hover {
+      background: var(--secondary-pink);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(228, 151, 170, 0.4);
+    }
+    
+    .order-done-btn:active {
+      transform: translateY(0);
     }
     
     .no-order {
@@ -523,6 +577,10 @@
       .camera-container {
         height: 350px;
       }
+      
+      .order-details {
+        height: calc(100vh - 180px);
+      }
     }
     
     /* Tablets (768px - 991px) */
@@ -565,6 +623,16 @@
       
       .camera-container {
         height: 350px;
+      }
+      
+      .order-details {
+        height: calc(100vh - 160px);
+      }
+      
+      .qr-scanner-container,
+      .order-details {
+        position: relative;
+        top: 0;
       }
     }
     
@@ -631,6 +699,16 @@
       .scanner-frame {
         width: 200px;
         height: 200px;
+      }
+      
+      .order-details {
+        height: calc(100vh - 150px);
+      }
+      
+      .qr-scanner-container,
+      .order-details {
+        position: relative;
+        top: 0;
       }
     }
     
@@ -708,6 +786,8 @@
       .order-details {
         padding: 16px;
         border-radius: 16px;
+        position: relative;
+        top: 0;
       }
       
       .scanner-header,
@@ -749,25 +829,10 @@
       .item-price {
         align-self: flex-end;
       }
-    }
-    
-    /* Extra Small Mobile (up to 375px) */
-    @media (max-width: 375px) {
-      .page-title {
-        font-size: 1.2rem;
-      }
       
-      main {
-        padding: 12px !important;
-      }
-      
-      .camera-container {
-        height: 220px;
-      }
-      
-      .scanner-frame {
-        width: 160px;
-        height: 160px;
+      .order-details {
+        height: auto;
+        max-height: 500px;
       }
     }
     
@@ -859,7 +924,7 @@
       </div>
       
       <div class="row">
-        <!-- QR Scanner Section -->
+        <!-- QR Scanner Section - FIXED -->
         <div class="col-lg-8">
           <div class="qr-scanner-container">
             <div class="scanner-header">
@@ -898,12 +963,26 @@
               <span class="order-status" id="orderStatus">No Order</span>
             </div>
             
-            <div id="orderContent">
+            <!-- SCROLLABLE Order Content -->
+            <div class="order-content" id="orderContent">
               <div class="no-order">
                 <i class="fas fa-qrcode"></i>
                 <h5>No Order Scanned</h5>
                 <p>Scan a QR code to view order details</p>
               </div>
+            </div>
+            
+            <!-- FIXED Total -->
+            <div class="order-total" id="orderTotal" style="display: none;">
+              <span>Total:</span>
+              <span id="totalAmount">$0.00</span>
+            </div>
+            
+            <!-- FIXED Order Done Button -->
+            <div class="order-actions" id="orderActions" style="display: none;">
+              <button class="order-done-btn" id="orderDoneBtn">
+                <i class="fas fa-check-circle"></i> Order Done
+              </button>
             </div>
           </div>
         </div>
@@ -944,12 +1023,18 @@
     });
   });
   
-  // QR Scanner Functionality - UI Only
+  // QR Scanner Functionality
   const video = document.getElementById('qr-video');
   const cameraPlaceholder = document.getElementById('cameraPlaceholder');
   const startCameraBtn = document.getElementById('startCamera');
   const stopCameraBtn = document.getElementById('stopCamera');
   const scannerResults = document.getElementById('scannerResults');
+  const orderContent = document.getElementById('orderContent');
+  const orderStatus = document.getElementById('orderStatus');
+  const orderTotal = document.getElementById('orderTotal');
+  const totalAmount = document.getElementById('totalAmount');
+  const orderActions = document.getElementById('orderActions');
+  const orderDoneBtn = document.getElementById('orderDoneBtn');
   
   let stream = null;
   
@@ -959,7 +1044,7 @@
       // Request camera access
       stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          facingMode: 'environment', // Prefer rear camera
+          facingMode: 'environment',
           width: { ideal: 1280 },
           height: { ideal: 720 }
         } 
@@ -1003,6 +1088,26 @@
     scannerResults.textContent = 'Camera stopped.';
     scannerResults.className = 'scanner-results';
   }
+  
+  // Order Done button functionality
+  orderDoneBtn.addEventListener('click', function() {
+    // Reset order details
+    orderContent.innerHTML = `
+      <div class="no-order">
+        <i class="fas fa-qrcode"></i>
+        <h5>No Order Scanned</h5>
+        <p>Scan a QR code to view order details</p>
+      </div>
+    `;
+    orderStatus.textContent = 'No Order';
+    orderStatus.style.background = '#6c757d';
+    orderTotal.style.display = 'none';
+    orderActions.style.display = 'none';
+    
+    // Show success message
+    scannerResults.textContent = 'Order marked as completed successfully!';
+    scannerResults.className = 'scanner-results success';
+  });
   
   // Event listeners for camera buttons
   startCameraBtn.addEventListener('click', startCamera);
