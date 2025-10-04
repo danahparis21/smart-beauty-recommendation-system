@@ -769,6 +769,33 @@
             outline: 2px solid var(--primary-pink);
             outline-offset: 2px;
         }
+
+        /* Remove default browser password reveal icon */
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-credentials-auto-fill-button:hover,
+        input[type="password"]::-webkit-credentials-auto-fill-button:active {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            right: 0 !important;
+        }
+
+        /* For Firefox */
+        input[type="password"]::-moz-reveal {
+            display: none !important;
+        }
+
+/* For Edge and IE */
+        input[type="password"]::-ms-reveal {
+            display: none !important;
+        }
+
+        /* For all browsers - additional method */
+        input[type="password"] {
+            /* Prevent browser from adding its own reveal button */
+            -webkit-text-security: disc;
+        }
     </style>
 </head>
 <body>
@@ -815,6 +842,7 @@
                 <input type="password" id="password" class="input-field" placeholder=" " required>
                 <label for="password" class="input-label">Password</label>
                 <button type="button" class="password-toggle" id="togglePassword">
+                    <!-- wag tanggalin -->
                     <i class="far fa-eye"></i>
                 </button>
                 
@@ -891,7 +919,7 @@
                 const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 confirmPasswordInput.setAttribute('type', type);
                 
-                // Toggle eye icon
+                // wag tanggalin! Toggle eye icon
                 const eyeIcon = this.querySelector('i');
                 if (type === 'text') {
                     eyeIcon.classList.remove('fa-eye');
