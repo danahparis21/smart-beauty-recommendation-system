@@ -287,17 +287,19 @@
       }
 
       /* Chart Container */
-      .chart-container {
+      .chart-section {
         background: white;
         border-radius: 20px;
         padding: 30px;
-        margin-bottom: 25px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         transition: all 0.4s ease;
         border: 1px solid rgba(228, 151, 170, 0.1);
+        height: 400px;
+        display: flex;
+        flex-direction: column;
       }
 
-      .chart-container:hover {
+      .chart-section:hover {
         box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
         transform: translateY(-4px);
       }
@@ -318,31 +320,26 @@
         margin: 0;
       }
 
-      /* Right Panel */
-      .right-panel {
+      /* Side Panels */
+      .side-panel {
         background: white;
         border-radius: 20px;
-        padding: 30px;
-        height: 100%;
-        overflow-y: auto;
+        padding: 25px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         transition: all 0.4s ease;
         border: 1px solid rgba(228, 151, 170, 0.1);
+        height: 400px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
       }
 
-      .right-panel:hover {
+      .side-panel:hover {
         box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
       }
 
-      .panel-section {
-        margin-bottom: 30px;
-      }
-
-      .panel-section:last-child {
-        margin-bottom: 0;
-      }
-
-      .panel-section h6 {
+      .side-panel h6 {
         color: var(--dark-pink);
         font-weight: 700;
         margin-bottom: 18px;
@@ -352,104 +349,198 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-shrink: 0;
       }
 
-      .panel-section h6 i {
-        font-size: 1.1rem;
+      /* Additional Panels Below Chart */
+      .additional-panels {
+        margin-top: 25px;
       }
 
-      /* Placeholder boxes */
-      .placeholder-box {
-        border: 2px dashed #e0e0e0;
-        border-radius: 12px;
-        padding: 32px 24px;
-        text-align: center;
-        color: #999;
-        font-style: italic;
-        background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
-        transition: all 0.4s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .placeholder-box::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(228, 151, 170, 0.1);
-        transform: translate(-50%, -50%);
-        transition: all 0.5s ease;
-      }
-
-      .placeholder-box:hover::before {
-        width: 200%;
-        height: 200%;
-      }
-
-      .placeholder-box:hover {
-        border-color: var(--primary-pink);
+      .additional-panel {
         background: white;
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        height: 300px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .additional-panel:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
         transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgba(228, 151, 170, 0.15);
       }
 
-      .placeholder-box i {
-        position: relative;
-        z-index: 1;
+      .additional-panel h6 {
+        color: var(--dark-pink);
+        font-weight: 700;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f0f0f0;
+        font-size: 1.05rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
       }
 
-      .placeholder-box div,
-      .placeholder-box small {
-        position: relative;
-        z-index: 1;
-      }
-
-      .chart-placeholder {
-        border: 2px dashed #e0e0e0;
-        border-radius: 12px;
-        height: 280px;
+      /* Content areas for scrolling */
+      .panel-content {
+        flex: 1;
+        overflow-y: auto;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #999;
+        color: #6c757d;
         font-style: italic;
-        background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
-        transition: all 0.4s ease;
-        position: relative;
-        overflow: hidden;
       }
 
-      .chart-placeholder::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
+      /* Product List Styles */
+      .product-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .product-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f5f5f5;
+        transition: all 0.3s ease;
+      }
+
+      .product-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+      }
+
+      .product-item:last-child {
+        border-bottom: none;
+      }
+
+      .product-rank {
+        font-weight: 700;
+        color: var(--dark-pink);
+        margin-right: 12px;
+        min-width: 20px;
+        text-align: center;
+      }
+
+      .product-info {
+        flex: 1;
+      }
+
+      .product-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+      }
+
+      .product-sales {
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+
+      /* Rating Styles */
+      .rating-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .rating-item:last-child {
+        border-bottom: none;
+      }
+
+      .rating-label {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .rating-value {
+        font-weight: 600;
+        color: var(--dark-pink);
+      }
+
+      .rating-stars {
+        color: #ffc107;
+        margin-right: 8px;
+      }
+
+      /* Customer List Styles */
+      .customer-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .customer-item:last-child {
+        border-bottom: none;
+      }
+
+      .customer-avatar {
+        width: 35px;
+        height: 35px;
         border-radius: 50%;
-        background: rgba(228, 151, 170, 0.1);
-        transform: translate(-50%, -50%);
-        transition: all 0.5s ease;
+        background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.8rem;
+        margin-right: 12px;
       }
 
-      .chart-placeholder:hover::before {
-        width: 200%;
-        height: 200%;
+      .customer-info {
+        flex: 1;
       }
 
-      .chart-placeholder:hover {
-        border-color: var(--primary-pink);
-        background: white;
-        box-shadow: 0 8px 16px rgba(228, 151, 170, 0.15);
+      .customer-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
       }
 
-      .chart-placeholder-content {
-        position: relative;
-        z-index: 1;
+      .customer-spent {
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+
+      /* AI Insights Styles */
+      .insight-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border-left: 4px solid var(--primary-pink);
+      }
+
+      .insight-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .insight-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+      }
+
+      .insight-desc {
+        font-size: 0.8rem;
+        color: #6c757d;
+        line-height: 1.4;
       }
 
       /* Button group styling */
@@ -517,22 +608,61 @@
       }
 
       /* Scrollbar styling */
-      .right-panel::-webkit-scrollbar {
+      .side-panel::-webkit-scrollbar,
+      .additional-panel::-webkit-scrollbar {
         width: 6px;
       }
 
-      .right-panel::-webkit-scrollbar-track {
+      .side-panel::-webkit-scrollbar-track,
+      .additional-panel::-webkit-scrollbar-track {
         background: #f1f1f1;
         border-radius: 10px;
       }
 
-      .right-panel::-webkit-scrollbar-thumb {
+      .side-panel::-webkit-scrollbar-thumb,
+      .additional-panel::-webkit-scrollbar-thumb {
         background: var(--primary-pink);
         border-radius: 10px;
       }
 
-      .right-panel::-webkit-scrollbar-thumb:hover {
+      .side-panel::-webkit-scrollbar-thumb:hover,
+      .additional-panel::-webkit-scrollbar-thumb:hover {
         background: var(--secondary-pink);
+      }
+
+      /* New Layout Styles */
+      .main-content-row {
+        display: flex;
+        gap: 25px;
+      }
+
+      .left-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      .right-column {
+        width: 350px;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      /* Empty state styling */
+      .empty-state {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        padding: 40px 20px;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--primary-pink);
+        opacity: 0.5;
       }
 
       /* Responsive Design */
@@ -551,11 +681,7 @@
           font-size: 2.5rem;
         }
 
-        .chart-container {
-          padding: 35px;
-        }
-
-        .right-panel {
+        .chart-section, .side-panel {
           padding: 35px;
         }
       }
@@ -589,11 +715,7 @@
           font-size: 2.2rem;
         }
 
-        .chart-container {
-          padding: 25px;
-        }
-
-        .right-panel {
+        .chart-section, .side-panel {
           padding: 25px;
         }
 
@@ -647,8 +769,7 @@
           font-size: 2rem;
         }
 
-        .chart-container,
-        .right-panel {
+        .chart-section, .side-panel {
           padding: 20px;
         }
 
@@ -677,8 +798,12 @@
           padding: 25px !important;
         }
 
-        .chart-placeholder {
-          height: 240px;
+        .main-content-row {
+          flex-direction: column;
+        }
+
+        .right-column {
+          width: 100%;
         }
       }
 
@@ -746,8 +871,7 @@
           font-size: 0.85rem;
         }
 
-        .chart-container,
-        .right-panel {
+        .chart-section, .side-panel {
           padding: 18px;
         }
 
@@ -784,16 +908,12 @@
           padding: 20px !important;
         }
 
-        .chart-placeholder {
-          height: 220px;
+        .main-content-row {
+          flex-direction: column;
         }
 
-        .panel-section h6 {
-          font-size: 1rem;
-        }
-
-        .placeholder-box {
-          padding: 24px 18px;
+        .right-column {
+          width: 100%;
         }
       }
 
@@ -902,8 +1022,7 @@
           margin-top: 4px;
         }
 
-        .chart-container,
-        .right-panel {
+        .chart-section, .side-panel {
           padding: 16px;
           border-radius: 16px;
         }
@@ -949,41 +1068,12 @@
           padding: 15px !important;
         }
 
-        .chart-placeholder {
-          height: 200px;
+        .main-content-row {
+          flex-direction: column;
         }
 
-        .chart-placeholder i {
-          font-size: 2rem !important;
-        }
-
-        .chart-placeholder div {
-          font-size: 0.95rem !important;
-        }
-
-        .panel-section {
-          margin-bottom: 20px;
-        }
-
-        .panel-section h6 {
-          font-size: 0.95rem;
-          margin-bottom: 12px;
-        }
-
-        .placeholder-box {
-          padding: 20px 16px;
-        }
-
-        .placeholder-box i {
-          font-size: 1.5rem !important;
-        }
-
-        .placeholder-box div {
-          font-size: 0.9rem !important;
-        }
-
-        .placeholder-box small {
-          font-size: 0.75rem !important;
+        .right-column {
+          width: 100%;
         }
       }
 
@@ -1024,8 +1114,9 @@
       }
 
       .stat-btn,
-      .chart-container,
-      .right-panel {
+      .chart-section,
+      .side-panel,
+      .additional-panel {
         animation: fadeInUp 0.6s ease forwards;
       }
 
@@ -1041,11 +1132,14 @@
       .stat-btn:nth-child(4) {
         animation-delay: 0.4s;
       }
-      .chart-container {
+      .chart-section {
         animation-delay: 0.5s;
       }
-      .right-panel {
+      .side-panel {
         animation-delay: 0.6s;
+      }
+      .additional-panel {
+        animation-delay: 0.7s;
       }
 
       @media (max-width: 991px) {
@@ -1063,13 +1157,10 @@
           z-index: 100;
         }
 
-        /* ADD THIS LINE */
         main {
           margin-left: 0 !important;
           width: 100% !important;
         }
-
-        /* ... rest of your existing code ... */
       }
     </style>
   </head>
@@ -1081,7 +1172,7 @@
           <i class="fas fa-bars"></i>
         </button>
         <div class="mobile-logo">
-          <img src="bnblogo.jpg" alt="Store Logo" />
+          <img src="images/mainlogo.png" alt="Store Logo" />
           <span>Beauty & Blessed</span>
         </div>
       </div>
@@ -1171,10 +1262,12 @@
             </button>
           </div>
 
-          <div class="row">
-            <!-- Graph Section -->
-            <div class="col-md-8">
-              <div class="chart-container">
+          <!-- Main Content Area -->
+          <div class="main-content-row">
+            <!-- Left Column -->
+            <div class="left-column">
+              <!-- Chart Section -->
+              <div class="chart-section">
                 <div class="chart-header">
                   <h5><i class="fas fa-chart-line"></i> Sales Overview</h5>
                   <div class="btn-group" role="group">
@@ -1195,74 +1288,62 @@
                     </button>
                   </div>
                 </div>
-                <canvas id="salesChart" style="height: 300px"></canvas>
+                <canvas id="salesChart" style="height: 280px"></canvas>
+              </div>
+
+              <!-- Additional Panels Below Chart -->
+              <div class="additional-panels">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="additional-panel">
+                      <h6><i class="fas fa-star"></i> Store Ratings</h6>
+                      <div class="panel-content">
+                        <div class="empty-state">
+                          <i class="fas fa-star"></i>
+                          <div>No rating data available</div>
+                          <small class="text-muted">Customer ratings will appear here</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="additional-panel">
+                      <h6><i class="fas fa-brain"></i> Smart AI Insights</h6>
+                      <div class="panel-content">
+                        <div class="empty-state">
+                          <i class="fas fa-robot"></i>
+                          <div>No insights generated</div>
+                          <small class="text-muted">AI-powered insights will appear here</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Right Panel -->
-            <div class="col-md-4">
-              <div class="right-panel">
-                <div class="panel-section">
-                  <h6><i class="fas fa-fire"></i> Best Selling Products</h6>
-                  <div class="placeholder-box">
-                    <i
-                      class="fas fa-cube fa-2x mb-3"
-                      style="color: var(--primary-pink)"
-                    ></i>
-                    <div style="font-size: 1rem; margin-bottom: 6px">
-                      Product Performance Data
-                    </div>
-                    <small class="text-muted"
-                      >Top products will be listed here</small
-                    >
+            <!-- Right Column -->
+            <div class="right-column">
+              <!-- Best Selling Products -->
+              <div class="side-panel">
+                <h6><i class="fas fa-fire"></i> Best Selling Products</h6>
+                <div class="panel-content">
+                  <div class="empty-state">
+                    <i class="fas fa-cube"></i>
+                    <div>No product data available</div>
+                    <small class="text-muted">Top products will be listed here</small>
                   </div>
                 </div>
+              </div>
 
-                <div class="panel-section">
-                  <h6><i class="fas fa-star"></i> Store Ratings</h6>
-                  <div class="placeholder-box">
-                    <i
-                      class="fas fa-star fa-2x mb-3"
-                      style="color: var(--primary-pink)"
-                    ></i>
-                    <div style="font-size: 1rem; margin-bottom: 6px">
-                      Customer Feedback & Ratings
-                    </div>
-                    <small class="text-muted"
-                      >Rating statistics will appear here</small
-                    >
-                  </div>
-                </div>
-
-                <div class="panel-section">
-                  <h6><i class="fas fa-brain"></i> Smart AI Insights</h6>
-                  <div class="placeholder-box">
-                    <i
-                      class="fas fa-robot fa-2x mb-3"
-                      style="color: var(--primary-pink)"
-                    ></i>
-                    <div style="font-size: 1rem; margin-bottom: 6px">
-                      AI-Powered Recommendations
-                    </div>
-                    <small class="text-muted"
-                      >Insights and suggestions will appear here</small
-                    >
-                  </div>
-                </div>
-
-                <div class="panel-section">
-                  <h6><i class="fas fa-crown"></i> Top Customers</h6>
-                  <div class="placeholder-box">
-                    <i
-                      class="fas fa-users fa-2x mb-3"
-                      style="color: var(--primary-pink)"
-                    ></i>
-                    <div style="font-size: 1rem; margin-bottom: 6px">
-                      Customer Performance Data
-                    </div>
-                    <small class="text-muted"
-                      >Top customers will be listed here</small
-                    >
+              <!-- Top Customers -->
+              <div class="side-panel">
+                <h6><i class="fas fa-crown"></i> Top Customers</h6>
+                <div class="panel-content">
+                  <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <div>No customer data available</div>
+                    <small class="text-muted">Top customers will be listed here</small>
                   </div>
                 </div>
               </div>
@@ -1312,7 +1393,66 @@
           this.classList.add("active");
         });
       });
-      // Adjust content padding based on mo   bile header
+
+      // Sales Chart
+      const ctx = document.getElementById('salesChart').getContext('2d');
+      const salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [{
+            label: 'Monthly Sales ($)',
+            data: [],
+            borderColor: '#e497aa',
+            backgroundColor: 'rgba(228, 151, 170, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#e497aa',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: '#e497aa',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              },
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toLocaleString();
+                }
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            }
+          }
+        }
+      });
+
+      // Adjust content padding based on mobile header
       function adjustContentForMobileHeader() {
         const mobileHeader = document.querySelector(".mobile-header");
         const mainContent = document.querySelector("main");
