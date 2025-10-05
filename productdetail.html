@@ -348,13 +348,12 @@
             margin-top: 10px;
         }
 
-        /* Ratings Section Below Product Image */
+        /* Ratings Section */
         .ratings-section {
             background-color: var(--soft-white);
             border-radius: 15px;
             padding: 25px;
             box-shadow: var(--card-shadow);
-            margin-top: 30px;
         }
 
         .rating-summary {
@@ -586,7 +585,7 @@
             font-weight: 600;
         }
 
-        /* Responsive Design */
+        /* Mobile-specific layout changes */
         @media (max-width: 767px) {
             .header {
                 padding: 12px 15px;
@@ -642,6 +641,22 @@
                 right: 15px;
                 width: 55px;
                 height: 55px;
+            }
+            
+            /* Move ratings section to be the last element on mobile */
+            .product-image-section .ratings-section {
+                display: none; /* Hide from inside product-image-section on mobile */
+            }
+            
+            .ratings-section.mobile-placement {
+                display: block; /* Show the ratings section at the bottom */
+            }
+        }
+
+        /* Hide bottom reviews section on desktop */
+        @media (min-width: 768px) {
+            .ratings-section.mobile-placement {
+                display: none;
             }
         }
 
@@ -701,7 +716,7 @@
                     </button>
                 </div>
 
-                <!-- Ratings Section Moved Below Product Image -->
+                <!-- Ratings Section - Hidden on mobile -->
                 <div class="ratings-section">
                     <h2 class="section-title">Customer Reviews</h2>
                     
@@ -805,6 +820,52 @@
                         hydrated all day long. Transfer-proof and kiss-proof!
                     </p>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Ratings Section for Mobile Placement - Hidden on Desktop -->
+        <div class="ratings-section mobile-placement">
+            <h2 class="section-title">Customer Reviews</h2>
+            
+            <div class="rating-summary">
+                <div class="average-rating">4.8</div>
+                <div>
+                    <div class="stars">★★★★★</div>
+                    <div class="rating-count">Based on 124 reviews</div>
+                </div>
+            </div>
+
+            <div class="featured-reviews">
+                <!-- Highest Rating -->
+                <div class="rating-item">
+                    <div class="rating-header">
+                        <div class="user-name">Sophia R.</div>
+                        <div class="rating-date">2023-10-15</div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                    <div class="rating-images">
+                        <div class="rating-image">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
+                    <p class="rating-text">The color is absolutely stunning and it lasts all day without drying my lips. Will definitely repurchase!</p>
+                </div>
+
+                <!-- Lowest Rating -->
+                <div class="rating-item">
+                    <div class="rating-header">
+                        <div class="user-name">Emma L.</div>
+                        <div class="rating-date">2023-09-22</div>
+                    </div>
+                    <div class="stars">★★★☆☆</div>
+                    <p class="rating-text">The color was nice but it felt quite drying on my lips. I expected more hydration from a product with avocado oil.</p>
+                </div>
+            </div>
+
+            <div class="view-all-reviews">
+                <button class="view-all-btn" id="viewAllReviewsBtnMobile">
+                    <i class="fas fa-list"></i> View All Reviews
+                </button>
             </div>
         </div>
     </div>
@@ -970,10 +1031,15 @@
         // Setup modal functionality
         function setupModal() {
             const viewAllBtn = document.getElementById('viewAllReviewsBtn');
+            const viewAllBtnMobile = document.getElementById('viewAllReviewsBtnMobile');
             const modal = document.getElementById('reviewsModal');
             const closeModal = document.getElementById('closeModal');
             
             viewAllBtn.addEventListener('click', function() {
+                openAllReviewsModal();
+            });
+            
+            viewAllBtnMobile.addEventListener('click', function() {
                 openAllReviewsModal();
             });
             
