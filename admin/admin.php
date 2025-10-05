@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // ================== BEST SELLING PRODUCTS ==================
   const bestsellersData = <?= json_encode($bestsellers) ?>;
-  const bestsellersContainer = document.querySelector('.panel-section:nth-child(1) .placeholder-box');
+  const bestsellersContainer = document.querySelector('.right-panel .panel-section:nth-child(1) .placeholder-box');
   
   if(bestsellersData.length > 0) {
     let bestsellersHTML = '<div class="list-group list-group-flush">';
@@ -333,8 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================== STORE RATINGS ==================
   const storeRatings = <?= json_encode($store_ratings) ?>;
   const recentReviews = <?= json_encode($recent_reviews) ?>;
-  const ratingsContainer = document.querySelector('.panel-section:nth-child(2) .placeholder-box');
-  
+  const ratingsContainer = document.querySelector('.right-panel .panel-section:nth-child(2) .placeholder-box');
   const avgRating = parseFloat(storeRatings.average_rating || 0).toFixed(1);
   const totalRatings = parseInt(storeRatings.total_ratings || 0);
   const fiveStar = parseInt(storeRatings.five_star || 0);
@@ -391,7 +390,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // ================== AI INSIGHTS ==================
   const aiInsights = <?= json_encode($ai_insights) ?>;
-  const insightsContainer = document.querySelector('.panel-section:nth-child(3) .placeholder-box');
+  const insightsContainer = document.querySelector('.col-md-8 .row.mt-4 .col-md-6:nth-child(1) .placeholder-box');
+
   
   let insightsHTML = '<div class="text-start">';
   
@@ -454,8 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // ================== TOP CUSTOMERS ==================
   const topCustomers = <?= json_encode($top_customers) ?>;
-  const customersContainer = document.querySelector('.panel-section:nth-child(4) .placeholder-box');
-  
+  const customersContainer = document.querySelector('.col-md-8 .row.mt-4 .col-md-6:nth-child(2) .placeholder-box');
   if(topCustomers.length > 0) {
     let customersHTML = '<div class="list-group list-group-flush">';
     topCustomers.forEach((customer, index) => {
