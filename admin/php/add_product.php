@@ -7,10 +7,9 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 
 // --- COLLECT ALL INPUTS ---
-// The following variables are collected from your form.
 $type = $_POST['productType'];
 $name = $_POST['productName'];
-$category = $_POST['productCategory'];
+$category = $_POST['productCategory'] ?? null;
 $variantName = $_POST['productVariantName'];
 $price = $_POST['productPrice'];
 $description = $_POST['productDescription'];
@@ -18,24 +17,45 @@ $stocks = $_POST['productStock'];
 $expiration = $_POST['productExpiration'] ?? null;
 
 // --- DUMMY/NULL VALUES FOR UNUSED COLUMNS (MATCHES YOUR SCHEMA) ---
-// Initialize placeholders for columns not yet in your form
 $ingredients = null;
 $imagePath = null;
 $previewImage = null;
 $hexCode = null;
 $productRating = 0; // Assuming default 0 or NULL
 
-// --- ATTRIBUTE COLLECTION (Needs form data to work fully) ---
-// For now, these are NULL/FALSE, but you need to read them from $_POST later
-$skinType = null;
-$skinTone = null;
-$undertone = null;
-$acne = 0; // Use 0/1 for boolean/TINYINT fields
-$dryness = 0;
-$darkSpots = 0;
-$matte = 0;
-$dewy = 0;
-$longLasting = 0;
+// // --- ATTRIBUTE COLLECTION (Needs form data to work fully) ---
+// $skinType = null;
+// $skinTone = null;
+// $undertone = null;
+// $acne = 0; // Use 0/1 for boolean/TINYINT fields
+// $dryness = 0;
+// $darkSpots = 0;
+// $matte = 0;
+// $dewy = 0;
+// $longLasting = 0;
+
+// --- ATTRIBUTE COLLECTION (NEW LOGIC) ---
+// 1. Array/String Attributes (Skin Type, Skin Tone)
+// If an array exists, implode it with a comma. If not, set to NULL.
+$skinType = isset($_POST['skinType']) ? implode(',', $_POST['skinType']) : null;
+$skinTone = isset($_POST['skinTone']) ? implode(',', $_POST['skinTone']) : null;
+
+// 2. Dropdown Attributes (Undertone)
+$undertone = $_POST['undertone'] ?? null;
+// Set to NULL if 'None' is selected or if no value is present
+if ($undertone === '' || strtolower($undertone) === 'none') {
+    $undertone = null;
+}
+
+// 3. Boolean/TINYINT (0 or 1) Attributes
+// If the checkbox name exists in $_POST, it means it was checked (value 1). If not, it's 0.
+$acne = isset($_POST['acne']) ? 1 : 0;
+$dryness = isset($_POST['dryness']) ? 1 : 0;
+$darkSpots = isset($_POST['darkSpots']) ? 1 : 0;
+
+$matte = isset($_POST['matte']) ? 1 : 0;
+$dewy = isset($_POST['dewy']) ? 1 : 0;
+$longLasting = isset($_POST['longLasting']) ? 1 : 0;
 
 function getNextProductID($conn, $category) {
     // 1. Define the Prefix Map (No change needed here)
@@ -69,8 +89,7 @@ function getNextProductID($conn, $category) {
         }
     }
     
-    // 3. Format the new ID (e.g., CONC001)
-    // 🛑 CHANGE 2: Use 3 digits for the sequence length
+  
     $newID = $prefix . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
     return $newID;
 }
@@ -144,50 +163,54 @@ $stmt->execute();
     insertAttributes($conn, $variantID, $skinType, $skinTone, $undertone, $acne, $dryness, $darkSpots, $matte, $dewy, $longLasting);
 
     echo "✅ New product line and first variant added successfully! (Parent ID: $parentProductID, Variant ID: $variantID)";
+    exit;
 }
-
 
 // --- LOGIC FOR NEW VARIANT (type = "variant") ---
 if ($type === "variant") {
+    // 1. Get Parent ID from form
     $parentProductID = $_POST['parentProductID'];
-    $variantID = uniqid("VAR");
 
-    // Select Name, Category, Description, etc., from the Parent, and use new values for Variant-specific fields
-    // NOTE: Price and Stocks, Ingredients, ImagePath, ExpirationDate must NOT be inherited from parent (Parent has 0.00 and 0 for price/stock)
+    // 2. Look up the Category from the Parent record in the DB
+    $stmt_parent = $conn->prepare("SELECT Category, Name, Description FROM Products WHERE ProductID = ?");
+    $stmt_parent->bind_param("s", $parentProductID);
+    $stmt_parent->execute();
+    $result_parent = $stmt_parent->get_result();
+    
+    if ($result_parent->num_rows === 0) {
+        echo "❌ Error: Parent Product ID not found.";
+        exit;
+    }
+
+    $parentData = $result_parent->fetch_assoc();
+    $category = $parentData['Category']; // Now we have the category!
+    // 🛑 NAME CLEANUP: Remove "Parent Record: " from the inherited name.
+    $name = str_replace('Parent Record: ', '', $parentData['Name']);
+    
+    $description = $_POST['productDescription'];
+    
+    // 3. Generate SEQUENTIAL Variant ID based on the looked-up Category
+    $variantID = getNextProductID($conn, $category); // E.g., EYLN006
+
+    // 4. Insert NEW VARIANT record
     $stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, ImagePath, PreviewImage, HexCode, ProductRating)
-                            SELECT 
-                                ?, 
-                                Name, 
-                                Category, 
-                                ?, 
-                                ?, 
-                                ?,              -- Price (from POST)
-                                Description, 
-                                ?,              -- Stocks (from POST)
-                                ?,              -- ExpirationDate (from POST)
-                                Ingredients, 
-                                ImagePath, 
-                                PreviewImage, 
-                                HexCode, 
-                                ProductRating 
-                            FROM Products 
-                            WHERE ProductID = ?");
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    // Bind: ssssdsss
-    $stmt->bind_param("sssdsis", 
-        $variantID,         // 1. s (string)
-        $parentProductID,   // 2. s (string)
-        $variantName,       // 3. s (string)
-        $price,             // 4. d (double/decimal)
-        $stocks,            // 5. i (integer)
-        $expiration,        // 6. s (string/date)
-        $parentProductID    // 7. s (string)
+    // Bind: sssssdsisssssi
+    $stmt->bind_param("sssssdsisssssi", 
+        $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expiration, 
+        $ingredients, $imagePath, $previewImage, $hexCode, $productRating
     );
-    $stmt->execute(); // <-- Now this will work!
     
-    // 2. Insert ATTRIBUTES for the new variant
+    if (!$stmt->execute()) {
+        echo "❌ Error inserting variant: " . $stmt->error;
+        exit;
+    }
+    
+    // 5. Insert ATTRIBUTES for the new variant
     insertAttributes($conn, $variantID, $skinType, $skinTone, $undertone, $acne, $dryness, $darkSpots, $matte, $dewy, $longLasting);
-
+    
     echo "✅ New variant added successfully! (Variant ID: $variantID)";
+    exit;
 }
 ?>

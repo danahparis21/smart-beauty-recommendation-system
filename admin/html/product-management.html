@@ -881,13 +881,12 @@
                     </div>
                   </div>
                   
-                  <div class="form-group" id="parentProductGroup" style="display: none;">
-                    <label for="parentProductID" class="form-label">Select Parent Product</label>
-                    <select class="form-select" id="parentProductID">
+                  <div class="form-group" id="parentProductGroup">
+                    <label for="parentProductID" class="form-label">Select Parent Product Line</label>
+                    <select class="form-select" id="parentProductID" name="parentProductID" required>
                       <option value="" selected disabled>Select an existing product line</option>
-                      </select>
-                    <small class="text-muted">Variants inherit Name, Category, and Description from the Parent.</small>
-                  </div>
+                    </select>
+                </div>
                   
                   <div class="form-group">
                     <label for="productVariantName" class="form-label">Shade/Variant Name <span class="text-danger">*</span></label>
@@ -997,111 +996,95 @@
                     />
                   </div>
               
-                <!-- Attributes Section -->
-<div class="form-group">
-  <button
-    type="button"
-    class="btn btn-outline-primary w-100"
-    data-bs-toggle="collapse"
-    data-bs-target="#attributesSection"
-  >
-    Add Product Attributes (Optional)
-  </button>
-
-  <div class="collapse mt-3" id="attributesSection">
-
-    <label class="form-label mt-3">Skin Type</label>
-<div class="skin-type-options">
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_normal" value="Normal" />
-    <label class="form-check-label" for="skin_normal">Normal</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_oily" value="Oily" />
-    <label class="form-check-label" for="skin_oily">Oily</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_dry" value="Dry" />
-    <label class="form-check-label" for="skin_dry">Dry</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_sensitive" value="Sensitive" />
-    <label class="form-check-label" for="skin_sensitive">Sensitive</label>
-  </div>
-</div>
-
-    <!-- Skin Tone -->
-    <label class="form-label mt-3">Skin Tone</label>
-    <div class="skin-tone-options">
-      <label class="skin-tone">
-        <input type="checkbox" name="skinTone[]" value="Fair" />
-        <div class="tone" style="background-color: #f5d6b3;"></div>
-        <span>Fair</span>
-      </label>
-      <label class="skin-tone">
-        <input type="checkbox" value="Medium" />
-        <div class="tone" style="background-color: #d2a679;"></div>
-        <span>Medium</span>
-      </label>
-      <label class="skin-tone">
-        <input type="checkbox" value="Tan" />
-        <div class="tone" style="background-color: #b47b52;"></div>
-        <span>Tan</span>
-      </label>
-      <label class="skin-tone">
-        <input type="checkbox" value="Deep" />
-        <div class="tone" style="background-color: #5a3825;"></div>
-        <span>Deep</span>
-      </label>
-    </div>
-
-    <!-- Undertone -->
-    <label class="form-label mt-3">Undertone</label>
-    <select class="form-select" id="undertone">
-      <option value="">None</option>
-      <option value="Warm">Warm</option>
-      <option value="Cool">Cool</option>
-      <option value="Neutral">Neutral</option>
-      <option value="All">All</option>
-    </select>
-
-    <!-- Skin Concerns -->
-    <label class="form-label mt-3">Skin Concerns</label>
-    <div class="skin-tone-options">
-      <label class="skin-tone">
-        <input type="checkbox" value="Acne" />
-        <div class="tone" style="background-color: #ffb6b9;"></div>
-        <span>Acne</span>
-      </label>
-      <label class="skin-tone">
-        <input type="checkbox" value="Dryness" />
-        <div class="tone" style="background-color: #ffe4b5;"></div>
-        <span>Dryness</span>
-      </label>
-      <label class="skin-tone">
-        <input type="checkbox" value="Dark Spots" />
-        <div class="tone" style="background-color: #cdb79e;"></div>
-        <span>Dark Spots</span>
-      </label>
-    </div>
-
-    <!-- Finish -->
-    <label class="form-label mt-3">Finish</label>
-    <div class="form-check">
-      <input type="checkbox" class="form-check-input" id="matte" />
-      <label class="form-check-label" for="matte">Matte</label>
-    </div>
-    <div class="form-check">
-      <input type="checkbox" class="form-check-input" id="dewy" />
-      <label class="form-check-label" for="dewy">Dewy</label>
-    </div>
-    <div class="form-check">
-      <input type="checkbox" class="form-check-input" id="longLasting" />
-      <label class="form-check-label" for="longLasting">Long-lasting</label>
-    </div>
-
-  </div>
-</div>
+                  <div class="form-group">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary w-100"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#attributesSection"
+                    >
+                      Add Product Attributes (Optional)
+                    </button>
+                  
+                    <div class="collapse mt-3" id="attributesSection">
+                  
+                      <label class="form-label mt-3">Skin Type</label>
+                      <div class="skin-type-options">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_normal" value="Normal" />
+                          <label class="form-check-label" for="skin_normal">Normal</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_oily" value="Oily" />
+                          <label class="form-check-label" for="skin_oily">Oily</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_dry" value="Dry" />
+                          <label class="form-check-label" for="skin_dry">Dry</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_sensitive" value="Sensitive" />
+                          <label class="form-check-label" for="skin_sensitive">Sensitive</label>
+                        </div>
+                      </div>
+                  
+                      <label class="form-label mt-3">Skin Tone</label>
+                      <div class="skin-tone-options">
+                        <label class="skin-tone">
+                          <input type="checkbox" name="skinTone[]" value="Fair" /> <div class="tone" style="background-color: #f5d6b3;"></div>
+                          <span>Fair</span>
+                        </label>
+                        <label class="skin-tone">
+                          <input type="checkbox" name="skinTone[]" value="Medium" /> <div class="tone" style="background-color: #d2a679;"></div>
+                          <span>Medium</span>
+                        </label>
+                        <label class="skin-tone">
+                          <input type="checkbox" name="skinTone[]" value="Tan" /> <div class="tone" style="background-color: #b47b52;"></div>
+                          <span>Tan</span>
+                        </label>
+                        <label class="skin-tone">
+                          <input type="checkbox" name="skinTone[]" value="Deep" /> <div class="tone" style="background-color: #5a3825;"></div>
+                          <span>Deep</span>
+                        </label>
+                      </div>
+                  
+                      <label class="form-label mt-3">Undertone</label>
+                      <select class="form-select" id="undertone" name="undertone"> <option value="">None</option>
+                        <option value="Warm">Warm</option>
+                        <option value="Cool">Cool</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="All">All</option>
+                      </select>
+                  
+                      <label class="form-label mt-3">Skin Concerns</label>
+                      <div class="skin-tone-options">
+                        <label class="skin-tone">
+                          <input type="checkbox" name="acne" value="1" /> <div class="tone" style="background-color: #ffb6b9;"></div>
+                          <span>Acne</span>
+                        </label>
+                        <label class="skin-tone">
+                          <input type="checkbox" name="dryness" value="1" /> <div class="tone" style="background-color: #ffe4b5;"></div>
+                          <span>Dryness</span>
+                        </label>
+                        <label class="skin-tone">
+                          <input type="checkbox" name="darkSpots" value="1" /> <div class="tone" style="background-color: #cdb79e;"></div>
+                          <span>Dark Spots</span>
+                        </label>
+                      </div>
+                  
+                      <label class="form-label mt-3">Finish</label>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="matte" name="matte" value="1" /> <label class="form-check-label" for="matte">Matte</label>
+                      </div>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="dewy" name="dewy" value="1" /> <label class="form-check-label" for="dewy">Dewy</label>
+                      </div>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="longLasting" name="longLasting" value="1" /> <label class="form-check-label" for="longLasting" >Long-lasting</label>
+                      </div>
+                  
+                    </div>
+                  </div>
 
 
 
@@ -1300,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", function () {
             productNameInput.required = false;
 
             productCategorySelect.disabled = true;
-            productDescriptionTextarea.readOnly = true;
+            productDescriptionTextarea.readOnly = false;
             
             // Fetch parent products only when selecting 'New Variant'
             loadParentProducts();
@@ -1397,9 +1380,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const formData = new FormData(productForm);
         const productType = document.querySelector('input[name="productType"]:checked').value;
         if (productType === "variant") {
-        formData.append("productName", productNameInput.value); 
-        formData.append("productCategory", productCategorySelect.value);
-        formData.append("productDescription", productDescriptionTextarea.value);
+        // formData.append("productName", productNameInput.value); 
+        // formData.append("productCategory", productCategorySelect.value);
+        // formData.append("productDescription", productDescriptionTextarea.value);
     }
         
         // You'll need to collect the attributes manually and append them
