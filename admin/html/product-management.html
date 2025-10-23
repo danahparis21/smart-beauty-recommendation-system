@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Product Management - Beauty & Blessed</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <style>
+      :root {
+        --primary-pink: #e497aa;
+        --secondary-pink: #db8299;
+        --dark-pink: #c36c82;
+        --darker-pink: #b05a70;
+        --light-bg: #f8f9fa;
+        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: linear-gradient(135deg, #fef5f8 0%, #f8f9fa 100%);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        min-height: 100vh;
+        background: linear-gradient(
+          180deg,
+          var(--primary-pink) 0%,
+          var(--darker-pink) 100%
+        );
+        color: white;
+        box-shadow: 3px 0 20px rgba(0, 0, 0, 0.15);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+        margin: 8px 15px;
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 14px 18px;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .sidebar .nav-link::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: white;
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar .nav-link:hover::before,
+      .sidebar .nav-link.active::before {
+        transform: scaleY(1);
+      }
+
+      .sidebar .nav-link:hover,
+      .sidebar .nav-link.active {
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        transform: translateX(8px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar .nav-link i {
+        margin-right: 12px;
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .logo-container {
+        padding: 30px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .logo {
+        max-width: 140px;
+        display: block;
+        margin: 0 auto;
+        filter: brightness(0) invert(1)
+          drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      }
+
+      .store-name {
+        margin-top: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      /* Page header */
+      .page-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+      }
+
+      .page-title {
+        color: var(--dark-pink);
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+      }
+
+      .page-header p {
+        color: #6c757d;
+        font-size: 1rem;
+        margin: 0;
+      }
+
+      /* Main content padding */
+      main {
+        padding: 35px !important;
+        margin-left: 220px;
+        width: calc(100% - 220px);
+      }
+
+      /* Product Management Section */
+      .product-management-container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        margin-bottom: 25px;
+      }
+
+      .product-management-container:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .section-title {
+        color: var(--dark-pink);
+        font-weight: 700;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-title i {
+        font-size: 1.2rem;
+      }
+
+      /* Form Styles */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+      }
+
+      .form-control,
+      .form-select {
+        border-radius: 12px;
+        padding: 12px 16px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 0.25rem rgba(228, 151, 170, 0.25);
+      }
+
+      /* Image Upload */
+      .image-upload-container {
+        border: 2px dashed #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fafafa;
+        margin-bottom: 20px;
+      }
+
+      .image-upload-container:hover {
+        border-color: var(--primary-pink);
+        background: rgba(228, 151, 170, 0.05);
+      }
+
+      .image-upload-container i {
+        font-size: 2.5rem;
+        color: var(--primary-pink);
+        margin-bottom: 10px;
+      }
+
+      .image-preview {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: none;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(228, 151, 170, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(228, 151, 170, 0.4);
+      }
+
+      .btn-outline-primary {
+        border: 2px solid var(--primary-pink);
+        color: var(--primary-pink);
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-outline-primary:hover {
+        background: var(--primary-pink);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      /* Table Styles */
+      .table-container {
+        overflow-x: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .table {
+        margin-bottom: 0;
+      }
+
+      .table thead th {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+        color: white;
+        font-weight: 600;
+        padding: 15px 12px;
+        border: none;
+      }
+
+      .table tbody tr {
+        transition: all 0.3s ease;
+      }
+
+      .table tbody tr:hover {
+        background-color: rgba(228, 151, 170, 0.05);
+      }
+
+      .table tbody td {
+        padding: 12px;
+        vertical-align: middle;
+        border-color: #f0f0f0;
+      }
+
+      .product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .status-available {
+        background: rgba(40, 167, 69, 0.15);
+        color: #28a745;
+      }
+
+      .status-out-of-stock {
+        background: rgba(220, 53, 69, 0.15);
+        color: #dc3545;
+      }
+
+      .status-archived {
+        background: rgba(108, 117, 125, 0.15);
+        color: #6c757d;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .btn-edit {
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+      }
+
+      .btn-edit:hover {
+        background: #0d6efd;
+        color: white;
+      }
+
+      .btn-delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+      }
+
+      .btn-delete:hover {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-archive {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+      }
+
+      .btn-archive:hover {
+        background: #6c757d;
+        color: white;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6c757d;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        color: var(--primary-pink);
+        margin-bottom: 15px;
+      }
+
+      /* Mobile Header */
+      .mobile-header {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(
+          180deg,
+          var(--primary-pink) 0%,
+          var(--darker-pink) 100%
+        );
+        color: white;
+        padding: 15px 20px;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        height: 70px;
+      }
+
+      .mobile-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .hamburger-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .hamburger-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .mobile-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mobile-logo img {
+        height: 30px;
+        filter: brightness(0) invert(1);
+      }
+
+      .mobile-logo span {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      /* Overlay for mobile menu */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+      }
+
+      /* Animation for page load */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .product-management-container {
+        animation: fadeInUp 0.6s ease forwards;
+      }
+
+      .skin-tone-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.skin-tone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+  padding: 2px;
+  gap: 10px;
+}
+
+.skin-tone input {
+  display: none;
+}
+
+.skin-tone .tone {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 transparent;
+}
+
+.skin-tone .tone:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(255, 182, 193, 0.4); /* soft pink hover glow */
+}
+
+.skin-tone input:checked + .tone {
+  border-color: var(--secondary-pink);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 105, 180, 0.7), 
+              0 0 25px rgba(255, 182, 193, 0.5); /* glow effect when selected */
+}
+
+.skin-tone span {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  color: #555;
+}
+
+
+      /* Responsive Design */
+
+      /* Large Screens (1200px - 1399px) */
+      @media (min-width: 1200px) and (max-width: 1399px) {
+        .page-title {
+          font-size: 1.8rem;
+        }
+      }
+
+      /* Medium Screens (992px - 1199px) */
+      @media (min-width: 992px) and (max-width: 1199px) {
+        .page-title {
+          font-size: 1.6rem;
+        }
+
+        .product-management-container {
+          padding: 25px;
+        }
+      }
+
+      /* Tablets (768px - 991px) */
+      @media (min-width: 768px) and (max-width: 991px) {
+        .mobile-header {
+          display: block;
+        }
+
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 280px;
+          transform: translateX(-100%);
+          z-index: 100;
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .sidebar-overlay.active {
+          display: block;
+        }
+
+        main {
+          margin-left: 0 !important;
+          width: 100% !important;
+          margin-top: 70px !important;
+          padding-top: 20px !important;
+        }
+
+        .page-header {
+          margin-top: 0 !important;
+          padding-top: 0 !important;
+        }
+
+        .product-management-container {
+          padding: 20px;
+        }
+
+        .page-title {
+          font-size: 1.5rem;
+        }
+
+        main {
+          padding: 25px !important;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+      }
+
+      /* Mobile Landscape (576px - 767px) */
+      @media (min-width: 576px) and (max-width: 767px) {
+        .mobile-header {
+          display: block;
+        }
+
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 280px;
+          transform: translateX(-100%);
+          z-index: 100;
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .sidebar-overlay.active {
+          display: block;
+        }
+
+        main {
+          margin-left: 0 !important;
+          width: 100% !important;
+          margin-top: 70px !important;
+          padding-top: 20px !important;
+        }
+
+        .sidebar .nav-link {
+          padding: 12px 15px;
+          font-size: 0.9rem;
+          margin: 6px 12px;
+        }
+
+        .logo-container {
+          padding: 20px 15px;
+        }
+
+        .store-name {
+          font-size: 1rem;
+        }
+
+        .product-management-container {
+          padding: 18px;
+        }
+
+        .page-title {
+          font-size: 1.4rem;
+        }
+
+        .page-header p {
+          font-size: 0.9rem;
+        }
+
+        main {
+          padding: 20px !important;
+        }
+
+        .section-title {
+          font-size: 1.1rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+      }
+
+      /* Mobile Portrait (up to 575px) */
+      @media (max-width: 575px) {
+        .mobile-header {
+          display: block;
+        }
+
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 280px;
+          transform: translateX(-100%);
+          z-index: 100;
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .sidebar-overlay.active {
+          display: block;
+        }
+
+        main {
+          margin-left: 0 !important;
+          width: 100% !important;
+          margin-top: 70px !important;
+          padding-top: 15px !important;
+        }
+
+        .sidebar .nav-link {
+          padding: 10px 12px;
+          font-size: 0.85rem;
+          margin: 5px 10px;
+        }
+
+        .sidebar .nav-link i {
+          font-size: 1rem;
+          margin-right: 10px;
+        }
+
+        .logo-container {
+          padding: 18px 12px;
+        }
+
+        .logo {
+          max-width: 100px;
+        }
+
+        .store-name {
+          font-size: 0.95rem;
+        }
+
+        .product-management-container {
+          padding: 16px;
+          border-radius: 16px;
+        }
+
+        .page-title {
+          font-size: 1.3rem;
+        }
+
+        .page-header {
+          margin-bottom: 20px;
+          padding-bottom: 15px;
+        }
+
+        .page-header p {
+          font-size: 0.85rem;
+        }
+
+        main {
+          padding: 15px !important;
+        }
+
+        .section-title {
+          font-size: 1rem;
+          margin-bottom: 20px;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+      }
+
+      /* Extra Small Mobile (up to 375px) */
+      @media (max-width: 375px) {
+        .page-title {
+          font-size: 1.2rem;
+        }
+
+        main {
+          padding: 12px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="mobile-header-content">
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="mobile-logo">
+          <a href="admin.html" class="nav-link">
+            <img src="mainlogo.png" alt="Store Logo" />
+            <span>Beauty & Blessed</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-md-block sidebar" id="sidebar">
+          <div class="logo-container">
+            <a href="admin.html">
+              <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
+            </a>
+            <div class="store-name">Beauty & Blessed</div>
+          <div class="nav flex-column">
+            <a href="product-management.html" class="nav-link active">
+              <i class="fa-solid fa-box"></i>
+              <span>Product Management</span>
+            </a>
+            <a href="recommendation-insights.html" class="nav-link">
+              <i class="fa-solid fa-lightbulb"></i>
+              <span>Recommendation Insights</span>
+            </a>
+            <a href="customer-managemnet.html" class="nav-link">
+              <i class="fa-solid fa-users"></i>
+              <span>Customer Management</span>
+            </a>
+            <a href="order-transactions.html" class="nav-link">
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Order Transaction</span>
+            </a>
+            <a href="store-settings.html" class="nav-link">
+              <i class="fa-solid fa-gear"></i>
+              <span>Store Setting</span>
+            </a>
+            <a href="activity-log.html" class="nav-link">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <span>Activity Log</span>
+            </a>
+          </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-10">
+          <!-- Page Header -->
+          <div class="page-header">
+            <h2 class="page-title">Product Management</h2>
+            <p class="text-muted">
+              Manage your products, inventory, and categories.
+            </p>
+          </div>
+
+          <div class="row">
+            <!-- Product Form Section -->
+            <div class="col-lg-5">
+              <div class="product-management-container">
+                <h3 class="section-title">
+                  <i class="fas fa-plus-circle"></i> Add New Product
+                </h3>
+              
+                <form id="productForm" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <label class="form-label">Product Type</label>
+                    <div class="d-flex gap-3">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="productType"
+                          id="typeNewProduct"
+                          value="new"
+                          checked
+                        />
+                        <label class="form-check-label" for="typeNewProduct">
+                          New Product Line
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="productType"
+                          id="typeNewVariant"
+                          value="variant"
+                        />
+                        <label class="form-check-label" for="typeNewVariant">
+                          New Variant (Shade/Size)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group" id="parentProductGroup" style="display: none;">
+                    <label for="parentProductID" class="form-label">Select Parent Product</label>
+                    <select class="form-select" id="parentProductID">
+                      <option value="" selected disabled>Select an existing product line</option>
+                      </select>
+                    <small class="text-muted">Variants inherit Name, Category, and Description from the Parent.</small>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="productVariantName" class="form-label">Shade/Variant Name <span class="text-danger">*</span></label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="productVariantName"
+                      name="productVariantName"
+                      placeholder="e.g., Black, Shade 03, 50ml, Large"
+                      required
+                    />
+                  </div>
+                  <!-- Product Images -->
+                  <div class="form-group">
+                    <label class="form-label">Product Images</label>
+                    <div class="image-upload-container" id="imageUpload">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                      <div>Click to upload product images (max 5)</div>
+                      <small class="text-muted">PNG, JPG, JPEG up to 5MB each</small>
+                      <input
+                        type="file"
+                        id="productImages"
+                        class="d-none"
+                        accept="image/*"
+                        multiple
+                      />
+                      <div id="imagePreviewContainer" class="preview-grid"></div>
+                    </div>
+                  </div>
+              
+                  <!-- Product Name -->
+                  <div class="form-group">
+                    <label for="productName" class="form-label">Product Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="productName"
+                      name="productName"
+                      placeholder="Enter product name"
+                      required
+                    />
+                  </div>
+              
+                  <!-- Category -->
+                  <div class="form-group">
+                    <label for="productCategory" class="form-label">Category</label>
+                    <div class="d-flex gap-2">
+                      <select class="form-select" id="productCategory" name="productCategory" required>
+                        <option value="" selected disabled>Select category</option>
+                        <!-- Categories will be fetched from database -->
+                      </select>
+                      <button type="button" id="addCategoryBtn" class="btn btn-outline-secondary btn-sm">
+                        Add New
+                      </button>
+                    </div>
+                  </div>
+              
+                  <!-- Stock -->
+                  <div class="form-group">
+                    <label for="productStock" class="form-label">Stocks</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="productStock"
+                      name="productStock"
+                      value="12"
+                      min="0"
+                      required
+                    />
+                  </div>
+              
+                  <!-- Price -->
+                  <div class="form-group">
+                    <label for="productPrice" class="form-label">Price (₱)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="productPrice"
+                      name="productPrice"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+              
+                  <!-- Description -->
+                  <div class="form-group">
+                    <label for="productDescription" class="form-label">Description</label>
+                    <textarea
+                      class="form-control"
+                      id="productDescription"
+                      name="productDescription"
+                      rows="3"
+                      placeholder="Enter product description"
+                    ></textarea>
+                  </div>
+              
+                  <!-- Expiration Date -->
+                  <div class="form-group">
+                    <label for="productExpiration" class="form-label">Expiration Date (optional)</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="productExpiration"
+                      name="productExpiration"
+                    />
+                  </div>
+              
+                <!-- Attributes Section -->
+<div class="form-group">
+  <button
+    type="button"
+    class="btn btn-outline-primary w-100"
+    data-bs-toggle="collapse"
+    data-bs-target="#attributesSection"
+  >
+    Add Product Attributes (Optional)
+  </button>
+
+  <div class="collapse mt-3" id="attributesSection">
+
+    <label class="form-label mt-3">Skin Type</label>
+<div class="skin-type-options">
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_normal" value="Normal" />
+    <label class="form-check-label" for="skin_normal">Normal</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_oily" value="Oily" />
+    <label class="form-check-label" for="skin_oily">Oily</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_dry" value="Dry" />
+    <label class="form-check-label" for="skin_dry">Dry</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" name="skinType[]" id="skin_sensitive" value="Sensitive" />
+    <label class="form-check-label" for="skin_sensitive">Sensitive</label>
+  </div>
+</div>
+
+    <!-- Skin Tone -->
+    <label class="form-label mt-3">Skin Tone</label>
+    <div class="skin-tone-options">
+      <label class="skin-tone">
+        <input type="checkbox" name="skinTone[]" value="Fair" />
+        <div class="tone" style="background-color: #f5d6b3;"></div>
+        <span>Fair</span>
+      </label>
+      <label class="skin-tone">
+        <input type="checkbox" value="Medium" />
+        <div class="tone" style="background-color: #d2a679;"></div>
+        <span>Medium</span>
+      </label>
+      <label class="skin-tone">
+        <input type="checkbox" value="Tan" />
+        <div class="tone" style="background-color: #b47b52;"></div>
+        <span>Tan</span>
+      </label>
+      <label class="skin-tone">
+        <input type="checkbox" value="Deep" />
+        <div class="tone" style="background-color: #5a3825;"></div>
+        <span>Deep</span>
+      </label>
+    </div>
+
+    <!-- Undertone -->
+    <label class="form-label mt-3">Undertone</label>
+    <select class="form-select" id="undertone">
+      <option value="">None</option>
+      <option value="Warm">Warm</option>
+      <option value="Cool">Cool</option>
+      <option value="Neutral">Neutral</option>
+      <option value="All">All</option>
+    </select>
+
+    <!-- Skin Concerns -->
+    <label class="form-label mt-3">Skin Concerns</label>
+    <div class="skin-tone-options">
+      <label class="skin-tone">
+        <input type="checkbox" value="Acne" />
+        <div class="tone" style="background-color: #ffb6b9;"></div>
+        <span>Acne</span>
+      </label>
+      <label class="skin-tone">
+        <input type="checkbox" value="Dryness" />
+        <div class="tone" style="background-color: #ffe4b5;"></div>
+        <span>Dryness</span>
+      </label>
+      <label class="skin-tone">
+        <input type="checkbox" value="Dark Spots" />
+        <div class="tone" style="background-color: #cdb79e;"></div>
+        <span>Dark Spots</span>
+      </label>
+    </div>
+
+    <!-- Finish -->
+    <label class="form-label mt-3">Finish</label>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="matte" />
+      <label class="form-check-label" for="matte">Matte</label>
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="dewy" />
+      <label class="form-check-label" for="dewy">Dewy</label>
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="longLasting" />
+      <label class="form-check-label" for="longLasting">Long-lasting</label>
+    </div>
+
+  </div>
+</div>
+
+
+
+              
+                  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="reset" class="btn btn-outline-primary me-md-2">
+                      Clear Form
+                    </button>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                  </div>
+                </form>
+              </div>
+              
+            </div>
+
+            <!-- Product Table Section -->
+            <div class="col-lg-7">
+              <div class="product-management-container">
+                <h3 class="section-title">
+                  <i class="fas fa-list"></i> Product List
+                </h3>
+
+                <div class="table-container">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                      <!-- Empty state -->
+                      <tr>
+                        <td colspan="6" class="text-center py-5">
+                          <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h5>No Products Yet</h5>
+                            <p>
+                              Add your first product using the form on the left
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between align-items-center mt-3"
+                >
+                  <div class="text-muted">
+                    Showing <span id="productCount">0</span> products
+                  </div>
+                  <nav>
+                    <ul class="pagination mb-0">
+                      <li class="page-item disabled">
+                        <a class="page-link" href="#">Previous</a>
+                      </li>
+                      <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+     // Wrap ALL application logic inside a single DOMContentLoaded listener for safety and scope.
+document.addEventListener("DOMContentLoaded", function () {
+    // --- Mobile Menu References (Keep these near the top) ---
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+    const navLinks = document.querySelectorAll(".sidebar .nav-link");
+    const mobileHeader = document.querySelector(".mobile-header");
+    const mainContent = document.querySelector("main");
+
+    // --- Product Form References ---
+    const productForm = document.getElementById("productForm");
+    const typeNewProduct = document.getElementById("typeNewProduct");
+    const typeNewVariant = document.getElementById("typeNewVariant");
+    const parentProductGroup = document.getElementById("parentProductGroup");
+    const parentProductID = document.getElementById("parentProductID");
+    
+    // Core fields that must change behavior based on product type
+    const productNameInput = document.getElementById("productName");
+    const productCategorySelect = document.getElementById("productCategory");
+    const productDescriptionTextarea = document.getElementById("productDescription");
+
+    // Image Upload References
+    const imageUpload = document.getElementById("imageUpload");
+    // You need to ensure the ID of your file input is correct, assumed to be 'productImages' from HTML
+    const productImagesInput = document.getElementById("productImages"); 
+    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+    
+    // Legacy/Unused References (kept for completeness if you use them elsewhere)
+    const productCount = document.getElementById("productCount");
+    if (productCount) productCount.textContent = "0";
+    
+   
+// --- Define the new function ---
+    function loadCategories() {
+        // Use the correct path to your PHP script (e.g., adjust if it's in a /php/ folder)
+        fetch("../php/fetch_categories.php") 
+            .then(res => {
+                if (!res.ok) throw new Error("Category fetch failed.");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success && data.categories) {
+                    // Clear existing options, but keep the disabled placeholder
+                    productCategorySelect.innerHTML = '<option value="" selected disabled>Select category</option>';
+                    
+                    data.categories.forEach(category => {
+                        // Skip 'All' if it's the first element from the PHP script
+                        // If you only want existing categories in the product form, exclude 'All'
+                        if (category === 'All' && productCategorySelect.options.length === 1) return;
+                        
+                        const option = document.createElement('option');
+                        option.value = category;
+                        option.textContent = category;
+                        productCategorySelect.appendChild(option);
+                    });
+                } else {
+                    console.error("Failed to load categories:", data.message || "No categories found.");
+                }
+            })
+            .catch(err => {
+                console.error("Error loading categories:", err);
+            });
+    }
+    // --- 1. Mobile Menu Functionality (Your Existing Logic) ---
+
+    function adjustContentForMobileHeader() {
+        if (window.innerWidth < 992 && mobileHeader && mainContent) {
+            const headerHeight = mobileHeader.offsetHeight;
+            mainContent.style.marginTop = `${headerHeight}px`;
+        } else if (mainContent) {
+            mainContent.style.marginTop = "";
+        }
+    }
+
+    if (hamburgerBtn && sidebar) {
+        hamburgerBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("mobile-open");
+            if (sidebarOverlay) sidebarOverlay.classList.toggle("active");
+        });
+        hamburgerBtn.addEventListener("click", () => setTimeout(adjustContentForMobileHeader, 300));
+    }
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", function () {
+            sidebar.classList.remove("mobile-open");
+            sidebarOverlay.classList.remove("active");
+        });
+    }
+    navLinks.forEach((link) => {
+        link.addEventListener("click", function () {
+            if (window.innerWidth < 992 && sidebar) {
+                sidebar.classList.remove("mobile-open");
+                if (sidebarOverlay) sidebarOverlay.classList.remove("active");
+            }
+        });
+    });
+
+    window.addEventListener("load", adjustContentForMobileHeader);
+    window.addEventListener("resize", adjustContentForMobileHeader);
+
+    // --- 2. Product Form Dynamic Toggling ---
+    
+    function toggleFormMode(mode) {
+        if (mode === 'variant') {
+            parentProductGroup.style.display = 'block';
+            productNameInput.placeholder = 'Product Name (Auto-filled from Parent)';
+            productNameInput.readOnly = true;
+            productNameInput.required = false;
+
+            productCategorySelect.disabled = true;
+            productDescriptionTextarea.readOnly = true;
+            
+            // Fetch parent products only when selecting 'New Variant'
+            loadParentProducts();
+
+        } else {
+            parentProductGroup.style.display = 'none';
+            productNameInput.placeholder = 'Enter product name';
+            productNameInput.readOnly = false;
+            productNameInput.required = true;
+
+            productCategorySelect.disabled = false;
+            productDescriptionTextarea.readOnly = false;
+        }
+    }
+
+    // Event listeners for radio buttons
+    typeNewProduct.addEventListener("change", () => toggleFormMode('new'));
+    typeNewVariant.addEventListener("change", () => toggleFormMode('variant'));
+
+    // Initial state setup
+    loadCategories();
+    toggleFormMode('new'); 
+    
+
+    // --- 3. Parent Product Fetching & Autofill ---
+
+    function loadParentProducts() {
+        // You MUST update fetch_parent_products.php to return Name, Category, and Description for autofill
+        fetch("../php/fetch_parent_products.php")
+
+            .then((res) => {
+                if (!res.ok) throw new Error("Network response was not ok");
+                return res.json();
+            })
+            .then((data) => {
+                parentProductID.innerHTML = '<option value="" selected disabled>Select an existing product line</option>';
+                data.forEach((product) => {
+                    const opt = document.createElement("option");
+                    opt.value = product.ProductID;
+                    opt.textContent = product.Name;
+                    
+                    // Crucial for autofill: Store details as data attributes
+                    opt.dataset.category = product.Category; 
+                    opt.dataset.description = product.Description;
+
+                    parentProductID.appendChild(opt);
+                });
+            })
+            .catch((err) => console.error("Error loading parent products:", err));
+    }
+    
+    // Autofill event listener
+    parentProductID.addEventListener('change', () => {
+        const selectedOption = parentProductID.options[parentProductID.selectedIndex];
+        if (selectedOption.value) {
+            productNameInput.value = selectedOption.textContent;
+            productCategorySelect.value = selectedOption.dataset.category;
+            productDescriptionTextarea.value = selectedOption.dataset.description;
+        }
+    });
+
+
+    // --- 4. Image Upload (Corrected to use new IDs) ---
+    if (imageUpload && productImagesInput) {
+        imageUpload.addEventListener("click", () => productImagesInput.click());
+
+        productImagesInput.addEventListener("change", (e) => {
+            imagePreviewContainer.innerHTML = ''; // Clear previews
+            const files = e.target.files;
+            
+            if (files.length > 5) {
+                alert("You can only upload a maximum of 5 images.");
+                productImagesInput.value = "";
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.className = 'preview-item';
+                    imgWrapper.innerHTML = `<img src="${e.target.result}" alt="Product Image Preview" class="img-fluid" />`;
+                    imagePreviewContainer.appendChild(imgWrapper);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+
+    // --- 5. Form Submission (Corrected AJAX logic) ---
+    productForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(productForm);
+        const productType = document.querySelector('input[name="productType"]:checked').value;
+        if (productType === "variant") {
+        formData.append("productName", productNameInput.value); 
+        formData.append("productCategory", productCategorySelect.value);
+        formData.append("productDescription", productDescriptionTextarea.value);
+    }
+        
+        // You'll need to collect the attributes manually and append them
+        // For example: formData.append("SkinType", document.getElementById('skinType').value);
+
+        // ✅ Send data to backend
+        fetch("../php/add_product.php", {
+            method: "POST",
+            body: formData,
+        })
+            .then((res) => res.text()) // Assuming your PHP returns a success message as text
+            .then((response) => {
+                console.error(response);
+                productForm.reset();
+                imagePreviewContainer.innerHTML = ''; // Clear image previews
+                toggleFormMode('new'); // Reset form state to default
+            })
+            .catch((err) => {
+                console.error(err);
+                alert("Error adding product! See console for details.");
+            });
+    });
+
+});
+    </script>
+  </body>
+</html>
