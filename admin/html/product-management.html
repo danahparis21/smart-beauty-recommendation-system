@@ -773,6 +773,45 @@
           padding: 12px !important;
         }
       }
+
+
+.image-preview-box {
+    width: 100%;
+    padding-top: 100%; 
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+.placeholder-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #888;
+    font-size: 0.9rem;
+    pointer-events: none; 
+}
+
+
+.image-preview-box img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    border-radius: 6px;
+}
+
     </style>
   </head>
   <body>
@@ -851,7 +890,7 @@
               
                 <form id="productForm" enctype="multipart/form-data">
                   <div class="form-group">
-                    <label class="form-label">Product Type</label>
+                    <label class="form-label">Product Type <span class="text-danger">*</span></label>
                     <div class="d-flex gap-3">
                       <div class="form-check">
                         <input
@@ -882,46 +921,65 @@
                   </div>
                   
                   <div class="form-group" id="parentProductGroup">
-                    <label for="parentProductID" class="form-label">Select Parent Product Line</label>
-                    <select class="form-select" id="parentProductID" name="parentProductID" required>
+                    <label for="parentProductID" class="form-label">Select Parent Product Line <span class="text-danger">*</span></label>
+                    <select class="form-select" id="parentProductID" name="parentProductID" >
                       <option value="" selected disabled>Select an existing product line</option>
                     </select>
                 </div>
                   
                  
-                <div class="form-group" id="previewImageGroup">
-                  <label for="previewImage" class="form-label">Preview Image (for product line)</label>
-                  <input type="file" id="previewImage" class="form-control" name="previewImage" accept="image/*">
-                  <small class="text-muted">Used for product listing preview</small>
+                <div class="row g-3 mb-4">
+
+                  <div class="col-6 col-lg-4" id="previewImageGroup">
+                      <label for="previewImage" class="form-label">Preview Image <span class="text-danger">*</span></label>
+                      
+                      <div class="image-preview-box" id="previewImagePreview">
+                          <span class="placeholder-text">Line Preview</span>
+                      </div>
+                      
+                      <input type="file" id="previewImage" class="form-control mt-2" name="previewImage" accept="image/*">
+                      <small class="text-muted">Main listing image</small>
+                  </div>
+              
+                  <div class="col-6 col-lg-4">
+                      <label for="variantImage" class="form-label">Variant Image <span class="text-danger">*</span></label>
+                      
+                      <div class="image-preview-box" id="variantImagePreview">
+                          <span class="placeholder-text">Variant Shade</span>
+                      </div>
+              
+                      <input type="file" id="variantImage" class="form-control mt-2" name="variantImage" accept="image/*">
+                      <small class="text-muted">Image for this specific shade</small>
+                  </div>
+              
+                  <div class="col-12 col-lg-4" id="additionalImagesGroup">
+                      <label for="detailImages" class="form-label">Additional Images</label>
+                      
+                      <div class="image-preview-box gallery-preview" id="detailImagesPreview">
+                          <span class="placeholder-text">Gallery (Max 5)</span>
+                      </div>
+                      
+                      <input type="file" id="detailImages" class="form-control mt-2" name="detailImages" accept="image/*">
+                      <small class="text-muted">Extra photos</small>
+                  </div>
+              
               </div>
               
               <div class="form-group">
-                  <label for="variantImage" class="form-label">Variant Product Image</label>
-                  <input type="file" id="variantImage" class="form-control" name="variantImage" accept="image/*" required>
-                  <small class="text-muted">Main image for this specific shade</small>
-              </div>
-              
-              <div class="form-group" id="additionalImagesGroup">
-                  <label for="detailImages" class="form-label">Additional Images (optional)</label>
-                  <input type="file" id="detailImages" class="form-control" name="detailImages[]" accept="image/*" multiple>
-                  <small class="text-muted">Lifestyle or extra photos (max 5)</small>
-              </div>
-              
-              <div class="form-group">
-                  <label for="hexCode" class="form-label">Shade Hex Code (optional)</label>
+                  <label for="hexCode" class="form-label">Shade Hex Code <span class="text-danger">*</span></label>
                   <input type="color" id="hexCode" name="hexCode" class="form-control form-control-color" value="#ffffff">
                   </div>
               
                   <!-- Product Name -->
                   <div class="form-group">
-                    <label for="productName" class="form-label">Product Name </label>
+                    <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
                     <input
                       type="text"
                       class="form-control"
                       id="productName"
                       name="productName"
                       placeholder="Enter product name"
-                      required
+                      
                     />
                   </div>
 
@@ -933,27 +991,35 @@
                       id="productVariantName"
                       name="productVariantName"
                       placeholder="e.g., Black, Shade 03, 50ml, Large"
-                      required
+                      
                     />
                   </div>
               
-                  <!-- Category -->
                   <div class="form-group">
-                    <label for="productCategory" class="form-label">Category </span></label>
+                    <label for="productCategory" class="form-label">Category <span class="text-danger">*</span></label>
                     <div class="d-flex gap-2">
-                      <select class="form-select" id="productCategory" name="productCategory" required>
-                        <option value="" selected disabled>Select category</option>
-                        <!-- Categories will be fetched from database -->
-                      </select>
-                      <button type="button" id="addCategoryBtn" class="btn btn-outline-secondary btn-sm">
-                        Add New
-                      </button>
+                        <select class="form-select" id="productCategorySelect" name="productCategory">
+                            <option value="" selected disabled>Select category</option>
+                            </select>
+                
+                        <input 
+                            type="text" 
+                            class="form-control d-none" 
+                            id="productCategoryInput" 
+                            name="productCategory" 
+                            placeholder="Enter new category name"
+                            disabled
+                        >
+                
+                        <button type="button" id="addCategoryBtn" class="btn btn-outline-secondary btn-sm">
+                            Add New
+                        </button>
                     </div>
-                  </div>
+                </div>
               
                   <!-- Stock -->
                   <div class="form-group">
-                    <label for="productStock" class="form-label">Stocks </span></label>
+                    <label for="productStock" class="form-label">Stocks <span class="text-danger">*</span></label>
                     <input
                       type="number"
                       class="form-control"
@@ -961,13 +1027,13 @@
                       name="productStock"
                       value="12"
                       min="0"
-                      required
+                     
                     />
                   </div>
               
                   <!-- Price -->
                   <div class="form-group">
-                    <label for="productPrice" class="form-label">Price (₱)</span></label>
+                    <label for="productPrice" class="form-label">Price (₱)<span class="text-danger">*</span></label>
                     <input
                       type="number"
                       class="form-control"
@@ -976,13 +1042,13 @@
                       placeholder="0.00"
                       min="0"
                       step="0.01"
-                      required
+                      
                     />
                   </div>
               
                   <!-- Description -->
                   <div class="form-group">
-                    <label for="productDescription" class="form-label">Description</label>
+                    <label for="productDescription" class="form-label">Description <span class="text-danger">*</span></label>
                     <textarea
                       class="form-control"
                       id="productDescription"
@@ -992,9 +1058,20 @@
                     ></textarea>
                   </div>
               
+                  <div class="form-group">
+                    <label for="productIngredients" class="form-label">Ingredients (optional)</label>
+                    <textarea
+                        class="form-control"
+                        id="productIngredients"
+                        name="productIngredients"
+                        rows="3"
+                        placeholder="List all ingredients, separated by commas or new lines."
+                    ></textarea>
+                </div>
+
                   <!-- Expiration Date -->
                   <div class="form-group">
-                    <label for="productExpiration" class="form-label">Expiration Date </label>
+                    <label for="productExpiration" class="form-label">Expiration Date <span class="text-danger">*</span></label>
                     <input
                       type="date"
                       class="form-control"
@@ -1196,19 +1273,32 @@ document.addEventListener("DOMContentLoaded", function () {
     
     
     const productNameInput = document.getElementById("productName");
-    const productCategorySelect = document.getElementById("productCategory");
     const productDescriptionTextarea = document.getElementById("productDescription");
 
-    // 🆕 NEW: Image Upload References
-const previewImageInput = document.getElementById("previewImage"); // Main Preview/Group Shot
-const variantImageInput = document.getElementById("variantImage"); // Variant/Shade Specific
-const detailImagesInput = document.getElementById("detailImages"); // Additional Gallery
+    const previewImageInput = document.getElementById("previewImage"); 
+    const variantImageInput = document.getElementById("variantImage");
+    const detailImagesInput = document.getElementById("detailImages");
+    const previewImageGroup = document.getElementById("previewImageGroup");
+    const additionalImagesGroup = document.getElementById("additionalImagesGroup");
 
-// 🆕 NEW: Reference to the containers (Assuming you wrap your images in groups for hiding)
-const previewImageGroup = document.getElementById("previewImageGroup"); // Add this ID to the Preview Image form group div
-const additionalImagesGroup = document.getElementById("additionalImagesGroup"); // Add this ID to the Additional Images form group div
+document.getElementById('previewImage').addEventListener('change', function() {
+        setupImagePreview(this, 'previewImagePreview');
+    });
 
-// 🆕 NEW: Hex Code Reference
+    document.getElementById('variantImage').addEventListener('change', function() {
+        setupImagePreview(this, 'variantImagePreview');
+    });
+
+    document.getElementById('detailImages').addEventListener('change', function() {
+        setupImagePreview(this, 'detailImagesPreview');
+    });
+
+
+    document.getElementById('previewImagePreview').innerHTML = `<span class="placeholder-text">Line Preview</span>`;
+    document.getElementById('variantImagePreview').innerHTML = `<span class="placeholder-text">Variant Shade</span>`;
+    document.getElementById('detailImagesPreview').innerHTML = `<span class="placeholder-text">Gallery (Max 5)</span>`;
+
+
 const hexCodeInput = document.getElementById("hexCode");
     
   
@@ -1216,11 +1306,76 @@ const hexCodeInput = document.getElementById("hexCode");
     if (productCount) productCount.textContent = "0";
 
 
+    const productCategorySelect = document.getElementById('productCategorySelect');
+const productCategoryInput = document.getElementById('productCategoryInput');
+const addCategoryBtn = document.getElementById('addCategoryBtn');
+addCategoryBtn.addEventListener('click', () => {
+    if (categoryMode === 'select') {
+        // Switch to Input mode
+        productCategorySelect.classList.add('d-none');
+        productCategoryInput.classList.remove('d-none');
+        addCategoryBtn.textContent = 'Select Existing';
+        categoryMode = 'input';
+        
+        // Ensure only the active element submits its value
+        productCategorySelect.setAttribute('disabled', 'disabled');
+        productCategoryInput.removeAttribute('disabled'); 
+    } else {
+        // Switch back to Select mode
+        productCategorySelect.classList.remove('d-none');
+        productCategoryInput.classList.add('d-none');
+        addCategoryBtn.textContent = 'Add New';
+        categoryMode = 'select';
+        
+
+        productCategorySelect.removeAttribute('disabled'); 
+        productCategoryInput.setAttribute('disabled', 'disabled');
+    }
+});
+
+let categoryMode = 'select';
+
+
+function setupImagePreview(fileInput, previewElementId) {
+    const previewContainer = document.getElementById(previewElementId);
     
-   
-// --- Define the new function ---
+
+    previewContainer.innerHTML = '';
+    
+
+    if (fileInput.files.length === 0) {
+        previewContainer.innerHTML = `<span class="placeholder-text">${previewContainer.getAttribute('data-placeholder') || 'Image Preview'}</span>`;
+        return;
+    }
+
+
+    if (!fileInput.multiple) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        };
+        reader.readAsDataURL(file);
+    } 
+
+    else {
+    previewContainer.classList.add('gallery-preview');
+    // Loop through all selected files
+    Array.from(fileInput.files).slice(0, 5).forEach(file => { 
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = "Gallery Image";
+            previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+    }
+}
+
     function loadCategories() {
-        // Use the correct path to your PHP script (e.g., adjust if it's in a /php/ folder)
+
         fetch("../php/fetch_categories.php") 
             .then(res => {
                 if (!res.ok) throw new Error("Category fetch failed.");
@@ -1228,12 +1383,10 @@ const hexCodeInput = document.getElementById("hexCode");
             })
             .then(data => {
                 if (data.success && data.categories) {
-                    // Clear existing options, but keep the disabled placeholder
+                   
                     productCategorySelect.innerHTML = '<option value="" selected disabled>Select category</option>';
                     
                     data.categories.forEach(category => {
-                        // Skip 'All' if it's the first element from the PHP script
-                        // If you only want existing categories in the product form, exclude 'All'
                         if (category === 'All' && productCategorySelect.options.length === 1) return;
                         
                         const option = document.createElement('option');
@@ -1249,7 +1402,7 @@ const hexCodeInput = document.getElementById("hexCode");
                 console.error("Error loading categories:", err);
             });
     }
-    // --- 1. Mobile Menu Functionality (Your Existing Logic) ---
+    // --- 1. Mobile Menu Functionality ---
 
     function adjustContentForMobileHeader() {
         if (window.innerWidth < 992 && mobileHeader && mainContent) {
@@ -1285,52 +1438,57 @@ const hexCodeInput = document.getElementById("hexCode");
     window.addEventListener("load", adjustContentForMobileHeader);
     window.addEventListener("resize", adjustContentForMobileHeader);
 
-    // --- 2. Product Form Dynamic Toggling ---
     
     function toggleFormMode(mode) {
         if (mode === 'variant') {
-            parentProductGroup.style.display = 'block';
+          parentProductGroup.classList.remove('d-none');
             productNameInput.placeholder = 'Product Name (Auto-filled from Parent)';
             productNameInput.readOnly = true;
             productNameInput.required = false;
 
             productCategorySelect.disabled = true;
-            productDescriptionTextarea.readOnly = false;
-            // 🆕 HIDE Preview/Gallery images for variants
-        if(previewImageGroup) previewImageGroup.style.display = 'none';
-        if(additionalImagesGroup) additionalImagesGroup.style.display = 'none';
-            
-            // Fetch parent products only when selecting 'New Variant'
-            loadParentProducts();
+           
+        if(previewImageGroup) previewImageGroup.classList.add('d-none');
+        if(additionalImagesGroup) additionalImagesGroup.classList.add('d-none');
+
+           
+        productNameInput.placeholder = 'Product Name (Auto-filled from Parent)';
+        productNameInput.readOnly = true;
+        productNameInput.required = false;
+        productCategorySelect.disabled = true;
+        productDescriptionTextarea.readOnly = false;
+        
+        loadParentProducts();
 
         } else {
-            parentProductGroup.style.display = 'none';
-            productNameInput.placeholder = 'Enter product name';
-            productNameInput.readOnly = false;
-            productNameInput.required = true;
-
-            productCategorySelect.disabled = false;
-            productDescriptionTextarea.readOnly = false;
-
-
-            if(previewImageGroup) previewImageGroup.style.display = 'block';
-        if(additionalImagesGroup) additionalImagesGroup.style.display = 'block';
+     
+        parentProductGroup.classList.add('d-none'); // Hide parent product select
+        
+       
+        if(previewImageGroup) previewImageGroup.classList.remove('d-none');
+        if(additionalImagesGroup) additionalImagesGroup.classList.remove('d-none');
+        
+        productNameInput.placeholder = 'Enter product name';
+        productNameInput.readOnly = false;
+        productNameInput.required = true;
+        productCategorySelect.disabled = false;
+        productDescriptionTextarea.readOnly = false;
         }
     }
 
-    // Event listeners for radio buttons
+ 
     typeNewProduct.addEventListener("change", () => toggleFormMode('new'));
     typeNewVariant.addEventListener("change", () => toggleFormMode('variant'));
 
-    // Initial state setup
+
     loadCategories();
     toggleFormMode('new'); 
     
 
-    // --- 3. Parent Product Fetching & Autofill ---
+
 
     function loadParentProducts() {
-        // You MUST update fetch_parent_products.php to return Name, Category, and Description for autofill
+    
         fetch("../php/fetch_parent_products.php")
 
             .then((res) => {
@@ -1344,7 +1502,7 @@ const hexCodeInput = document.getElementById("hexCode");
                     opt.value = product.ProductID;
                     opt.textContent = product.Name;
                     
-                    // Crucial for autofill: Store details as data attributes
+                
                     opt.dataset.category = product.Category; 
                     opt.dataset.description = product.Description;
 
@@ -1354,7 +1512,7 @@ const hexCodeInput = document.getElementById("hexCode");
             .catch((err) => console.error("Error loading parent products:", err));
     }
     
-    // Autofill event listener
+ 
     parentProductID.addEventListener('change', () => {
         const selectedOption = parentProductID.options[parentProductID.selectedIndex];
         if (selectedOption.value) {
@@ -1364,21 +1522,24 @@ const hexCodeInput = document.getElementById("hexCode");
         }
     });
 
-    // --- 5. Form Submission (Corrected AJAX logic) ---
+
     productForm.addEventListener("submit", (e) => {
         e.preventDefault();
-
+        const productType = document.querySelector('input[name="productType"]:checked').value;
+    if (!validateForm(productType)) {
+        return; 
+    }
         const formData = new FormData(productForm);
-        // 🛑 START OF DEBUGGING BLOCK 🛑
+        //  DEBUG
     console.log("--- Form Data Contents ---");
     let isDataEmpty = true;
     for (const [key, value] of formData.entries()) {
         isDataEmpty = false;
-        // Special handling for files: Print just the name/size, not the full object
+  
         if (value instanceof File) {
             console.log(`INPUT: ${key}: File - ${value.name} (${value.size} bytes)`);
         } else {
-            // Print all other fields (text, number, select, etc.)
+           
             console.log(`INPUT: ${key}: "${value}"`);
         }
     }
@@ -1386,52 +1547,78 @@ const hexCodeInput = document.getElementById("hexCode");
         console.warn("WARNING: FormData appears empty. Check form's 'name' attributes.");
     }
     console.log("--------------------------");
-        const productType = document.querySelector('input[name="productType"]:checked').value;
+       
       
-        // ✅ Send data to backend
+        //  Send data to backend
         fetch("../php/add_product.php", {
         method: "POST",
         body: formData,
     })
     .then((res) => {
-        // We always try to read the response as text, even if it's an error.
-        // This is crucial because your PHP echoes success/error messages as text.
+       
         return res.text().then(text => {
-            // Include the HTTP status in the console log
             console.log("HTTP Status:", res.status); 
 
             if (!res.ok) {
-                // If status is 4xx or 5xx, the promise is rejected, but fetch() 
-                // doesn't usually reject on HTTP errors. We'll handle the text here.
-                
-                // 🛑 LOG THE SERVER'S ERROR MESSAGE
+              
                 console.error("❌ Server Error Response:", text);
                 alert("Error adding product! See console for server message.");
-                // Throw an error to stop the success chain
+    
                 throw new Error("Server response status not OK: " + text); 
             }
             return text;
         });
     })
     .then((response) => {
-        // This runs if res.ok was true
+        
         console.log("✅ Success:", response);
         alert(response); // Show success message from PHP
         productForm.reset();
-        // Clear image previews (assuming you implement this correctly)
-        // imagePreviewContainer.innerHTML = ''; 
         toggleFormMode('new'); 
     })
     .catch((err) => {
-        // This catches network errors or the error thrown above
+       
         console.error("🚨 Fetch/Network Error:", err);
-        // If the server error was already logged, this just confirms it failed
         if (!err.message.includes("Server response status not OK")) {
              alert("Network error or client-side failure. Check console.");
         }
     });
-});
 
+function validateForm(type) {
+    const name = document.getElementById('productName').value.trim();
+    const variantName = document.getElementById('productVariantName').value.trim();
+    const categoryElement = productCategorySelect.hasAttribute('disabled') 
+        ? productCategoryInput 
+        : productCategorySelect;
+    
+    const category = categoryElement.value.trim()
+    const variantImage = document.getElementById('variantImage').files.length;
+    const parentProductID = document.getElementById('parentProductID').value;
+    const previewImage = document.getElementById('previewImage').files.length;
+
+    let errors = [];
+
+    // --- Validation for ALL product types ---
+    if (!name) errors.push("Product Name is required.");
+    if (!variantName) errors.push("Shade/Variant Name is required.");
+    if (variantImage === 0) errors.push("Variant Product Image is required.");
+    
+    // --- Conditional Validation based on Product Type ---
+    if (type === 'new') {
+        if (!category) errors.push("Category is required for a New Product Line.");
+        if (previewImage === 0) errors.push("Preview Image is required for a New Product Line.");
+    } else if (type === 'variant') {
+        if (!parentProductID) errors.push("You must select a Parent Product Line for a New Variant.");
+    }
+
+    if (errors.length > 0) {
+        alert("Please correct the following errors before submitting:\n" + errors.join('\n'));
+        return false;
+    }
+
+    return true;
+}
+});
 });
     </script>
   </body>
