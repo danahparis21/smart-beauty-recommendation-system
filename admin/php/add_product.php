@@ -6,6 +6,30 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// --- IMAGE UPLOAD HELPER FUNCTION ---
+function handleFileUpload($fileInputName, $targetDir = "uploads/") {
+    // Check if a file was actually uploaded for this input name
+    if (!isset($_FILES[$fileInputName]) || $_FILES[$fileInputName]['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    
+    // Ensure the target directory exists and is writable
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0777, true);
+    }
+
+    $file = $_FILES[$fileInputName];
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    // Create a unique file name using a prefix and timestamp
+    $fileName = uniqid("img_") . time() . "." . $ext; 
+    $targetFile = $targetDir . $fileName;
+
+    if (move_uploaded_file($file["tmp_name"], $targetFile)) {
+        // Return the path
+        return $targetFile;
+    }
+    return null;
+}
 // --- COLLECT ALL INPUTS ---
 $type = $_POST['productType'];
 $name = $_POST['productName'];
@@ -15,28 +39,21 @@ $price = $_POST['productPrice'];
 $description = $_POST['productDescription'];
 $stocks = $_POST['productStock'];
 $expiration = $_POST['productExpiration'] ?? null;
+$hexCode = $_POST['hexCode'] ?? null;
+if ($hexCode === '') $hexCode = null;
 
-// --- DUMMY/NULL VALUES FOR UNUSED COLUMNS (MATCHES YOUR SCHEMA) ---
+// --- DUMMY/NULL VALUES FOR UNUSED COLUMNS---
 $ingredients = null;
-$imagePath = null;
-$previewImage = null;
-$hexCode = null;
-$productRating = 0; // Assuming default 0 or NULL
+$productRating = 0;
 
-// // --- ATTRIBUTE COLLECTION (Needs form data to work fully) ---
-// $skinType = null;
-// $skinTone = null;
-// $undertone = null;
-// $acne = 0; // Use 0/1 for boolean/TINYINT fields
-// $dryness = 0;
-// $darkSpots = 0;
-// $matte = 0;
-// $dewy = 0;
-// $longLasting = 0;
+// --- IMAGE UPLOAD COLLECTION ---
+$targetDir = "../uploads/product_images/";
+// 🛑 NEW: Call the helper function to get the paths
+$variantImagePath = handleFileUpload('variantImage', $targetDir);
+$previewImagePath = handleFileUpload('previewImage', $targetDir);
 
 // --- ATTRIBUTE COLLECTION (NEW LOGIC) ---
-// 1. Array/String Attributes (Skin Type, Skin Tone)
-// If an array exists, implode it with a comma. If not, set to NULL.
+
 $skinType = isset($_POST['skinType']) ? implode(',', $_POST['skinType']) : null;
 $skinTone = isset($_POST['skinTone']) ? implode(',', $_POST['skinTone']) : null;
 
@@ -48,7 +65,6 @@ if ($undertone === '' || strtolower($undertone) === 'none') {
 }
 
 // 3. Boolean/TINYINT (0 or 1) Attributes
-// If the checkbox name exists in $_POST, it means it was checked (value 1). If not, it's 0.
 $acne = isset($_POST['acne']) ? 1 : 0;
 $dryness = isset($_POST['dryness']) ? 1 : 0;
 $darkSpots = isset($_POST['darkSpots']) ? 1 : 0;
@@ -56,6 +72,8 @@ $darkSpots = isset($_POST['darkSpots']) ? 1 : 0;
 $matte = isset($_POST['matte']) ? 1 : 0;
 $dewy = isset($_POST['dewy']) ? 1 : 0;
 $longLasting = isset($_POST['longLasting']) ? 1 : 0;
+
+
 
 function getNextProductID($conn, $category) {
     // 1. Define the Prefix Map (No change needed here)
@@ -73,7 +91,6 @@ function getNextProductID($conn, $category) {
     $prefix = $prefixMap[$category] ?? 'PROD';
     
     // 2. Find the highest existing sequence number for this prefix
-    // 🛑 CHANGE 1: Use three underscores (___) to match CONC001 format
     $sql = "SELECT ProductID FROM Products WHERE ProductID LIKE '{$prefix}___' ORDER BY ProductID DESC LIMIT 1";
     $result = $conn->query($sql);
     
@@ -135,36 +152,72 @@ if ($type === "new") {
     $parentProductID = $checkID; // e.g., ANOTHER01, ANOTHER02, etc.
     // ----------------------------------------------------
 
-    // 1. Create PARENT PRODUCT record (Using $parentProductID)
-$parentName = "Parent Record: $name";
-$desc = "Parent product record for $name shades.";
-$stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, ImagePath, PreviewImage, HexCode, ProductRating)
-                         VALUES (?, ?, ?, NULL, 'PARENT_GROUP', 0.00, ?, 0, NULL, ?, ?, ?, ?, ?)");
-// Correct Type string for the 9 variables:
-$stmt->bind_param("ssssssssi", 
-    $parentProductID, $parentName, $category, $desc, 
-    $ingredients, $imagePath, $previewImage, $hexCode, $productRating
-);
-$stmt->execute();
+    // 1. Create PARENT PRODUCT record (12 Columns)
+    $parentName = "Parent Record: $name";
+    $desc = "Parent product record for $name shades.";
+    $stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating)
+                             VALUES (?, ?, ?, NULL, 'PARENT_GROUP', 0.00, ?, 0, NULL, ?, NULL, ?)");
+    // Bind parameters: ssss (for ID, Name, Category, Desc), s (for Ingredients), i (for Rating) 
+    $stmt->bind_param("sssssi", $parentProductID, $parentName, $category, $desc, $ingredients, $productRating);
+    $stmt->execute();
 
 
-    // 2. Insert FIRST VARIANT record (Using $variantID)
-    $stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, ImagePath, PreviewImage, HexCode, ProductRating)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+   // 2. Insert FIRST VARIANT record (12 Columns)
+    $stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    // CORRECTED BIND PARAM FOR 14 variables: ProductID(s), Name(s), Category(s), ParentID(s), VariantName(s), Price(d), Description(s), Stocks(i), ExpDate(s), Ing(s), Path(s), Preview(s), Hex(s), Rating(i)
-    $stmt->bind_param("sssssdsisssssi", 
+    // Bind parameters: sssss (for strings), d (for price), s (for desc), i (for stocks), s (for exp), s (for ingr), s (for hex), i (for rating)
+    $stmt->bind_param("sssssdsisssi", 
         $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expiration, 
-        $ingredients, $imagePath, $previewImage, $hexCode, $productRating
+        $ingredients, $hexCode, $productRating // Hex Code is inserted, Image paths are gone!
     );
     $stmt->execute();
 
-    // 3. Insert ATTRIBUTES for the variant
+    // 3. INSERT INTO ProductMedia for Variant-Specific Image 🛑 NEW STEP
+    if ($variantImagePath) {
+        $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
+        $media_stmt->bind_param("sss", $parentProductID, $variantID, $variantImagePath);
+        $media_stmt->execute();
+    }
+
+    //4. INSERT INTO ProductMedia for Preview/Hover Image
+    if ($previewImagePath) {
+        $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'PREVIEW', 1)");
+        $media_stmt->bind_param("ss", $parentProductID, $previewImagePath);
+        $media_stmt->execute();
+    }
+
+
+    // 5. INSERT INTO ProductMedia for Additional Gallery Images
+    if (isset($_FILES['detailImages'])) {
+        $sortOrder = 1;
+        // Loop through the multiple file array structure
+        foreach ($_FILES['detailImages']['name'] as $key => $name) {
+            if ($_FILES['detailImages']['error'][$key] === UPLOAD_ERR_OK) {
+                
+                // Manually handle the upload for this specific file from the array
+                $tmp_name = $_FILES['detailImages']['tmp_name'][$key];
+                $ext = pathinfo($name, PATHINFO_EXTENSION);
+                $fileName = uniqid("gall_") . "_" . $key . time() . "." . $ext;
+                $targetFile = $targetDir . $fileName;
+
+                if (move_uploaded_file($tmp_name, $targetFile)) {
+                    $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'GALLERY', ?)");
+                    $media_stmt->bind_param("ssi", $parentProductID, $targetFile, $sortOrder);
+                    $media_stmt->execute();
+                    $sortOrder++;
+                }
+            }
+        }
+    }
+    
+    // 6. Insert ATTRIBUTES for the variant
     insertAttributes($conn, $variantID, $skinType, $skinTone, $undertone, $acne, $dryness, $darkSpots, $matte, $dewy, $longLasting);
 
     echo "✅ New product line and first variant added successfully! (Parent ID: $parentProductID, Variant ID: $variantID)";
     exit;
 }
+
 
 // --- LOGIC FOR NEW VARIANT (type = "variant") ---
 if ($type === "variant") {
@@ -192,14 +245,15 @@ if ($type === "variant") {
     // 3. Generate SEQUENTIAL Variant ID based on the looked-up Category
     $variantID = getNextProductID($conn, $category); // E.g., EYLN006
 
-    // 4. Insert NEW VARIANT record
-    $stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, ImagePath, PreviewImage, HexCode, ProductRating)
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    // Bind: sssssdsisssssi
-    $stmt->bind_param("sssssdsisssssi", 
+    // 4. Insert NEW VARIANT record (12 Columns)
+    $stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating)
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    
+    // Bind: sssssdsisssi
+    $stmt->bind_param("sssssdsisssi", 
         $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expiration, 
-        $ingredients, $imagePath, $previewImage, $hexCode, $productRating
+        $ingredients, $hexCode, $productRating // Hex Code is inserted, Image paths are gone!
     );
     
     if (!$stmt->execute()) {
@@ -207,9 +261,15 @@ if ($type === "variant") {
         exit;
     }
     
-    // 5. Insert ATTRIBUTES for the new variant
+    // 5. INSERT INTO ProductMedia for Variant-Specific Image 🛑 NEW STEP
+    if ($variantImagePath) {
+        $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
+        $media_stmt->bind_param("sss", $parentProductID, $variantID, $variantImagePath);
+        $media_stmt->execute();
+    }
+
+    // 6. Insert ATTRIBUTES for the new variant (Original Step 5)
     insertAttributes($conn, $variantID, $skinType, $skinTone, $undertone, $acne, $dryness, $darkSpots, $matte, $dewy, $longLasting);
-    
     echo "✅ New variant added successfully! (Variant ID: $variantID)";
     exit;
 }

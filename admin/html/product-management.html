@@ -888,6 +888,43 @@
                     </select>
                 </div>
                   
+                 
+                <div class="form-group" id="previewImageGroup">
+                  <label for="previewImage" class="form-label">Preview Image (for product line)</label>
+                  <input type="file" id="previewImage" class="form-control" name="previewImage" accept="image/*">
+                  <small class="text-muted">Used for product listing preview</small>
+              </div>
+              
+              <div class="form-group">
+                  <label for="variantImage" class="form-label">Variant Product Image</label>
+                  <input type="file" id="variantImage" class="form-control" name="variantImage" accept="image/*" required>
+                  <small class="text-muted">Main image for this specific shade</small>
+              </div>
+              
+              <div class="form-group" id="additionalImagesGroup">
+                  <label for="detailImages" class="form-label">Additional Images (optional)</label>
+                  <input type="file" id="detailImages" class="form-control" name="detailImages[]" accept="image/*" multiple>
+                  <small class="text-muted">Lifestyle or extra photos (max 5)</small>
+              </div>
+              
+              <div class="form-group">
+                  <label for="hexCode" class="form-label">Shade Hex Code (optional)</label>
+                  <input type="color" id="hexCode" name="hexCode" class="form-control form-control-color" value="#ffffff">
+                  </div>
+              
+                  <!-- Product Name -->
+                  <div class="form-group">
+                    <label for="productName" class="form-label">Product Name </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="productName"
+                      name="productName"
+                      placeholder="Enter product name"
+                      required
+                    />
+                  </div>
+
                   <div class="form-group">
                     <label for="productVariantName" class="form-label">Shade/Variant Name <span class="text-danger">*</span></label>
                     <input
@@ -899,40 +936,10 @@
                       required
                     />
                   </div>
-                  <!-- Product Images -->
-                  <div class="form-group">
-                    <label class="form-label">Product Images</label>
-                    <div class="image-upload-container" id="imageUpload">
-                      <i class="fas fa-cloud-upload-alt"></i>
-                      <div>Click to upload product images (max 5)</div>
-                      <small class="text-muted">PNG, JPG, JPEG up to 5MB each</small>
-                      <input
-                        type="file"
-                        id="productImages"
-                        class="d-none"
-                        accept="image/*"
-                        multiple
-                      />
-                      <div id="imagePreviewContainer" class="preview-grid"></div>
-                    </div>
-                  </div>
-              
-                  <!-- Product Name -->
-                  <div class="form-group">
-                    <label for="productName" class="form-label">Product Name</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="productName"
-                      name="productName"
-                      placeholder="Enter product name"
-                      required
-                    />
-                  </div>
               
                   <!-- Category -->
                   <div class="form-group">
-                    <label for="productCategory" class="form-label">Category</label>
+                    <label for="productCategory" class="form-label">Category </span></label>
                     <div class="d-flex gap-2">
                       <select class="form-select" id="productCategory" name="productCategory" required>
                         <option value="" selected disabled>Select category</option>
@@ -946,7 +953,7 @@
               
                   <!-- Stock -->
                   <div class="form-group">
-                    <label for="productStock" class="form-label">Stocks</label>
+                    <label for="productStock" class="form-label">Stocks </span></label>
                     <input
                       type="number"
                       class="form-control"
@@ -960,7 +967,7 @@
               
                   <!-- Price -->
                   <div class="form-group">
-                    <label for="productPrice" class="form-label">Price (₱)</label>
+                    <label for="productPrice" class="form-label">Price (₱)</span></label>
                     <input
                       type="number"
                       class="form-control"
@@ -987,7 +994,7 @@
               
                   <!-- Expiration Date -->
                   <div class="form-group">
-                    <label for="productExpiration" class="form-label">Expiration Date (optional)</label>
+                    <label for="productExpiration" class="form-label">Expiration Date </label>
                     <input
                       type="date"
                       class="form-control"
@@ -1003,7 +1010,7 @@
                       data-bs-toggle="collapse"
                       data-bs-target="#attributesSection"
                     >
-                      Add Product Attributes (Optional)
+                      Add Product Attributes for Recommendation
                     </button>
                   
                     <div class="collapse mt-3" id="attributesSection">
@@ -1085,9 +1092,6 @@
                   
                     </div>
                   </div>
-
-
-
               
                   <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                     <button type="reset" class="btn btn-outline-primary me-md-2">
@@ -1173,9 +1177,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-     // Wrap ALL application logic inside a single DOMContentLoaded listener for safety and scope.
+    
 document.addEventListener("DOMContentLoaded", function () {
-    // --- Mobile Menu References (Keep these near the top) ---
+    
     const hamburgerBtn = document.getElementById("hamburgerBtn");
     const sidebar = document.getElementById("sidebar");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
@@ -1190,20 +1194,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const parentProductGroup = document.getElementById("parentProductGroup");
     const parentProductID = document.getElementById("parentProductID");
     
-    // Core fields that must change behavior based on product type
+    
     const productNameInput = document.getElementById("productName");
     const productCategorySelect = document.getElementById("productCategory");
     const productDescriptionTextarea = document.getElementById("productDescription");
 
-    // Image Upload References
-    const imageUpload = document.getElementById("imageUpload");
-    // You need to ensure the ID of your file input is correct, assumed to be 'productImages' from HTML
-    const productImagesInput = document.getElementById("productImages"); 
-    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+    // 🆕 NEW: Image Upload References
+const previewImageInput = document.getElementById("previewImage"); // Main Preview/Group Shot
+const variantImageInput = document.getElementById("variantImage"); // Variant/Shade Specific
+const detailImagesInput = document.getElementById("detailImages"); // Additional Gallery
+
+// 🆕 NEW: Reference to the containers (Assuming you wrap your images in groups for hiding)
+const previewImageGroup = document.getElementById("previewImageGroup"); // Add this ID to the Preview Image form group div
+const additionalImagesGroup = document.getElementById("additionalImagesGroup"); // Add this ID to the Additional Images form group div
+
+// 🆕 NEW: Hex Code Reference
+const hexCodeInput = document.getElementById("hexCode");
     
-    // Legacy/Unused References (kept for completeness if you use them elsewhere)
+  
     const productCount = document.getElementById("productCount");
     if (productCount) productCount.textContent = "0";
+
+
     
    
 // --- Define the new function ---
@@ -1284,6 +1296,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             productCategorySelect.disabled = true;
             productDescriptionTextarea.readOnly = false;
+            // 🆕 HIDE Preview/Gallery images for variants
+        if(previewImageGroup) previewImageGroup.style.display = 'none';
+        if(additionalImagesGroup) additionalImagesGroup.style.display = 'none';
             
             // Fetch parent products only when selecting 'New Variant'
             loadParentProducts();
@@ -1296,6 +1311,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             productCategorySelect.disabled = false;
             productDescriptionTextarea.readOnly = false;
+
+
+            if(previewImageGroup) previewImageGroup.style.display = 'block';
+        if(additionalImagesGroup) additionalImagesGroup.style.display = 'block';
         }
     }
 
@@ -1345,66 +1364,73 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-
-    // --- 4. Image Upload (Corrected to use new IDs) ---
-    if (imageUpload && productImagesInput) {
-        imageUpload.addEventListener("click", () => productImagesInput.click());
-
-        productImagesInput.addEventListener("change", (e) => {
-            imagePreviewContainer.innerHTML = ''; // Clear previews
-            const files = e.target.files;
-            
-            if (files.length > 5) {
-                alert("You can only upload a maximum of 5 images.");
-                productImagesInput.value = "";
-                return;
-            }
-
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const imgWrapper = document.createElement('div');
-                    imgWrapper.className = 'preview-item';
-                    imgWrapper.innerHTML = `<img src="${e.target.result}" alt="Product Image Preview" class="img-fluid" />`;
-                    imagePreviewContainer.appendChild(imgWrapper);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-    }
-
     // --- 5. Form Submission (Corrected AJAX logic) ---
     productForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
         const formData = new FormData(productForm);
-        const productType = document.querySelector('input[name="productType"]:checked').value;
-        if (productType === "variant") {
-        // formData.append("productName", productNameInput.value); 
-        // formData.append("productCategory", productCategorySelect.value);
-        // formData.append("productDescription", productDescriptionTextarea.value);
+        // 🛑 START OF DEBUGGING BLOCK 🛑
+    console.log("--- Form Data Contents ---");
+    let isDataEmpty = true;
+    for (const [key, value] of formData.entries()) {
+        isDataEmpty = false;
+        // Special handling for files: Print just the name/size, not the full object
+        if (value instanceof File) {
+            console.log(`INPUT: ${key}: File - ${value.name} (${value.size} bytes)`);
+        } else {
+            // Print all other fields (text, number, select, etc.)
+            console.log(`INPUT: ${key}: "${value}"`);
+        }
     }
-        
-        // You'll need to collect the attributes manually and append them
-        // For example: formData.append("SkinType", document.getElementById('skinType').value);
-
+    if (isDataEmpty) {
+        console.warn("WARNING: FormData appears empty. Check form's 'name' attributes.");
+    }
+    console.log("--------------------------");
+        const productType = document.querySelector('input[name="productType"]:checked').value;
+      
         // ✅ Send data to backend
         fetch("../php/add_product.php", {
-            method: "POST",
-            body: formData,
-        })
-            .then((res) => res.text()) // Assuming your PHP returns a success message as text
-            .then((response) => {
-                console.error(response);
-                productForm.reset();
-                imagePreviewContainer.innerHTML = ''; // Clear image previews
-                toggleFormMode('new'); // Reset form state to default
-            })
-            .catch((err) => {
-                console.error(err);
-                alert("Error adding product! See console for details.");
-            });
+        method: "POST",
+        body: formData,
+    })
+    .then((res) => {
+        // We always try to read the response as text, even if it's an error.
+        // This is crucial because your PHP echoes success/error messages as text.
+        return res.text().then(text => {
+            // Include the HTTP status in the console log
+            console.log("HTTP Status:", res.status); 
+
+            if (!res.ok) {
+                // If status is 4xx or 5xx, the promise is rejected, but fetch() 
+                // doesn't usually reject on HTTP errors. We'll handle the text here.
+                
+                // 🛑 LOG THE SERVER'S ERROR MESSAGE
+                console.error("❌ Server Error Response:", text);
+                alert("Error adding product! See console for server message.");
+                // Throw an error to stop the success chain
+                throw new Error("Server response status not OK: " + text); 
+            }
+            return text;
+        });
+    })
+    .then((response) => {
+        // This runs if res.ok was true
+        console.log("✅ Success:", response);
+        alert(response); // Show success message from PHP
+        productForm.reset();
+        // Clear image previews (assuming you implement this correctly)
+        // imagePreviewContainer.innerHTML = ''; 
+        toggleFormMode('new'); 
+    })
+    .catch((err) => {
+        // This catches network errors or the error thrown above
+        console.error("🚨 Fetch/Network Error:", err);
+        // If the server error was already logged, this just confirms it failed
+        if (!err.message.includes("Server response status not OK")) {
+             alert("Network error or client-side failure. Check console.");
+        }
     });
+});
 
 });
     </script>
