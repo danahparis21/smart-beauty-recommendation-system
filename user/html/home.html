@@ -30,21 +30,40 @@
         --medium-gray: #e0e0e0;
         --text-gray: #888;
         --dark-gray: #555;
-        --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --gradient-bg: linear-gradient(135deg, #ffffff 0%, #fff5f9 30%, #ffe6f2 70%, #ffd1dc 100%);
+        --gradient-header: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,252,0.95) 100%);
+        --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,252,0.95) 100%);
       }
 
       body {
-        background: linear-gradient(135deg, #ffe6f2 0%, #ffffff 100%);
+        background: var(--gradient-bg);
         min-height: 100vh;
-        font-family: "Montserrat", sans-serif;
+        font-family: 'Montserrat', sans-serif;
         overflow-x: hidden;
-        padding-bottom: 80px; /* Space for mobile bottom nav */
+        position: relative;
+        background-attachment: fixed;
+        padding-bottom: 80px;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 10% 20%, rgba(255,255,255,0.8) 0%, transparent 50%),
+            radial-gradient(circle at 90% 80%, rgba(255,182,193,0.3) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(255,105,180,0.1) 0%, transparent 50%);
+        z-index: -1;
       }
 
       /* Header Styles */
       .header {
-        background-color: var(--soft-white);
-        box-shadow: 0 2px 10px rgba(255, 105, 180, 0.1);
+        background: var(--gradient-header);
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.1);
         padding: 15px 20px;
         position: sticky;
         top: 0;
@@ -52,6 +71,30 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .brand-header {
+        text-align: center;
+        flex: 1;
+      }
+
+      .brand-name {
+        color: var(--primary-pink);
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        font-family: 'Cormorant Garamond', serif;
+        margin-bottom: 2px;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .brand-tagline {
+        color: var(--text-gray);
+        font-size: 12px;
+        letter-spacing: 1px;
+        font-weight: 300;
       }
 
       .user-info {
@@ -82,6 +125,49 @@
 
       .user-avatar:hover {
         transform: scale(1.05);
+      }
+
+      /* Desktop Navigation - Top Position */
+      .desktop-nav {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        padding: 15px 20px;
+        background: var(--gradient-header);
+        box-shadow: 0 2px 10px rgba(255, 105, 180, 0.1);
+        position: sticky;
+        top: 70px;
+        z-index: 99;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        color: var(--text-gray);
+        transition: all 0.3s ease;
+        font-size: 12px;
+        padding: 8px 15px;
+        border-radius: 10px;
+        text-decoration: none;
+      }
+
+      .nav-item:hover {
+        color: var(--primary-pink);
+        background: rgba(255, 182, 193, 0.1);
+      }
+
+      .nav-item.active {
+        color: var(--primary-pink);
+        background: rgba(255, 182, 193, 0.15);
+      }
+
+      .nav-item i {
+        font-size: 20px;
       }
 
       /* Search Bar */
@@ -158,11 +244,24 @@
       }
 
       .section-title {
-        font-size: 22px;
+        font-size: 28px;
         font-weight: 600;
         color: var(--dark-gray);
         margin-bottom: 20px;
         font-family: "Cormorant Garamond", serif;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary-pink), var(--light-pink));
+        border-radius: 3px;
       }
 
       .products-grid {
@@ -172,25 +271,40 @@
       }
 
       .product-card {
-        background-color: var(--soft-white);
-        border-radius: 15px;
+        background: var(--gradient-card);
+        border-radius: 18px;
         overflow: hidden;
         box-shadow: var(--card-shadow);
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
       }
 
       .product-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary-pink), var(--light-pink));
       }
 
       .product-image {
         width: 100%;
         height: 160px;
-        background-color: var(--light-gray);
+        background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--text-gray);
+        color: var(--primary-pink);
       }
 
       .product-image i {
@@ -280,11 +394,6 @@
         cursor: pointer;
         z-index: 90;
         transition: transform 0.3s ease;
-        display: none; /* Hidden by default */
-      }
-
-      .floating-cart.show {
-        display: flex; /* Show only on specific pages */
       }
 
       .floating-cart:hover {
@@ -307,58 +416,13 @@
         font-weight: 600;
       }
 
-      /* Navigation */
-      .desktop-nav {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        padding: 15px 20px;
-        background-color: var(--soft-white);
-        box-shadow: 0 -2px 10px rgba(255, 105, 180, 0.1);
-      }
-
-      .nav-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-        cursor: pointer;
-        color: var(--text-gray);
-        transition: color 0.3s ease;
-        font-size: 12px;
-      }
-
-      .nav-item.active {
-        color: var(--primary-pink);
-      }
-
-      .nav-item i {
-        font-size: 20px;
-      }
-
-      .mobile-nav {
-        display: none;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: var(--soft-white);
-        box-shadow: 0 -2px 10px rgba(255, 105, 180, 0.1);
-        padding: 10px 0;
-        z-index: 100;
-      }
-
-      .mobile-nav-items {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-      }
-
       /* Page Content */
       .page-content {
         display: none;
-        padding: 20px;
+        padding: 30px 25px;
         min-height: 60vh;
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
       .page-content.active {
@@ -367,11 +431,12 @@
 
       /* Beauty Recommender */
       .recommender-container {
-        background-color: var(--soft-white);
-        border-radius: 15px;
+        background: var(--gradient-card);
+        border-radius: 18px;
         padding: 20px;
         box-shadow: var(--card-shadow);
         margin-bottom: 20px;
+        border: 1px solid rgba(255, 182, 193, 0.2);
       }
 
       .recommender-title {
@@ -414,115 +479,17 @@
         );
         color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: 12px;
         padding: 12px;
         font-weight: 500;
         cursor: pointer;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
       }
 
       .recommend-btn:hover {
-        transform: translateY(-2px);
-      }
-
-      /* Cart Page */
-      .cart-item {
-        display: flex;
-        background-color: var(--soft-white);
-        border-radius: 15px;
-        padding: 15px;
-        margin-bottom: 15px;
-        box-shadow: var(--card-shadow);
-      }
-
-      .cart-item-image {
-        width: 80px;
-        height: 80px;
-        background-color: var(--light-gray);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 15px;
-      }
-
-      .cart-item-details {
-        flex: 1;
-      }
-
-      .cart-item-name {
-        font-weight: 500;
-        margin-bottom: 5px;
-      }
-
-      .cart-item-price {
-        color: var(--primary-pink);
-        font-weight: 600;
-        margin-bottom: 10px;
-      }
-
-      .cart-item-actions {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .quantity-btn {
-        background: none;
-        border: 1px solid var(--medium-gray);
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-      }
-
-      .quantity {
-        margin: 0 10px;
-      }
-
-      .remove-btn {
-        background: none;
-        border: none;
-        color: var(--text-gray);
-        cursor: pointer;
-      }
-
-      .cart-total {
-        background-color: var(--soft-white);
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: var(--card-shadow);
-        margin-top: 20px;
-      }
-
-      .total-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-      }
-
-      .checkout-btn {
-        background: linear-gradient(
-          135deg,
-          var(--primary-pink),
-          var(--dark-pink)
-        );
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 15px;
-        font-weight: 500;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 15px;
-        transition: transform 0.3s ease;
-      }
-
-      .checkout-btn:hover {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
       }
 
       /* Virtual Try-On */
@@ -534,18 +501,19 @@
       }
 
       .tryon-container {
-        background-color: var(--soft-white);
-        border-radius: 15px;
+        background: var(--gradient-card);
+        border-radius: 18px;
         padding: 20px;
         box-shadow: var(--card-shadow);
         width: 100%;
         max-width: 500px;
+        border: 1px solid rgba(255, 182, 193, 0.2);
       }
 
       .tryon-image {
         width: 100%;
         height: 300px;
-        background-color: var(--light-gray);
+        background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -555,7 +523,7 @@
 
       .tryon-image i {
         font-size: 60px;
-        color: var(--text-gray);
+        color: var(--primary-pink);
       }
 
       .tryon-controls {
@@ -584,6 +552,27 @@
         color: white;
       }
 
+      /* Mobile Navigation */
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--gradient-header);
+        box-shadow: 0 -2px 10px rgba(255, 105, 180, 0.1);
+        padding: 10px 0;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .mobile-nav-items {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+
       /* Responsive Design */
       @media (min-width: 1024px) {
         .desktop-nav {
@@ -599,34 +588,30 @@
         }
 
         .floating-cart {
-          display: none; /* Hide floating cart on desktop */
+          display: flex; /* Always show on desktop */
         }
 
-        /* --- DESKTOP FIXES: Force 4 columns and make cards bigger --- */
         .products-container {
-          /* Center content and limit maximum width for a balanced look */
           max-width: 1200px;
           margin: 0 auto;
           padding-top: 40px;
         }
 
         .products-grid {
-          /* Overrides auto-fill: exactly 4 columns for spacious, bigger cards */
           grid-template-columns: repeat(4, 1fr);
-          gap: 30px; /* Increased gap for better visual separation */
+          gap: 30px;
         }
 
         .product-image {
-          /* Increase height for a 'bigger' product view */
           height: 220px;
         }
 
         .product-name {
-          font-size: 16px; /* Slightly larger text */
+          font-size: 16px;
         }
 
         .product-price {
-          font-size: 18px; /* Slightly larger text */
+          font-size: 18px;
         }
       }
 
@@ -642,11 +627,23 @@
         .products-grid {
           grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         }
+
+        .floating-cart {
+          display: flex; /* Always show on mobile */
+        }
       }
 
       @media (max-width: 480px) {
         .header {
           padding: 12px 15px;
+        }
+
+        .brand-name {
+          font-size: 22px;
+        }
+
+        .brand-tagline {
+          font-size: 11px;
         }
 
         .user-greeting {
@@ -678,36 +675,44 @@
           width: 55px;
           height: 55px;
         }
+
+        .page-content {
+          padding: 20px;
+        }
       }
     </style>
   </head>
   <body>
     <!-- Header -->
     <header class="header">
+      <div class="brand-header">
+        <h1 class="brand-name">Beauty & Blessed</h1>
+        <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+      </div>
       <div class="user-info">
         <div class="user-greeting">Hi, Maria!</div>
+        <div class="user-avatar" onclick="openProfile()">M</div>
       </div>
-      <div class="user-avatar" onclick="openProfile()">M</div>
     </header>
 
     <!-- Desktop Navigation -->
     <nav class="desktop-nav">
-      <div class="nav-item active" data-page="home">
+      <a href="home.html" class="nav-item active" data-page="home">
         <i class="fas fa-home"></i>
         <span>Home</span>
-      </div>
-      <div class="nav-item" data-page="favorites">
+      </a>
+      <a class="nav-item" data-page="favorites">
         <i class="fas fa-heart"></i>
         <span>Favorites</span>
-      </div>
+      </a>
       <div class="nav-item" data-page="recommender">
         <i class="fas fa-star"></i>
         <span>Recommender</span>
       </div>
-      <div class="nav-item" data-page="cart">
+      <a href="cart.html" class="nav-item" data-page="cart">
         <i class="fas fa-shopping-cart"></i>
         <span>Cart</span>
-      </div>
+      </a>
       <div class="nav-item" data-page="tryon">
         <i class="fas fa-camera"></i>
         <span>Virtual Try-On</span>
@@ -800,31 +805,6 @@
         </div>
       </section>
 
-      <!-- Cart Page -->
-      <section id="cart" class="page-content">
-        <div class="products-container">
-          <h2 class="section-title">Your Cart</h2>
-          <div id="cart-items">
-            <!-- Cart items will be dynamically added here -->
-          </div>
-          <div class="cart-total">
-            <div class="total-row">
-              <span>Subtotal:</span>
-              <span>₱0.00</span>
-            </div>
-            <div class="total-row">
-              <span>Shipping:</span>
-              <span>₱50.00</span>
-            </div>
-            <div class="total-row" style="font-weight: 600; font-size: 18px">
-              <span>Total:</span>
-              <span>₱50.00</span>
-            </div>
-            <button class="checkout-btn">Proceed to Checkout</button>
-          </div>
-        </div>
-      </section>
-
       <!-- Virtual Try-On Page -->
       <section id="tryon" class="page-content">
         <div class="products-container">
@@ -852,8 +832,8 @@
       </section>
     </main>
 
-    <!-- Floating Cart - Only shown on Home and Favorites pages -->
-    <div class="floating-cart" onclick="switchPage('cart')">
+    <!-- Floating Cart - Always visible -->
+    <div class="floating-cart" onclick="window.location.href='cart.html'">
       <i class="fas fa-shopping-cart"></i>
       <div class="cart-count">0</div>
     </div>
@@ -861,22 +841,22 @@
     <!-- Mobile Navigation -->
     <nav class="mobile-nav">
       <div class="mobile-nav-items">
-        <div class="nav-item active" data-page="home">
+        <a href="home.html" class="nav-item active" data-page="home">
           <i class="fas fa-home"></i>
           <span>Home</span>
-        </div>
-        <div class="nav-item" data-page="favorites">
+        </a>
+        <a class="nav-item" data-page="favorites">
           <i class="fas fa-heart"></i>
           <span>Favorites</span>
-        </div>
+        </a>
         <div class="nav-item" data-page="recommender">
           <i class="fas fa-star"></i>
           <span>Recommender</span>
         </div>
-        <div class="nav-item" data-page="cart">
+        <a href="cart.html" class="nav-item" data-page="cart">
           <i class="fas fa-shopping-cart"></i>
           <span>Cart</span>
-        </div>
+        </a>
         <div class="nav-item" data-page="tryon">
           <i class="fas fa-camera"></i>
           <span>Try-On</span>
@@ -935,8 +915,7 @@
 
       function createProductCard(product) {
         const card = document.createElement("div");
-        card.className =
-          "product-card bg-white shadow-lg rounded-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300";
+        card.className = "product-card";
 
         let variantCount = product.variants ? product.variants.length : 0;
         let priceDisplay = `₱${parseFloat(product.price).toFixed(2)}`; // Default to parent price
@@ -985,7 +964,7 @@
           : "far text-gray-500 hover:text-red-500";
 
         card.innerHTML = `
-        <div class="product-image h-48 bg-gray-100 flex items-center justify-center">
+        <div class="product-image">
             <!-- Using placeholder image service for demonstration -->
             <img src="${
               product.image ||
@@ -994,14 +973,14 @@
               }`
             }" alt="${product.name}" class="object-cover h-full w-full">
         </div>
-        <div class="product-info p-4">
-            <div class="product-name font-semibold text-lg mb-1">${
+        <div class="product-info">
+            <div class="product-name">${
               product.name
             }</div>
-            <div class="product-price text-xl font-bold text-pink-600">${priceDisplay}</div>
+            <div class="product-price">${priceDisplay}</div>
             ${variantListHTML}
-            <div class="product-actions flex justify-between items-center mt-3 pt-3 border-t">
-                <button class="like-btn p-2 rounded-full transition-colors duration-200" onclick="toggleLike('${
+            <div class="product-actions">
+                <button class="like-btn" onclick="toggleLike('${
                   product.id
                 }')">
                     <i class="${likeIconClass} fa-heart text-lg"></i>
@@ -1011,7 +990,7 @@
                     ? `<button class="view-variants-btn bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md">
                             View Options
                         </button>`
-                    : `<button class="add-to-cart bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md" onclick="addToCart('${product.id}')">
+                    : `<button class="add-to-cart" onclick="addToCart('${product.id}')">
                             <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
                         </button>`
                 }
@@ -1107,12 +1086,10 @@
 
             cart.push({ ...productToAdd, quantity: 1 });
             updateCartCount();
-            renderCart();
             showNotification(`${productToAdd.name} added to cart!`);
           } else {
             // If already in cart, just increase quantity
             existingCartItem.quantity++;
-            renderCart();
             showNotification(
               `${productToAdd.name} quantity increased to ${existingCartItem.quantity}.`
             );
@@ -1128,121 +1105,6 @@
         const cartCount = document.querySelector(".cart-count");
         if (cartCount) {
           cartCount.textContent = cart.length;
-        }
-      }
-
-      // Render cart items
-      function renderCart() {
-        const cartItems = document.getElementById("cart-items");
-        if (!cartItems) return;
-
-        cartItems.innerHTML = "";
-
-        if (cart.length === 0) {
-          cartItems.innerHTML =
-            "<p class='text-center p-4 text-gray-500'>Your cart is empty</p>";
-          updateCartTotal();
-          return;
-        }
-
-        cart.forEach((item) => {
-          const cartItem = document.createElement("div");
-          cartItem.className =
-            "cart-item flex items-center p-3 border-b last:border-b-0";
-          cartItem.innerHTML = `
-            <div class="cart-item-image w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-pink-600 text-xl mr-3">
-                <i class="fas fa-palette"></i>
-            </div>
-            <div class="cart-item-details flex-grow">
-                <div class="cart-item-name font-medium">${item.name}</div>
-                <div class="cart-item-price text-pink-600 font-semibold">₱${item.price.toFixed(
-                  2
-                )}</div>
-            </div>
-            <div class="cart-item-actions flex items-center space-x-2">
-                <button class="quantity-btn bg-gray-200 text-gray-700 w-6 h-6 rounded-full text-sm hover:bg-gray-300 transition-colors" onclick="decreaseQuantity('${
-                  item.id
-                }')">-</button>
-                <span class="quantity font-medium w-4 text-center">${
-                  item.quantity
-                }</span>
-                <button class="quantity-btn bg-gray-200 text-gray-700 w-6 h-6 rounded-full text-sm hover:bg-gray-300 transition-colors" onclick="increaseQuantity('${
-                  item.id
-                }')">+</button>
-                <button class="remove-btn text-red-500 p-1 rounded-full hover:bg-red-100 transition-colors" onclick="removeFromCart('${
-                  item.id
-                }')">
-                    <i class="fas fa-trash text-sm"></i>
-                </button>
-            </div>
-        `;
-          cartItems.appendChild(cartItem);
-        });
-
-        updateCartTotal();
-      }
-
-      // Increase item quantity
-      function increaseQuantity(productId) {
-        const item = cart.find((i) => i.id === productId);
-        if (item) {
-          item.quantity++;
-          renderCart();
-        }
-      }
-
-      // Decrease item quantity
-      function decreaseQuantity(productId) {
-        const item = cart.find((i) => i.id === productId);
-        if (item && item.quantity > 1) {
-          item.quantity--;
-          renderCart();
-        }
-      }
-
-      // Remove item from cart
-      function removeFromCart(productId) {
-        const itemIndex = cart.findIndex((i) => i.id === productId);
-        if (itemIndex !== -1) {
-          // We don't need to update product.inCart as the product list holds
-          // the parent product info, not necessarily the variant we just removed.
-          // It's safer to only rely on the `cart` array for cart status.
-          cart.splice(itemIndex, 1);
-          updateCartCount();
-          renderCart();
-        }
-      }
-
-      // Update cart total
-      function updateCartTotal() {
-        const subtotal = cart.reduce(
-          (sum, item) => sum + item.price * item.quantity,
-          0
-        );
-        const total = subtotal + SHIPPING_FEE;
-
-        // Find and update subtotal
-        const subtotalElement = document.querySelector(
-          ".cart-total .total-row:nth-child(1) span:last-child"
-        );
-        if (subtotalElement) {
-          subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
-        }
-
-        // Find and update total
-        const totalElement = document.querySelector(
-          ".cart-total .total-row:nth-child(3) span:last-child"
-        );
-        if (totalElement) {
-          totalElement.textContent = `₱${total.toFixed(2)}`;
-        }
-
-        // Update shipping display (assuming ₱50.00 is hardcoded in HTML, if not, update here too)
-        const shippingElement = document.querySelector(
-          ".cart-total .total-row:nth-child(2) span:last-child"
-        );
-        if (shippingElement) {
-          shippingElement.textContent = `₱${SHIPPING_FEE.toFixed(2)}`;
         }
       }
 
@@ -1270,7 +1132,7 @@
 
       // Setup navigation
       function setupNavigation() {
-        const navItems = document.querySelectorAll(".nav-item");
+        const navItems = document.querySelectorAll(".nav-item:not([href])");
 
         navItems.forEach((item) => {
           item.addEventListener("click", function () {
@@ -1304,31 +1166,9 @@
             item.classList.add("active");
           });
 
-        // Update floating cart visibility
-        updateFloatingCartVisibility();
-
         // Render specific page content if needed
         if (page === "favorites") {
           renderFavorites();
-        } else if (page === "cart") {
-          renderCart();
-        }
-      }
-
-      // Update floating cart visibility based on current page
-      function updateFloatingCartVisibility() {
-        const floatingCart = document.querySelector(".floating-cart");
-        const activePage = document.querySelector(".page-content.active");
-
-        if (!floatingCart || !activePage) return;
-
-        const currentPage = activePage.id;
-
-        // Show floating cart only on home and favorites pages
-        if (currentPage === "home" || currentPage === "favorites") {
-          floatingCart.classList.add("show");
-        } else {
-          floatingCart.classList.remove("show");
         }
       }
 
@@ -1337,8 +1177,7 @@
         showNotification("Profile page would open here!");
       }
 
-      // Setup category filters (moved setupCategories function content to DOMContentLoaded,
-      // but kept logic for the fetch callback to generate the initial buttons.)
+      // Setup category filters
       function handleCategoryFilter(category) {
         document
           .querySelectorAll(".category-btn")
