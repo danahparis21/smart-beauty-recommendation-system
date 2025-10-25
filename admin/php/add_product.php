@@ -50,7 +50,6 @@ $productRating = 0;
 
 // --- IMAGE UPLOAD---
 $targetDir = '../uploads/product_images/';
-// 🛑 NEW: Call the helper function to get the paths
 $variantImagePath = handleFileUpload('variantImage', $targetDir);
 $previewImagePath = handleFileUpload('previewImage', $targetDir);
 

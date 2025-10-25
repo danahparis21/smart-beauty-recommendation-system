@@ -811,6 +811,141 @@
     object-fit: cover; 
     border-radius: 6px;
 }
+/* New style for the rectangular gallery container */
+.image-gallery-container {
+    width: 100%;
+    /* KEEP: Aspect ratio trick */
+    padding-top: 50%; 
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: 6px;
+    position: relative; /* KEEP: This is necessary for the placeholder text to position correctly inside */
+    overflow: hidden;
+    cursor: pointer;
+
+    
+    /* RE-APPLY grid setup within the correct block: */
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 5px;
+    padding: 5px; 
+    
+    /* Use flexbox to center placeholder content if no images are present */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Ensure the image-gallery-container placeholder text is centered */
+.image-gallery-container .placeholder-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #888;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+/* Style for individual small previews in the gallery */
+.image-gallery-container img {
+    /* Reset img style from .image-preview-box img */
+    position: static; 
+    width: 100%;
+    height: 100%; /* Fill the grid cell */
+    object-fit: cover;
+    border-radius: 4px;
+}
+/* Styling for the Plus icon */
+.placeholder-icon {
+    font-size: 2rem;
+    color: #ced4da;
+    transition: color 0.2s;
+}
+
+/* Hover effect on the box */
+.image-preview-box.additional-slot:hover {
+    border-color: var(--secondary-pink); /* Highlight border on hover */
+}
+.image-preview-box.additional-slot:hover .placeholder-icon {
+    color: var(--dark-pink); /* Highlight plus icon on hover */
+}
+
+/* Hide the actual file input elements */
+.hidden-file-input {
+    display: none;
+}
+
+/* Style for the small delete button (we'll add this with JS) */
+.delete-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 10;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+/* Styling for the nested table */
+.table-nested {
+    width: 100%;
+    border-left: 5px solid #007bff; /* Blue line to distinguish variants */
+    margin-left: 10px;
+    padding-left: 10px;
+}
+
+.table-nested th {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.table-nested td {
+    font-size: 0.9rem;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+/* Ensure the main rows don't have border under the collapse row */
+.parent-product-row {
+    border-bottom: 0 !important;
+}
+
+/* Style the rows for the variants */
+.variant-row {
+    background-color: #f8f9fa; /* Light background for variant rows */
+}
+td div::-webkit-scrollbar {
+        width: 4px;
+    }
+    td div::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+    .parent-product-row img {
+  transition: transform 0.2s ease;
+}
+.parent-product-row img:hover {
+  transform: scale(1.1);
+}
+.variant-row img {
+  transition: transform 0.2s ease;
+}
+.variant-row img:hover {
+  transform: scale(1.1);
+}
+.bg-soft-red {
+  background-color: #c2335c;
+  color: white;
+}
 
     </style>
   </head>
@@ -884,9 +1019,9 @@
             <!-- Product Form Section -->
             <div class="col-lg-5">
               <div class="product-management-container">
-                <h3 class="section-title">
+                <h3 class="section-title" id="productFormTitle">
                   <i class="fas fa-plus-circle"></i> Add New Product
-                </h3>
+              </h3>
               
                 <form id="productForm" enctype="multipart/form-data">
                   <div class="form-group">
@@ -930,7 +1065,7 @@
                  
                 <div class="row g-3 mb-4">
 
-                  <div class="col-6 col-lg-4" id="previewImageGroup">
+                  <div class="col-6 col-lg-6" id="previewImageGroup">
                       <label for="previewImage" class="form-label">Preview Image <span class="text-danger">*</span></label>
                       
                       <div class="image-preview-box" id="previewImagePreview">
@@ -941,7 +1076,7 @@
                       <small class="text-muted">Main listing image</small>
                   </div>
               
-                  <div class="col-6 col-lg-4">
+                  <div class="col-6 col-lg-6">
                       <label for="variantImage" class="form-label">Variant Image <span class="text-danger">*</span></label>
                       
                       <div class="image-preview-box" id="variantImagePreview">
@@ -951,20 +1086,45 @@
                       <input type="file" id="variantImage" class="form-control mt-2" name="variantImage" accept="image/*">
                       <small class="text-muted">Image for this specific shade</small>
                   </div>
-              
-                  <div class="col-12 col-lg-4" id="additionalImagesGroup">
-                      <label for="detailImages" class="form-label">Additional Images</label>
-                      
-                      <div class="image-preview-box gallery-preview" id="detailImagesPreview">
-                          <span class="placeholder-text">Gallery (Max 5)</span>
-                      </div>
-                      
-                      <input type="file" id="detailImages" class="form-control mt-2" name="detailImages" accept="image/*">
-                      <small class="text-muted">Extra photos</small>
-                  </div>
-              
               </div>
               
+              
+              <div class="row mb-4">
+                <div class="col-12" id="additionalImagesGroup">
+                    <label class="form-label">Additional Images (Max 4)</label>
+                    
+                    <div class="row g-3">
+                        <div class="col-3 additional-image-slot-wrapper">
+                            <div class="image-preview-box additional-slot" data-slot="1">
+                                <i class="fas fa-plus placeholder-icon"></i>
+                            </div>
+                            <input type="file" id="detailImage1" class="hidden-file-input" name="detailImages[]" accept="image/*">
+                        </div>
+            
+                        <div class="col-3 additional-image-slot-wrapper">
+                            <div class="image-preview-box additional-slot" data-slot="2">
+                                <i class="fas fa-plus placeholder-icon"></i>
+                            </div>
+                            <input type="file" id="detailImage2" class="hidden-file-input" name="detailImages[]" accept="image/*">
+                        </div>
+            
+                        <div class="col-3 additional-image-slot-wrapper">
+                            <div class="image-preview-box additional-slot" data-slot="3">
+                                <i class="fas fa-plus placeholder-icon"></i>
+                            </div>
+                            <input type="file" id="detailImage3" class="hidden-file-input" name="detailImages[]" accept="image/*">
+                        </div>
+            
+                        <div class="col-3 additional-image-slot-wrapper">
+                            <div class="image-preview-box additional-slot" data-slot="4">
+                                <i class="fas fa-plus placeholder-icon"></i>
+                            </div>
+                            <input type="file" id="detailImage4" class="hidden-file-input" name="detailImages[]" accept="image/*">
+                        </div>
+                    </div>
+                    <small class="text-muted mt-2">Click the plus icon to add an image.</small>
+                </div>
+            </div>
               <div class="form-group">
                   <label for="hexCode" class="form-label">Shade Hex Code <span class="text-danger">*</span></label>
                   <input type="color" id="hexCode" name="hexCode" class="form-control form-control-color" value="#ffffff">
@@ -1170,13 +1330,19 @@
                     </div>
                   </div>
               
-                  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                    <button type="reset" class="btn btn-outline-primary me-md-2">
-                      Clear Form
-                    </button>
-                    <button type="submit" class="btn btn-primary">Add Product</button>
-                  </div>
-                </form>
+                  <input type="hidden" id="hiddenProductID" name="productID" value="">
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+    <button type="reset" id="clearFormBtn" class="btn btn-outline-primary me-md-2">
+        Clear Form
+    </button>
+    <button type="submit" id="addProductBtn" class="btn btn-primary">Add Product</button>
+    
+    <button type="button" id="updateProductBtn" class="btn btn-success d-none">
+        <i class="fas fa-save"></i> Update Product
+    </button>
+</div>
+</form>
               </div>
               
             </div>
@@ -1195,8 +1361,8 @@
                         <th>Image</th>
                         <th>Name</th>
                         <th>Category</th>
-                        <th>Price</th>
-                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Available Shades</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -1277,7 +1443,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const previewImageInput = document.getElementById("previewImage"); 
     const variantImageInput = document.getElementById("variantImage");
-    const detailImagesInput = document.getElementById("detailImages");
     const previewImageGroup = document.getElementById("previewImageGroup");
     const additionalImagesGroup = document.getElementById("additionalImagesGroup");
 
@@ -1289,16 +1454,72 @@ document.getElementById('previewImage').addEventListener('change', function() {
         setupImagePreview(this, 'variantImagePreview');
     });
 
-    document.getElementById('detailImages').addEventListener('change', function() {
-        setupImagePreview(this, 'detailImagesPreview');
-    });
-
 
     document.getElementById('previewImagePreview').innerHTML = `<span class="placeholder-text">Line Preview</span>`;
     document.getElementById('variantImagePreview').innerHTML = `<span class="placeholder-text">Variant Shade</span>`;
-    document.getElementById('detailImagesPreview').innerHTML = `<span class="placeholder-text">Gallery (Max 5)</span>`;
+  
+    const additionalSlots = document.querySelectorAll('.image-preview-box.additional-slot');
+const imageInputs = [
+    document.getElementById('detailImage1'),
+    document.getElementById('detailImage2'),
+    document.getElementById('detailImage3'),
+    document.getElementById('detailImage4')
+];
 
+additionalSlots.forEach(box => {
+    const slotNumber = parseInt(box.dataset.slot);
+    const hiddenInput = document.getElementById(`detailImage${slotNumber}`);
 
+    // 1. Click Listener (Links the visual box click to the hidden file input)
+    box.addEventListener('click', function() {
+        // Trigger the hidden file input click
+        hiddenInput.click();
+    });
+});
+
+// 2. Change Listener (Handles file selection and visual update)
+imageInputs.forEach(input => {
+    input.addEventListener('change', function() {
+        const slotNumber = this.id.replace('detailImage', '');
+        const previewBox = document.querySelector(`.image-preview-box[data-slot="${slotNumber}"]`);
+        
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                // Remove existing content and delete button
+                previewBox.innerHTML = '';
+                
+                
+                // Add the image
+                previewBox.innerHTML = `<img src="${e.target.result}" alt="Additional Image ${slotNumber}">`;
+                
+                // Add a delete button (using a simple X icon, requires Font Awesome or equivalent)
+                const deleteBtn = document.createElement('span');
+                deleteBtn.className = 'delete-image-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; // 'X' icon
+                
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Stop click from propagating to the box (which would open file dialog)
+                    
+                    // Clear the file input value (crucial for form submission)
+                    this.value = ''; 
+                    
+                    // Reset the visual box
+                    previewBox.innerHTML = `<i class="fas fa-plus placeholder-icon"></i>`;
+                });
+
+                previewBox.appendChild(deleteBtn);
+            };
+            reader.readAsDataURL(file);
+
+        } else {
+             // Reset back to plus icon if file selection was cancelled
+            previewBox.innerHTML = `<i class="fas fa-plus placeholder-icon"></i>`;
+        }
+    });
+});
 const hexCodeInput = document.getElementById("hexCode");
     
   
@@ -1334,21 +1555,393 @@ addCategoryBtn.addEventListener('click', () => {
 });
 
 let categoryMode = 'select';
+let currentPage = 1;
+const productsPerPage = 10;
+
+async function fetchAndRenderProducts(page = 1) {
+    const tableBody = document.getElementById('productTableBody');
+    const productCountSpan = document.getElementById('productCount');
+    const paginationContainer = document.querySelector('.pagination');
+
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="6" class="text-center py-5">
+                <i class="fas fa-spinner fa-spin"></i> Loading Products...
+            </td>
+        </tr>`;
+
+    try {
+      const response = await fetch(`../php/fetch_table.php?page=${page}`);
+const data = await response.json();
+const productGroups = data.parents;
+const totalParents = data.total;
 
 
-function setupImagePreview(fileInput, previewElementId) {
+
+
+        if (!Array.isArray(productGroups) || productGroups.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h5>No Products Yet</h5>
+                            <p>Add your first product using the form on the left</p>
+                        </div>
+                    </td>
+                </tr>`;
+            productCountSpan.textContent = '0';
+            paginationContainer.innerHTML = '';
+            return;
+        }
+
+        // PAGINATION LOGIC
+        const totalPages = Math.ceil(totalParents / productsPerPage);
+        currentPage = Math.min(Math.max(page, 1), totalPages);
+        const start = (currentPage - 1) * productsPerPage;
+        const end = start + productsPerPage;
+        const productsToDisplay = productGroups.slice(start, end);
+
+        tableBody.innerHTML = '';
+        let totalVariants = 0;
+
+        productsToDisplay.forEach(parent => {
+            const variants = parent.Variants || [];
+            totalVariants += variants.length;
+
+            const parentImage = parent.Image
+                ? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width80px;height:80px;object-fit:cover;border-radius:6px;">`
+                : `<div class="text-muted small">No Image</div>`;
+
+            // Parent Row
+            const parentRow = document.createElement('tr');
+            parentRow.classList.add('parent-product-row');
+            parentRow.setAttribute('data-product-id', parent.ProductID);
+            parentRow.setAttribute('data-bs-toggle', 'collapse');
+            parentRow.setAttribute('data-bs-target', `#variants-${parent.ProductID}`);
+            parentRow.setAttribute('aria-expanded', 'false');
+            parentRow.style.cursor = 'pointer';
+
+            parentRow.innerHTML = `
+    <td style="vertical-align: middle;">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-chevron-right me-2 collapse-icon text-muted"></i>
+            ${parentImage}
+        </div>
+    </td>
+    <td style="vertical-align: middle;">
+        <span style="font-size: 14px; font-weight: 600; color: #333;">
+            ${parent.ParentName || parent.Name}
+        </span>
+    </td>
+    <td style="vertical-align: middle;">${parent.Category || 'N/A'}</td>
+    <td style="vertical-align: middle;">
+        <div style="
+            max-height: 50px;
+            overflow-y: auto;
+            white-space: normal;
+            font-size: 13px;
+            padding-right: 4px;
+        ">
+            ${parent.Description || 'N/A'}
+        </div>
+    </td>
+    <td style="vertical-align: middle;">
+       <span class="badge ${parent.Status.includes('No') ? 'bg-soft-red' : 'bg-success'}">
+    ${parent.Status}
+</span>
+
+    </td>
+    <td class="text-nowrap" style="vertical-align: middle;">
+        <div class="d-flex flex-column align-items-start gap-1">
+            <button class="btn btn-sm btn-primary edit-parent-btn" data-id="${parent.ProductID}"
+                style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-danger delete-parent-btn" data-id="${parent.ProductID}"
+                style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                <i class="fas fa-trash-alt"></i> Delete
+            </button>
+        </div>
+    </td>
+`;
+            tableBody.appendChild(parentRow);
+
+            // Variants
+const variantsTableRows = variants
+    .filter(v => v.ShadeOrVariant?.toUpperCase() !== 'PARENT_GROUP')
+    .map(variant => {
+        const variantImage = variant.Image
+            ? `<img src="${variant.Image}" alt="${variant.ShadeOrVariant || variant.Name}" 
+                    style="width:80px;height:80px;object-fit:cover;border-radius:4px;">`
+            : `<div class="text-muted small">No Image</div>`;
+
+        const attributesHtml = `
+            <span class="d-block text-muted small">Skin Type: <strong class="text-dark">${variant["Skin Type"] || 'N/A'}</strong></span>
+            <span class="d-block text-muted small">Skin Tone: <strong class="text-dark">${variant["Skin Tone"] || 'N/A'}</strong></span>
+            <span class="d-block text-muted small">Undertone: <strong class="text-dark">${variant["Undertone"] || 'N/A'}</strong></span>
+            <span class="d-block text-muted small">Skin Concern: <strong class="text-dark">${variant["Skin Concern"] || 'N/A'}</strong></span>
+            <span class="d-block text-muted small">Finish: <strong class="text-dark">${variant["Finish"] || 'N/A'}</strong></span>
+        `;
+
+        // ✅ Match badge color with actual DB status
+        const statusColor = {
+            'Available': 'success',
+            'Low Stock': 'warning',
+            'No Stock': 'danger',
+            'Expired': 'secondary'
+        }[variant.Status] || 'secondary';
+
+        return `
+            <tr class="variant-row" data-product-id="${variant.ProductID}">
+                <td>${variantImage} 
+                    <strong>${variant.ShadeOrVariant || variant.Name || 'Unnamed Variant'}</strong>
+                </td>
+                <td>${attributesHtml}</td>
+                <td>₱${parseFloat(variant.Price || 0).toFixed(2)}</td>
+                <td>${variant.Stocks || 0}</td>
+                <td>
+                    <span class="badge bg-${statusColor}">
+                        ${variant.Status || 'N/A'}
+                    </span>
+                </td>
+                <td class="text-nowrap">
+                    <div class="d-flex flex-column align-items-start gap-1">
+                        <button class="btn btn-sm btn-primary edit-variant-btn" data-id="${variant.ProductID}" style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-variant-btn" data-id="${variant.ProductID}" style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+
+
+            const variantsRow = document.createElement('tr');
+            variantsRow.classList.add('collapse-row');
+            variantsRow.innerHTML = `
+                <td colspan="6" class="p-0 border-0">
+                    <div class="collapse" id="variants-${parent.ProductID}">
+                        <table class="table table-sm table-nested mb-0">
+                            <thead>
+                                <tr class="table-light">
+                                    <th>Shade Name</th>
+                                    <th>Attributes</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                ${variantsTableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </td>`;
+            tableBody.appendChild(variantsRow);
+        });
+
+        productCountSpan.textContent = totalVariants;
+
+        // PAGINATION DISPLAY (limit to 3 visible page numbers)
+const maxVisiblePages = 3;
+let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+let endPage = startPage + maxVisiblePages - 1;
+
+if (endPage > totalPages) {
+  endPage = totalPages;
+  startPage = Math.max(1, endPage - maxVisiblePages + 1);
+}
+
+let paginationHTML = `
+  <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+    <button class="page-link" data-page="${currentPage - 1}">Previous</button>
+  </li>
+`;
+
+for (let i = startPage; i <= endPage; i++) {
+  paginationHTML += `
+    <li class="page-item ${i === currentPage ? 'active' : ''}">
+      <button class="page-link" data-page="${i}">${i}</button>
+    </li>
+  `;
+}
+
+paginationHTML += `
+  <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+    <button class="page-link" data-page="${currentPage + 1}">Next</button>
+  </li>
+`;
+
+paginationContainer.innerHTML = paginationHTML;
+
+// Pagination click events
+paginationContainer.querySelectorAll('.page-link').forEach(button => {
+  button.addEventListener('click', e => {
+    const page = parseInt(e.target.getAttribute('data-page'));
+    if (!isNaN(page) && page >= 1 && page <= totalPages) {
+      fetchAndRenderProducts(page);
+    }
+  });
+});
+
+
+        // AFTER (Listens only to collapse elements within the dynamic product table)
+
+// Locate the product table container (assuming the table is nearby or easy to select)
+const productTableBody = document.getElementById('productTableBody');
+
+if (productTableBody) {
+    productTableBody.querySelectorAll('.collapse').forEach(collapseEl => {
+        // The event listeners now only attach to variants collapse divs created in the table
+        collapseEl.addEventListener('show.bs.collapse', function () {
+            const parentRow = document.querySelector(`[data-bs-target="#${this.id}"]`);
+            // Add an extra check to ensure the collapse icon exists before trying to access its classList
+            if (parentRow) {
+                const icon = parentRow.querySelector('.collapse-icon');
+                if (icon) icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
+            }
+        });
+        
+        collapseEl.addEventListener('hide.bs.collapse', function () {
+            const parentRow = document.querySelector(`[data-bs-target="#${this.id}"]`);
+            // Add an extra check
+            if (parentRow) {
+                const icon = parentRow.querySelector('.collapse-icon');
+                if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
+            }
+        });
+    });
+}
+
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        tableBody.innerHTML = `
+            <tr><td colspan="6" class="text-center py-5 text-danger">
+                Failed to load products. Check console for details.
+            </td></tr>`;
+    }
+}
+
+fetchAndRenderProducts();
+
+document.addEventListener('click', async function (e) {
+  const parentBtn = e.target.closest('.delete-parent-btn');
+  const variantBtn = e.target.closest('.delete-variant-btn');
+
+  // If parent delete button clicked
+  if (parentBtn) {
+    e.stopPropagation();
+    const productId = parentBtn.getAttribute('data-id');
+    const confirmed = confirm("Are you sure you want to delete this product? This will also delete all its variants.");
+    if (confirmed) {
+      await deleteProduct(productId, true);
+    }
+    return;
+  }
+
+  // If variant delete button clicked
+  if (variantBtn) {
+    e.stopPropagation();
+    const variantId = variantBtn.getAttribute('data-id');
+    const confirmed = confirm("Are you sure you want to delete this variant? This action cannot be undone.");
+    if (confirmed) {
+      await deleteProduct(variantId, false);
+    }
+  }
+});
+
+async function deleteProduct(id, isParent) {
+  console.log("🧩 Deleting:", { id, isParent });
+
+  try {
+    const response = await fetch('../php/delete_product.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `id=${id}&isParent=${isParent ? 1 : 0}`
+    });
+
+    const text = await response.text();
+    console.log("🧾 Raw response:", text);
+
+    // Try to parse JSON only if it starts with { or [
+    if (text.trim().startsWith('{')) {
+      const result = JSON.parse(text);
+      if (result.success) {
+        alert(result.message);
+        location.reload();
+      } else {
+        alert("Failed: " + result.message);
+      }
+    } else {
+      console.error("⚠️ Invalid response (not JSON):", text);
+      alert("Server returned an unexpected response.");
+    }
+
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    alert("An error occurred while deleting the product.");
+  }
+}
+
+
+
+function setupImagePreview(fileInput, previewElementId, imagePath = null) {
     const previewContainer = document.getElementById(previewElementId);
     
-
+    // Clear previous content
     previewContainer.innerHTML = '';
     
+    // Handle container classes (as you had before)
+    if (previewElementId !== 'detailImagesPreview') {
+        previewContainer.classList.remove('image-gallery-container'); 
+    }
 
-    if (fileInput.files.length === 0) {
-        previewContainer.innerHTML = `<span class="placeholder-text">${previewContainer.getAttribute('data-placeholder') || 'Image Preview'}</span>`;
+    // --- NEW LOGIC: Display existing image path ---
+    if (imagePath && typeof imagePath === 'string') {
+        // Display the existing image from the path
+        previewContainer.innerHTML = `<img src="${imagePath}" alt="Existing Preview Image">`;
+        
+        // Add a delete button for the existing main image (optional, but good for UX)
+        const deleteBtn = document.createElement('span');
+        deleteBtn.className = 'delete-image-btn';
+        deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; 
+        
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Clear the preview and the hidden image path input (you'll need to create this hidden input)
+            previewContainer.innerHTML = `<i class="fas fa-plus placeholder-icon"></i>`;
+            // You will need a hidden input here to tell the update script to DELETE the main image
+            // document.getElementById('hiddenMainImagePath').value = 'DELETE';
+            // Also, reset the file input visually/programmatically
+            const fileInputId = previewElementId.replace('Preview', '');
+            document.getElementById(fileInputId).value = '';
+        });
+
+        previewContainer.appendChild(deleteBtn);
+
+        return; // Stop here if we successfully loaded an existing image
+    }
+
+    // --- EXISTING LOGIC: Handle file input ---
+    
+    // 1. Handle No Files Selected (and no imagePath passed)
+    // Check if fileInput is null OR if no files are selected
+    if (!fileInput || fileInput.files.length === 0) {
+        let placeholderText = 'Image Preview';
+        if (previewElementId === 'previewImagePreview') placeholderText = 'Line Preview';
+        else if (previewElementId === 'variantImagePreview') placeholderText = 'Variant Shade';
+        
+        previewContainer.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
         return;
     }
 
 
+    // 2. Handle Single File (Preview & Variant Image)
+    // Note: The input has NO 'multiple' attribute for the first two.
     if (!fileInput.multiple) {
         const file = fileInput.files[0];
         const reader = new FileReader();
@@ -1357,21 +1950,304 @@ function setupImagePreview(fileInput, previewElementId) {
         };
         reader.readAsDataURL(file);
     } 
-
+    
+    // 3. Handle Multiple Files (Additional Images - RECTANGULAR GALLERY)
     else {
-    previewContainer.classList.add('gallery-preview');
-    // Loop through all selected files
-    Array.from(fileInput.files).slice(0, 5).forEach(file => { 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.alt = "Gallery Image";
-            previewContainer.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-    });
+        // The container is already styled as a grid via .image-gallery-container in the HTML
+        
+        // Loop through all selected files (limiting to 4)
+        Array.from(fileInput.files).slice(0, 4).forEach(file => { 
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = "Gallery Image";
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
     }
+}
+
+// Function to switch form mode between 'Add' and 'Update'
+function setFormMode(mode, productID = null) {
+    const title = document.getElementById('productFormTitle');
+    const addBtn = document.getElementById('addProductBtn');
+    const updateBtn = document.getElementById('updateProductBtn');
+    const hiddenID = document.getElementById('hiddenProductID');
+
+    if (mode === 'update') {
+        title.innerHTML = '<i class="fas fa-edit"></i> Update Product Line';
+        addBtn.classList.add('d-none');
+        updateBtn.classList.remove('d-none');
+        hiddenID.value = productID;
+        // Also ensure 'New Product Line' radio button is selected
+        document.getElementById('typeNewProduct').checked = true;
+        handleProductTypeChange(); // To show/hide variant fields correctly
+
+    } else { // mode === 'add'
+        title.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product';
+        addBtn.classList.remove('d-none');
+        updateBtn.classList.add('d-none');
+        hiddenID.value = '';
+    }
+}
+// Function to populate the main form for Parent/Simple product
+function populateParentForm(data) {
+    // Basic Fields
+    document.getElementById('productName').value = data.Name || '';
+    document.getElementById('productDescription').value = data.Description || '';
+    document.getElementById('productIngredients').value = data.Ingredients || '';
+    
+    // FIX 1: Change data.Stock to data.Stocks
+    document.getElementById('productStock').value = data.Stocks || 0; 
+    
+    document.getElementById('productPrice').value = data.Price || 0.00;
+    
+    // FIX 2: Change data.ExpirationDate to use || '' for null handling (already looks correct)
+    document.getElementById('productExpiration').value = data.ExpirationDate || '';
+    
+    // Category Select (selects the option if it exists)
+    const categorySelect = document.getElementById('productCategorySelect');
+    
+    // FIX 3: Change data.CategoryID to data.Category
+    if (categorySelect.querySelector(`option[value="${data.Category}"]`)) { 
+        categorySelect.value = data.Category;
+    } else {
+        // Fallback to setting the text input if the select doesn't match the fetched category
+        // Assuming you have an input for manual category entry if it's not in the select list.
+        // If not, you might need another field to store the Category value if it's dynamic.
+        categorySelect.value = ''; 
+    }
+
+    // Image Fields
+    
+    // 1. Preview Image (Main Image)
+    // FIX 4: Call setupImagePreview with the third argument (imagePath)
+    // The setupImagePreview function currently only accepts two arguments (fileInput, previewElementId).
+    // We need to pass the image URL directly to display an existing image.
+    if (data.MainImage) {
+        // You MUST update setupImagePreview to handle a string path instead of a file input.
+        setupImagePreview(null, 'previewImagePreview', data.MainImage);
+    } else {
+        // Clear the main image preview if there is no image
+        setupImagePreview({files: []}, 'previewImagePreview');
+    }
+    
+    // 2. Additional Images
+    // This looks correct, assuming data.DetailImages is an array of paths from PHP.
+    resetAdditionalImages(data.DetailImages); 
+
+    // Attributes (No need for attributes for a Parent Product update based on your prompt)
+
+    setFormMode('update', data.ProductID);
+}
+
+function populateVariantForm(data) {
+    // 1. Set Form Mode & Title
+    // Assuming you have a form mode handler for variants (or reuse setFormMode)
+    setFormMode('update', data.ProductID);
+    // Force switch to Variant mode display
+    document.getElementById('typeNewVariant').checked = true;
+    handleProductTypeChange(); 
+    
+    // 2. Basic Fields
+    // Use the Name, Stocks, Price from the variant row
+    document.getElementById('productName').value = data.Name || ''; 
+    document.getElementById('productDescription').value = data.Description || '';
+    document.getElementById('productIngredients').value = data.Ingredients || '';
+    document.getElementById('productStock').value = data.Stocks || 0; 
+    document.getElementById('productPrice').value = data.Price || 0.00;
+    document.getElementById('productExpiration').value = data.ExpirationDate || '';
+    
+    // 3. Variant Fields
+    document.getElementById('hexCode').value = data.HexCode || '';
+    document.getElementById('productVariantName').value = data.ShadeOrVariant || '';
+
+    // 4. Attributes (Crucial for Variant)
+    // List of attribute checkboxes/inputs to check (match the names in your form)
+    const attributeFields = [
+        'SkinType', 'SkinTone', 'Undertone', 'Acne', 'Dryness', 
+        'DarkSpots', 'Matte', 'Dewy', 'LongLasting'
+    ];
+    
+    attributeFields.forEach(field => {
+        // Find the element by its ID (e.g., checkbox with ID 'Matte')
+        const element = document.getElementById(field);
+        if (element) {
+            // Check if the element should be checked/selected based on the fetched data
+            // Assuming boolean/numeric flags (1 or 0) from the DB
+            if (element.type === 'checkbox' || element.type === 'radio') {
+                // If value is 1 (true), check the box
+                element.checked = (data[field] == 1); 
+            } else if (element.tagName === 'SELECT') {
+                 // For select/dropdowns, set the value
+                 element.value = data[field] || '';
+            }
+        }
+    });
+
+    // 5. Image (Variant Image)
+    // Assuming you have an ID 'variantImagePreview' for the image box
+    if (data.VariantImage) {
+        setupImagePreview(null, 'variantImagePreview', data.VariantImage);
+    } else {
+        setupImagePreview(null, 'variantImagePreview'); 
+    }
+    
+    // Note: The Parent Product fields (MainImage, DetailImages, CategorySelect) 
+    // will remain as they were set, but the variant form should visually hide them.
+    // The handleProductTypeChange() function is responsible for hiding irrelevant Parent fields.
+}
+
+// Function to reset and display additional images
+function resetAdditionalImages(imagePaths = []) {
+    const additionalSlots = document.querySelectorAll('.image-preview-box.additional-slot');
+    const imageInputs = [
+        document.getElementById('detailImage1'),
+        document.getElementById('detailImage2'),
+        document.getElementById('detailImage3'),
+        document.getElementById('detailImage4')
+    ];
+
+    imageInputs.forEach(input => input.value = ''); // Clear file inputs first
+
+    additionalSlots.forEach((box, index) => {
+        const path = imagePaths[index];
+        box.innerHTML = '';
+        
+        if (path) {
+            // Display the image
+            box.innerHTML = `<img src="${path}" alt="Additional Image ${index + 1}">`;
+            
+            // Add delete button (no file input clear needed, as it's an existing image)
+            const deleteBtn = document.createElement('span');
+            deleteBtn.className = 'delete-image-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; 
+            
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                // Visually remove and mark for deletion on submission
+                box.innerHTML = `<i class="fas fa-plus placeholder-icon"></i>`;
+                // You will need a hidden mechanism to track deleted images (e.g., another hidden input)
+                console.log(`Image at index ${index} (path: ${path}) marked for deletion`); 
+            });
+
+            box.appendChild(deleteBtn);
+
+        } else {
+            // Reset to plus icon
+            box.innerHTML = `<i class="fas fa-plus placeholder-icon"></i>`;
+        }
+    });
+}
+
+// Event listener for the "Clear Form" button to switch back to "Add" mode
+document.getElementById('clearFormBtn').addEventListener('click', () => {
+    productForm.reset();
+    setFormMode('add');
+});
+
+// --- Event Delegation for Edit Buttons ---
+document.getElementById('productTableBody').addEventListener('click', async (e) => {
+    // 1. PARENT EDIT BUTTON
+    if (e.target.closest('.edit-parent-btn')) {
+        const btn = e.target.closest('.edit-parent-btn');
+        const productID = btn.getAttribute('data-id');
+        
+        if (!productID) {
+            console.error('No Product ID found for parent edit.');
+            return;
+        }
+
+        // Show a loading indicator
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+
+        try {
+    // CORRECTED: Use the same path as your other PHP files
+    const response = await fetch(`../php/fetch_product_details.php?id=${productID}`);
+    
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Check if the response contains an error
+    if (data.error) {
+        console.error(data.error);
+        alert('Error fetching product details: ' + data.error);
+        return;
+    }
+    
+    // Load the form with the fetched data
+    populateParentForm(data); 
+
+} catch (error) {
+    console.error('Network error during product fetch:', error);
+    alert('A network error occurred while fetching product details.');
+} finally {
+    // Restore button state
+    btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+    btn.disabled = false;
+}
+    }
+    
+    // 2. VARIANT EDIT BUTTON
+    if (e.target.closest('.edit-variant-btn')) {
+        const btn = e.target.closest('.edit-variant-btn');
+        const variantID = btn.getAttribute('data-id');
+        
+        if (!variantID) {
+            console.error('No Product ID found for variant edit.');
+            return;
+        }
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(`../php/fetch_variant_details.php?id=${variantID}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error fetching variant details: ' + data.error);
+                console.error(data.error);
+                return;
+            }
+            
+            // Load the form with the fetched variant data
+            populateVariantForm(data); 
+
+        } catch (error) {
+            console.error('Network error during variant fetch:', error);
+            alert('A network error occurred while fetching variant details.');
+        } finally {
+            // Restore button state
+            btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+            btn.disabled = false;
+        }
+    }
+});
+
+              // Add safety checks (?.classList) to all element access within this function.
+function handleProductTypeChange() {
+    const isVariantMode = document.getElementById('typeNewVariant').checked;
+
+    // Example of safe class manipulation:
+    document.getElementById('parentOnlyGroup')?.classList.toggle('d-none', isVariantMode);
+    document.getElementById('variantSpecificGroup')?.classList.toggle('d-none', !isVariantMode);
+
+    // ... and so on for all major groups.
+
+    // If the 'attributesSection' is supposed to be visible for variants, 
+    // ensure its parent container is visible too.
 }
 
     function loadCategories() {
