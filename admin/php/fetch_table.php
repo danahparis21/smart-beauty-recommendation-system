@@ -104,13 +104,20 @@ if ($result && $result->num_rows > 0) {
             $concerns[] = 'Dark Spots';
         $skin_concern_value = empty($concerns) ? 'N/A' : implode(', ', $concerns);
 
-        $finish_value = 'N/A';
-        if ($row['Matte'] == 1 && $row['Dewy'] != 1)
-            $finish_value = 'Matte';
-        else if ($row['Dewy'] == 1 && $row['Matte'] != 1)
-            $finish_value = 'Dewy';
-        else if ($row['Matte'] == 1 && $row['Dewy'] == 1)
-            $finish_value = 'Mixed/Hybrid';
+        // NEW Finish Logic (Complete)
+        $finish_attributes = [];
+
+        if ($row['Matte'] == 1) {
+            $finish_attributes[] = 'Matte';
+        }
+        if ($row['Dewy'] == 1) {
+            $finish_attributes[] = 'Dewy';
+        }
+        if ($row['LongLasting'] == 1) {
+            $finish_attributes[] = 'Long-lasting';
+        }
+
+        $finish_value = empty($finish_attributes) ? 'N/A' : implode(', ', $finish_attributes);
 
         $status = $row['Status'];
         if ((int) $row['Stocks'] <= 0) {

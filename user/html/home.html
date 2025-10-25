@@ -678,6 +678,143 @@
           width: 55px;
           height: 55px;
         }
+        /* Updated Product Card Styles */
+        .product-card {
+          background-color: var(--soft-white);
+          border-radius: 15px;
+          overflow: hidden;
+          box-shadow: var(--card-shadow);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          height: 100%; /* Uniform height */
+        }
+
+        .product-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 25px rgba(255, 105, 180, 0.15);
+        }
+
+        .product-image {
+          width: 100%;
+          height: 200px; /* Fixed height */
+          background-color: var(--light-gray);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .product-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover; /* Prevents overflow */
+          transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image img {
+          transform: scale(1.05);
+        }
+
+        .product-info {
+          padding: 15px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .product-name {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--dark-gray);
+          margin-bottom: 8px;
+          line-height: 1.4;
+          height: 42px; /* Fixed height for 2 lines */
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          font-family: "Montserrat", sans-serif;
+        }
+
+        .product-price {
+          font-size: 18px;
+          font-weight: 700;
+          color: var(--primary-pink);
+          margin-bottom: 12px;
+          font-family: "Montserrat", sans-serif;
+        }
+
+        /* Variant Color Circles */
+        .variant-colors {
+          display: flex;
+          gap: 6px;
+          margin-bottom: 12px;
+          flex-wrap: wrap;
+          min-height: 24px;
+        }
+
+        .color-circle {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 2px solid var(--medium-gray);
+          cursor: pointer;
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .color-circle:hover {
+          transform: scale(1.15);
+          border-color: var(--primary-pink);
+        }
+
+        .color-circle.active {
+          border-color: var(--dark-pink);
+          border-width: 3px;
+        }
+
+        .product-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: auto;
+          padding-top: 10px;
+          border-top: 1px solid var(--light-gray);
+        }
+
+        .add-to-cart-btn {
+          background: linear-gradient(
+            135deg,
+            var(--primary-pink),
+            var(--dark-pink)
+          );
+          color: white;
+          border: none;
+          border-radius: 25px;
+          padding: 8px 16px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-family: "Montserrat", sans-serif;
+        }
+
+        .add-to-cart-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .add-to-cart-btn i {
+          font-size: 14px;
+        }
+
+        @media (min-width: 1024px) {
+          .product-image {
+            height: 240px; /* Larger for desktop */
+          }
+        }
       }
     </style>
   </head>
@@ -935,14 +1072,15 @@
 
       function createProductCard(product) {
         const card = document.createElement("div");
-        card.className =
-          "product-card bg-white shadow-lg rounded-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300";
+        card.className = "product-card";
 
-        let variantCount = product.variants ? product.variants.length : 0;
+        // ----------------------------------------------------
+        // 1. PRICE RANGE CALCULATION LOGIC (FIXED)
+        // ----------------------------------------------------
         let priceDisplay = `₱${parseFloat(product.price).toFixed(2)}`; // Default to parent price
+        const variantCount = product.variants ? product.variants.length : 0;
 
-        // Logic to calculate price range from variants
-        if (product.variants && variantCount > 0) {
+        if (variantCount > 0) {
           const prices = product.variants
             .map((v) => parseFloat(v.price))
             .filter((p) => !isNaN(p) && p > 0);
@@ -961,85 +1099,117 @@
             }
           }
         }
+        // ----------------------------------------------------
 
-        // Build the variant list HTML
-        let variantListHTML = "";
-        if (product.variants && variantCount > 0) {
-          variantListHTML =
-            '<ul class="variants mt-2 text-sm text-gray-600 space-y-1 max-h-16 overflow-y-auto border-t pt-2">';
-          // Show the variant name, assuming the PHP script now provides it
-          product.variants.forEach((v) => {
-            variantListHTML += `<li class="flex justify-between">
-                <span>${v.variant || v.name}</span>
-                <span class="font-medium">₱${parseFloat(v.price).toFixed(
-                  2
-                )}</span>
-            </li>`;
-          });
-          variantListHTML += "</ul>";
-        }
+        // Get first variant or use product itself
+        const firstVariant =
+          product.variants && product.variants.length > 0
+            ? product.variants[0]
+            : null;
 
-        // Determine the icon state
-        const likeIconClass = product.liked
-          ? "fas text-red-500"
-          : "far text-gray-500 hover:text-red-500";
+        // Define the local fallback for broken images
+        const LOCAL_FALLBACK_IMAGE =
+          "/admin/uploads/product_images/no-image.png";
+
+        // Use the local fallback if no valid image is fetched
+        const defaultImage = firstVariant ? firstVariant.image : product.image;
+        const initialImageSrc = defaultImage || LOCAL_FALLBACK_IMAGE;
+
+        const previewImage = product.previewImage || initialImageSrc;
 
         card.innerHTML = `
-        <div class="product-image h-48 bg-gray-100 flex items-center justify-center">
-            <!-- Using placeholder image service for demonstration -->
-            <img src="${
-              product.image ||
-              `https://placehold.co/400x300/FEE2E2/B91C1C?text=${
-                product.name.split(" ")[0]
-              }`
-            }" alt="${product.name}" class="object-cover h-full w-full">
+        <div class="product-image">
+            <img 
+                src="${initialImageSrc}" 
+                data-default="${initialImageSrc}"
+                data-preview="${previewImage}"
+                alt="${product.name}"
+                onerror="this.onerror=null; this.src='${LOCAL_FALLBACK_IMAGE}';"
+            >
         </div>
-        <div class="product-info p-4">
-            <div class="product-name font-semibold text-lg mb-1">${
-              product.name
-            }</div>
-            <div class="product-price text-xl font-bold text-pink-600">${priceDisplay}</div>
-            ${variantListHTML}
-            <div class="product-actions flex justify-between items-center mt-3 pt-3 border-t">
-                <button class="like-btn p-2 rounded-full transition-colors duration-200" onclick="toggleLike('${
-                  product.id
-                }')">
-                    <i class="${likeIconClass} fa-heart text-lg"></i>
+        <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            
+            <div class="product-price">${priceDisplay}</div> 
+            
+            ${
+              product.variants && product.variants.length > 0
+                ? `
+                <div class="variant-colors">
+                ${product.variants
+                  .map(
+                    (variant, index) => `
+                        <div 
+                            class="color-circle ${index === 0 ? "active" : ""}" 
+                            style="background-color: ${
+                              variant.hexCode || "#CCCCCC"
+                            };"
+                            data-variant-id="${variant.id}"
+                            data-variant-image="${variant.image}"
+                            title="${variant.name}"
+                        ></div>
+                    `
+                  )
+                  .join("")}
+                </div>
+            `
+                : ""
+            }
+            
+            <div class="product-actions">
+                <button class="like-btn" onclick="toggleLike('${product.id}')">
+                    <i class="${product.liked ? "fas" : "far"} fa-heart"></i>
                 </button>
-                ${
-                  variantCount > 0
-                    ? `<button class="view-variants-btn bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md">
-                            View Options
-                        </button>`
-                    : `<button class="add-to-cart bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md" onclick="addToCart('${product.id}')">
-                            <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
-                        </button>`
-                }
+                <button class="add-to-cart-btn" onclick="addToCart('${
+                  firstVariant ? firstVariant.id : product.id
+                }')">
+                    <i class="fas fa-shopping-cart"></i>
+                    Add to Cart
+                </button>
             </div>
         </div>
     `;
 
-        // Add logic for 'View Options' button if it exists
-        if (variantCount > 0) {
-          const viewBtn = card.querySelector(".view-variants-btn");
-          viewBtn.addEventListener("click", () => {
-            // Placeholder: In a real app, this would open a product detail modal
-            showNotification(
-              `Viewing options for ${product.name} (Parent ID: ${product.id})`
-            );
+        // Add hover effect for preview image
+        const img = card.querySelector(".product-image img");
+        const productImageDiv = card.querySelector(".product-image");
 
-            // To add a variant to the cart, you'd prompt the user for the specific variant ID
-            // For now, let's just add the first one as a demo
-            if (product.variants.length > 0) {
-              const firstVariantId = product.variants[0].id;
-              addToCart(firstVariantId);
+        productImageDiv.addEventListener("mouseenter", () => {
+          const preview = img.dataset.preview;
+          // Check for existence and also if the image is already the preview to prevent unnecessary loading
+          if (preview && preview !== img.src) {
+            img.src = preview;
+          }
+        });
+
+        productImageDiv.addEventListener("mouseleave", () => {
+          const defaultImg = img.dataset.default;
+          if (defaultImg) {
+            img.src = defaultImg;
+          }
+        });
+
+        // Add variant color circle click handlers
+        const colorCircles = card.querySelectorAll(".color-circle");
+        colorCircles.forEach((circle) => {
+          circle.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            // Update active state
+            colorCircles.forEach((c) => c.classList.remove("active"));
+            circle.classList.add("active");
+
+            // Update image
+            const variantImage = circle.dataset.variantImage;
+            if (variantImage) {
+              img.dataset.default = variantImage;
+              img.src = variantImage;
             }
           });
-        }
+        });
 
         return card;
       }
-
       // Toggle like status
       function toggleLike(productId) {
         // We need to find the product either by its own ID or its parent ID
