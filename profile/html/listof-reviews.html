@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty & Blessed | My Reviews</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-pink: #ff69b4;
+            --light-pink: #ffb6c1;
+            --dark-pink: #ff1493;
+            --gold: #d4af37;
+            --light-gold: #f7e8c4;
+            --soft-white: #fefefe;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --text-gray: #888;
+            --dark-gray: #555;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --gradient-bg: linear-gradient(135deg, #ffffff 0%, #fff5f9 30%, #ffe6f2 70%, #ffd1dc 100%);
+            --gradient-header: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,252,0.95) 100%);
+            --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,252,0.95) 100%);
+        }
+
+        body {
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.8) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(255,182,193,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255,105,180,0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--gradient-header);
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.1);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+            font-size: 18px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .brand-header {
+            text-align: center;
+            flex-grow: 1;
+            padding: 0 20px;
+        }
+
+        .brand-name {
+            color: var(--primary-pink);
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            font-family: 'Cormorant Garamond', serif;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand-tagline {
+            color: var(--text-gray);
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* Page Content */
+        .page-content {
+            padding: 30px 25px;
+            min-height: 60vh;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 25px;
+            font-family: 'Cormorant Garamond', serif;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-pink), var(--light-pink));
+            border-radius: 3px;
+        }
+
+        /* Review Cards */
+        .review-card {
+            background: var(--gradient-card);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 182, 193, 0.2);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-pink), var(--light-pink));
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .review-info h3 {
+            color: var(--primary-pink);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .review-info p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .review-stars {
+            color: #ffc107;
+            font-size: 16px;
+        }
+
+        .review-content {
+            margin-bottom: 15px;
+        }
+
+        .review-text {
+            color: var(--dark-gray);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .review-media {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .media-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .review-product {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255, 182, 193, 0.1);
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .product-image i {
+            font-size: 24px;
+            color: var(--primary-pink);
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+            font-size: 16px;
+        }
+
+        .product-variant {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            color: var(--primary-pink);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .review-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .delete-btn {
+            background: rgba(255, 105, 180, 0.1);
+            color: var(--dark-pink);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 105, 180, 0.2);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-gray);
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: var(--light-pink);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--dark-gray);
+        }
+
+        .empty-state p {
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .review-date {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .brand-name {
+                font-size: 22px;
+            }
+            
+            .brand-tagline {
+                font-size: 11px;
+            }
+            
+            .back-button {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .page-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <button class="back-button" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="brand-header">
+            <h1 class="brand-name">Beauty & Blessed</h1>
+            <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+        </div>
+        <!-- Empty div to maintain layout balance -->
+        <div style="width: 44px;"></div>
+    </header>
+
+    <!-- Page Content -->
+    <main>
+        <section class="page-content">
+            <h2 class="section-title">My Reviews</h2>
+            <div id="reviewsList"></div>
+        </section>
+    </main>
+
+    <script>
+        // Sample data for user reviews
+        const userReviews = [
+            {
+                id: "R001",
+                product: {
+                    name: "Hydrating Face Serum",
+                    variant: "Size: 30ml",
+                    price: 1899.00,
+                    icon: "fas fa-flask"
+                },
+                rating: 5,
+                date: "Oct 20, 2023",
+                text: "Absolutely love this serum! It's lightweight, absorbs quickly, and has made my skin feel so hydrated and plump. I've noticed a significant improvement in my skin texture after just two weeks of use. Will definitely repurchase!",
+                media: [
+                    "https://via.placeholder.com/150?text=Photo+1",
+                    "https://via.placeholder.com/150?text=Photo+2"
+                ]
+            },
+            {
+                id: "R002",
+                product: {
+                    name: "Setting Spray",
+                    variant: "Size: 100ml",
+                    price: 799.00,
+                    icon: "fas fa-spray-can"
+                },
+                rating: 4,
+                date: "Nov 10, 2023",
+                text: "Good setting spray that keeps my makeup in place throughout the day. The mist is fine and doesn't feel heavy on the skin. My only complaint is that the nozzle sometimes gets clogged. Overall, a solid product for the price.",
+                media: []
+            },
+            {
+                id: "R003",
+                product: {
+                    name: "Luxury Lipstick Set",
+                    variant: "Shade: Ruby Red, Size: 3.5g",
+                    price: 1299.00,
+                    icon: "fas fa-palette"
+                },
+                rating: 5,
+                date: "Oct 25, 2023",
+                text: "The colors in this set are absolutely stunning! The formula is creamy and doesn't dry out my lips. The staying power is impressive - I only need to reapply after meals. The packaging is also beautiful and luxurious. Highly recommend!",
+                media: [
+                    "https://via.placeholder.com/150?text=Photo+1",
+                    "https://via.placeholder.com/150?text=Photo+2",
+                    "https://via.placeholder.com/150?text=Photo+3"
+                ]
+            }
+        ];
+
+        const reviewsList = document.getElementById('reviewsList');
+
+        // Function to go back to previous page
+        function goBack() {
+            window.history.back();
+        }
+
+        // Function to delete a review
+        function deleteReview(reviewId) {
+            if (confirm("Are you sure you want to delete this review?")) {
+                // In a real application, this would make an API call to delete the review
+                // For this demo, we'll just remove it from the UI
+                const reviewIndex = userReviews.findIndex(review => review.id === reviewId);
+                if (reviewIndex !== -1) {
+                    userReviews.splice(reviewIndex, 1);
+                    renderReviews();
+                }
+            }
+        }
+
+        // Render reviews
+        function renderReviews() {
+            reviewsList.innerHTML = '';
+            
+            if (userReviews.length === 0) {
+                reviewsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-comment-slash"></i>
+                        <h3>No Reviews Yet</h3>
+                        <p>You haven't written any reviews yet. Start reviewing products you've purchased!</p>
+                        <button class="btn btn-primary" onclick="goToOrders()">View My Orders</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            userReviews.forEach(review => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card';
+
+                // Review header
+                const reviewHeader = document.createElement('div');
+                reviewHeader.className = 'review-header';
+
+                const reviewInfo = document.createElement('div');
+                reviewInfo.className = 'review-info';
+
+                const reviewTitle = document.createElement('h3');
+                reviewTitle.textContent = review.product.name;
+
+                const reviewRating = document.createElement('div');
+                reviewRating.className = 'review-rating';
+                
+                const stars = document.createElement('div');
+                stars.className = 'review-stars';
+                
+                for (let i = 0; i < 5; i++) {
+                    const star = document.createElement('span');
+                    star.innerHTML = i < review.rating ? '★' : '☆';
+                    stars.appendChild(star);
+                }
+                
+                reviewRating.appendChild(stars);
+
+                reviewInfo.appendChild(reviewTitle);
+                reviewInfo.appendChild(reviewRating);
+
+                const reviewDate = document.createElement('div');
+                reviewDate.className = 'review-date';
+                reviewDate.textContent = `Reviewed on ${review.date}`;
+
+                reviewHeader.appendChild(reviewInfo);
+                reviewHeader.appendChild(reviewDate);
+
+                // Review content
+                const reviewContent = document.createElement('div');
+                reviewContent.className = 'review-content';
+
+                const reviewText = document.createElement('div');
+                reviewText.className = 'review-text';
+                reviewText.textContent = review.text;
+
+                reviewContent.appendChild(reviewText);
+
+                // Review media
+                if (review.media.length > 0) {
+                    const reviewMedia = document.createElement('div');
+                    reviewMedia.className = 'review-media';
+                    
+                    review.media.forEach(mediaUrl => {
+                        const mediaItem = document.createElement('div');
+                        mediaItem.className = 'media-item';
+                        
+                        const img = document.createElement('img');
+                        img.src = mediaUrl;
+                        img.alt = "Review photo";
+                        
+                        mediaItem.appendChild(img);
+                        reviewMedia.appendChild(mediaItem);
+                    });
+                    
+                    reviewContent.appendChild(reviewMedia);
+                }
+
+                // Product info
+                const reviewProduct = document.createElement('div');
+                reviewProduct.className = 'review-product';
+
+                const productImage = document.createElement('div');
+                productImage.className = 'product-image';
+                const productIcon = document.createElement('i');
+                productIcon.className = review.product.icon;
+                productImage.appendChild(productIcon);
+
+                const productDetails = document.createElement('div');
+                productDetails.className = 'product-details';
+
+                const productName = document.createElement('div');
+                productName.className = 'product-name';
+                productName.textContent = review.product.name;
+
+                const productVariant = document.createElement('div');
+                productVariant.className = 'product-variant';
+                productVariant.textContent = review.product.variant;
+
+                const productPrice = document.createElement('div');
+                productPrice.className = 'product-price';
+                productPrice.textContent = `₱${review.product.price.toFixed(2)}`;
+
+                productDetails.appendChild(productName);
+                productDetails.appendChild(productVariant);
+                productDetails.appendChild(productPrice);
+
+                reviewProduct.appendChild(productImage);
+                reviewProduct.appendChild(productDetails);
+
+                // Review actions - Only delete button remains
+                const reviewActions = document.createElement('div');
+                reviewActions.className = 'review-actions';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Review';
+                deleteBtn.addEventListener('click', () => deleteReview(review.id));
+
+                reviewActions.appendChild(deleteBtn);
+
+                // Assemble review card
+                reviewCard.appendChild(reviewHeader);
+                reviewCard.appendChild(reviewContent);
+                reviewCard.appendChild(reviewProduct);
+                reviewCard.appendChild(reviewActions);
+
+                reviewsList.appendChild(reviewCard);
+            });
+        }
+
+        // Function to navigate to orders page
+        function goToOrders() {
+            // In a real application, this would navigate to the orders page
+            alert("Navigating to orders page. In a real application, this would redirect to the orders page.");
+        }
+
+        // Initialize the page
+        renderReviews();
+    </script>
+</body>
+</html>
