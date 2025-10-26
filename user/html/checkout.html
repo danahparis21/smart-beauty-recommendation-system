@@ -614,6 +614,66 @@
             transform: translateY(-2px);
         }
 
+        /* Thank You Modal Styles */
+        .thank-you-modal .modal {
+            max-width: 380px;
+        }
+
+        .thank-you-modal .modal-body {
+            padding: 40px 30px;
+        }
+
+        .thank-you-icon {
+            font-size: 80px;
+            color: var(--primary-pink);
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .thank-you-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .thank-you-message {
+            color: var(--text-gray);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .order-confirmation {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-pink);
+        }
+
+        .order-confirmation p {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .order-confirmation p:last-child {
+            margin-bottom: 0;
+        }
+
         /* Responsive Design */
         @media (max-width: 480px) {
             .header {
@@ -651,13 +711,17 @@
             .modal {
                 max-width: 95%;
             }
+
+            .thank-you-modal .modal {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
-        <button class="back-button" onclick="goBack()">
+        <button class="back-button" id="backButton">
             <i class="fas fa-arrow-left"></i>
         </button>
         <div class="brand-header">
@@ -731,7 +795,59 @@
         </div>
     </div>
 
+    <!-- Thank You Modal -->
+    <div class="modal-overlay thank-you-modal" id="thankYouModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Order Confirmation</h3>
+                <button class="close-modal" id="closeThankYouModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="thank-you-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="thank-you-title">Thank You for Your Order!</h2>
+                <p class="thank-you-message">Your order has been successfully placed and is being processed. We appreciate your business!</p>
+                
+                <div class="order-confirmation">
+                    <p><strong>Order Reference:</strong> <span id="orderRefNumber">BB-2023-001</span></p>
+                    <p><strong>Total Amount:</strong> <span id="confirmationTotal">₱0.00</span></p>
+                    <p>Kindly show the QR Code to the store to claim your order.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="goHomeBtn">
+                    <i class="fas fa-home"></i> Back to Home
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Global functions accessible to the back button
+        function showThankYouModal() {
+            // Generate order reference
+            const orderRef = generateOrderReference();
+            document.getElementById('orderRefNumber').textContent = orderRef;
+            
+            // Update confirmation total with current order total
+            const total = document.getElementById('total').textContent;
+            document.getElementById('confirmationTotal').textContent = total;
+            
+            // Show the modal
+            document.getElementById('thankYouModal').classList.add('active');
+        }
+
+        function generateOrderReference() {
+            const timestamp = new Date().getTime();
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            return `BB-${timestamp}-${randomNum}`;
+        }
+
+        function goToHome() {
+            window.location.href = 'home.html';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Sample order data
             const orderItems = [
@@ -759,6 +875,7 @@
             ];
             
             // DOM Elements
+            const backButton = document.getElementById('backButton');
             const orderItemsEl = document.getElementById('orderItems');
             const totalEl = document.getElementById('total');
             const generateQrBtn = document.getElementById('generateQrBtn');
@@ -772,6 +889,13 @@
             const paymentAmount = document.getElementById('paymentAmount');
             const paymentReference = document.getElementById('paymentReference');
             
+            // Thank You Modal Elements
+            const thankYouModal = document.getElementById('thankYouModal');
+            const closeThankYouModal = document.getElementById('closeThankYouModal');
+            const goHomeBtn = document.getElementById('goHomeBtn');
+            const orderRefNumber = document.getElementById('orderRefNumber');
+            const confirmationTotal = document.getElementById('confirmationTotal');
+            
             // Format price with commas for thousands
             function formatPrice(price) {
                 return '₱' + price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -781,6 +905,9 @@
             function initPage() {
                 renderOrderItems();
                 calculateTotals();
+                
+                // Add event listener to back button
+                backButton.addEventListener('click', showThankYouModal);
             }
             
             // Render order items
@@ -817,6 +944,9 @@
                 
                 // Update payment amount in modal
                 paymentAmount.textContent = formatPrice(total);
+                
+                // Update confirmation total
+                confirmationTotal.textContent = formatPrice(total);
             }
             
             // Generate QR Code
@@ -912,9 +1042,9 @@
                 qrModal.classList.remove('active');
             }
             
-            // Go back to previous page
-            function goBack() {
-                window.history.back();
+            // Close Thank You modal
+            function closeThankYouModalFunc() {
+                thankYouModal.classList.remove('active');
             }
             
             // Event Listeners
@@ -924,10 +1054,20 @@
             closeModal.addEventListener('click', closeQRModal);
             doneBtn.addEventListener('click', closeQRModal);
             
-            // Close modal when clicking outside
+            // Thank You Modal Event Listeners
+            closeThankYouModal.addEventListener('click', closeThankYouModalFunc);
+            goHomeBtn.addEventListener('click', goToHome);
+            
+            // Close modals when clicking outside
             qrModal.addEventListener('click', function(e) {
                 if (e.target === qrModal) {
                     closeQRModal();
+                }
+            });
+            
+            thankYouModal.addEventListener('click', function(e) {
+                if (e.target === thankYouModal) {
+                    closeThankYouModalFunc();
                 }
             });
             
