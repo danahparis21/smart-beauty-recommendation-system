@@ -785,7 +785,7 @@
                     <button class="like-button">
                         <i class="far fa-heart"></i> <span>Like</span>
                     </button>
-                    <button class="order-button">
+                    <button class="order-button" onclick="orderNow()">
                         <i class="fas fa-bolt"></i> <span>Order Now</span>
                     </button>
                     <button class="cart-button">
@@ -886,7 +886,7 @@
     </div>
 
     <!-- Floating Cart -->
-    <div class="floating-cart">
+    <div class="floating-cart" onclick="window.location.href='cart.html'">
         <i class="fas fa-shopping-cart"></i>
         <div class="cart-count">3</div>
     </div>
@@ -1009,12 +1009,6 @@
                 addToCart();
             });
             
-            // Set up order button
-            const orderButton = document.querySelector('.order-button');
-            orderButton.addEventListener('click', function() {
-                orderNow();
-            });
-            
             // Set up navigation buttons
             const prevButton = document.querySelector('.prev-button');
             const nextButton = document.querySelector('.next-button');
@@ -1131,10 +1125,18 @@
             alert(`${product.name} added to cart!`);
         }
 
-        // Order now functionality
+        // Order now functionality - redirects to checkout.html
         function orderNow() {
-            alert(`Redirecting to checkout for ${product.name}`);
-            // In a real app, this would redirect to the checkout page
+            // Add product to cart first
+            product.inCart = true;
+            
+            // Update cart count
+            const cartCount = document.querySelector('.cart-count');
+            let currentCount = parseInt(cartCount.textContent);
+            cartCount.textContent = currentCount + 1;
+            
+            // Redirect to checkout page
+            window.location.href = 'checkout.html';
         }
 
         // Navigate to previous product
@@ -1149,9 +1151,9 @@
             // In a real app, this would load the next product details
         }
 
-        // Go back to previous page
+        // Go back to home page
         function goBack() {
-            window.history.back();
+            window.location.href = 'home.html';
         }
     </script>
 </body>
