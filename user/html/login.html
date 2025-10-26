@@ -1196,6 +1196,33 @@
           passive: true,
         });
       });
+
+      /// Google Login Button Handler
+// Google Login Button Handler
+const googleLoginBtn = document.querySelector('.social-btn.google');
+googleLoginBtn.addEventListener('click', function() {
+    const clientId = '1002579907182-03h0l3s7dend47reghc4j805herork3l.apps.googleusercontent.com';
+    const redirectUri = 'http://localhost:8000/user/php/google-login-callback.php';
+    const scope = 'email profile';
+
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `client_id=${encodeURIComponent(clientId)}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&response_type=code` +
+        `&scope=${encodeURIComponent(scope)}` +
+        `&access_type=online` +
+        `&prompt=select_account`;
+
+    console.log('Redirecting to:', googleAuthUrl); // Debug log
+    window.location.href = googleAuthUrl;
+});
+
+// Forgot Password Handler
+const forgotPasswordLink = document.querySelector('.forgot-password');
+forgotPasswordLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '/user/html/forgot-password.html';
+});
     </script>
     <div id="toast" class="toast"></div>
   </body>
