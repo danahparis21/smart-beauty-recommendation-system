@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty & Blessed | My Preferences</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-pink: #ff69b4;
+            --light-pink: #ffb6c1;
+            --dark-pink: #ff1493;
+            --gold: #d4af37;
+            --light-gold: #f7e8c4;
+            --soft-white: #fefefe;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --text-gray: #888;
+            --dark-gray: #555;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --gradient-bg: linear-gradient(135deg, #ffffff 0%, #fff5f9 30%, #ffe6f2 70%, #ffd1dc 100%);
+            --gradient-header: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,252,0.95) 100%);
+            --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,249,252,0.95) 100%);
+        }
+
+        body {
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.8) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(255,182,193,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255,105,180,0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--gradient-header);
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.1);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+            font-size: 18px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .brand-header {
+            text-align: center;
+            flex-grow: 1;
+            padding: 0 20px;
+        }
+
+        .brand-name {
+            color: var(--primary-pink);
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            font-family: 'Cormorant Garamond', serif;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand-tagline {
+            color: var(--text-gray);
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* Page Content */
+        .page-content {
+            padding: 30px 25px;
+            min-height: 60vh;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 25px;
+            font-family: 'Cormorant Garamond', serif;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-pink), var(--light-pink));
+            border-radius: 3px;
+        }
+
+        /* Preference Cards */
+        .preference-card {
+            background: var(--gradient-card);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 182, 193, 0.2);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .preference-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .preference-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-pink), var(--light-pink));
+        }
+
+        .preference-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preference-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .preference-icon i {
+            font-size: 22px;
+            color: var(--primary-pink);
+        }
+
+        .preference-title {
+            color: var(--primary-pink);
+            font-size: 20px;
+            font-weight: 600;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .preference-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .preference-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255, 182, 193, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .preference-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .preference-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .preference-value {
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .color-swatch {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            vertical-align: middle;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(255, 182, 193, 0.15);
+            color: var(--primary-pink);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .edit-preferences-btn {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 30px auto 0;
+        }
+
+        .edit-preferences-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s;
+            border: 1px solid rgba(255, 182, 193, 0.2);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #fff9fc 0%, #ffffff 100%);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: var(--dark-gray);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-pink);
+            margin-bottom: 15px;
+            font-family: 'Cormorant Garamond', serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-pink);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .checkbox-item label {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover {
+            border-color: var(--primary-pink);
+        }
+
+        .color-option.selected {
+            border-color: var(--primary-pink);
+            background: rgba(255, 182, 193, 0.1);
+        }
+
+        .modal-footer {
+            padding: 25px 30px;
+            border-top: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            background: #f9f9f9;
+            border-radius: 0 0 25px 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            border: 1px solid var(--medium-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--medium-gray);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .preference-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .preference-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .modal {
+                max-width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .brand-name {
+                font-size: 22px;
+            }
+            
+            .brand-tagline {
+                font-size: 11px;
+            }
+            
+            .back-button {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .page-content {
+                padding: 20px;
+            }
+            
+            .preference-card {
+                padding: 20px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <button class="back-button" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="brand-header">
+            <h1 class="brand-name">Beauty & Blessed</h1>
+            <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+        </div>
+        <!-- Empty div to maintain layout balance -->
+        <div style="width: 44px;"></div>
+    </header>
+
+    <!-- Page Content -->
+    <main>
+        <section class="page-content">
+            <h2 class="section-title">My Beauty Preferences</h2>
+            <div id="preferencesList"></div>
+            <button class="edit-preferences-btn" onclick="openEditModal()">
+                <i class="fas fa-edit"></i> Edit Preferences
+            </button>
+        </section>
+    </main>
+
+    <!-- Edit Preferences Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Beauty Preferences</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="preferencesForm">
+                    <!-- Skin Profile Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">
+                            <i class="fas fa-user"></i> Skin Profile
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Skin Type</label>
+                            <select class="form-select" id="skinType">
+                                <option value="Normal">Normal</option>
+                                <option value="Dry">Dry</option>
+                                <option value="Oily">Oily</option>
+                                <option value="Combination">Combination</option>
+                                <option value="Sensitive">Sensitive</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Skin Tone</label>
+                            <select class="form-select" id="skinTone">
+                                <option value="Fair">Fair</option>
+                                <option value="Light">Light</option>
+                                <option value="Light Medium">Light Medium</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Tan">Tan</option>
+                                <option value="Deep">Deep</option>
+                                <option value="Rich">Rich</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Undertone</label>
+                            <select class="form-select" id="skinUndertone">
+                                <option value="Cool">Cool</option>
+                                <option value="Warm">Warm</option>
+                                <option value="Neutral">Neutral</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Sensitivity</label>
+                            <select class="form-select" id="skinSensitivity">
+                                <option value="Not Sensitive">Not Sensitive</option>
+                                <option value="Slightly Sensitive">Slightly Sensitive</option>
+                                <option value="Sensitive">Sensitive</option>
+                                <option value="Very Sensitive">Very Sensitive</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Skin Concerns</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="concernAcne" value="Acne">
+                                    <label for="concernAcne">Acne</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="concernPores" value="Large Pores">
+                                    <label for="concernPores">Large Pores</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="concernTexture" value="Uneven Texture">
+                                    <label for="concernTexture">Uneven Texture</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="concernDarkSpots" value="Dark Spots">
+                                    <label for="concernDarkSpots">Dark Spots</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="concernWrinkles" value="Fine Lines & Wrinkles">
+                                    <label for="concernWrinkles">Fine Lines & Wrinkles</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="concernRedness" value="Redness">
+                                    <label for="concernRedness">Redness</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Makeup Preferences Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">
+                            <i class="fas fa-palette"></i> Makeup Preferences
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Foundation Shade</label>
+                            <input type="text" class="form-input" id="foundationShade" placeholder="e.g., Natural Beige">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Coverage</label>
+                            <select class="form-select" id="coverage">
+                                <option value="Light">Light</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Full">Full</option>
+                                <option value="Buildable">Buildable</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Finish</label>
+                            <select class="form-select" id="finish">
+                                <option value="Natural">Natural</option>
+                                <option value="Matte">Matte</option>
+                                <option value="Dewy">Dewy</option>
+                                <option value="Satin">Satin</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Preferred Brands</label>
+                            <input type="text" class="form-input" id="preferredBrands" placeholder="e.g., NARS, Fenty Beauty, Rare Beauty">
+                            <small style="color: var(--text-gray); font-size: 12px;">Separate brands with commas</small>
+                        </div>
+                    </div>
+
+                    <!-- Color Preferences Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">
+                            <i class="fas fa-fill-drip"></i> Color Preferences
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Lipstick Colors</label>
+                            <div class="color-options" id="lipstickColors">
+                                <div class="color-option" data-color="Nude Pink">
+                                    <span class="color-swatch" style="background-color: #f8c6c6"></span>
+                                    Nude Pink
+                                </div>
+                                <div class="color-option" data-color="Berry">
+                                    <span class="color-swatch" style="background-color: #c44569"></span>
+                                    Berry
+                                </div>
+                                <div class="color-option" data-color="Coral">
+                                    <span class="color-swatch" style="background-color: #ff7f50"></span>
+                                    Coral
+                                </div>
+                                <div class="color-option" data-color="Red">
+                                    <span class="color-swatch" style="background-color: #dc143c"></span>
+                                    Red
+                                </div>
+                                <div class="color-option" data-color="Mauve">
+                                    <span class="color-swatch" style="background-color: #916c80"></span>
+                                    Mauve
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Eyeshadow Colors</label>
+                            <div class="color-options" id="eyeshadowColors">
+                                <div class="color-option" data-color="Neutral Browns">
+                                    <span class="color-swatch" style="background-color: #8b7355"></span>
+                                    Neutral Browns
+                                </div>
+                                <div class="color-option" data-color="Rose Gold">
+                                    <span class="color-swatch" style="background-color: #e8b4a9"></span>
+                                    Rose Gold
+                                </div>
+                                <div class="color-option" data-color="Mauve">
+                                    <span class="color-swatch" style="background-color: #916c80"></span>
+                                    Mauve
+                                </div>
+                                <div class="color-option" data-color="Neutral">
+                                    <span class="color-swatch" style="background-color: #d7ccc8"></span>
+                                    Neutral
+                                </div>
+                                <div class="color-option" data-color="Warm">
+                                    <span class="color-swatch" style="background-color: #ffb74d"></span>
+                                    Warm
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Blush Color</label>
+                            <div class="color-options" id="blushColor">
+                                <div class="color-option" data-color="Peach">
+                                    <span class="color-swatch" style="background-color: #ffdab9"></span>
+                                    Peach
+                                </div>
+                                <div class="color-option" data-color="Pink">
+                                    <span class="color-swatch" style="background-color: #f8c6c6"></span>
+                                    Pink
+                                </div>
+                                <div class="color-option" data-color="Rose">
+                                    <span class="color-swatch" style="background-color: #e8b4a9"></span>
+                                    Rose
+                                </div>
+                                <div class="color-option" data-color="Berry">
+                                    <span class="color-swatch" style="background-color: #c44569"></span>
+                                    Berry
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Highlighter</label>
+                            <div class="color-options" id="highlighterColor">
+                                <div class="color-option" data-color="Champagne">
+                                    <span class="color-swatch" style="background-color: #f7e7ce"></span>
+                                    Champagne
+                                </div>
+                                <div class="color-option" data-color="Pearl">
+                                    <span class="color-swatch" style="background-color: #f0f0f0"></span>
+                                    Pearl
+                                </div>
+                                <div class="color-option" data-color="Rose Gold">
+                                    <span class="color-swatch" style="background-color: #e8b4a9"></span>
+                                    Rose Gold
+                                </div>
+                                <div class="color-option" data-color="Golden">
+                                    <span class="color-swatch" style="background-color: #ffd700"></span>
+                                    Golden
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Allergies & Sensitivities Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">
+                            <i class="fas fa-exclamation-triangle"></i> Allergies & Sensitivities
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Ingredients to Avoid</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allergyFragrance" value="Fragrance">
+                                    <label for="allergyFragrance">Fragrance</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allergyOils" value="Essential Oils">
+                                    <label for="allergyOils">Essential Oils</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allergyLanolin" value="Lanolin">
+                                    <label for="allergyLanolin">Lanolin</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allergySulfates" value="Sulfates">
+                                    <label for="allergySulfates">Sulfates</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allergyParabens" value="Parabens">
+                                    <label for="allergyParabens">Parabens</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allergyAlcohol" value="Alcohol">
+                                    <label for="allergyAlcohol">Alcohol</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Reactions</label>
+                            <input type="text" class="form-input" id="reactions" placeholder="e.g., Contact Dermatitis">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                <button class="btn btn-primary" id="savePreferencesBtn">Save Preferences</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for customer preferences
+        let customerPreferences = {
+            skin: {
+                type: "Combination",
+                tone: "Light Medium",
+                concerns: ["Acne", "Large Pores", "Uneven Texture"],
+                undertone: "Neutral",
+                sensitivity: "Sensitive"
+            },
+            makeup: {
+                foundationShade: "Natural Beige",
+                coverage: "Medium",
+                finish: "Natural",
+                preferredBrands: ["NARS", "Fenty Beauty", "Rare Beauty"]
+            },
+            color: {
+                lipstick: ["Nude Pink", "Berry", "Coral"],
+                eyeshadow: ["Neutral Browns", "Rose Gold", "Mauve"],
+                blush: "Peach",
+                highlighter: "Champagne"
+            },
+            allergies: {
+                ingredients: ["Fragrance", "Essential Oils", "Lanolin"],
+                reactions: "Contact Dermatitis"
+            }
+        };
+
+        const preferencesList = document.getElementById('preferencesList');
+        const editModal = document.getElementById('editModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const savePreferencesBtn = document.getElementById('savePreferencesBtn');
+        const preferencesForm = document.getElementById('preferencesForm');
+
+        // Function to go back to previous page
+        function goBack() {
+            window.history.back();
+        }
+
+        // Function to open edit modal
+        function openEditModal() {
+            // Populate form with current preferences
+            populateForm();
+            editModal.classList.add('active');
+        }
+
+        // Function to close edit modal
+        function closeEditModal() {
+            editModal.classList.remove('active');
+        }
+
+        // Function to populate form with current preferences
+        function populateForm() {
+            // Skin Profile
+            document.getElementById('skinType').value = customerPreferences.skin.type;
+            document.getElementById('skinTone').value = customerPreferences.skin.tone;
+            document.getElementById('skinUndertone').value = customerPreferences.skin.undertone;
+            document.getElementById('skinSensitivity').value = customerPreferences.skin.sensitivity;
+
+            // Skin Concerns checkboxes
+            const concernCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
+            concernCheckboxes.forEach(checkbox => {
+                checkbox.checked = customerPreferences.skin.concerns.includes(checkbox.value);
+            });
+
+            // Makeup Preferences
+            document.getElementById('foundationShade').value = customerPreferences.makeup.foundationShade;
+            document.getElementById('coverage').value = customerPreferences.makeup.coverage;
+            document.getElementById('finish').value = customerPreferences.makeup.finish;
+            document.getElementById('preferredBrands').value = customerPreferences.makeup.preferredBrands.join(', ');
+
+            // Color Preferences
+            selectColorOptions('lipstickColors', customerPreferences.color.lipstick);
+            selectColorOptions('eyeshadowColors', customerPreferences.color.eyeshadow);
+            selectSingleColorOption('blushColor', customerPreferences.color.blush);
+            selectSingleColorOption('highlighterColor', customerPreferences.color.highlighter);
+
+            // Allergies
+            const allergyCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
+            allergyCheckboxes.forEach(checkbox => {
+                if (checkbox.id.startsWith('allergy')) {
+                    checkbox.checked = customerPreferences.allergies.ingredients.includes(checkbox.value);
+                }
+            });
+
+            document.getElementById('reactions').value = customerPreferences.allergies.reactions;
+        }
+
+        // Function to select multiple color options
+        function selectColorOptions(containerId, selectedColors) {
+            const container = document.getElementById(containerId);
+            const options = container.querySelectorAll('.color-option');
+            options.forEach(option => {
+                if (selectedColors.includes(option.dataset.color)) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        // Function to select single color option
+        function selectSingleColorOption(containerId, selectedColor) {
+            const container = document.getElementById(containerId);
+            const options = container.querySelectorAll('.color-option');
+            options.forEach(option => {
+                if (option.dataset.color === selectedColor) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        // Function to save preferences
+        function savePreferences() {
+            // Get form values
+            const formData = {
+                skin: {
+                    type: document.getElementById('skinType').value,
+                    tone: document.getElementById('skinTone').value,
+                    undertone: document.getElementById('skinUndertone').value,
+                    sensitivity: document.getElementById('skinSensitivity').value,
+                    concerns: Array.from(document.querySelectorAll('input[type="checkbox"][value]:checked'))
+                                .map(checkbox => checkbox.value)
+                },
+                makeup: {
+                    foundationShade: document.getElementById('foundationShade').value,
+                    coverage: document.getElementById('coverage').value,
+                    finish: document.getElementById('finish').value,
+                    preferredBrands: document.getElementById('preferredBrands').value
+                                .split(',')
+                                .map(brand => brand.trim())
+                                .filter(brand => brand !== '')
+                },
+                color: {
+                    lipstick: getSelectedColors('lipstickColors'),
+                    eyeshadow: getSelectedColors('eyeshadowColors'),
+                    blush: getSingleSelectedColor('blushColor'),
+                    highlighter: getSingleSelectedColor('highlighterColor')
+                },
+                allergies: {
+                    ingredients: Array.from(document.querySelectorAll('input[type="checkbox"][value]:checked'))
+                                  .filter(checkbox => checkbox.id.startsWith('allergy'))
+                                  .map(checkbox => checkbox.value),
+                    reactions: document.getElementById('reactions').value
+                }
+            };
+
+            // Update customer preferences
+            customerPreferences = formData;
+
+            // Close modal
+            closeEditModal();
+
+            // Refresh the display
+            renderPreferences();
+
+            // Show success message
+            alert('Your preferences have been updated successfully!');
+        }
+
+        // Function to get multiple selected colors
+        function getSelectedColors(containerId) {
+            const container = document.getElementById(containerId);
+            const selectedOptions = container.querySelectorAll('.color-option.selected');
+            return Array.from(selectedOptions).map(option => option.dataset.color);
+        }
+
+        // Function to get single selected color
+        function getSingleSelectedColor(containerId) {
+            const container = document.getElementById(containerId);
+            const selectedOption = container.querySelector('.color-option.selected');
+            return selectedOption ? selectedOption.dataset.color : '';
+        }
+
+        // Function to render color swatches
+        function renderColorSwatch(color) {
+            const colorMap = {
+                "Nude Pink": "#f8c6c6",
+                "Berry": "#c44569",
+                "Coral": "#ff7f50",
+                "Red": "#dc143c",
+                "Mauve": "#916c80",
+                "Neutral Browns": "#8b7355",
+                "Rose Gold": "#e8b4a9",
+                "Neutral": "#d7ccc8",
+                "Warm": "#ffb74d",
+                "Peach": "#ffdab9",
+                "Pink": "#f8c6c6",
+                "Rose": "#e8b4a9",
+                "Champagne": "#f7e7ce",
+                "Pearl": "#f0f0f0",
+                "Golden": "#ffd700"
+            };
+            
+            return `<span class="color-swatch" style="background-color: ${colorMap[color] || '#ccc'}"></span>${color}`;
+        }
+
+        // Render preferences
+        function renderPreferences() {
+            preferencesList.innerHTML = '';
+
+            // Skin Preferences
+            const skinCard = document.createElement('div');
+            skinCard.className = 'preference-card';
+            skinCard.innerHTML = `
+                <div class="preference-header">
+                    <div class="preference-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="preference-title">Skin Profile</h3>
+                </div>
+                <div class="preference-content">
+                    <div class="preference-item">
+                        <div class="preference-label">Skin Type</div>
+                        <div class="preference-value">${customerPreferences.skin.type}</div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Skin Tone</div>
+                        <div class="preference-value">${customerPreferences.skin.tone}</div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Undertone</div>
+                        <div class="preference-value">${customerPreferences.skin.undertone}</div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Sensitivity</div>
+                        <div class="preference-value">${customerPreferences.skin.sensitivity}</div>
+                    </div>
+                    <div class="preference-item" style="grid-column: 1 / -1;">
+                        <div class="preference-label">Skin Concerns</div>
+                        <div class="preference-value">
+                            ${customerPreferences.skin.concerns.map(concern => `<span class="tag">${concern}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            preferencesList.appendChild(skinCard);
+
+            // Makeup Preferences
+            const makeupCard = document.createElement('div');
+            makeupCard.className = 'preference-card';
+            makeupCard.innerHTML = `
+                <div class="preference-header">
+                    <div class="preference-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 class="preference-title">Makeup Preferences</h3>
+                </div>
+                <div class="preference-content">
+                    <div class="preference-item">
+                        <div class="preference-label">Foundation Shade</div>
+                        <div class="preference-value">${customerPreferences.makeup.foundationShade}</div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Coverage</div>
+                        <div class="preference-value">${customerPreferences.makeup.coverage}</div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Finish</div>
+                        <div class="preference-value">${customerPreferences.makeup.finish}</div>
+                    </div>
+                    <div class="preference-item" style="grid-column: 1 / -1;">
+                        <div class="preference-label">Preferred Brands</div>
+                        <div class="preference-value">
+                            ${customerPreferences.makeup.preferredBrands.map(brand => `<span class="tag">${brand}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            preferencesList.appendChild(makeupCard);
+
+            // Color Preferences
+            const colorCard = document.createElement('div');
+            colorCard.className = 'preference-card';
+            colorCard.innerHTML = `
+                <div class="preference-header">
+                    <div class="preference-icon">
+                        <i class="fas fa-fill-drip"></i>
+                    </div>
+                    <h3 class="preference-title">Color Preferences</h3>
+                </div>
+                <div class="preference-content">
+                    <div class="preference-item">
+                        <div class="preference-label">Lipstick Colors</div>
+                        <div class="preference-value">
+                            ${customerPreferences.color.lipstick.map(color => `<div>${renderColorSwatch(color)}</div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Eyeshadow Colors</div>
+                        <div class="preference-value">
+                            ${customerPreferences.color.eyeshadow.map(color => `<div>${renderColorSwatch(color)}</div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Blush Color</div>
+                        <div class="preference-value">${renderColorSwatch(customerPreferences.color.blush)}</div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="preference-label">Highlighter</div>
+                        <div class="preference-value">${renderColorSwatch(customerPreferences.color.highlighter)}</div>
+                    </div>
+                </div>
+            `;
+            preferencesList.appendChild(colorCard);
+
+            // Allergies & Sensitivities
+            const allergiesCard = document.createElement('div');
+            allergiesCard.className = 'preference-card';
+            allergiesCard.innerHTML = `
+                <div class="preference-header">
+                    <div class="preference-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="preference-title">Allergies & Sensitivities</h3>
+                </div>
+                <div class="preference-content">
+                    <div class="preference-item" style="grid-column: 1 / -1;">
+                        <div class="preference-label">Ingredients to Avoid</div>
+                        <div class="preference-value">
+                            ${customerPreferences.allergies.ingredients.map(ingredient => `<span class="tag">${ingredient}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="preference-item" style="grid-column: 1 / -1;">
+                        <div class="preference-label">Reactions</div>
+                        <div class="preference-value">${customerPreferences.allergies.reactions}</div>
+                    </div>
+                </div>
+            `;
+            preferencesList.appendChild(allergiesCard);
+        }
+
+        // Event Listeners
+        closeModal.addEventListener('click', closeEditModal);
+        cancelEditBtn.addEventListener('click', closeEditModal);
+        savePreferencesBtn.addEventListener('click', savePreferences);
+
+        // Color option selection
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const container = this.parentElement;
+                
+                // For single selection containers
+                if (container.id === 'blushColor' || container.id === 'highlighterColor') {
+                    container.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                } 
+                // For multiple selection containers
+                else {
+                    this.classList.toggle('selected');
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        editModal.addEventListener('click', function(e) {
+            if (e.target === editModal) {
+                closeEditModal();
+            }
+        });
+
+        // Initialize the page
+        renderPreferences();
+    </script>
+</body>
+</html>
