@@ -1,4 +1,6 @@
 <?php
+
+
 // Configuration (Your existing connection block)
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
@@ -21,11 +23,12 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $variantID = $_GET['id'];
 
 try {
-    // 1. Fetch Variant Details and Attributes (LEFT JOIN is crucial)
+    // 1. Fetch Variant Details and Attributes - ADD PARENT PRODUCT NAME
     $sql_variant = '
         SELECT 
             p.ProductID, 
             p.ParentProductID,
+            parent.Name as ParentProductName,  
             p.Name, 
             p.Description, 
             p.Ingredients,
@@ -47,6 +50,7 @@ try {
             a.LongLasting
         FROM Products p
         LEFT JOIN ProductAttributes a ON p.ProductID = a.ProductID
+        LEFT JOIN Products parent ON p.ParentProductID = parent.ProductID 
         WHERE p.ProductID = ? AND p.ParentProductID IS NOT NULL 
         LIMIT 1';
 
@@ -75,14 +79,11 @@ try {
     $stmt_media->bind_param('s', $variantID);
     $stmt_media->execute();
     $result_media = $stmt_media->get_result();
-    $media = $result_media->fetch_assoc();  // Use fetch_assoc to get a single row
+    $media = $result_media->fetch_assoc();
     $stmt_media->close();
 
     // Attach the variant image path
     $variant['VariantImage'] = $media['ImagePath'] ?? null;
-
-    // Remove the ParentProductID field as it's not needed for the form
-    unset($variant['ParentProductID']);
 
     echo json_encode($variant);
 } catch (Exception $e) {

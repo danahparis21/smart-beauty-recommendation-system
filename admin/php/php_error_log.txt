@@ -1,0 +1,32 @@
+Array
+(
+    [productType] => variant
+    [parentProductID] => BATHBODY01
+    [hexCode] => #362121
+    [productName] => Parent Record: A Thousand Wishes Bath & Body Works
+    [productVariantName] => WHITE
+    [productCategory] => Body Care
+    [productStock] => 12
+    [productPrice] => 21212.00
+    [productDescription] => undefined
+    [productIngredients] => 
+    [productExpiration] => 2025-10-25
+    [skinType] => Array
+        (
+            [0] => Dry
+            [1] => Sensitive
+        )
+
+    [skinTone] => Array
+        (
+            [0] => Medium
+        )
+
+    [undertone] => Warm
+    [acne] => 1
+    [longLasting] => 1
+    [productID] => CONC018
+    [ProductID] => CONC018
+    [isParentUpdate] => false
+    [ParentProductID] => BATHBODY01
+)

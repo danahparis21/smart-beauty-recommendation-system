@@ -946,6 +946,9 @@ td div::-webkit-scrollbar {
   background-color: #c2335c;
   color: white;
 }
+.btn-outline-soft-pink {
+  color: var(--secondary-pink);
+}
 
     </style>
   </head>
@@ -1019,9 +1022,19 @@ td div::-webkit-scrollbar {
             <!-- Product Form Section -->
             <div class="col-lg-5">
               <div class="product-management-container">
-                <h3 class="section-title" id="productFormTitle">
-                  <i class="fas fa-plus-circle"></i> Add New Product
-              </h3>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h3 class="section-title mb-0" id="productFormTitle">
+                      <i class="fas fa-plus-circle"></i> Add New Product
+                  </h3>
+                  <button 
+                      type="button" 
+                      class="btn btn-outline-soft-pink btn-sm" 
+                      id="headerRefreshBtn" 
+                      title="Reset Form/Refresh Page"
+                  >
+                      <i class="fas fa-sync-alt"></i>
+                  </button>
+              </div>
               
                 <form id="productForm" enctype="multipart/form-data">
                   <div class="form-group">
@@ -1055,7 +1068,7 @@ td div::-webkit-scrollbar {
                     </div>
                   </div>
                   
-                  <div class="form-group" id="parentProductGroup">
+                  <div class="form-group " id="parentProductGroup">
                     <label for="parentProductID" class="form-label">Select Parent Product Line <span class="text-danger">*</span></label>
                     <select class="form-select" id="parentProductID" name="parentProductID" >
                       <option value="" selected disabled>Select an existing product line</option>
@@ -1065,7 +1078,7 @@ td div::-webkit-scrollbar {
                  
                 <div class="row g-3 mb-4">
 
-                  <div class="col-6 col-lg-6" id="previewImageGroup">
+                  <div class="col-6 col-lg-6 parent-product-field" id="previewImageGroup">
                       <label for="previewImage" class="form-label">Preview Image <span class="text-danger">*</span></label>
                       
                       <div class="image-preview-box" id="previewImagePreview">
@@ -1076,7 +1089,7 @@ td div::-webkit-scrollbar {
                       <small class="text-muted">Main listing image</small>
                   </div>
               
-                  <div class="col-6 col-lg-6">
+                  <div class="col-6 col-lg-6  variant-product-field">
                       <label for="variantImage" class="form-label">Variant Image <span class="text-danger">*</span></label>
                       
                       <div class="image-preview-box" id="variantImagePreview">
@@ -1090,7 +1103,7 @@ td div::-webkit-scrollbar {
               
               
               <div class="row mb-4">
-                <div class="col-12" id="additionalImagesGroup">
+                <div class="col-12 parent-product-field" id="additionalImagesGroup">
                     <label class="form-label">Additional Images (Max 4)</label>
                     
                     <div class="row g-3">
@@ -1125,13 +1138,14 @@ td div::-webkit-scrollbar {
                     <small class="text-muted mt-2">Click the plus icon to add an image.</small>
                 </div>
             </div>
-              <div class="form-group">
+              <div class="form-group variant-product-field">
                   <label for="hexCode" class="form-label">Shade Hex Code <span class="text-danger">*</span></label>
                   <input type="color" id="hexCode" name="hexCode" class="form-control form-control-color" value="#ffffff">
                   </div>
               
+                  
                   <!-- Product Name -->
-                  <div class="form-group">
+                  <div class="form-group parent-product-field">
                     <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
                     <input
                       type="text"
@@ -1143,7 +1157,7 @@ td div::-webkit-scrollbar {
                     />
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group  variant-product-field">
                     <label for="productVariantName" class="form-label">Shade/Variant Name <span class="text-danger">*</span></label>
                     <input
                       type="text"
@@ -1155,7 +1169,7 @@ td div::-webkit-scrollbar {
                     />
                   </div>
               
-                  <div class="form-group">
+                  <div class="form-group parent-product-field">
                     <label for="productCategory" class="form-label">Category <span class="text-danger">*</span></label>
                     <div class="d-flex gap-2">
                         <select class="form-select" id="productCategorySelect" name="productCategory">
@@ -1178,7 +1192,7 @@ td div::-webkit-scrollbar {
                 </div>
               
                   <!-- Stock -->
-                  <div class="form-group">
+                  <div class="form-group variant-product-field">
                     <label for="productStock" class="form-label">Stocks <span class="text-danger">*</span></label>
                     <input
                       type="number"
@@ -1192,7 +1206,7 @@ td div::-webkit-scrollbar {
                   </div>
               
                   <!-- Price -->
-                  <div class="form-group">
+                  <div class="form-group variant-product-field">
                     <label for="productPrice" class="form-label">Price (₱)<span class="text-danger">*</span></label>
                     <input
                       type="number"
@@ -1207,7 +1221,7 @@ td div::-webkit-scrollbar {
                   </div>
               
                   <!-- Description -->
-                  <div class="form-group">
+                  <div class="form-group variant-product-field">
                     <label for="productDescription" class="form-label">Description <span class="text-danger">*</span></label>
                     <textarea
                       class="form-control"
@@ -1218,7 +1232,7 @@ td div::-webkit-scrollbar {
                     ></textarea>
                   </div>
               
-                  <div class="form-group">
+                  <div class="form-group variant-product-field">
                     <label for="productIngredients" class="form-label">Ingredients (optional)</label>
                     <textarea
                         class="form-control"
@@ -1230,7 +1244,7 @@ td div::-webkit-scrollbar {
                 </div>
 
                   <!-- Expiration Date -->
-                  <div class="form-group">
+                  <div class="form-group variant-product-field">
                     <label for="productExpiration" class="form-label">Expiration Date <span class="text-danger">*</span></label>
                     <input
                       type="date"
@@ -1240,7 +1254,7 @@ td div::-webkit-scrollbar {
                     />
                   </div>
               
-                  <div class="form-group">
+                  <div class="form-group variant-product-field">
                     <button
                       type="button"
                       class="btn btn-outline-primary w-100"
@@ -1331,6 +1345,8 @@ td div::-webkit-scrollbar {
                   </div>
               
                   <input type="hidden" id="hiddenProductID" name="productID" value="">
+                  <input type="hidden" id="hiddenParentProductID" name="ParentProductID">
+
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
     <button type="reset" id="clearFormBtn" class="btn btn-outline-primary me-md-2">
@@ -1420,6 +1436,64 @@ td div::-webkit-scrollbar {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+   // Function to explicitly toggle fields based on mode, used ONLY in Edit context.
+function toggleEditFormFields() {
+    // This is the logic you already have.
+    const isVariantMode = document.getElementById('typeNewVariant').checked;
+    const parentProductGroup = document.getElementById("parentProductGroup"); 
+
+    const parentFields = document.querySelectorAll('.parent-product-field');
+    const variantFields = document.querySelectorAll('.variant-product-field');
+
+    if (isVariantMode) {
+        // Variant Update Mode
+        variantFields.forEach(el => el.classList.remove('d-none'));
+        parentFields.forEach(el => el.classList.add('d-none'));
+        if (parentProductGroup) parentProductGroup.classList.remove('d-none');
+    } else { 
+        // Parent Update Mode
+        parentFields.forEach(el => el.classList.remove('d-none'));
+        variantFields.forEach(el => el.classList.add('d-none'));
+        if (parentProductGroup) parentProductGroup.classList.add('d-none');
+    }
+}
+// Define loadCategories globally
+function loadCategories() {
+    // Ensure productCategorySelect is accessible here, or get it by ID
+    const productCategorySelect = document.getElementById('productCategorySelect');
+
+    fetch("../php/fetch_categories.php") 
+        .then(res => {
+            if (!res.ok) throw new Error("Category fetch failed.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.success && data.categories && productCategorySelect) {
+                
+                productCategorySelect.innerHTML = '<option value="" selected disabled>Select category</option>';
+                
+                data.categories.forEach(category => {
+                    if (category === 'All' && productCategorySelect.options.length === 1) return;
+                    
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    productCategorySelect.appendChild(option);
+                });
+            } else {
+                console.error("Failed to load categories:", data.message || "No categories found or select element missing.");
+            }
+        })
+        .catch(err => {
+            console.error("Error loading categories:", err);
+        });
+}
+
+// Function to handle the complete form reset
+function resetProductForm() {
+    // This immediately reloads the current page, simulating a browser refresh.
+    window.location.reload(); 
+}
     
 document.addEventListener("DOMContentLoaded", function () {
     
@@ -1446,6 +1520,93 @@ document.addEventListener("DOMContentLoaded", function () {
     const previewImageGroup = document.getElementById("previewImageGroup");
     const additionalImagesGroup = document.getElementById("additionalImagesGroup");
 
+    const clearFormBtn = document.getElementById('clearFormBtn');
+    const headerRefreshBtn = document.getElementById('headerRefreshBtn');
+
+    if (clearFormBtn) {
+        clearFormBtn.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            resetProductForm();
+        });
+    }
+    
+    // BIND THE SAME FUNCTION TO THE NEW HEADER BUTTON
+    if (headerRefreshBtn) {
+        headerRefreshBtn.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            resetProductForm();
+        });
+    }
+
+    const updateBtn = document.getElementById('updateProductBtn'); 
+
+if (updateBtn) {
+    updateBtn.addEventListener('click', async (e) => {
+        e.preventDefault(); // Stop the default form submission
+
+        // Use FormData to include file uploads
+        const formData = new FormData(productForm); 
+        
+        // Add the ProductID and the Product Type to the form data
+        const productID = document.getElementById('hiddenProductID').value; // Hidden input stores the ID
+        formData.append('ProductID', productID);
+
+        // Determine if we are updating a Parent or a Variant
+        const isParentUpdate = document.getElementById('typeNewProduct').checked;
+        formData.append('isParentUpdate', isParentUpdate ? 'true' : 'false');
+        // If editing a variant, include the parent ID
+const parentProductIDField = document.getElementById('hiddenParentProductID');
+if (parentProductIDField) {
+    const parentProductID = parentProductIDField.value;
+    formData.append('ParentProductID', parentProductID);
+}
+
+    // DEBUG: Log all form data being sent
+    console.log("📤 FORM DATA BEING SENT:");
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        updateBtn.disabled = true;
+
+        try {
+            const response = await fetch('../php/update_product.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            // FIRST get the raw text to see PHP response
+            const rawResponse = await response.text();
+            console.log("📄 RAW PHP RESPONSE:", rawResponse);
+
+            // THEN try to parse as JSON
+            let result;
+            try {
+                result = JSON.parse(rawResponse);
+            } catch (jsonError) {
+                console.error("❌ JSON Parse Error - PHP returned HTML instead of JSON");
+                console.error("This means there's a PHP error. Check your PHP error logs.");
+                throw new Error("Server error - check PHP configuration");
+            }
+
+            if (!response.ok || result.error) {
+                throw new Error(result.error || `HTTP error! status: ${response.status}`);
+            }
+
+            alert('Product updated successfully!');
+            window.location.reload();
+
+        } catch (error) {
+            console.error('Update failed:', error);
+            alert('Failed to update product: ' + error.message);
+        } finally {
+            updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Product';
+            updateBtn.disabled = false;
+        }
+    });
+}
+
 document.getElementById('previewImage').addEventListener('change', function() {
         setupImagePreview(this, 'previewImagePreview');
     });
@@ -1457,6 +1618,7 @@ document.getElementById('previewImage').addEventListener('change', function() {
 
     document.getElementById('previewImagePreview').innerHTML = `<span class="placeholder-text">Line Preview</span>`;
     document.getElementById('variantImagePreview').innerHTML = `<span class="placeholder-text">Variant Shade</span>`;
+    
   
     const additionalSlots = document.querySelectorAll('.image-preview-box.additional-slot');
 const imageInputs = [
@@ -1554,9 +1716,16 @@ addCategoryBtn.addEventListener('click', () => {
     }
 });
 
-let categoryMode = 'select';
+
+function resetProductForm() {
+        // The one line that makes it work like a refresh
+        window.location.reload(); 
+    }
+
+    let categoryMode = 'select';
 let currentPage = 1;
 const productsPerPage = 10;
+
 
 async function fetchAndRenderProducts(page = 1) {
     const tableBody = document.getElementById('productTableBody');
@@ -1575,10 +1744,6 @@ async function fetchAndRenderProducts(page = 1) {
 const data = await response.json();
 const productGroups = data.parents;
 const totalParents = data.total;
-
-
-
-
         if (!Array.isArray(productGroups) || productGroups.length === 0) {
             tableBody.innerHTML = `
                 <tr>
@@ -1972,75 +2137,96 @@ function setupImagePreview(fileInput, previewElementId, imagePath = null) {
 // Function to switch form mode between 'Add' and 'Update'
 function setFormMode(mode, productID = null) {
     const title = document.getElementById('productFormTitle');
+    const labelNewProduct = document.querySelector('label[for="typeNewProduct"]');
+    const labelNewVariant = document.querySelector('label[for="typeNewVariant"]');
     const addBtn = document.getElementById('addProductBtn');
     const updateBtn = document.getElementById('updateProductBtn');
     const hiddenID = document.getElementById('hiddenProductID');
 
     if (mode === 'update') {
-        title.innerHTML = '<i class="fas fa-edit"></i> Update Product Line';
+        // --- A. Main Title and Buttons ---
+        title.innerHTML = '<i class="fas fa-edit"></i> Update Product'; // Keep general for now
         addBtn.classList.add('d-none');
         updateBtn.classList.remove('d-none');
         hiddenID.value = productID;
-        // Also ensure 'New Product Line' radio button is selected
-        document.getElementById('typeNewProduct').checked = true;
-        handleProductTypeChange(); // To show/hide variant fields correctly
+        
+        // --- B. Update Radio Button Labels ---
+        if (labelNewProduct) {
+            labelNewProduct.textContent = 'Update Product Line';
+        }
+        if (labelNewVariant) {
+            labelNewVariant.textContent = 'Update Variant (Shade/Size)';
+        }
 
-    } else { // mode === 'add'
+        // --- C. Reset/Toggle state for parent/variant update ---
+        // When initially entering update mode, we don't know if it's parent or variant, 
+        // but since you call this *before* populateParentForm/populateVariantForm:
+        document.getElementById('typeNewProduct').checked = true;
+        // toggleEditFormFields(); // This toggle is handled by the populate function now.
+
+    } else { // 'add' mode
+        // --- A. Main Title and Buttons ---
         title.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product';
         addBtn.classList.remove('d-none');
         updateBtn.classList.add('d-none');
         hiddenID.value = '';
+        
+        // --- B. Restore Radio Button Labels ---
+        if (labelNewProduct) {
+            labelNewProduct.textContent = 'New Product Line';
+        }
+        if (labelNewVariant) {
+            labelNewVariant.textContent = 'New Variant (Shade/Size)';
+        }
+        
+        // Set to default 'new product line' state
+        document.getElementById('typeNewProduct').checked = true;
     }
 }
+
 // Function to populate the main form for Parent/Simple product
 function populateParentForm(data) {
-    // Basic Fields
+    // 1. Set Form Mode & Title
+    setFormMode('update', data.ProductID);
+    
+    // 2. CRUCIAL TOGGLE LOGIC:
+    // Force switch to Parent Product Line mode display
+    document.getElementById('typeNewProduct').checked = true;
+    toggleEditFormFields(); // <-- ADD THIS LINE! This reveals the parent fields.
+    
+    // 3. Basic Fields (These should now be visible)
     document.getElementById('productName').value = data.Name || '';
     document.getElementById('productDescription').value = data.Description || '';
     document.getElementById('productIngredients').value = data.Ingredients || '';
     
-    // FIX 1: Change data.Stock to data.Stocks
     document.getElementById('productStock').value = data.Stocks || 0; 
-    
     document.getElementById('productPrice').value = data.Price || 0.00;
-    
-    // FIX 2: Change data.ExpirationDate to use || '' for null handling (already looks correct)
     document.getElementById('productExpiration').value = data.ExpirationDate || '';
     
-    // Category Select (selects the option if it exists)
+    // 4. Category Select
     const categorySelect = document.getElementById('productCategorySelect');
-    
-    // FIX 3: Change data.CategoryID to data.Category
     if (categorySelect.querySelector(`option[value="${data.Category}"]`)) { 
         categorySelect.value = data.Category;
     } else {
-        // Fallback to setting the text input if the select doesn't match the fetched category
-        // Assuming you have an input for manual category entry if it's not in the select list.
-        // If not, you might need another field to store the Category value if it's dynamic.
         categorySelect.value = ''; 
     }
 
-    // Image Fields
+    // 5. Image Fields
     
     // 1. Preview Image (Main Image)
-    // FIX 4: Call setupImagePreview with the third argument (imagePath)
-    // The setupImagePreview function currently only accepts two arguments (fileInput, previewElementId).
-    // We need to pass the image URL directly to display an existing image.
+    // Assuming your setupImagePreview is now updated to handle imagePath (URL)
     if (data.MainImage) {
-        // You MUST update setupImagePreview to handle a string path instead of a file input.
         setupImagePreview(null, 'previewImagePreview', data.MainImage);
     } else {
-        // Clear the main image preview if there is no image
-        setupImagePreview({files: []}, 'previewImagePreview');
+        // Clear the main image preview and show placeholder
+        setupImagePreview(null, 'previewImagePreview'); 
     }
     
     // 2. Additional Images
-    // This looks correct, assuming data.DetailImages is an array of paths from PHP.
     resetAdditionalImages(data.DetailImages); 
 
-    // Attributes (No need for attributes for a Parent Product update based on your prompt)
-
-    setFormMode('update', data.ProductID);
+    // 6. Final cleanup (only needed once)
+    // setFormMode('update', data.ProductID); // REMOVE: Already called at the start
 }
 
 function populateVariantForm(data) {
@@ -2049,7 +2235,7 @@ function populateVariantForm(data) {
     setFormMode('update', data.ProductID);
     // Force switch to Variant mode display
     document.getElementById('typeNewVariant').checked = true;
-    handleProductTypeChange(); 
+    toggleEditFormFields();
     
     // 2. Basic Fields
     // Use the Name, Stocks, Price from the variant row
@@ -2060,33 +2246,119 @@ function populateVariantForm(data) {
     document.getElementById('productPrice').value = data.Price || 0.00;
     document.getElementById('productExpiration').value = data.ExpirationDate || '';
     
+    
     // 3. Variant Fields
     document.getElementById('hexCode').value = data.HexCode || '';
     document.getElementById('productVariantName').value = data.ShadeOrVariant || '';
-
-    // 4. Attributes (Crucial for Variant)
-    // List of attribute checkboxes/inputs to check (match the names in your form)
-    const attributeFields = [
-        'SkinType', 'SkinTone', 'Undertone', 'Acne', 'Dryness', 
-        'DarkSpots', 'Matte', 'Dewy', 'LongLasting'
-    ];
-    
-    attributeFields.forEach(field => {
-        // Find the element by its ID (e.g., checkbox with ID 'Matte')
-        const element = document.getElementById(field);
-        if (element) {
-            // Check if the element should be checked/selected based on the fetched data
-            // Assuming boolean/numeric flags (1 or 0) from the DB
-            if (element.type === 'checkbox' || element.type === 'radio') {
-                // If value is 1 (true), check the box
-                element.checked = (data[field] == 1); 
-            } else if (element.tagName === 'SELECT') {
-                 // For select/dropdowns, set the value
-                 element.value = data[field] || '';
-            }
-        }
+   // 4. Debug parent product info
+   console.log("📦 Variant Parent Data:", {
+        variantID: data.ProductID,
+        variantName: data.Name,
+        parentProductID: data.ParentProductID,
+        parentProductName: data.ParentProductName 
     });
 
+    loadParentProducts(() => {
+    const parentProductIDSelect = document.getElementById('parentProductID');
+    const targetValue = data.ParentProductID;
+    
+    if (targetValue) {
+        // Method 1: Direct value assignment
+        parentProductIDSelect.value = targetValue;
+        
+        // Method 2: If Method 1 fails, wait a bit and try again (for async issues)
+        setTimeout(() => {
+            if (parentProductIDSelect.value !== targetValue) {
+                console.log("🔄 Retrying dropdown selection...");
+                parentProductIDSelect.value = targetValue;
+                
+                // Method 3: If still not working, force by iterating options
+                if (parentProductIDSelect.value !== targetValue) {
+                    for (let i = 0; i < parentProductIDSelect.options.length; i++) {
+                        if (parentProductIDSelect.options[i].value === targetValue) {
+                            parentProductIDSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Final check and event trigger
+            console.log("🎯 Final selection - Value:", parentProductIDSelect.value, "Text:", parentProductIDSelect.options[parentProductIDSelect.selectedIndex]?.text);
+            parentProductIDSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        }, 100);
+    }
+});
+    // 4. Attributes (CRUCIAL REWRITE)
+    
+   // --- A. Handle Single-Value Checkboxes (0 or 1) ---
+const booleanFields = [
+    'Acne', 
+    'Dryness', 
+    // CHANGE 1: Use the camelCase name for lookup
+    {db: 'DarkSpots', name: 'darkSpots'}, 
+    'Matte', 
+    'Dewy', 
+    // CHANGE 2: Use the camelCase name for lookup
+    {db: 'LongLasting', name: 'longLasting'}
+];
+
+booleanFields.forEach(item => {
+    // Determine the lowercase name to use for the selector
+    const fieldName = typeof item === 'string' ? item.toLowerCase() : item.name;
+    const dbKey = typeof item === 'string' ? item : item.db;
+
+    const element = document.querySelector(`[name="${fieldName}"]`); 
+    
+    if (element && (element.type === 'checkbox' || element.type === 'radio')) {
+        // Use the DB key to fetch the data value
+        element.checked = (data[dbKey] == 1);
+    }
+});
+
+    // --- B. Handle Select/Dropdown (Undertone) ---
+    const undertoneSelect = document.getElementById('undertone');
+    if (undertoneSelect) {
+        // Set the select box value directly
+        undertoneSelect.value = data.Undertone || '';
+    }
+
+   // --- C. Handle Multi-Value Checkboxes (SkinType & SkinTone) ---
+
+// Helper function to prepare the database array for safe matching
+const prepareDBArray = (dataString) => {
+    if (!dataString) return [];
+    // 1. Split the string by comma
+    // 2. Trim whitespace from each element
+    // 3. Convert all elements to uppercase for case-insensitive matching
+    return dataString.split(',')
+                     .map(s => s.trim().toUpperCase());
+};
+
+// 1. Skin Type
+const dbSkinTypes = prepareDBArray(data.SkinType);
+
+// Find ALL checkboxes with name="skinType[]"
+document.querySelectorAll('[name="skinType[]"]').forEach(checkbox => {
+    // Check if the checkbox's uppercase value is in the cleaned DB array
+    checkbox.checked = dbSkinTypes.includes(checkbox.value.toUpperCase());
+});
+
+// 2. Skin Tone
+const dbSkinTones = prepareDBArray(data.SkinTone);
+
+// Find ALL checkboxes with name="skinTone[]"
+document.querySelectorAll('[name="skinTone[]"]').forEach(checkbox => {
+    // Check if the checkbox's uppercase value is in the cleaned DB array
+    checkbox.checked = dbSkinTones.includes(checkbox.value.toUpperCase());
+});
+    // --- D. Force Collapse to Open (Optional, but recommended for UX) ---
+    // Use the function from our previous conversation if you have the Bootstrap JS available
+    const attributesCollapse = document.getElementById('attributesSection');
+    if (attributesCollapse) {
+         // This is the correct Bootstrap 5 way:
+         new bootstrap.Collapse(attributesCollapse, { toggle: false }).show();
+    }
     // 5. Image (Variant Image)
     // Assuming you have an ID 'variantImagePreview' for the image box
     if (data.VariantImage) {
@@ -2126,12 +2398,18 @@ function resetAdditionalImages(imagePaths = []) {
             deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; 
             
             deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); 
-                // Visually remove and mark for deletion on submission
-                box.innerHTML = `<i class="fas fa-plus placeholder-icon"></i>`;
-                // You will need a hidden mechanism to track deleted images (e.g., another hidden input)
-                console.log(`Image at index ${index} (path: ${path}) marked for deletion`); 
-            });
+    e.stopPropagation(); 
+    box.innerHTML = `<i class="fas fa-plus placeholder-icon"></i>`;
+    
+    // >>> CRITICAL NEW LOGIC: ADD HIDDEN INPUT <<<
+    const deletedInput = document.createElement('input');
+    deletedInput.type = 'hidden';
+    deletedInput.name = 'deleted_images[]'; // Array to collect all deleted paths
+    deletedInput.value = path; // The path of the image being deleted
+    document.getElementById('productForm').appendChild(deletedInput); // Append to the form
+
+    console.log(`Image at index ${index} (path: ${path}) marked for deletion`); 
+});
 
             box.appendChild(deleteBtn);
 
@@ -2148,7 +2426,6 @@ document.getElementById('clearFormBtn').addEventListener('click', () => {
     setFormMode('add');
 });
 
-// --- Event Delegation for Edit Buttons ---
 document.getElementById('productTableBody').addEventListener('click', async (e) => {
     // 1. PARENT EDIT BUTTON
     if (e.target.closest('.edit-parent-btn')) {
@@ -2160,38 +2437,43 @@ document.getElementById('productTableBody').addEventListener('click', async (e) 
             return;
         }
 
-        // Show a loading indicator
+        // Show a loading indicator (Should happen immediately)
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
         try {
-    // CORRECTED: Use the same path as your other PHP files
-    const response = await fetch(`../php/fetch_product_details.php?id=${productID}`);
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Check if the response contains an error
-    if (data.error) {
-        console.error(data.error);
-        alert('Error fetching product details: ' + data.error);
-        return;
-    }
-    
-    // Load the form with the fetched data
-    populateParentForm(data); 
+            // STEP 1: Execute the network request and DEFINE 'response'
+            const response = await fetch(`../php/fetch_parent_details.php?id=${productID}`);
+            
+            if (!response.ok) {
+                // If the HTTP status is bad (e.g., 404, 500)
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            // STEP 2: Process the response into JSON and DEFINE 'data'
+            const data = await response.json();
+            
+            // Log the data for debugging (Good practice!)
+            console.log("Parent Product Data Response:", data); 
 
-} catch (error) {
-    console.error('Network error during product fetch:', error);
-    alert('A network error occurred while fetching product details.');
-} finally {
-    // Restore button state
-    btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
-    btn.disabled = false;
-}
+            // STEP 3: Check for application-level errors
+            if (data.error) {
+                console.error(data.error);
+                alert('Error fetching product details: ' + data.error);
+                return;
+            }
+            
+            // STEP 4: Load the form with the fetched data
+            populateParentForm(data); 
+
+        } catch (error) {
+            console.error('Error during product fetch:', error);
+            alert('An error occurred while fetching product details: ' + error.message);
+        } finally {
+            // Restore button state
+            btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+            btn.disabled = false;
+        }
     }
     
     // 2. VARIANT EDIT BUTTON
@@ -2236,49 +2518,6 @@ document.getElementById('productTableBody').addEventListener('click', async (e) 
     }
 });
 
-              // Add safety checks (?.classList) to all element access within this function.
-function handleProductTypeChange() {
-    const isVariantMode = document.getElementById('typeNewVariant').checked;
-
-    // Example of safe class manipulation:
-    document.getElementById('parentOnlyGroup')?.classList.toggle('d-none', isVariantMode);
-    document.getElementById('variantSpecificGroup')?.classList.toggle('d-none', !isVariantMode);
-
-    // ... and so on for all major groups.
-
-    // If the 'attributesSection' is supposed to be visible for variants, 
-    // ensure its parent container is visible too.
-}
-
-    function loadCategories() {
-
-        fetch("../php/fetch_categories.php") 
-            .then(res => {
-                if (!res.ok) throw new Error("Category fetch failed.");
-                return res.json();
-            })
-            .then(data => {
-                if (data.success && data.categories) {
-                   
-                    productCategorySelect.innerHTML = '<option value="" selected disabled>Select category</option>';
-                    
-                    data.categories.forEach(category => {
-                        if (category === 'All' && productCategorySelect.options.length === 1) return;
-                        
-                        const option = document.createElement('option');
-                        option.value = category;
-                        option.textContent = category;
-                        productCategorySelect.appendChild(option);
-                    });
-                } else {
-                    console.error("Failed to load categories:", data.message || "No categories found.");
-                }
-            })
-            .catch(err => {
-                console.error("Error loading categories:", err);
-            });
-    }
-    // --- 1. Mobile Menu Functionality ---
 
     function adjustContentForMobileHeader() {
         if (window.innerWidth < 992 && mobileHeader && mainContent) {
@@ -2363,31 +2602,32 @@ function handleProductTypeChange() {
 
 
 
-    function loadParentProducts() {
-    
-        fetch("../php/fetch_parent_products.php")
+    function loadParentProducts(callback = null) { // Add callback parameter
+    fetch("../php/fetch_parent_products.php")
+    .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+    })
+    .then((data) => {
+        parentProductID.innerHTML = '<option value="" selected disabled>Select an existing product line</option>';
+        data.forEach((product) => {
+            const opt = document.createElement("option");
+            opt.value = product.ProductID;
+            opt.textContent = product.Name;
+            
+            opt.dataset.category = product.Category; 
+            opt.dataset.description = product.Description;
 
-            .then((res) => {
-                if (!res.ok) throw new Error("Network response was not ok");
-                return res.json();
-            })
-            .then((data) => {
-                parentProductID.innerHTML = '<option value="" selected disabled>Select an existing product line</option>';
-                data.forEach((product) => {
-                    const opt = document.createElement("option");
-                    opt.value = product.ProductID;
-                    opt.textContent = product.Name;
-                    
-                
-                    opt.dataset.category = product.Category; 
-                    opt.dataset.description = product.Description;
-
-                    parentProductID.appendChild(opt);
-                });
-            })
-            .catch((err) => console.error("Error loading parent products:", err));
-    }
-    
+            parentProductID.appendChild(opt);
+        });
+        
+        // ✅ CRITICAL: Execute the callback after products are loaded
+        if (callback && typeof callback === 'function') {
+            callback();
+        }
+    })
+    .catch((err) => console.error("Error loading parent products:", err));
+}
  
     parentProductID.addEventListener('change', () => {
         const selectedOption = parentProductID.options[parentProductID.selectedIndex];

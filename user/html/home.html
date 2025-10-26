@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Beauty & Blessed</title>
+    <title>Home | Beauty & Blessed</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -675,10 +675,6 @@
           width: 55px;
           height: 55px;
         }
-
-        .page-content {
-          padding: 20px;
-        }
       }
     </style>
   </head>
@@ -917,11 +913,13 @@
         const card = document.createElement("div");
         card.className = "product-card";
 
-        let variantCount = product.variants ? product.variants.length : 0;
+        // ----------------------------------------------------
+        // 1. PRICE RANGE CALCULATION LOGIC (FIXED)
+        // ----------------------------------------------------
         let priceDisplay = `₱${parseFloat(product.price).toFixed(2)}`; // Default to parent price
+        const variantCount = product.variants ? product.variants.length : 0;
 
-        // Logic to calculate price range from variants
-        if (product.variants && variantCount > 0) {
+        if (variantCount > 0) {
           const prices = product.variants
             .map((v) => parseFloat(v.price))
             .filter((p) => !isNaN(p) && p > 0);
@@ -940,31 +938,26 @@
             }
           }
         }
+        // ----------------------------------------------------
 
-        // Build the variant list HTML
-        let variantListHTML = "";
-        if (product.variants && variantCount > 0) {
-          variantListHTML =
-            '<ul class="variants mt-2 text-sm text-gray-600 space-y-1 max-h-16 overflow-y-auto border-t pt-2">';
-          // Show the variant name, assuming the PHP script now provides it
-          product.variants.forEach((v) => {
-            variantListHTML += `<li class="flex justify-between">
-                <span>${v.variant || v.name}</span>
-                <span class="font-medium">₱${parseFloat(v.price).toFixed(
-                  2
-                )}</span>
-            </li>`;
-          });
-          variantListHTML += "</ul>";
-        }
+        // Get first variant or use product itself
+        const firstVariant =
+          product.variants && product.variants.length > 0
+            ? product.variants[0]
+            : null;
 
-        // Determine the icon state
-        const likeIconClass = product.liked
-          ? "fas text-red-500"
-          : "far text-gray-500 hover:text-red-500";
+        // Define the local fallback for broken images
+        const LOCAL_FALLBACK_IMAGE =
+          "/admin/uploads/product_images/no-image.png";
+
+        // Use the local fallback if no valid image is fetched
+        const defaultImage = firstVariant ? firstVariant.image : product.image;
+        const initialImageSrc = defaultImage || LOCAL_FALLBACK_IMAGE;
+
+        const previewImage = product.previewImage || initialImageSrc;
 
         card.innerHTML = `
-        <div class="product-image">
+        <div class="product-image h-48 bg-gray-100 flex items-center justify-center">
             <!-- Using placeholder image service for demonstration -->
             <img src="${
               product.image ||
@@ -973,14 +966,14 @@
               }`
             }" alt="${product.name}" class="object-cover h-full w-full">
         </div>
-        <div class="product-info">
-            <div class="product-name">${
+        <div class="product-info p-4">
+            <div class="product-name font-semibold text-lg mb-1">${
               product.name
             }</div>
-            <div class="product-price">${priceDisplay}</div>
+            <div class="product-price text-xl font-bold text-pink-600">${priceDisplay}</div>
             ${variantListHTML}
-            <div class="product-actions">
-                <button class="like-btn" onclick="toggleLike('${
+            <div class="product-actions flex justify-between items-center mt-3 pt-3 border-t">
+                <button class="like-btn p-2 rounded-full transition-colors duration-200" onclick="toggleLike('${
                   product.id
                 }')">
                     <i class="${likeIconClass} fa-heart text-lg"></i>
@@ -990,7 +983,7 @@
                     ? `<button class="view-variants-btn bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md">
                             View Options
                         </button>`
-                    : `<button class="add-to-cart" onclick="addToCart('${product.id}')">
+                    : `<button class="add-to-cart bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md" onclick="addToCart('${product.id}')">
                             <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
                         </button>`
                 }
@@ -998,27 +991,46 @@
         </div>
     `;
 
-        // Add logic for 'View Options' button if it exists
-        if (variantCount > 0) {
-          const viewBtn = card.querySelector(".view-variants-btn");
-          viewBtn.addEventListener("click", () => {
-            // Placeholder: In a real app, this would open a product detail modal
-            showNotification(
-              `Viewing options for ${product.name} (Parent ID: ${product.id})`
-            );
+        // Add hover effect for preview image
+        const img = card.querySelector(".product-image img");
+        const productImageDiv = card.querySelector(".product-image");
 
-            // To add a variant to the cart, you'd prompt the user for the specific variant ID
-            // For now, let's just add the first one as a demo
-            if (product.variants.length > 0) {
-              const firstVariantId = product.variants[0].id;
-              addToCart(firstVariantId);
+        productImageDiv.addEventListener("mouseenter", () => {
+          const preview = img.dataset.preview;
+          // Check for existence and also if the image is already the preview to prevent unnecessary loading
+          if (preview && preview !== img.src) {
+            img.src = preview;
+          }
+        });
+
+        productImageDiv.addEventListener("mouseleave", () => {
+          const defaultImg = img.dataset.default;
+          if (defaultImg) {
+            img.src = defaultImg;
+          }
+        });
+
+        // Add variant color circle click handlers
+        const colorCircles = card.querySelectorAll(".color-circle");
+        colorCircles.forEach((circle) => {
+          circle.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            // Update active state
+            colorCircles.forEach((c) => c.classList.remove("active"));
+            circle.classList.add("active");
+
+            // Update image
+            const variantImage = circle.dataset.variantImage;
+            if (variantImage) {
+              img.dataset.default = variantImage;
+              img.src = variantImage;
             }
           });
-        }
+        });
 
         return card;
       }
-
       // Toggle like status
       function toggleLike(productId) {
         // We need to find the product either by its own ID or its parent ID
