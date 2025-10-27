@@ -66,13 +66,14 @@ if (!$result) {
 
 $groupedProducts = [];
 
-// ===================== SIMPLE GROUPING ===================== //
+// In your PHP, add debug logging for the variant field
 while ($row = $result->fetch_assoc()) {
     $parentID = $row['parentID'];
 
-    // Parent products have NULL parentID (or empty string/0 depending on DB schema)
-    // Use COALESCE(p.ParentProductID, p.ProductID) in query for reliable grouping
-    $isParent = ($parentID === null || $parentID === $row['id']); 
+    // Debug the variant field
+    error_log("DB ROW - ID: {$row['id']}, Name: {$row['name']}, Variant Field: " . ($row['variant'] ?? 'NULL') . ', HexCode: ' . ($row['hexCode'] ?? 'NULL'));
+
+    $isParent = ($parentID === null || $parentID === $row['id']);
 
     $row['variantImage'] = getPublicImagePath($row['variantImage'] ?? '');
     $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
@@ -84,92 +85,78 @@ while ($row = $result->fetch_assoc()) {
                 'id' => $row['id'],
                 'name' => $row['name'],
                 'category' => strtolower($row['category']),
-                'price' => floatval($row['price']), // Use parent's price as initial price
-                
-                // --- FIX: Ensure status and stockQuantity are set for parent record initialization ---
-                'status' => $row['status'], 
-                'stockQuantity' => intval($row['stockQuantity']), 
-                // --------------------------------------------------------------------------------------
-                
+                'price' => floatval($row['price']),
+                'status' => $row['status'],
+                'stockQuantity' => intval($row['stockQuantity']),
                 'image' => $row['previewImage'],
                 'previewImage' => $row['previewImage'],
                 'variants' => []
             ];
-        } else {
-            // If the parent was already initialized by a variant, ensure the parent's data (like its name/image) is dominant.
-            // This is more complex but is why the single-pass loop is difficult.
-            // For now, we rely on the first entry to define the structure.
         }
     } else {
         // Variant product
         $parentKey = $parentID;
 
         if (!isset($groupedProducts[$parentKey])) {
-            // Create parent from variant (This is the parent's initial data)
             $groupedProducts[$parentKey] = [
                 'id' => $parentKey,
-                'name' => $row['name'], // Use variant name as placeholder
+                'name' => $row['name'],  // This might be wrong - we should get the actual parent name
                 'category' => strtolower($row['category']),
-                'price' => floatval($row['price']), // Use variant price as initial price
-                
-                // --- Set status and stockQuantity when initializing parent from variant ---
-                'status' => $row['status'], 
-                'stockQuantity' => intval($row['stockQuantity']), 
-                // -------------------------------------------------------------------------
-                
+                'price' => floatval($row['price']),
+                'status' => $row['status'],
+                'stockQuantity' => intval($row['stockQuantity']),
                 'image' => $row['previewImage'],
                 'previewImage' => $row['previewImage'],
                 'variants' => []
             ];
-        } else {
-            // Parent container already exists, update aggregated data
-            
-            // Price Aggregation (Simplified: Find the first > 0 price)
-            $variantPrice = floatval($row['price']);
-            if ($variantPrice > 0 && $groupedProducts[$parentKey]['price'] == 0) {
-                $groupedProducts[$parentKey]['price'] = $variantPrice;
-            }
-
-            // Status Aggregation (If any variant is 'Low Stock', parent is 'Low Stock')
-            if ($row['status'] === 'Low Stock') {
-                $groupedProducts[$parentKey]['status'] = 'Low Stock';
-            }
-
-            // Stock Aggregation (Sum or minimum, depending on your business logic. Sum is usually safer.)
-            // NOTE: If you are relying on the main parent record for stock, this variant logic is wrong.
-            // Assuming you want the LOWEST stock among variants for 'stockQuantity' display:
-            $currentVariantStock = intval($row['stockQuantity']);
-            if (isset($groupedProducts[$parentKey]['stockQuantity'])) {
-                $groupedProducts[$parentKey]['stockQuantity'] = min($currentVariantStock, $groupedProducts[$parentKey]['stockQuantity']);
-            } else {
-                 $groupedProducts[$parentKey]['stockQuantity'] = $currentVariantStock;
-            }
         }
 
-        // Add variant
+        // FIX: Make sure we're using the actual variant name and hex code
         $groupedProducts[$parentKey]['variants'][] = [
             'id' => $row['id'],
-            'name' => $row['variant'] ?? $row['name'],
+            'name' => $row['variant'] ?? $row['name'],  // This should be "Rose", "Bear", etc.
+            'variant' => $row['variant'] ?? $row['name'],  // Add this field too
             'price' => floatval($row['price']),
             'image' => $row['variantImage'],
             'hexCode' => $row['hexCode'] ?? '#CCCCCC',
-            // Also add status/stock to the variant if needed for detailed view
-            'status' => $row['status'], 
-            'stockQuantity' => intval($row['stockQuantity']), 
+            'status' => $row['status'],
+            'stockQuantity' => intval($row['stockQuantity']),
         ];
+
+        error_log("Added variant: {$row['variant']} with hex: {$row['hexCode']} to parent: {$parentKey}");
     }
 }
-    
 // ===================== SAFETY CHECK ===================== //
 // Ensure all products have status and stockQuantity
 foreach ($groupedProducts as &$product) {
     if (!isset($product['status'])) {
-        $product['status'] = 'Available'; // Default status
+        $product['status'] = 'Available';  // Default status
     }
     if (!isset($product['stockQuantity'])) {
-        $product['stockQuantity'] = 0; // Default stock
+        $product['stockQuantity'] = 0;  // Default stock
     }
 }
+// Add this debug output in your PHP before the final output
+$debugInfo = [];
+foreach ($groupedProducts as $product) {
+    if (!empty($product['variants'])) {
+        $debugInfo[$product['id']] = [
+            'product_name' => $product['name'],
+            'variants' => array_map(function ($v) {
+                return [
+                    'variant_name' => $v['name'],
+                    'hexCode' => $v['hexCode'],
+                    'has_hex' => !empty($v['hexCode'])
+                ];
+            }, $product['variants'])
+        ];
+    }
+}
+
+error_log('DEBUG - Variant Hex Codes: ' . json_encode($debugInfo));
+
+// Also add this to your response for frontend debugging
+$response['debug_hex_codes'] = $debugInfo;
 
 // ===================== OUTPUT ===================== //
 $response = [
@@ -181,9 +168,8 @@ $response = [
         'fields_check' => !empty($groupedProducts) ? array_keys(reset($groupedProducts)) : []
     ]
 ];
-error_log("=== DEBUG SAMPLE PRODUCT ===");
+error_log('=== DEBUG SAMPLE PRODUCT ===');
 error_log(print_r(reset($groupedProducts), true));
-
 
 echo json_encode($response);
 $conn->close();
