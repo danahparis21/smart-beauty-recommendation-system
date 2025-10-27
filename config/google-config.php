@@ -1,16 +1,16 @@
 <?php
 // Google OAuth Configuration
-define('GOOGLE_CLIENT_ID', '1002579907182-03h0l3s7dend47reghc4j805herork3l.apps.googleusercontent.com');
-define('GOOGLE_CLIENT_SECRET', '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');
+define('GOOGLE_CLIENT_ID', '561361392985-e94cdftuvt3efrr8rkt8ikh7q8er2alv.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET', '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');
 define('GOOGLE_REDIRECT_URI', 'http://localhost:8000/user/php/google-callback.php');
 define('GOOGLE_LOGIN_REDIRECT_URI', 'http://localhost:8000/user/php/google-login-callback.php');
 
 // Email Configuration (for sending verification emails)
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
-define('SMTP_USERNAME', 'christianpaulmendoza10@gmail.com');
-define('SMTP_PASSWORD', 'ryhi tfdi ndwf asfv');
-define('SMTP_FROM_EMAIL', 'christianpaulmendoza10@gmail.com');
+define('SMTP_USERNAME', 'beautyandblessed.business@gmail.com');
+define('SMTP_PASSWORD', 'bhsx riiz eceg ryvw');
+define('SMTP_FROM_EMAIL', 'beautyandblessed.business@gmail.com');
 define('SMTP_FROM_NAME', 'Beauty & Blessed');
 
 // Base URL

@@ -112,40 +112,20 @@ if ($result->num_rows > 0) {
     $role = 'customer';
     $emailVerified = 0;
     $verificationToken = bin2hex(random_bytes(32));
-    $createdAt = date('Y-m-d H:i:s');
-
-    // Token valid for 3 days (72 hours)
-    $tokenExpiresAt = date('Y-m-d H:i:s', strtotime('+3 days'));
 
     // Insert new user (unverified)
-    $insert = $conn->prepare('
-        INSERT INTO users (username, first_name, last_name, Email, Role, email_verified, google_id, verification_token, verification_token_created_at, CreatedAt)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ');
-    $insert->bind_param(
-        'ssssisssss',
-        $username,
-        $firstName,
-        $lastName,
-        $email,
-        $role,
-        $emailVerified,
-        $googleId,
-        $verificationToken,
-        $tokenExpiresAt,
-        $createdAt
-    );
+    $insert = $conn->prepare('INSERT INTO users (username, first_name, last_name, Email, Role, email_verified, google_id, verification_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $insert->bind_param('sssssiss', $username, $firstName, $lastName, $email, $role, $emailVerified, $googleId, $verificationToken);
 
     if (!$insert->execute()) {
         echo '<script>alert("Database error during signup."); window.location.href="/user/html/signup.html";</script>';
         exit();
     }
 
-    $userId = $conn->insert_id;
     $insert->close();
 
     // ===== SEND VERIFICATION EMAIL =====
-    $emailSent = sendVerificationEmail($email, $firstName, $verificationToken, true);
+    $emailSent = sendVerificationEmail($email, $firstName, $verificationToken);
 
     if (!$emailSent) {
         echo '<script>alert("Failed to send verification email. Please contact support."); window.location.href="/user/html/signup.html";</script>';
@@ -165,7 +145,6 @@ if ($result->num_rows > 0) {
             .email { color: #ff69b4; font-weight: bold; font-size: 18px; margin: 20px 0; }
             .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 15px 35px; border: none; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; }
             .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
-            .note { font-size: 14px; color: #888; margin-top: 25px; }
         </style>
     </head>
     <body>
@@ -175,8 +154,7 @@ if ($result->num_rows > 0) {
             <p>We have sent a verification link to:</p>
             <div class="email">' . htmlspecialchars($email) . '</div>
             <p>Click the link in your inbox to activate your account.</p>
-            <p class="note">Note: This link will remain valid for <strong>3 days</strong>.</p>
-            <button class="btn" onclick="window.location.href=\'/user/html/signup.html\'">Back to Signup</button>
+            <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Go to Login</button>
         </div>
     </body>
     </html>';
