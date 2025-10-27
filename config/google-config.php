@@ -17,7 +17,7 @@ define('SMTP_FROM_NAME', 'Beauty & Blessed');
 define('BASE_URL', 'http://localhost:8000');
 
 // ===== DEVELOPMENT MODE =====
-define('DEV_MODE', false); // Set to false in production
+define('DEV_MODE', false);  // Set to false in production
 
 // Password Reset Token Expiry (1 hour)
 define('PASSWORD_RESET_EXPIRY', 3600);
