@@ -34,7 +34,7 @@ function handleFileUpload($fileInputName, $targetDir = 'uploads/')
 // --- COLLECT ALL INPUTS ---
 $type = $_POST['productType'];
 $name = $_POST['productName'];
-$category = $_POST['productCategory'];
+// $category = $_POST['productCategory'];
 $variantName = $_POST['productVariantName'];
 $price = $_POST['productPrice'];
 $description = $_POST['productDescription'];
@@ -44,6 +44,14 @@ $hexCode = $_POST['hexCode'] ?? null;
 if ($hexCode === '')
     $hexCode = null;
 $ingredients = $_POST['productIngredients'] ?? NULL;
+$category = null;
+if ($type === 'new') {
+    $category = $_POST['productCategory'] ?? null;
+    if (!$category) {
+        echo '❌ Error: Category is required for new product lines.';
+        exit;
+    }
+}
 
 // --- DUMMY---
 $productRating = 0;

@@ -275,6 +275,39 @@
         transform: translateY(-2px);
       }
 
+      .table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.search-box {
+  position: relative;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.search-box input {
+  padding-left: 40px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.search-box i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.sort-dropdown {
+  min-width: 180px;
+}
+
       /* Table Styles */
       .table-container {
         overflow-x: auto;
@@ -284,6 +317,7 @@
 
       .table {
         margin-bottom: 0;
+        min-width: 620px;
       }
 
       .table thead th {
@@ -294,9 +328,48 @@
         );
         color: white;
         font-weight: 600;
-        padding: 15px 12px;
         border: none;
+        cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  position: relative;
+  padding-right: 30px;
       }
+
+
+
+.table th:nth-child(4), /* Description header */
+.table td:nth-child(4) { 
+    max-width: 180px;
+    width: 180px; 
+}
+
+.table th:nth-child(2), /* name header */
+.table td:nth-child(2) { 
+    max-width: 150px; 
+    width: 150px; 
+}
+
+.table th:nth-child(3), /* category header */
+.table td:nth-child(3) {
+    max-width: 90px; 
+    width: 90px;
+}
+.table th:nth-child(1), /* image header */
+.table td:nth-child(1) { 
+    max-width: 120px; 
+    width: 120px; 
+}
+.table th:nth-child(5), /* shades header */
+.table td:nth-child(5) { 
+    max-width: 90px; 
+    width: 90px; 
+}
+.table th:nth-child(6), /* actions header */
+.table td:nth-child(6) { 
+    max-width: 90px; 
+    width: 90px; 
+}
 
       .table tbody tr {
         transition: all 0.3s ease;
@@ -531,7 +604,180 @@
   margin-top: 4px;
   color: #555;
 }
+#messageModal .modal-content {
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(227, 151, 170, 0.3);
+  border: none;
+  background: linear-gradient(135deg, #ffffff 0%, #fefafc 100%);
+  backdrop-filter: blur(10px);
+}
 
+#messageModal .modal-header {
+  padding: 1.5rem 2rem 0.5rem;
+  border-bottom: 1px solid rgba(227, 151, 170, 0.1);
+}
+
+#messageModal .modal-header .btn-close {
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+#messageModal .modal-header .btn-close:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+#messageModal .modal-body {
+  padding: 2rem 2rem 1.5rem;
+  text-align: center;
+}
+
+#messageModal .modal-footer {
+  padding: 0 2rem 2rem;
+  border-top: none;
+}
+
+/* Success Modal - Pink Theme */
+.modal-success .modal-content {
+  border-top: 4px solid var(--primary-pink);
+  background: linear-gradient(135deg, #ffffff 0%, #fff9fb 100%);
+}
+
+.modal-success #modalIcon {
+  color: var(--primary-pink);
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 12px rgba(227, 151, 170, 0.3);
+}
+
+.modal-success .modal-title {
+  color: var(--dark-pink);
+  font-weight: 600;
+}
+
+.modal-success #modalActionBtn {
+  background: linear-gradient(135deg, var(--primary-pink) 0%, var(--secondary-pink) 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 10px 30px;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(227, 151, 170, 0.4);
+  transition: all 0.3s ease;
+}
+
+.modal-success #modalActionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(227, 151, 170, 0.6);
+  background: linear-gradient(135deg, var(--secondary-pink) 0%, var(--dark-pink) 100%);
+}
+
+/* Error Modal - Soft Red Theme */
+.modal-error .modal-content {
+  border-top: 4px solid #ff6b8b;
+  background: linear-gradient(135deg, #ffffff 0%, #fff9fa 100%);
+}
+
+.modal-error #modalIcon {
+  color: #ff6b8b;
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 12px rgba(255, 107, 139, 0.3);
+}
+
+.modal-error .modal-title {
+  color: #e25573;
+  font-weight: 600;
+}
+
+.modal-error #modalActionBtn {
+  background: linear-gradient(135deg, #ff6b8b 0%, #ff8fa3 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 10px 30px;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(255, 107, 139, 0.4);
+  transition: all 0.3s ease;
+}
+
+.modal-error #modalActionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 139, 0.6);
+  background: linear-gradient(135deg, #ff8fa3 0%, #ff6b8b 100%);
+}
+
+/* Warning Modal - Gold Theme */
+.modal-warning .modal-content {
+  border-top: 4px solid #ffb74d;
+  background: linear-gradient(135deg, #ffffff 0%, #fffdf9 100%);
+}
+
+.modal-warning #modalIcon {
+  color: #ffb74d;
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 12px rgba(255, 183, 77, 0.3);
+}
+
+.modal-warning .modal-title {
+  color: #f57c00;
+  font-weight: 600;
+}
+
+.modal-warning #modalActionBtn {
+  background: linear-gradient(135deg, #ffb74d 0%, #ffcc80 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 10px 30px;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(255, 183, 77, 0.4);
+  color: #7d4a00;
+  transition: all 0.3s ease;
+}
+
+.modal-warning #modalActionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 183, 77, 0.6);
+  background: linear-gradient(135deg, #ffcc80 0%, #ffb74d 100%);
+}
+
+/* Modal Typography */
+#modalTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--dark-pink) 0%, var(--darker-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#modalMessage {
+  color: #6c757d;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* Modal Backdrop */
+.modal-backdrop {
+  background: rgba(255, 237, 242, 0.039);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+}
+
+/* Modal Animation */
+.modal.fade .modal-dialog {
+  transform: translateY(-50px) scale(0.9);
+  transition: all 0.3s ease;
+}
+
+.modal.show .modal-dialog {
+  transform: translateY(0) scale(1);
+}
 
       /* Responsive Design */
 
@@ -604,6 +850,18 @@
         .action-buttons {
           flex-direction: column;
         }
+        .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-box {
+    max-width: 100%;
+  }
+  
+  .sort-dropdown {
+    width: 100%;
+  }
       }
 
       /* Mobile Landscape (576px - 767px) */
@@ -662,6 +920,25 @@
         .page-header p {
           font-size: 0.9rem;
         }
+        #messageModal .modal-dialog {
+    margin: 1rem;
+  }
+  
+  #messageModal .modal-body {
+    padding: 1.5rem 1rem 1rem;
+  }
+  
+  #modalTitle {
+    font-size: 1.3rem;
+  }
+  
+  #modalMessage {
+    font-size: 1rem;
+  }
+  
+  #modalIcon {
+    font-size: 3rem;
+  }
 
         main {
           padding: 20px !important;
@@ -1168,7 +1445,7 @@ td div::-webkit-scrollbar {
                     />
                   </div>
               
-                  <div class="form-group parent-product-field">
+                  <div class="form-group">
                     <label for="productCategory" class="form-label">Category <span class="text-danger">*</span></label>
                     <div class="d-flex gap-2">
                         <select class="form-select" id="productCategorySelect" name="productCategory">
@@ -1226,7 +1503,7 @@ td div::-webkit-scrollbar {
                       class="form-control"
                       id="productDescription"
                       name="productDescription"
-                      rows="3"
+                      rows="1"
                       placeholder="Enter product description"
                     ></textarea>
                   </div>
@@ -1368,17 +1645,36 @@ td div::-webkit-scrollbar {
                 <h3 class="section-title">
                   <i class="fas fa-list"></i> Product List
                 </h3>
+                <!-- ADD THIS SECTION - Table Controls -->
+    <div class="table-controls">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="productSearch" class="form-control" placeholder="Search products...">
+      </div>
+      <div class="d-flex gap-2">
+        <select id="categoryFilter" class="form-select sort-dropdown">
+          <option value="">All Categories</option>
+          <!-- Categories will be populated dynamically -->
+        </select>
+        <select id="sortSelect" class="form-select sort-dropdown">
+          <option value="name-asc">Name: A to Z</option>
+          <option value="name-desc">Name: Z to A</option>
+          <option value="category-asc">Category: A to Z</option>
+          <option value="category-desc">Category: Z to A</option>
+        </select>
+      </div>
+    </div>
 
                 <div class="table-container">
                   <table class="table table-hover">
                     <thead>
                       <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th>Available Shades</th>
-                        <th>Actions</th>
+                         <th class="sortable" data-sort="image">Image</th>
+                                    <th class="sortable" data-sort="name">Name</th>
+                                    <th class="sortable" data-sort="category">Category</th>
+                                    <th class="sortable" data-sort="description">Description</th>
+                                    <th class="sortable" data-sort="status">Available Shades</th>
+                                    <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody id="productTableBody">
@@ -1431,6 +1727,30 @@ td div::-webkit-scrollbar {
       </div>
     </div>
 
+      <!-- Success/Error Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="messageModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="mb-3" id="modalIcon">
+          <!-- Icon will be inserted here -->
+        </div>
+        <h4 id="modalTitle" class="mb-2"></h4>
+        <p id="modalMessage" class="mb-0"></p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modalActionBtn">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -1440,6 +1760,7 @@ function toggleEditFormFields() {
     // This is the logic you already have.
     const isVariantMode = document.getElementById('typeNewVariant').checked;
     const parentProductGroup = document.getElementById("parentProductGroup"); 
+    const categorySelect = document.getElementById('productCategorySelect');
 
     const parentFields = document.querySelectorAll('.parent-product-field');
     const variantFields = document.querySelectorAll('.variant-product-field');
@@ -1449,11 +1770,13 @@ function toggleEditFormFields() {
         variantFields.forEach(el => el.classList.remove('d-none'));
         parentFields.forEach(el => el.classList.add('d-none'));
         if (parentProductGroup) parentProductGroup.classList.remove('d-none');
+        if (categorySelect) categorySelect.disabled = true;
     } else { 
         // Parent Update Mode
         parentFields.forEach(el => el.classList.remove('d-none'));
         variantFields.forEach(el => el.classList.add('d-none'));
         if (parentProductGroup) parentProductGroup.classList.add('d-none');
+        if (categorySelect) categorySelect.disabled = false;
     }
 }
 // Define loadCategories globally
@@ -1493,6 +1816,10 @@ function resetProductForm() {
     // This immediately reloads the current page, simulating a browser refresh.
     window.location.reload(); 
 }
+let currentSearch = '';
+let currentSort = 'name-asc';
+let currentCategory = '';
+let filteredProducts = [];
     
 document.addEventListener("DOMContentLoaded", function () {
     
@@ -1521,6 +1848,172 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const clearFormBtn = document.getElementById('clearFormBtn');
     const headerRefreshBtn = document.getElementById('headerRefreshBtn');
+    
+    const productSearch = document.getElementById('productSearch');
+const sortSelect = document.getElementById('sortSelect');
+const categoryFilter = document.getElementById('categoryFilter');
+const tableHeaders = document.querySelectorAll('th.sortable');
+
+
+// Search handler
+function handleSearch(e) {
+    currentSearch = e.target.value.toLowerCase();
+    
+    if (currentSearch === '') {
+        // If search is cleared, refresh to server pagination
+        fetchAndRenderProducts(1);
+    } else {
+        // If searching, use client-side filtering (no pagination)
+        renderFilteredProducts();
+    }
+}
+
+// Sort handler  
+function handleSortChange(e) {
+    currentSort = e.target.value;
+    
+    // Check if we have active filters
+    const hasActiveFilters = currentSearch || currentCategory;
+    
+    if (hasActiveFilters) {
+        // If filters are active, sort the filtered results
+        renderFilteredProducts();
+    } else {
+        // If no filters, fetch fresh data from server (standard paginated view)
+        fetchAndRenderProducts(1);
+    }
+}
+// Category filter handler
+function handleCategoryChange(e) {
+    currentCategory = e.target.value;
+    
+    if (currentCategory === '') {
+        // If "All Categories" is selected, refresh to standard server pagination
+        fetchAndRenderProducts(1);
+    } else {
+        // For specific categories, use client-side filtering (no pagination)
+        renderFilteredProducts();
+    }
+}
+// Toggle sort direction for table headers
+function toggleSort(header, sortField) {
+    // Reset all headers
+    tableHeaders.forEach(h => {
+        h.classList.remove('sort-asc', 'sort-desc');
+    });
+    
+    // Determine new sort direction
+    let sortDirection = 'asc';
+    if (header.classList.contains('sort-asc')) {
+        sortDirection = 'desc';
+    }
+    
+    // Apply to clicked header
+    header.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+    
+    // Update sort select to match
+    const sortValue = `${sortField}-${sortDirection}`;
+    sortSelect.value = sortValue;
+    currentSort = sortValue;
+    
+    filterAndRenderProducts();
+}
+
+// Filter and render products based on current filters
+function filterAndRenderProducts() {
+    if (!allProducts || allProducts.length === 0) return;
+    
+    // Apply search filter
+    let filtered = allProducts;
+    
+    if (currentSearch) {
+        filtered = filtered.filter(product => 
+            product.ParentName.toLowerCase().includes(currentSearch) ||
+            (product.Description && product.Description.toLowerCase().includes(currentSearch)) ||
+            (product.Category && product.Category.toLowerCase().includes(currentSearch))
+        );
+    }
+    
+    // Apply category filter
+    if (currentCategory) {
+        filtered = filtered.filter(product => 
+            product.Category === currentCategory
+        );
+    }
+    
+    // Apply sorting
+    filtered = sortProducts(filtered, currentSort);
+    
+    filteredProducts = filtered;
+    renderProducts(currentPage);
+}
+
+// Sort products based on current sort setting
+function sortProducts(products, sortSetting) {
+    const [field, direction] = sortSetting.split('-');
+    
+    return [...products].sort((a, b) => {
+        let aValue, bValue;
+        
+        switch(field) {
+            case 'name':
+                aValue = a.ParentName || '';
+                bValue = b.ParentName || '';
+                break;
+            case 'category':
+                aValue = a.Category || '';
+                bValue = b.Category || '';
+                break;
+            case 'description':
+                aValue = a.Description || '';
+                bValue = b.Description || '';
+                break;
+            case 'status':
+                aValue = a.Status || '';
+                bValue = b.Status || '';
+                break;
+            default:
+                return 0;
+        }
+        
+        // Convert to string for comparison
+        aValue = String(aValue).toLowerCase();
+        bValue = String(bValue).toLowerCase();
+        
+        if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+}
+// Populate category filter dropdown using your existing categories
+function populateCategoryFilter() {
+    // Use your existing loadCategories function but populate the filter dropdown instead
+    fetch("../php/fetch_categories.php") 
+        .then(res => {
+            if (!res.ok) throw new Error("Category fetch failed.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.success && data.categories && categoryFilter) {
+                
+                categoryFilter.innerHTML = '<option value="">All Categories</option>';
+                
+                data.categories.forEach(category => {
+                    if (category === 'All' && categoryFilter.options.length === 1) return;
+                    
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                });
+            } else {
+                console.error("Failed to load categories for filter:", data.message || "No categories found or select element missing.");
+            }
+        })
+        .catch(err => {
+            console.error("Error loading categories for filter:", err);
+        });
+}
 
     if (clearFormBtn) {
         clearFormBtn.addEventListener('click', function(e) {
@@ -1539,33 +2032,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const updateBtn = document.getElementById('updateProductBtn'); 
 
-if (updateBtn) {
+    if (updateBtn) {
     updateBtn.addEventListener('click', async (e) => {
-        e.preventDefault(); // Stop the default form submission
+        e.preventDefault();
 
-        // Use FormData to include file uploads
         const formData = new FormData(productForm); 
-        
-        // Add the ProductID and the Product Type to the form data
-        const productID = document.getElementById('hiddenProductID').value; // Hidden input stores the ID
+        const productID = document.getElementById('hiddenProductID').value;
         formData.append('ProductID', productID);
 
-        // Determine if we are updating a Parent or a Variant
         const isParentUpdate = document.getElementById('typeNewProduct').checked;
         formData.append('isParentUpdate', isParentUpdate ? 'true' : 'false');
-        // If editing a variant, include the parent ID
-const parentProductIDField = document.getElementById('hiddenParentProductID');
-if (parentProductIDField) {
-    const parentProductID = parentProductIDField.value;
-    formData.append('ParentProductID', parentProductID);
-}
-
-    // DEBUG: Log all form data being sent
-    console.log("📤 FORM DATA BEING SENT:");
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
+        
+        const parentProductIDField = document.getElementById('hiddenParentProductID');
+        if (parentProductIDField) {
+            const parentProductID = parentProductIDField.value;
+            formData.append('ParentProductID', parentProductID);
         }
 
+        // Show loading state
         updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
         updateBtn.disabled = true;
 
@@ -1575,36 +2059,54 @@ if (parentProductIDField) {
                 body: formData
             });
 
-            // FIRST get the raw text to see PHP response
             const rawResponse = await response.text();
             console.log("📄 RAW PHP RESPONSE:", rawResponse);
 
-            // THEN try to parse as JSON
             let result;
             try {
                 result = JSON.parse(rawResponse);
             } catch (jsonError) {
-                console.error("❌ JSON Parse Error - PHP returned HTML instead of JSON");
-                console.error("This means there's a PHP error. Check your PHP error logs.");
-                throw new Error("Server error - check PHP configuration");
+                console.error("❌ JSON Parse Error");
+                showModal('error', 'Server Error', 'There was a server error while updating the product. Please try again.');
+                return;
             }
 
             if (!response.ok || result.error) {
                 throw new Error(result.error || `HTTP error! status: ${response.status}`);
             }
 
-            alert('Product updated successfully!');
-            window.location.reload();
+            const productType = isParentUpdate ? 'Parent Product' : 'Variant';
+            showModal('success', `${productType} Updated!`, 
+                `Successfully updated the ${productType.toLowerCase()}!\n\nThe page will refresh automatically.`, 
+                true);
 
         } catch (error) {
             console.error('Update failed:', error);
-            alert('Failed to update product: ' + error.message);
+            showModal('error', 'Update Failed', `Failed to update product: ${error.message}`);
         } finally {
             updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Product';
             updateBtn.disabled = false;
         }
     });
 }
+if (productSearch) {
+        productSearch.addEventListener('input', handleSearch);
+    }
+    if (sortSelect) {
+        sortSelect.addEventListener('change', handleSortChange);
+    }
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', handleCategoryChange);
+    }
+    
+    if (tableHeaders) {
+        tableHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const sortField = header.getAttribute('data-sort');
+                toggleSort(header, sortField);
+            });
+        });
+    }
 
 document.getElementById('previewImage').addEventListener('change', function() {
         setupImagePreview(this, 'previewImagePreview');
@@ -1715,9 +2217,16 @@ addCategoryBtn.addEventListener('click', () => {
     }
 });
 
+const parentProductIDSelect = document.getElementById('parentProductID');
+    if (parentProductIDSelect) {
+        parentProductIDSelect.addEventListener('change', function() {
+            document.getElementById('hiddenParentProductID').value = this.value;
+            console.log("🔄 ParentProductID updated to:", this.value);
+        });
+    }
 
 function resetProductForm() {
-        // The one line that makes it work like a refresh
+
         window.location.reload(); 
     }
 
@@ -1730,7 +2239,7 @@ async function fetchAndRenderProducts(page = 1) {
     const tableBody = document.getElementById('productTableBody');
     const productCountSpan = document.getElementById('productCount');
     const paginationContainer = document.querySelector('.pagination');
-
+   
     tableBody.innerHTML = `
         <tr>
             <td colspan="6" class="text-center py-5">
@@ -1758,6 +2267,7 @@ const totalParents = data.total;
             paginationContainer.innerHTML = '';
             return;
         }
+        allProducts = productGroups;
 
         // PAGINATION LOGIC
         const totalPages = Math.ceil(totalParents / productsPerPage);
@@ -1952,8 +2462,8 @@ paginationContainer.querySelectorAll('.page-link').forEach(button => {
   });
 });
 
+populateCategoryFilter();
 
-        // AFTER (Listens only to collapse elements within the dynamic product table)
 
 // Locate the product table container (assuming the table is nearby or easy to select)
 const productTableBody = document.getElementById('productTableBody');
@@ -1991,66 +2501,361 @@ if (productTableBody) {
 }
 
 fetchAndRenderProducts();
-
 document.addEventListener('click', async function (e) {
-  const parentBtn = e.target.closest('.delete-parent-btn');
-  const variantBtn = e.target.closest('.delete-variant-btn');
+    const parentBtn = e.target.closest('.delete-parent-btn');
+    const variantBtn = e.target.closest('.delete-variant-btn');
 
-  // If parent delete button clicked
-  if (parentBtn) {
-    e.stopPropagation();
-    const productId = parentBtn.getAttribute('data-id');
-    const confirmed = confirm("Are you sure you want to delete this product? This will also delete all its variants.");
-    if (confirmed) {
-      await deleteProduct(productId, true);
+    if (parentBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        const productId = parentBtn.getAttribute('data-id');
+        const productName = parentBtn.closest('tr').querySelector('td:nth-child(2) span').textContent;
+        
+        // Store the product info for later use
+        window.pendingDelete = { id: productId, isParent: true };
+        
+        showModal('warning', 'Delete Product Line?', 
+            `Are you sure you want to delete "${productName}"?\n\nThis will also delete ALL its variants and cannot be undone.`);
+        return;
     }
-    return;
-  }
 
-  // If variant delete button clicked
-  if (variantBtn) {
-    e.stopPropagation();
-    const variantId = variantBtn.getAttribute('data-id');
-    const confirmed = confirm("Are you sure you want to delete this variant? This action cannot be undone.");
-    if (confirmed) {
-      await deleteProduct(variantId, false);
+    if (variantBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        const variantId = variantBtn.getAttribute('data-id');
+        const variantName = variantBtn.closest('tr').querySelector('td strong').textContent;
+        
+        // Store the variant info for later use
+        window.pendingDelete = { id: variantId, isParent: false };
+        
+        showModal('warning', 'Delete Variant?', 
+            `Are you sure you want to delete the variant "${variantName}"?\n\nThis action cannot be undone.`);
     }
-  }
 });
 
-async function deleteProduct(id, isParent) {
-  console.log("🧩 Deleting:", { id, isParent });
-
-  try {
-    const response = await fetch('../php/delete_product.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `id=${id}&isParent=${isParent ? 1 : 0}`
-    });
-
-    const text = await response.text();
-    console.log("🧾 Raw response:", text);
-
-    // Try to parse JSON only if it starts with { or [
-    if (text.trim().startsWith('{')) {
-      const result = JSON.parse(text);
-      if (result.success) {
-        alert(result.message);
-        location.reload();
-      } else {
-        alert("Failed: " + result.message);
-      }
-    } else {
-      console.error("⚠️ Invalid response (not JSON):", text);
-      alert("Server returned an unexpected response.");
+// Updated showModal function to handle delete confirmations
+function showModal(type, title, message, autoClose = false) {
+    const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+    const modalElement = document.getElementById('messageModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalActionBtn = document.getElementById('modalActionBtn');
+    
+    // Remove previous classes
+    modalElement.classList.remove('modal-success', 'modal-error', 'modal-warning');
+    
+    // Set styles based on type
+    switch(type) {
+        case 'success':
+            modalElement.classList.add('modal-success');
+            modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            modalActionBtn.className = 'btn';
+            modalActionBtn.textContent = 'Continue';
+            break;
+        case 'error':
+            modalElement.classList.add('modal-error');
+            modalIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            modalActionBtn.className = 'btn';
+            modalActionBtn.textContent = 'Try Again';
+            break;
+        case 'warning':
+            modalElement.classList.add('modal-warning');
+            modalIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+            modalActionBtn.className = 'btn';
+            modalActionBtn.textContent = 'Yes, Delete';
+            break;
     }
-
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    alert("An error occurred while deleting the product.");
-  }
+    
+    // Set content with better formatting
+    modalTitle.textContent = title;
+    modalMessage.innerHTML = message.replace(/\n/g, '<br>');
+    
+    // Clear previous event listeners
+    const newActionBtn = modalActionBtn.cloneNode(true);
+    modalActionBtn.parentNode.replaceChild(newActionBtn, modalActionBtn);
+    
+    // Set up event listener based on modal type
+    if (type === 'warning') {
+        newActionBtn.onclick = async function() {
+            modal.hide();
+            if (window.pendingDelete) {
+                await deleteProduct(window.pendingDelete.id, window.pendingDelete.isParent);
+                window.pendingDelete = null;
+            }
+        };
+    } else if (type === 'success') {
+        newActionBtn.onclick = function() {
+            modal.hide();
+            if (autoClose) {
+                window.location.reload();
+            }
+        };
+        
+        if (autoClose) {
+            setTimeout(() => {
+                modal.hide();
+                window.location.reload();
+            }, 2000);
+        }
+    } else {
+        newActionBtn.onclick = function() {
+            modal.hide();
+        };
+    }
+    
+    // Show modal
+    modal.show();
 }
 
+async function deleteProduct(id, isParent) {
+    console.log("🧩 Deleting:", { id, isParent });
+
+    try {
+        const response = await fetch('../php/delete_product.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${id}&isParent=${isParent ? 1 : 0}`
+        });
+
+        const text = await response.text();
+        console.log("🧾 Raw response:", text);
+
+        if (text.trim().startsWith('{')) {
+            const result = JSON.parse(text);
+            if (result.success) {
+                const productType = isParent ? 'Parent Product' : 'Variant';
+                showModal('success', `${productType} Deleted!`, 
+                    `${productType} has been successfully deleted!\n\nThe page will refresh automatically.`, 
+                    true);
+            } else {
+                showModal('error', 'Delete Failed', result.message || 'Failed to delete the product.');
+            }
+        } else {
+            showModal('error', 'Unexpected Response', 'Server returned an unexpected response.');
+        }
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        showModal('error', 'Delete Error', 'An error occurred while deleting the product.');
+    }
+}
+
+// ✅ ADD THIS NEW FUNCTION - Client-side filtering and rendering
+function renderFilteredProducts() {
+    if (!allProducts || allProducts.length === 0) return;
+    
+    const tableBody = document.getElementById('productTableBody');
+    const productCountSpan = document.getElementById('productCount');
+    const paginationContainer = document.querySelector('.pagination');
+    
+    // Apply filters
+    let filtered = allProducts;
+    
+    // Search filter
+    if (currentSearch) {
+        filtered = filtered.filter(product => 
+            (product.ParentName && product.ParentName.toLowerCase().includes(currentSearch)) ||
+            (product.Description && product.Description.toLowerCase().includes(currentSearch)) ||
+            (product.Category && product.Category.toLowerCase().includes(currentSearch))
+        );
+    }
+    
+    // Category filter
+    if (currentCategory) {
+        filtered = filtered.filter(product => 
+            product.Category === currentCategory
+        );
+    }
+    
+    // Sorting
+    filtered = sortProducts(filtered, currentSort);
+    
+    if (filtered.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h5>No Products Found</h5>
+                        <p>Try adjusting your search or filters</p>
+                    </div>
+                </td>
+            </tr>`;
+        productCountSpan.textContent = '0';
+        if (paginationContainer) paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    // Show ALL filtered results (no pagination for filtered results)
+    productCountSpan.textContent = filtered.length;
+    
+    // Render the products (using your existing rendering code)
+    tableBody.innerHTML = '';
+    let totalVariants = 0;
+
+    filtered.forEach(parent => {
+        const variants = parent.Variants || [];
+        totalVariants += variants.length;
+
+        const parentImage = parent.Image
+            ? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width80px;height:80px;object-fit:cover;border-radius:6px;">`
+            : `<div class="text-muted small">No Image</div>`;
+
+        // Parent Row (your existing code)
+        const parentRow = document.createElement('tr');
+        parentRow.classList.add('parent-product-row');
+        parentRow.setAttribute('data-product-id', parent.ProductID);
+        parentRow.setAttribute('data-bs-toggle', 'collapse');
+        parentRow.setAttribute('data-bs-target', `#variants-${parent.ProductID}`);
+        parentRow.setAttribute('aria-expanded', 'false');
+        parentRow.style.cursor = 'pointer';
+
+        parentRow.innerHTML = `
+            <td style="vertical-align: middle;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-chevron-right me-2 collapse-icon text-muted"></i>
+                    ${parentImage}
+                </div>
+            </td>
+            <td style="vertical-align: middle;">
+                <span style="font-size: 14px; font-weight: 600; color: #333;">
+                    ${parent.ParentName || parent.Name}
+                </span>
+            </td>
+            <td style="vertical-align: middle;">${parent.Category || 'N/A'}</td>
+            <td style="vertical-align: middle;">
+                <div style="
+                    max-height: 50px;
+                    overflow-y: auto;
+                    white-space: normal;
+                    font-size: 13px;
+                    padding-right: 4px;
+                ">
+                    ${parent.Description || 'N/A'}
+                </div>
+            </td>
+            <td style="vertical-align: middle;">
+            <span class="badge ${parent.Status.includes('No') ? 'bg-soft-red' : 'bg-success'}">
+                ${parent.Status}
+            </span>
+            </td>
+            <td class="text-nowrap" style="vertical-align: middle;">
+                <div class="d-flex flex-column align-items-start gap-1">
+                    <button class="btn btn-sm btn-primary edit-parent-btn" data-id="${parent.ProductID}"
+                        style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger delete-parent-btn" data-id="${parent.ProductID}"
+                        style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(parentRow);
+
+        // Variants (same as your existing code)
+        const variantsTableRows = variants
+            .filter(v => v.ShadeOrVariant?.toUpperCase() !== 'PARENT_GROUP')
+            .map(variant => {
+                const variantImage = variant.Image
+                    ? `<img src="${variant.Image}" alt="${variant.ShadeOrVariant || variant.Name}" 
+                            style="width:80px;height:80px;object-fit:cover;border-radius:4px;">`
+                    : `<div class="text-muted small">No Image</div>`;
+
+                const attributesHtml = `
+                    <span class="d-block text-muted small">Skin Type: <strong class="text-dark">${variant["Skin Type"] || 'N/A'}</strong></span>
+                    <span class="d-block text-muted small">Skin Tone: <strong class="text-dark">${variant["Skin Tone"] || 'N/A'}</strong></span>
+                    <span class="d-block text-muted small">Undertone: <strong class="text-dark">${variant["Undertone"] || 'N/A'}</strong></span>
+                    <span class="d-block text-muted small">Skin Concern: <strong class="text-dark">${variant["Skin Concern"] || 'N/A'}</strong></span>
+                    <span class="d-block text-muted small">Finish: <strong class="text-dark">${variant["Finish"] || 'N/A'}</strong></span>
+                `;
+
+                const statusColor = {
+                    'Available': 'success',
+                    'Low Stock': 'warning',
+                    'No Stock': 'danger',
+                    'Expired': 'secondary'
+                }[variant.Status] || 'secondary';
+
+                return `
+                    <tr class="variant-row" data-product-id="${variant.ProductID}">
+                        <td>${variantImage} 
+                            <strong>${variant.ShadeOrVariant || variant.Name || 'Unnamed Variant'}</strong>
+                        </td>
+                        <td>${attributesHtml}</td>
+                        <td>₱${parseFloat(variant.Price || 0).toFixed(2)}</td>
+                        <td>${variant.Stocks || 0}</td>
+                        <td>
+                            <span class="badge bg-${statusColor}">
+                                ${variant.Status || 'N/A'}
+                            </span>
+                        </td>
+                        <td class="text-nowrap">
+                            <div class="d-flex flex-column align-items-start gap-1">
+                                <button class="btn btn-sm btn-primary edit-variant-btn" data-id="${variant.ProductID}" style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-variant-btn" data-id="${variant.ProductID}" style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+        const variantsRow = document.createElement('tr');
+        variantsRow.classList.add('collapse-row');
+        variantsRow.innerHTML = `
+            <td colspan="6" class="p-0 border-0">
+                <div class="collapse" id="variants-${parent.ProductID}">
+                    <table class="table table-sm table-nested mb-0">
+                        <thead>
+                            <tr class="table-light">
+                                <th>Shade Name</th>
+                                <th>Attributes</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                            ${variantsTableRows}
+                        </tbody>
+                    </table>
+                </div>
+            </td>`;
+        tableBody.appendChild(variantsRow);
+    });
+
+    productCountSpan.textContent = filtered.length;
+    
+    // Hide pagination for filtered results (since we're showing all matching products)
+    if (paginationContainer) paginationContainer.innerHTML = '';
+
+    // Re-attach collapse event listeners
+    const productTableBody = document.getElementById('productTableBody');
+    if (productTableBody) {
+        productTableBody.querySelectorAll('.collapse').forEach(collapseEl => {
+            collapseEl.addEventListener('show.bs.collapse', function () {
+                const parentRow = document.querySelector(`[data-bs-target="#${this.id}"]`);
+                if (parentRow) {
+                    const icon = parentRow.querySelector('.collapse-icon');
+                    if (icon) icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
+                }
+            });
+            
+            collapseEl.addEventListener('hide.bs.collapse', function () {
+                const parentRow = document.querySelector(`[data-bs-target="#${this.id}"]`);
+                if (parentRow) {
+                    const icon = parentRow.querySelector('.collapse-icon');
+                    if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
+                }
+            });
+        });
+    }
+}
 
 
 function setupImagePreview(fileInput, previewElementId, imagePath = null) {
@@ -2132,8 +2937,6 @@ function setupImagePreview(fileInput, previewElementId, imagePath = null) {
         });
     }
 }
-
-// Function to switch form mode between 'Add' and 'Update'
 function setFormMode(mode, productID = null) {
     const title = document.getElementById('productFormTitle');
     const labelNewProduct = document.querySelector('label[for="typeNewProduct"]');
@@ -2144,7 +2947,7 @@ function setFormMode(mode, productID = null) {
 
     if (mode === 'update') {
         // --- A. Main Title and Buttons ---
-        title.innerHTML = '<i class="fas fa-edit"></i> Update Product'; // Keep general for now
+        title.innerHTML = '<i class="fas fa-edit"></i> Update Product';
         addBtn.classList.add('d-none');
         updateBtn.classList.remove('d-none');
         hiddenID.value = productID;
@@ -2157,12 +2960,16 @@ function setFormMode(mode, productID = null) {
             labelNewVariant.textContent = 'Update Variant (Shade/Size)';
         }
 
-        // --- C. Reset/Toggle state for parent/variant update ---
-        // When initially entering update mode, we don't know if it's parent or variant, 
-        // but since you call this *before* populateParentForm/populateVariantForm:
-        document.getElementById('typeNewProduct').checked = true;
-        // toggleEditFormFields(); // This toggle is handled by the populate function now.
-
+        // ✅ RE-ATTACH EVENT LISTENER when button becomes visible
+        if (updateBtn) {
+            // Remove any existing event listeners by cloning
+            updateBtn.replaceWith(updateBtn.cloneNode(true));
+            const newUpdateBtn = document.getElementById('updateProductBtn');
+            
+            // Add new event listener
+            newUpdateBtn.addEventListener('click', handleUpdateProduct);
+        }
+        
     } else { // 'add' mode
         // --- A. Main Title and Buttons ---
         title.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product';
@@ -2178,11 +2985,76 @@ function setFormMode(mode, productID = null) {
             labelNewVariant.textContent = 'New Variant (Shade/Size)';
         }
         
+        // ✅ Clear the hidden ParentProductID when in add mode
+        document.getElementById('hiddenParentProductID').value = '';
+        
+        // ✅ Enable category dropdown when in add mode
+        document.getElementById('productCategorySelect').disabled = false;
+        
         // Set to default 'new product line' state
         document.getElementById('typeNewProduct').checked = true;
     }
 }
 
+// Separate function for update logic
+async function handleUpdateProduct(e) {
+    e.preventDefault();
+    
+    const updateBtn = document.getElementById('updateProductBtn');
+    if (!updateBtn) return;
+
+    const formData = new FormData(productForm); 
+    const productID = document.getElementById('hiddenProductID').value;
+    formData.append('ProductID', productID);
+
+    const isParentUpdate = document.getElementById('typeNewProduct').checked;
+    formData.append('isParentUpdate', isParentUpdate ? 'true' : 'false');
+    
+    const parentProductIDField = document.getElementById('hiddenParentProductID');
+    if (parentProductIDField) {
+        const parentProductID = parentProductIDField.value;
+        formData.append('ParentProductID', parentProductID);
+    }
+
+    // Show loading state
+    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    updateBtn.disabled = true;
+
+    try {
+        const response = await fetch('../php/update_product.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const rawResponse = await response.text();
+        console.log("📄 RAW PHP RESPONSE:", rawResponse);
+
+        let result;
+        try {
+            result = JSON.parse(rawResponse);
+        } catch (jsonError) {
+            console.error("❌ JSON Parse Error");
+            showModal('error', 'Server Error', 'There was a server error while updating the product. Please try again.');
+            return;
+        }
+
+        if (!response.ok || result.error) {
+            throw new Error(result.error || `HTTP error! status: ${response.status}`);
+        }
+
+        const productType = isParentUpdate ? 'Parent Product' : 'Variant';
+        showModal('success', `${productType} Updated!`, 
+            `Successfully updated the ${productType.toLowerCase()}!\n\nThe page will refresh automatically.`, 
+            true);
+
+    } catch (error) {
+        console.error('Update failed:', error);
+        showModal('error', 'Update Failed', `Failed to update product: ${error.message}`);
+    } finally {
+        updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Product';
+        updateBtn.disabled = false;
+    }
+}
 // Function to populate the main form for Parent/Simple product
 function populateParentForm(data) {
     // 1. Set Form Mode & Title
@@ -2244,11 +3116,14 @@ function populateVariantForm(data) {
     document.getElementById('productStock').value = data.Stocks || 0; 
     document.getElementById('productPrice').value = data.Price || 0.00;
     document.getElementById('productExpiration').value = data.ExpirationDate || '';
+
+    document.getElementById('productCategorySelect').disabled = true;
     
-    
+
     // 3. Variant Fields
     document.getElementById('hexCode').value = data.HexCode || '';
     document.getElementById('productVariantName').value = data.ShadeOrVariant || '';
+    document.getElementById('hiddenParentProductID').value = data.ParentProductID || '';
    // 4. Debug parent product info
    console.log("📦 Variant Parent Data:", {
         variantID: data.ProductID,
@@ -2639,64 +3514,91 @@ document.getElementById('productTableBody').addEventListener('click', async (e) 
 
 
     productForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const productType = document.querySelector('input[name="productType"]:checked').value;
+    e.preventDefault();
+    const productType = document.querySelector('input[name="productType"]:checked').value;
+    
     if (!validateForm(productType)) {
+        showModal('error', 'Missing Information', 'Please fill in all required fields before submitting.');
         return; 
     }
-        const formData = new FormData(productForm);
-        //  DEBUG
+    
+    const formData = new FormData(productForm);
+    
+    // Show loading state
+    const addBtn = document.getElementById('addProductBtn');
+    const originalText = addBtn.innerHTML;
+    addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Product...';
+    addBtn.disabled = true;
+    
+    // DEBUG
     console.log("--- Form Data Contents ---");
-    let isDataEmpty = true;
     for (const [key, value] of formData.entries()) {
-        isDataEmpty = false;
-  
         if (value instanceof File) {
             console.log(`INPUT: ${key}: File - ${value.name} (${value.size} bytes)`);
         } else {
-           
             console.log(`INPUT: ${key}: "${value}"`);
         }
     }
-    if (isDataEmpty) {
-        console.warn("WARNING: FormData appears empty. Check form's 'name' attributes.");
-    }
     console.log("--------------------------");
-       
-      
-        //  Send data to backend
-        fetch("../php/add_product.php", {
+    
+    // Send data to backend
+    fetch("../php/add_product.php", {
         method: "POST",
         body: formData,
     })
     .then((res) => {
-       
         return res.text().then(text => {
             console.log("HTTP Status:", res.status); 
 
             if (!res.ok) {
-              
                 console.error("❌ Server Error Response:", text);
-                alert("Error adding product! See console for server message.");
-    
+                showModal('error', 'Error Adding Product', 'There was an error adding the product. Please check the console for details.');
                 throw new Error("Server response status not OK: " + text); 
             }
             return text;
         });
     })
     .then((response) => {
-        
         console.log("✅ Success:", response);
-        alert(response); // Show success message from PHP
-        productForm.reset();
-        toggleFormMode('new'); 
+        
+        // Parse the response to show appropriate message
+        if (response.includes('New product line and first variant')) {
+            const match = response.match(/Parent ID: (\w+), Variant ID: (\w+)/);
+            if (match) {
+                showModal('success', 'Product Line Created!', 
+                    `Successfully created new product line!\n\nParent Product: ${match[1]}\nFirst Variant: ${match[2]}\n\nThe page will refresh automatically.`, 
+                    true);
+            } else {
+                showModal('success', 'Product Line Created!', 
+                    'Successfully created new product line with first variant!\n\nThe page will refresh automatically.', 
+                    true);
+            }
+        } else if (response.includes('New variant added')) {
+            const match = response.match(/Variant ID: (\w+)/);
+            if (match) {
+                showModal('success', 'Variant Added!', 
+                    `Successfully added new variant!\n\nVariant ID: ${match[1]}\n\nThe page will refresh automatically.`, 
+                    true);
+            } else {
+                showModal('success', 'Variant Added!', 
+                    'Successfully added new variant!\n\nThe page will refresh automatically.', 
+                    true);
+            }
+        } else {
+            showModal('success', 'Success!', 
+                'Product operation completed successfully!\n\nThe page will refresh automatically.', 
+                true);
+        }
     })
     .catch((err) => {
-       
         console.error("🚨 Fetch/Network Error:", err);
-        if (!err.message.includes("Server response status not OK")) {
-             alert("Network error or client-side failure. Check console.");
-        }
+        showModal('error', 'Network Error', 
+            'A network error occurred while adding the product. Please check your connection and try again.');
+    })
+    .finally(() => {
+        // Restore button state
+        addBtn.innerHTML = originalText;
+        addBtn.disabled = false;
     });
 
 function validateForm(type) {
@@ -2733,6 +3635,63 @@ function validateForm(type) {
 
     return true;
 }
+
+// Modal message handler
+function showModal(type, title, message, autoClose = false) {
+    const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+    const modalElement = document.getElementById('messageModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalActionBtn = document.getElementById('modalActionBtn');
+    
+    // Remove previous classes
+    modalElement.classList.remove('modal-success', 'modal-error', 'modal-warning');
+    
+    // Set styles based on type
+    switch(type) {
+        case 'success':
+            modalElement.classList.add('modal-success');
+            modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            modalActionBtn.className = 'btn btn-success';
+            break;
+        case 'error':
+            modalElement.classList.add('modal-error');
+            modalIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            modalActionBtn.className = 'btn btn-danger';
+            break;
+        case 'warning':
+            modalElement.classList.add('modal-warning');
+            modalIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+            modalActionBtn.className = 'btn btn-warning';
+            break;
+    }
+    
+    // Set content
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    modalActionBtn.textContent = type === 'error' ? 'Try Again' : 'Continue';
+    
+    // Show modal
+    modal.show();
+    
+    // Auto close for success after 2 seconds
+    if (autoClose && type === 'success') {
+        setTimeout(() => {
+            modal.hide();
+            window.location.reload();
+        }, 2000);
+    }
+    
+    // Add event listener for the action button
+    modalActionBtn.onclick = function() {
+        modal.hide();
+        if (type === 'success') {
+            window.location.reload();
+        }
+    };
+}
+
 });
 });
     </script>

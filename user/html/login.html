@@ -1202,7 +1202,7 @@
 const googleLoginBtn = document.querySelector('.social-btn.google');
 googleLoginBtn.addEventListener('click', function() {
     const clientId = '1002579907182-03h0l3s7dend47reghc4j805herork3l.apps.googleusercontent.com';
-    const redirectUri = 'http://localhost:8000/user/php/google-login-callback.php';
+    const redirectUri = 'http://localhost:8080/user/php/google-login-callback.php';
     const scope = 'email profile';
 
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
