@@ -3,7 +3,7 @@
 define('GOOGLE_CLIENT_ID', '1002579907182-03h0l3s7dend47reghc4j805herork3l.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET', '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');
 define('GOOGLE_REDIRECT_URI', 'http://localhost:8000/user/php/google-callback.php');
-define('GOOGLE_LOGIN_REDIRECT_URI', 'http://localhost:8000/user/php/google-login-callback.php');
+define('GOOGLE_LOGIN_REDIRECT_URI', 'http://localhost:8000/user/php/google-callback.php');
 
 // Email Configuration (for sending verification emails)
 define('SMTP_HOST', 'smtp.gmail.com');
