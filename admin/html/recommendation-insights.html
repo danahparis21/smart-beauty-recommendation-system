@@ -42,16 +42,18 @@
     
     /* Sidebar */
     .sidebar {
-    position: fixed;          /* stays in place */
-    top: 0;
-    left: 0;
-    height: 100vh;            /* full screen height */
-    width: 220px;             /* fixed width */
-    background-color: #e497aa;
-    color: white;
-    overflow-y: auto;         /* scroll inside sidebar if needed */
-    z-index: 100;
-    padding-top: 20px;
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
+      color: white;
+      box-shadow: 3px 0 20px rgba(0,0,0,0.15);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 16.666667%;
+      height: 100vh;
+      z-index: 100;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
     }
     
     .sidebar .nav-link {
@@ -121,9 +123,12 @@
       letter-spacing: 0.5px;
     }
 
-    /* Main content */
+    /* Main content padding */
     main {
       padding: 35px !important;
+      margin-left: 16.666667%;
+      width: calc(100% - 16.666667%);
+      transition: margin-left 0.3s ease;
     }
 
     .page-header {
