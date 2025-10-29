@@ -308,34 +308,47 @@
   min-width: 180px;
 }
 
-      /* Table Styles */
-      .table-container {
-        overflow-x: auto;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      }
+/* Clean Table Styles */
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: white;
+}
 
-      .table {
-        margin-bottom: 0;
-        min-width: 620px;
-      }
+.table {
+  margin-bottom: 0;
+  min-width: 600px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
 
-      .table thead th {
-        background: linear-gradient(
-          135deg,
-          var(--primary-pink),
-          var(--secondary-pink)
-        );
-        color: white;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-  -webkit-user-select: none;
+/* Clean Header - Removed Gradient */
+.table thead th {
+  background: var(--primary-pink);
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
   user-select: none;
   position: relative;
-  padding-right: 30px;
-      }
+  padding: 16px 12px;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #e9ecef;
+}
 
+.table thead th.sortable:hover {
+  background: #c2335c;
+}
+
+/* Clean Cell Styling */
+.table tbody td {
+  padding: 14px 12px;
+  vertical-align: middle;
+  border-color: #f8f9fa;
+  font-size: 0.875rem;
+  color: #495057;
+}
 
 
 .table th:nth-child(4), /* Description header */
@@ -371,107 +384,191 @@
     width: 90px; 
 }
 
-      .table tbody tr {
-        transition: all 0.3s ease;
-      }
+/* Improved Hover Effect */
+.table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f8f9fa;
+}
 
-      .table tbody tr:hover {
-        background-color: rgba(228, 151, 170, 0.05);
-      }
+.table tbody tr:hover {
+  background-color: rgba(228, 151, 170, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
 
-      .table tbody td {
-        padding: 12px;
-        vertical-align: middle;
-        border-color: #f0f0f0;
-      }
+/* Enhanced Product Image */
+.product-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
 
-      .product-image {
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 8px;
-      }
+.product-image:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
 
-      .status-badge {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-      }
+/* Clean Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
 
-      .status-available {
-        background: rgba(40, 167, 69, 0.15);
-        color: #28a745;
-      }
+.status-available {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border-color: rgba(40, 167, 69, 0.2);
+}
 
-      .status-out-of-stock {
-        background: rgba(220, 53, 69, 0.15);
-        color: #dc3545;
-      }
+.status-out-of-stock {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border-color: rgba(220, 53, 69, 0.2);
+}
 
-      .status-archived {
-        background: rgba(108, 117, 125, 0.15);
-        color: #6c757d;
-      }
+.status-archived {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+  border-color: rgba(108, 117, 125, 0.2);
+}
 
-      .action-buttons {
-        display: flex;
-        gap: 8px;
-      }
+/* Improved Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
 
-      .action-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        border: none;
-      }
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+}
 
-      .btn-edit {
-        background: rgba(13, 110, 253, 0.1);
-        color: #0d6efd;
-      }
+.btn-edit {
+  background: rgba(13, 110, 253, 0.08);
+  color: #0d6efd;
+  border-color: rgba(13, 110, 253, 0.2);
+}
 
-      .btn-edit:hover {
-        background: #0d6efd;
-        color: white;
-      }
+.btn-edit:hover {
+  background: #0d6efd;
+  color: white;
+  transform: translateY(-1px);
+}
 
-      .btn-delete {
-        background: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-      }
+.btn-delete {
+  background: rgba(220, 53, 69, 0.08);
+  color: #dc3545;
+  border-color: rgba(220, 53, 69, 0.2);
+}
 
-      .btn-delete:hover {
-        background: #dc3545;
-        color: white;
-      }
+.btn-delete:hover {
+  background: #dc3545;
+  color: white;
+  transform: translateY(-1px);
+}
 
-      .btn-archive {
-        background: rgba(108, 117, 125, 0.1);
-        color: #6c757d;
-      }
+/* Enhanced Table Controls */
+.table-controls {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
+}
 
-      .btn-archive:hover {
-        background: #6c757d;
-        color: white;
-      }
+.search-box {
+  position: relative;
+  max-width: 300px;
+}
 
-      /* Empty State */
-      .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        color: #6c757d;
-      }
+.search-box .fas.fa-search {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
 
-      .empty-state i {
-        font-size: 3rem;
-        color: var(--primary-pink);
-        margin-bottom: 15px;
-      }
+.search-box .form-control {
+  padding-left: 40px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.sort-dropdown {
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  min-width: 160px;
+}
+
+/* Improved Nested Table */
+.table-nested {
+  background: #fafafa;
+  border-left: 4px solid var(--primary-pink);
+  margin: 8px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.table-nested th {
+  font-size: 0.8rem;
+  /* font-weight: 600; */
+   background: rgba(0, 0, 0, 0.02);
+  padding: 10px 8px;
+}
+
+.table-nested td {
+  font-size: 0.8rem;
+  padding: 8px;
+  background: white;
+}
+
+.variant-row {
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.variant-row:hover {
+  background: rgba(228, 151, 170, 0.05);
+}
+
+/* Better Collapse Icon */
+.collapse-icon {
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.collapse.show + .collapse-icon {
+  transform: rotate(90deg);
+}
+
+/* Improved Scrollbar */
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
 
       /* Mobile Header */
       .mobile-header {
@@ -1174,14 +1271,14 @@
 /* Styling for the nested table */
 .table-nested {
     width: 100%;
-    border-left: 5px solid #007bff; /* Blue line to distinguish variants */
+    border-left: 5px solid --primary-pink; /* Blue line to distinguish variants */
     margin-left: 10px;
     padding-left: 10px;
 }
 
 .table-nested th {
     font-size: 0.85rem;
-    font-weight: 600;
+    /* font-weight: 600; */
 }
 
 .table-nested td {
@@ -1289,9 +1386,9 @@ td div::-webkit-scrollbar {
           <!-- Page Header -->
           <div class="page-header">
             <h2 class="page-title">Product Management</h2>
-            <p class="text-muted">
+            <!-- <p class="text-muted">
               Manage your products, inventory, and categories.
-            </p>
+            </p> -->
           </div>
 
           <div class="row">
@@ -2304,7 +2401,7 @@ const totalParents = data.total;
         </div>
     </td>
     <td style="vertical-align: middle;">
-        <span style="font-size: 14px; font-weight: 600; color: #333;">
+        <span style="font-size: 14px; color: #333;">
             ${parent.ParentName || parent.Name}
         </span>
     </td>
@@ -2718,7 +2815,7 @@ function renderFilteredProducts() {
                 </div>
             </td>
             <td style="vertical-align: middle;">
-                <span style="font-size: 14px; font-weight: 600; color: #333;">
+                <span style="font-size: 14px; color: #333;">
                     ${parent.ParentName || parent.Name}
                 </span>
             </td>
