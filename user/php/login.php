@@ -15,7 +15,6 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
-
 function returnJsonResponse($success, $message, $data = [], $conn = null) {
     // Close database connection
     if ($conn && !$conn->connect_error) {

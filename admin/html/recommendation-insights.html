@@ -1,127 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Recommendation Insights - Beauty & Blessed</title>
 
+  <link rel="stylesheet" href="../styles/styles.css">
+
+
+  <!-- For Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
-    :root {
-      --primary-pink: #e497aa;
-      --secondary-pink: #db8299;
-      --dark-pink: #c36c82;
-      --darker-pink: #b05a70;
-      --light-bg: #f8f9fa;
-      --success-green: #28a745;
-      --warning-yellow: #ffc107;
-      --danger-red: #dc3545;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      background: linear-gradient(135deg, #fef5f8 0%, #f8f9fa 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow-x: hidden;
-    }
-    
-        /* Adjust main content so it doesn't overlap sidebar */
+    /* Adjust main content so it doesn't overlap sidebar */
     main {
-    margin-left: 220px;       /* same as sidebar width */
-    padding: 20px;
+      margin-left: 220px;
+      /* same as sidebar width */
+      padding: 20px;
     }
-    
-    /* Sidebar */
-    .sidebar {
-      min-height: 100vh;
-      background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
-      color: white;
-      box-shadow: 3px 0 20px rgba(0,0,0,0.15);
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 16.666667%;
-      height: 100vh;
-      z-index: 100;
-      transition: transform 0.3s ease;
-      overflow-y: auto;
-    }
-    
-    .sidebar .nav-link {
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 500;
-      margin: 8px 15px;
-      border-radius: 12px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      padding: 14px 18px;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .sidebar .nav-link::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: 4px;
-      background: white;
-      transform: scaleY(0);
-      transition: transform 0.3s ease;
-    }
-    
-    .sidebar .nav-link:hover::before,
-    .sidebar .nav-link.active::before {
-      transform: scaleY(1);
-    }
-    
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background: rgba(255, 255, 255, 0.25);
-      color: #fff;
-      transform: translateX(8px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .sidebar .nav-link i {
-      margin-right: 12px;
-      font-size: 1.1rem;
-      width: 20px;
-      text-align: center;
-    }
-    
-    .logo-container {
-      padding: 30px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    
-    .logo {
-      max-width: 140px;
-      display: block;
-      margin: 0 auto;
-      filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-    }
-    
-    .store-name {
-      margin-top: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
+
+
 
     /* Main content padding */
     main {
@@ -136,7 +40,7 @@
       padding-bottom: 20px;
       border-bottom: 2px solid rgba(228, 151, 170, 0.15);
     }
-    
+
     .page-title {
       color: var(--dark-pink);
       font-weight: 700;
@@ -144,7 +48,7 @@
       margin-bottom: 8px;
       letter-spacing: -0.5px;
     }
-    
+
     .page-header p {
       color: #6c757d;
       font-size: 1rem;
@@ -163,7 +67,7 @@
       background: white;
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
       transition: all 0.4s ease;
       border: 1px solid rgba(228, 151, 170, 0.1);
       position: relative;
@@ -188,7 +92,7 @@
 
     .stat-card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
     }
 
     .stat-card-header {
@@ -228,10 +132,25 @@
       color: #999;
     }
 
-    .success-bg { background: rgba(40, 167, 69, 0.1); color: var(--success-green); }
-    .warning-bg { background: rgba(255, 193, 7, 0.1); color: var(--warning-yellow); }
-    .danger-bg { background: rgba(220, 53, 69, 0.1); color: var(--danger-red); }
-    .primary-bg { background: rgba(228, 151, 170, 0.1); color: var(--primary-pink); }
+    .success-bg {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success-green);
+    }
+
+    .warning-bg {
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--warning-yellow);
+    }
+
+    .danger-bg {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger-red);
+    }
+
+    .primary-bg {
+      background: rgba(228, 151, 170, 0.1);
+      color: var(--primary-pink);
+    }
 
     /* Content Cards */
     .content-card {
@@ -239,13 +158,13 @@
       border-radius: 20px;
       padding: 30px;
       margin-bottom: 25px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       transition: all 0.4s ease;
       border: 1px solid rgba(228, 151, 170, 0.1);
     }
 
     .content-card:hover {
-      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
       transform: translateY(-4px);
     }
 
@@ -385,8 +304,13 @@
       font-size: 0.9rem;
     }
 
-    .thumbs-up { color: var(--success-green); }
-    .thumbs-down { color: var(--danger-red); }
+    .thumbs-up {
+      color: var(--success-green);
+    }
+
+    .thumbs-down {
+      color: var(--danger-red);
+    }
 
     .recommendation-score {
       display: flex;
@@ -608,6 +532,7 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -619,17 +544,28 @@
       animation: fadeInUp 0.6s ease forwards;
     }
 
-    .stat-card:nth-child(1) { animation-delay: 0.1s; }
-    .stat-card:nth-child(2) { animation-delay: 0.2s; }
-    .stat-card:nth-child(3) { animation-delay: 0.3s; }
-    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    .stat-card:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .stat-card:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .stat-card:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .stat-card:nth-child(4) {
+      animation-delay: 0.4s;
+    }
 
     /* Responsive Design */
     @media (max-width: 991px) {
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
-      
+
       .recommendation-item {
         flex-wrap: wrap;
       }
@@ -703,498 +639,452 @@
       }
     }
 
-    /* Mobile Header */
-.mobile-header {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
-  color: white;
-  padding: 15px 20px;
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-  height: 70px;
-}
+    /* Fix for main content on mobile devices */
+    @media (max-width: 991px) {
+      .mobile-header {
+        display: block;
+      }
 
-.mobile-header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 280px;
+        transform: translateX(-100%);
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
 
-.hamburger-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-}
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
 
-.hamburger-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
+      .sidebar-overlay.active {
+        display: block;
+      }
 
-.mobile-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+      main {
+        margin-top: 70px !important;
+        padding-top: 20px !important;
+        margin-left: 0 !important;
+      }
 
-.mobile-logo img {
-  height: 30px;
-  filter: brightness(0) invert(1);
-}
-
-.mobile-logo span {
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-/* Overlay for mobile menu */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 99;
-}
-
-/* Fix for main content on mobile devices */
-@media (max-width: 991px) {
-  .mobile-header {
-    display: block;
-  }
-  
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 280px;
-    transform: translateX(-100%);
-    z-index: 100;
-    transition: transform 0.3s ease;
-  }
-  
-  .sidebar.mobile-open {
-    transform: translateX(0);
-  }
-  
-  .sidebar-overlay.active {
-    display: block;
-  }
-  
-  main {
-    margin-top: 70px !important;
-    padding-top: 20px !important;
-    margin-left: 0 !important;
-  }
-  
-  .page-header {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-}
-
-/* For extra small screens */
-@media (max-width: 575px) {
-  main {
-    margin-top: 70px !important;
-    padding-top: 15px !important;
-    margin-left: 0 !important;
-  }
-}
-  </style>
-</head>
-<body>
-
-    <!-- Mobile Header -->
-<div class="mobile-header">
-  <div class="mobile-header-content">
-    <button class="hamburger-btn" id="hamburgerBtn">
-      <i class="fas fa-bars"></i>
-    </button>
-    <div class="mobile-logo">
-      <img src="images/mainlogo.png" alt="Store Logo">
-      <span>Beauty & Blessed</span>
-    </div>
-  </div>
-</div>
-
-<!-- Sidebar Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar -->
-    <nav class="col-md-2 d-md-block sidebar" id="sidebar">
-      <div class="logo-container">
-        <a href="admin.html">
-          <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
-        </a>
-        <div class="store-name">Beauty & Blessed</div>
-      <div class="nav flex-column">
-        <a href="product-management.html" class="nav-link">
-          <i class="fa-solid fa-box"></i>
-          <span>Product Management</span>
-        </a>
-        <a href="recommendation-insights.html" class="nav-link active">
-          <i class="fa-solid fa-lightbulb"></i>
-          <span>Recommendation Insights</span>
-        </a>
-        <a href="customer-managemnet.html" class="nav-link">
-          <i class="fa-solid fa-users"></i>
-          <span>Customer Management</span>
-        </a>
-        <a href="order-transactions.html" class="nav-link">
-          <i class="fa-solid fa-credit-card"></i>
-          <span>Order Transaction</span>
-        </a>
-        <a href="store-settings.html" class="nav-link">
-          <i class="fa-solid fa-gear"></i>
-          <span>Store Setting</span>
-        </a>
-        <a href="activity-log.html" class="nav-link">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <span>Activity Log</span>
-        </a>
-      </div>
-    </nav>
-
-    <!-- Main content -->
-    <main class="col-md-10">
-      <!-- Page Header -->
-      <div class="page-header">
-        <h2 class="page-title">Recommendation Insights</h2>
-        <p class="text-muted">AI-powered shade matching performance and customer feedback analytics</p>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <span class="stat-card-title">Success Rate</span>
-            <div class="stat-card-icon success-bg">
-              <i class="fa-solid fa-thumbs-up"></i>
-            </div>
-          </div>
-          <div class="stat-card-value">--</div>
-          <div class="stat-card-label">Positive Feedback</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <span class="stat-card-title">Total Recommendations</span>
-            <div class="stat-card-icon primary-bg">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-            </div>
-          </div>
-          <div class="stat-card-value">--</div>
-          <div class="stat-card-label">AI Suggestions Made</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <span class="stat-card-title">Customer Feedback</span>
-            <div class="stat-card-icon warning-bg">
-              <i class="fa-solid fa-comments"></i>
-            </div>
-          </div>
-          <div class="stat-card-value">--</div>
-          <div class="stat-card-label">Total Responses</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card-header">
-            <span class="stat-card-title">Avg. Match Score</span>
-            <div class="stat-card-icon primary-bg">
-              <i class="fa-solid fa-bullseye"></i>
-            </div>
-          </div>
-          <div class="stat-card-value">--</div>
-          <div class="stat-card-label">Accuracy Rating</div>
-        </div>
-      </div>
-
-      <!-- Most Recommended Products -->
-      <div class="content-card">
-        <div class="card-header-custom">
-          <h5 class="card-title">
-            <i class="fa-solid fa-ranking-star"></i>
-            Product Recommendation Performance
-          </h5>
-          <div class="filter-group">
-            <button class="filter-btn active">All Time</button>
-            <button class="filter-btn">This Month</button>
-            <button class="filter-btn">This Week</button>
-          </div>
-        </div>
-
-        <div class="recommendation-list">
-          <div class="recommendation-item">
-            <div class="recommendation-rank">#1</div>
-            <div class="recommendation-image">
-              <i class="fa-solid fa-droplet"></i>
-            </div>
-            <div class="recommendation-details">
-              <div class="recommendation-name">Foundation Shade [Product Name]</div>
-              <div class="recommendation-category">Foundation • Shade: Light Beige</div>
-              <div class="recommendation-stats">
-                <span class="stat-badge thumbs-up">
-                  <i class="fa-solid fa-thumbs-up"></i> --
-                </span>
-                <span class="stat-badge thumbs-down">
-                  <i class="fa-solid fa-thumbs-down"></i> --
-                </span>
-                <span class="stat-badge">
-                  <i class="fa-solid fa-eye"></i> -- views
-                </span>
-              </div>
-            </div>
-            <div class="recommendation-score">
-              <div class="score-value">--</div>
-              <div class="score-label">Success</div>
-            </div>
-          </div>
-
-          <div class="recommendation-item">
-            <div class="recommendation-rank">#2</div>
-            <div class="recommendation-image">
-              <i class="fa-solid fa-palette"></i>
-            </div>
-            <div class="recommendation-details">
-              <div class="recommendation-name">Lipstick [Product Name]</div>
-              <div class="recommendation-category">Lipstick • Shade: Rose Pink</div>
-              <div class="recommendation-stats">
-                <span class="stat-badge thumbs-up">
-                  <i class="fa-solid fa-thumbs-up"></i> --
-                </span>
-                <span class="stat-badge thumbs-down">
-                  <i class="fa-solid fa-thumbs-down"></i> --
-                </span>
-                <span class="stat-badge">
-                  <i class="fa-solid fa-eye"></i> -- views
-                </span>
-              </div>
-            </div>
-            <div class="recommendation-score">
-              <div class="score-value">--</div>
-              <div class="score-label">Success</div>
-            </div>
-          </div>
-
-          <div class="recommendation-item">
-            <div class="recommendation-rank">#3</div>
-            <div class="recommendation-image">
-              <i class="fa-solid fa-brush"></i>
-            </div>
-            <div class="recommendation-details">
-              <div class="recommendation-name">Blush [Product Name]</div>
-              <div class="recommendation-category">Blush • Shade: Coral</div>
-              <div class="recommendation-stats">
-                <span class="stat-badge thumbs-up">
-                  <i class="fa-solid fa-thumbs-up"></i> --
-                </span>
-                <span class="stat-badge thumbs-down">
-                  <i class="fa-solid fa-thumbs-down"></i> --
-                </span>
-                <span class="stat-badge">
-                  <i class="fa-solid fa-eye"></i> -- views
-                </span>
-              </div>
-            </div>
-            <div class="recommendation-score">
-              <div class="score-value">--</div>
-              <div class="score-label">Success</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Customer Preferences -->
-      <div class="content-card">
-        <div class="card-header-custom">
-          <h5 class="card-title">
-            <i class="fa-solid fa-heart"></i>
-            Customer Preferences & Trends
-          </h5>
-        </div>
-
-        <div class="preferences-grid">
-          <div class="preference-item">
-            <div class="preference-icon">
-              <i class="fa-solid fa-sun"></i>
-            </div>
-            <div class="preference-content">
-              <h6>Light Skin Tones</h6>
-              <div class="preference-count">--</div>
-              <div class="preference-label">customers</div>
-            </div>
-          </div>
-
-          <div class="preference-item">
-            <div class="preference-icon">
-              <i class="fa-solid fa-cloud-sun"></i>
-            </div>
-            <div class="preference-content">
-              <h6>Medium Skin Tones</h6>
-              <div class="preference-count">--</div>
-              <div class="preference-label">customers</div>
-            </div>
-          </div>
-
-          <div class="preference-item">
-            <div class="preference-icon">
-              <i class="fa-solid fa-moon"></i>
-            </div>
-            <div class="preference-content">
-              <h6>Deep Skin Tones</h6>
-              <div class="preference-count">--</div>
-              <div class="preference-label">customers</div>
-            </div>
-          </div>
-
-          <div class="preference-item">
-            <div class="preference-icon">
-              <i class="fa-solid fa-fire"></i>
-            </div>
-            <div class="preference-content">
-              <h6>Warm Undertones</h6>
-              <div class="preference-count">--</div>
-              <div class="preference-label">customers</div>
-            </div>
-          </div>
-
-          <div class="preference-item">
-            <div class="preference-icon">
-              <i class="fa-solid fa-snowflake"></i>
-            </div>
-            <div class="preference-content">
-              <h6>Cool Undertones</h6>
-              <div class="preference-count">--</div>
-              <div class="preference-label">customers</div>
-            </div>
-          </div>
-
-          <div class="preference-item">
-            <div class="preference-icon">
-              <i class="fa-solid fa-balance-scale"></i>
-            </div>
-            <div class="preference-content">
-              <h6>Neutral Undertones</h6>
-              <div class="preference-count">--</div>
-              <div class="preference-label">customers</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Feedback -->
-      <div class="content-card">
-        <div class="card-header-custom">
-          <h5 class="card-title">
-            <i class="fa-solid fa-message"></i>
-            Recent Customer Feedback
-          </h5>
-          <div class="filter-group">
-            <button class="filter-btn active">All</button>
-            <button class="filter-btn">Positive</button>
-            <button class="filter-btn">Negative</button>
-          </div>
-        </div>
-
-        <div class="placeholder-box">
-          <i class="fa-solid fa-inbox"></i>
-          <p>No customer feedback available yet</p>
-        </div>
-      </div>
-
-    </main>
-  </div>
-</div>
-
-<!-- Bootstrap 5 JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  // Mobile menu functionality
-const hamburgerBtn = document.getElementById('hamburgerBtn');
-const sidebar = document.getElementById('sidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-// Toggle sidebar on hamburger click
-if (hamburgerBtn && sidebar) {
-  hamburgerBtn.addEventListener('click', function() {
-    sidebar.classList.toggle('mobile-open');
-    if (sidebarOverlay) {
-      sidebarOverlay.classList.toggle('active');
-    }
-  });
-}
-
-// Close sidebar when overlay is clicked
-if (sidebarOverlay) {
-  sidebarOverlay.addEventListener('click', function() {
-    sidebar.classList.remove('mobile-open');
-    sidebarOverlay.classList.remove('active');
-  });
-}
-
-// Close sidebar when a nav link is clicked (on mobile)
-const navLinks = document.querySelectorAll('.sidebar .nav-link');
-navLinks.forEach(link => {
-  link.addEventListener('click', function() {
-    if (window.innerWidth < 992 && sidebar) {
-      sidebar.classList.remove('mobile-open');
-      if (sidebarOverlay) {
-        sidebarOverlay.classList.remove('active');
+      .page-header {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
       }
     }
-  });
-});
 
-// Adjust content padding based on mobile header
-function adjustContentForMobileHeader() {
-  const mobileHeader = document.querySelector('.mobile-header');
-  const mainContent = document.querySelector('main');
-  
-  if (window.innerWidth < 992 && mobileHeader && mainContent) {
-    const headerHeight = mobileHeader.offsetHeight;
-    mainContent.style.marginTop = `${headerHeight}px`;
-  } else if (mainContent) {
-    mainContent.style.marginTop = '';
-  }
-}
+    /* For extra small screens */
+    @media (max-width: 575px) {
+      main {
+        margin-top: 70px !important;
+        padding-top: 15px !important;
+        margin-left: 0 !important;
+      }
+    }
+  </style>
+</head>
 
-// Run on load and resize
-window.addEventListener('load', adjustContentForMobileHeader);
-window.addEventListener('resize', adjustContentForMobileHeader);
+<body>
 
-// Also run after sidebar toggle to ensure proper layout
-if (hamburgerBtn) {
-  hamburgerBtn.addEventListener('click', function() {
-    setTimeout(adjustContentForMobileHeader, 300);
-  });
-}
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <div class="mobile-header-content">
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="mobile-logo">
+        <img src="images/mainlogo.png" alt="Store Logo">
+        <span>Beauty & Blessed</span>
+      </div>
+    </div>
+  </div>
 
-// Filter button functionality
-document.querySelectorAll('.filter-group').forEach(group => {
-  group.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-2 d-md-block sidebar" id="sidebar">
+        <div class="logo-container">
+          <a href="admin.html">
+            <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
+          </a>
+          <div class="store-name">Beauty & Blessed</div>
+
+        </div>
+        <div class="nav flex-column">
+          <a href="product-management.html" class="nav-link">
+            <i class="fa-solid fa-box"></i>
+            <span>Product Management</span>
+          </a>
+          <a href="recommendation-insights.html" class="nav-link">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Recommendation Insights</span>
+          </a>
+          <a href="customer-managemnet.html" class="nav-link">
+            <i class="fa-solid fa-users"></i>
+            <span>Customer Management</span>
+          </a>
+          <a href="order-transactions.html" class="nav-link">
+            <i class="fa-solid fa-credit-card"></i>
+            <span>Order Transaction</span>
+          </a>
+          <a href="store-settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            <span>Store Setting</span>
+          </a>
+          <a href="activity-log.html" class="nav-link">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Activity Log</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-10">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h2 class="page-title">Recommendation Insights</h2>
+          <p class="text-muted">AI-powered shade matching performance and customer feedback analytics</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Success Rate</span>
+              <div class="stat-card-icon success-bg">
+                <i class="fa-solid fa-thumbs-up"></i>
+              </div>
+            </div>
+            <div class="stat-card-value">--</div>
+            <div class="stat-card-label">Positive Feedback</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Total Recommendations</span>
+              <div class="stat-card-icon primary-bg">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+            </div>
+            <div class="stat-card-value">--</div>
+            <div class="stat-card-label">AI Suggestions Made</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Customer Feedback</span>
+              <div class="stat-card-icon warning-bg">
+                <i class="fa-solid fa-comments"></i>
+              </div>
+            </div>
+            <div class="stat-card-value">--</div>
+            <div class="stat-card-label">Total Responses</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Avg. Match Score</span>
+              <div class="stat-card-icon primary-bg">
+                <i class="fa-solid fa-bullseye"></i>
+              </div>
+            </div>
+            <div class="stat-card-value">--</div>
+            <div class="stat-card-label">Accuracy Rating</div>
+          </div>
+        </div>
+
+        <!-- Most Recommended Products -->
+        <div class="content-card">
+          <div class="card-header-custom">
+            <h5 class="card-title">
+              <i class="fa-solid fa-ranking-star"></i>
+              Product Recommendation Performance
+            </h5>
+            <div class="filter-group">
+              <button class="filter-btn active">All Time</button>
+              <button class="filter-btn">This Month</button>
+              <button class="filter-btn">This Week</button>
+            </div>
+          </div>
+
+          <div class="recommendation-list">
+            <div class="recommendation-item">
+              <div class="recommendation-rank">#1</div>
+              <div class="recommendation-image">
+                <i class="fa-solid fa-droplet"></i>
+              </div>
+              <div class="recommendation-details">
+                <div class="recommendation-name">Foundation Shade [Product Name]</div>
+                <div class="recommendation-category">Foundation • Shade: Light Beige</div>
+                <div class="recommendation-stats">
+                  <span class="stat-badge thumbs-up">
+                    <i class="fa-solid fa-thumbs-up"></i> --
+                  </span>
+                  <span class="stat-badge thumbs-down">
+                    <i class="fa-solid fa-thumbs-down"></i> --
+                  </span>
+                  <span class="stat-badge">
+                    <i class="fa-solid fa-eye"></i> -- views
+                  </span>
+                </div>
+              </div>
+              <div class="recommendation-score">
+                <div class="score-value">--</div>
+                <div class="score-label">Success</div>
+              </div>
+            </div>
+
+            <div class="recommendation-item">
+              <div class="recommendation-rank">#2</div>
+              <div class="recommendation-image">
+                <i class="fa-solid fa-palette"></i>
+              </div>
+              <div class="recommendation-details">
+                <div class="recommendation-name">Lipstick [Product Name]</div>
+                <div class="recommendation-category">Lipstick • Shade: Rose Pink</div>
+                <div class="recommendation-stats">
+                  <span class="stat-badge thumbs-up">
+                    <i class="fa-solid fa-thumbs-up"></i> --
+                  </span>
+                  <span class="stat-badge thumbs-down">
+                    <i class="fa-solid fa-thumbs-down"></i> --
+                  </span>
+                  <span class="stat-badge">
+                    <i class="fa-solid fa-eye"></i> -- views
+                  </span>
+                </div>
+              </div>
+              <div class="recommendation-score">
+                <div class="score-value">--</div>
+                <div class="score-label">Success</div>
+              </div>
+            </div>
+
+            <div class="recommendation-item">
+              <div class="recommendation-rank">#3</div>
+              <div class="recommendation-image">
+                <i class="fa-solid fa-brush"></i>
+              </div>
+              <div class="recommendation-details">
+                <div class="recommendation-name">Blush [Product Name]</div>
+                <div class="recommendation-category">Blush • Shade: Coral</div>
+                <div class="recommendation-stats">
+                  <span class="stat-badge thumbs-up">
+                    <i class="fa-solid fa-thumbs-up"></i> --
+                  </span>
+                  <span class="stat-badge thumbs-down">
+                    <i class="fa-solid fa-thumbs-down"></i> --
+                  </span>
+                  <span class="stat-badge">
+                    <i class="fa-solid fa-eye"></i> -- views
+                  </span>
+                </div>
+              </div>
+              <div class="recommendation-score">
+                <div class="score-value">--</div>
+                <div class="score-label">Success</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Preferences -->
+        <div class="content-card">
+          <div class="card-header-custom">
+            <h5 class="card-title">
+              <i class="fa-solid fa-heart"></i>
+              Customer Preferences & Trends
+            </h5>
+          </div>
+
+          <div class="preferences-grid">
+            <div class="preference-item">
+              <div class="preference-icon">
+                <i class="fa-solid fa-sun"></i>
+              </div>
+              <div class="preference-content">
+                <h6>Light Skin Tones</h6>
+                <div class="preference-count">--</div>
+                <div class="preference-label">customers</div>
+              </div>
+            </div>
+
+            <div class="preference-item">
+              <div class="preference-icon">
+                <i class="fa-solid fa-cloud-sun"></i>
+              </div>
+              <div class="preference-content">
+                <h6>Medium Skin Tones</h6>
+                <div class="preference-count">--</div>
+                <div class="preference-label">customers</div>
+              </div>
+            </div>
+
+            <div class="preference-item">
+              <div class="preference-icon">
+                <i class="fa-solid fa-moon"></i>
+              </div>
+              <div class="preference-content">
+                <h6>Deep Skin Tones</h6>
+                <div class="preference-count">--</div>
+                <div class="preference-label">customers</div>
+              </div>
+            </div>
+
+            <div class="preference-item">
+              <div class="preference-icon">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+              <div class="preference-content">
+                <h6>Warm Undertones</h6>
+                <div class="preference-count">--</div>
+                <div class="preference-label">customers</div>
+              </div>
+            </div>
+
+            <div class="preference-item">
+              <div class="preference-icon">
+                <i class="fa-solid fa-snowflake"></i>
+              </div>
+              <div class="preference-content">
+                <h6>Cool Undertones</h6>
+                <div class="preference-count">--</div>
+                <div class="preference-label">customers</div>
+              </div>
+            </div>
+
+            <div class="preference-item">
+              <div class="preference-icon">
+                <i class="fa-solid fa-balance-scale"></i>
+              </div>
+              <div class="preference-content">
+                <h6>Neutral Undertones</h6>
+                <div class="preference-count">--</div>
+                <div class="preference-label">customers</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Feedback -->
+        <div class="content-card">
+          <div class="card-header-custom">
+            <h5 class="card-title">
+              <i class="fa-solid fa-message"></i>
+              Recent Customer Feedback
+            </h5>
+            <div class="filter-group">
+              <button class="filter-btn active">All</button>
+              <button class="filter-btn">Positive</button>
+              <button class="filter-btn">Negative</button>
+            </div>
+          </div>
+
+          <div class="placeholder-box">
+            <i class="fa-solid fa-inbox"></i>
+            <p>No customer feedback available yet</p>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Mobile menu functionality
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    // Toggle sidebar on hamburger click
+    if (hamburgerBtn && sidebar) {
+      hamburgerBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('mobile-open');
+        if (sidebarOverlay) {
+          sidebarOverlay.classList.toggle('active');
+        }
+      });
+    }
+
+    // Close sidebar when overlay is clicked
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', function () {
+        sidebar.classList.remove('mobile-open');
+        sidebarOverlay.classList.remove('active');
+      });
+    }
+
+    // Close sidebar when a nav link is clicked (on mobile)
+    const navLinks = document.querySelectorAll('.sidebar .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function () {
+        if (window.innerWidth < 992 && sidebar) {
+          sidebar.classList.remove('mobile-open');
+          if (sidebarOverlay) {
+            sidebarOverlay.classList.remove('active');
+          }
+        }
+      });
+    });
+
+    // Adjust content padding based on mobile header
+    function adjustContentForMobileHeader() {
+      const mobileHeader = document.querySelector('.mobile-header');
+      const mainContent = document.querySelector('main');
+
+      if (window.innerWidth < 992 && mobileHeader && mainContent) {
+        const headerHeight = mobileHeader.offsetHeight;
+        mainContent.style.marginTop = `${headerHeight}px`;
+      } else if (mainContent) {
+        mainContent.style.marginTop = '';
+      }
+    }
+
+    // Run on load and resize
+    window.addEventListener('load', adjustContentForMobileHeader);
+    window.addEventListener('resize', adjustContentForMobileHeader);
+
+    // Also run after sidebar toggle to ensure proper layout
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', function () {
+        setTimeout(adjustContentForMobileHeader, 300);
+      });
+    }
+
+    // Filter button functionality
+    document.querySelectorAll('.filter-group').forEach(group => {
+      group.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    });
+    // Highlight active sidebar link based on current URL
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.sidebar .nav-link');
+    const currentPath = window.location.pathname.split('/').pop();
+
+    navLinks.forEach(link => {
+      const linkPath = link.getAttribute('href');
+      if (linkPath === currentPath) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
     });
   });
-});
-</script>
+  </script>
 
 </body>
+
 </html

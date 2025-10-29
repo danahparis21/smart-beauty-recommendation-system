@@ -1,1210 +1,961 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Store Settings</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Store Settings</title>
 
-    <style>
-      :root {
-        --primary-pink: #e497aa;
-        --secondary-pink: #db8299;
-        --dark-pink: #c36c82;
-        --darker-pink: #b05a70;
-        --light-bg: #f8f9fa;
-        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      }
+  <link rel="stylesheet" href="../styles/styles.css">
+  <!-- For Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
 
-      body {
-        background: linear-gradient(135deg, #fef5f8 0%, #f8f9fa 100%);
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        overflow-x: hidden;
-      }
+  <style>
+    /* Page header */
+    .page-header {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+    }
 
-      /* Mobile Header */
+    .page-title {
+      color: var(--dark-pink);
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+      color: #6c757d;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    /* Main content padding */
+    main {
+      padding: 35px !important;
+      margin-left: 16.666667%;
+      width: calc(100% - 16.666667%);
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Settings Container */
+    .settings-container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 25px;
+    }
+
+    /* Settings Navigation - Fixed */
+    .settings-nav {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .settings-nav-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .settings-nav-item:hover {
+      background: rgba(228, 151, 170, 0.05);
+      color: var(--dark-pink);
+    }
+
+    .settings-nav-item.active {
+      background: rgba(228, 151, 170, 0.1);
+      color: var(--dark-pink);
+      font-weight: 600;
+    }
+
+    .settings-nav-item i {
+      margin-right: 12px;
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Settings Content - Scrollable */
+    .settings-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
+    }
+
+    .settings-section {
+      display: none;
+    }
+
+    .settings-section.active {
+      display: block;
+    }
+
+    .section-title {
+      color: var(--dark-pink);
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(228, 151, 170, 0.1);
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-pink);
+      box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
+      outline: none;
+    }
+
+    .form-text {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-top: 5px;
+    }
+
+    /* Logo Upload */
+    .logo-upload {
+      text-align: center;
+      padding: 30px;
+      border: 2px dashed #e0e0e0;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logo-upload:hover {
+      border-color: var(--primary-pink);
+      background: rgba(228, 151, 170, 0.02);
+    }
+
+    .logo-upload i {
+      font-size: 3rem;
+      color: #6c757d;
+      margin-bottom: 15px;
+    }
+
+    .logo-upload-text {
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+
+    .logo-upload-btn {
+      background: var(--primary-pink);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logo-upload-btn:hover {
+      background: var(--secondary-pink);
+    }
+
+    .logo-preview {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .logo-preview img {
+      max-width: 200px;
+      max-height: 100px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e0e0e0;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.toggle-slider {
+      background-color: var(--primary-pink);
+    }
+
+    input:checked+.toggle-slider:before {
+      transform: translateX(30px);
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    /* Color Picker */
+    .color-picker {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .color-option {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .color-option:hover {
+      transform: scale(1.05);
+    }
+
+    .color-option.active {
+      border-color: #333;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Save Button */
+    .save-actions {
+      position: sticky;
+      bottom: 0;
+      background: white;
+      padding: 20px 0;
+      border-top: 1px solid #e0e0e0;
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+    }
+
+    .save-btn {
+      background: var(--primary-pink);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .save-btn:hover {
+      background: var(--secondary-pink);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .cancel-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .cancel-btn:hover {
+      background: #5a6268;
+    }
+
+    /* Confirmation Modal */
+    .confirmation-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .confirmation-modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-icon {
+      font-size: 4rem;
+      color: var(--primary-pink);
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      color: var(--dark-pink);
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .modal-text {
+      color: #6c757d;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-btn.confirm {
+      background: var(--primary-pink);
+      color: white;
+    }
+
+    .modal-btn.confirm:hover {
+      background: var(--secondary-pink);
+    }
+
+    .modal-btn.cancel {
+      background: #6c757d;
+      color: white;
+    }
+
+    .modal-btn.cancel:hover {
+      background: #5a6268;
+    }
+
+    /* Scrollable Content Area */
+    .scrollable-content {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .scrollable-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb {
+      background: var(--primary-pink);
+      border-radius: 10px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb:hover {
+      background: var(--dark-pink);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
       .mobile-header {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        background: linear-gradient(
-          180deg,
-          var(--primary-pink) 0%,
-          var(--darker-pink) 100%
-        );
-        color: white;
-        padding: 15px 20px;
-        z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        display: block;
       }
 
-      .mobile-header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .hamburger-btn {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-      }
-
-      .hamburger-btn:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-
-      .mobile-logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .mobile-logo img {
-        height: 30px;
-        filter: brightness(0) invert(1);
-      }
-
-      .mobile-logo span {
-        font-weight: 600;
-        font-size: 1.1rem;
-      }
-
-      /* Sidebar */
       .sidebar {
-        min-height: 100vh;
-        background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
-        color: white;
-        box-shadow: 3px 0 20px rgba(0,0,0,0.15);
         position: fixed;
         top: 0;
         left: 0;
-        width: 16.666667%;
-        height: 100vh;
+        height: 100%;
+        width: 280px;
+        transform: translateX(-100%);
         z-index: 100;
-        transition: transform 0.3s ease;
-        overflow-y: auto;
       }
 
-      .sidebar .nav-link {
-        color: rgba(255, 255, 255, 0.85);
-        font-weight: 500;
-        margin: 8px 15px;
-        border-radius: 12px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        padding: 14px 18px;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
+      .sidebar.mobile-open {
+        transform: translateX(0);
       }
 
-      .sidebar .nav-link::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 4px;
-        background: white;
-        transform: scaleY(0);
-        transition: transform 0.3s ease;
-      }
-
-      .sidebar .nav-link:hover::before,
-      .sidebar .nav-link.active::before {
-        transform: scaleY(1);
-      }
-
-      .sidebar .nav-link:hover,
-      .sidebar .nav-link.active {
-        background: rgba(255, 255, 255, 0.25);
-        color: #fff;
-        transform: translateX(8px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      .sidebar .nav-link i {
-        margin-right: 12px;
-        font-size: 1.1rem;
-        width: 20px;
-        text-align: center;
-      }
-
-      .logo-container {
-        padding: 30px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        margin-bottom: 15px;
-        text-align: center;
-      }
-
-      .logo {
-        max-width: 140px;
+      .sidebar-overlay.active {
         display: block;
-        margin: 0 auto;
-        filter: brightness(0) invert(1)
-          drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       }
 
-      .store-name {
-        margin-top: 12px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-      }
-
-      /* Overlay for mobile menu */
-      .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 99;
-      }
-
-      /* Page header */
-      .page-header {
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid rgba(228, 151, 170, 0.15);
-      }
-
-      .page-title {
-        color: var(--dark-pink);
-        font-weight: 700;
-        font-size: 2rem;
-        margin-bottom: 8px;
-        letter-spacing: -0.5px;
-      }
-
-      .page-header p {
-        color: #6c757d;
-        font-size: 1rem;
-        margin: 0;
-      }
-
-      /* Main content padding */
       main {
-        padding: 35px !important;
-        margin-left: 16.666667%;
-        width: calc(100% - 16.666667%);
-        transition: margin-left 0.3s ease;
+        margin-left: 0 !important;
+        width: 100% !important;
+        margin-top: 70px;
       }
 
-      /* Settings Container */
       .settings-container {
-        display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 25px;
+        grid-template-columns: 1fr;
       }
 
-      /* Settings Navigation - Fixed */
       .settings-nav {
-        background: white;
-        border-radius: 20px;
-        padding: 25px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(228, 151, 170, 0.1);
-        height: fit-content;
-        position: sticky;
-        top: 20px;
-      }
-
-      .settings-nav-item {
-        display: flex;
-        align-items: center;
-        padding: 15px 20px;
-        margin-bottom: 10px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        color: #6c757d;
-        font-weight: 500;
-      }
-
-      .settings-nav-item:hover {
-        background: rgba(228, 151, 170, 0.05);
-        color: var(--dark-pink);
-      }
-
-      .settings-nav-item.active {
-        background: rgba(228, 151, 170, 0.1);
-        color: var(--dark-pink);
-        font-weight: 600;
-      }
-
-      .settings-nav-item i {
-        margin-right: 12px;
-        font-size: 1.1rem;
-        width: 20px;
-        text-align: center;
-      }
-
-      /* Settings Content - Scrollable */
-      .settings-content {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(228, 151, 170, 0.1);
-      }
-
-      .settings-section {
-        display: none;
-      }
-
-      .settings-section.active {
-        display: block;
-      }
-
-      .section-title {
-        color: var(--dark-pink);
-        font-weight: 700;
-        font-size: 1.5rem;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid rgba(228, 151, 170, 0.1);
-      }
-
-      /* Form Styles */
-      .form-group {
-        margin-bottom: 25px;
-      }
-
-      .form-label {
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 8px;
-        display: block;
-      }
-
-      .form-control {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-      }
-
-      .form-control:focus {
-        border-color: var(--primary-pink);
-        box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
-        outline: none;
-      }
-
-      .form-text {
-        font-size: 0.85rem;
-        color: #6c757d;
-        margin-top: 5px;
-      }
-
-      /* Logo Upload */
-      .logo-upload {
-        text-align: center;
-        padding: 30px;
-        border: 2px dashed #e0e0e0;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .logo-upload:hover {
-        border-color: var(--primary-pink);
-        background: rgba(228, 151, 170, 0.02);
-      }
-
-      .logo-upload i {
-        font-size: 3rem;
-        color: #6c757d;
-        margin-bottom: 15px;
-      }
-
-      .logo-upload-text {
-        color: #6c757d;
-        margin-bottom: 10px;
-      }
-
-      .logo-upload-btn {
-        background: var(--primary-pink);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .logo-upload-btn:hover {
-        background: var(--secondary-pink);
-      }
-
-      .logo-preview {
-        text-align: center;
-        margin-top: 20px;
-      }
-
-      .logo-preview img {
-        max-width: 200px;
-        max-height: 100px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      /* Toggle Switch */
-      .toggle-switch {
         position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 30px;
-      }
-
-      .toggle-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-
-      .toggle-slider {
-        position: absolute;
-        cursor: pointer;
         top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #e0e0e0;
-        transition: 0.4s;
-        border-radius: 34px;
       }
+    }
 
-      .toggle-slider:before {
-        position: absolute;
-        content: "";
-        height: 22px;
-        width: 22px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: 0.4s;
-        border-radius: 50%;
-      }
-
-      input:checked + .toggle-slider {
-        background-color: var(--primary-pink);
-      }
-
-      input:checked + .toggle-slider:before {
-        transform: translateX(30px);
-      }
-
-      .toggle-label {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-      }
-
-      /* Color Picker */
-      .color-picker {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-      }
-
-      .color-option {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        cursor: pointer;
-        border: 3px solid transparent;
-        transition: all 0.3s ease;
-      }
-
-      .color-option:hover {
-        transform: scale(1.05);
-      }
-
-      .color-option.active {
-        border-color: #333;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      /* Save Button */
-      .save-actions {
-        position: sticky;
-        bottom: 0;
-        background: white;
-        padding: 20px 0;
-        border-top: 1px solid #e0e0e0;
-        margin-top: 30px;
-        display: flex;
-        justify-content: flex-end;
-        gap: 15px;
-      }
-
-      .save-btn {
-        background: var(--primary-pink);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 30px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .save-btn:hover {
-        background: var(--secondary-pink);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      .cancel-btn {
-        background: #6c757d;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 30px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .cancel-btn:hover {
-        background: #5a6268;
-      }
-
-      /* Confirmation Modal */
-      .confirmation-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .confirmation-modal.active {
-        display: flex;
-      }
-
-      .modal-content {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        max-width: 500px;
-        width: 90%;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      }
-
-      .modal-icon {
-        font-size: 4rem;
-        color: var(--primary-pink);
-        margin-bottom: 20px;
-      }
-
-      .modal-title {
-        color: var(--dark-pink);
-        font-weight: 700;
-        font-size: 1.5rem;
-        margin-bottom: 15px;
-      }
-
-      .modal-text {
-        color: #6c757d;
-        margin-bottom: 25px;
-        line-height: 1.5;
-      }
-
+    @media (max-width: 575px) {
       .modal-actions {
-        display: flex;
-        gap: 15px;
+        flex-direction: column;
+      }
+
+      .color-picker {
         justify-content: center;
       }
+    }
+  </style>
+</head>
 
-      .modal-btn {
-        padding: 10px 25px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
+<body>
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <div class="mobile-header-content">
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="mobile-logo">
+        <img src="images/mainlogo.png" alt="Store Logo" />
+        <span>Store Name</span>
+      </div>
+    </div>
+  </div>
 
-      .modal-btn.confirm {
-        background: var(--primary-pink);
-        color: white;
-      }
-
-      .modal-btn.confirm:hover {
-        background: var(--secondary-pink);
-      }
-
-      .modal-btn.cancel {
-        background: #6c757d;
-        color: white;
-      }
-
-      .modal-btn.cancel:hover {
-        background: #5a6268;
-      }
-
-      /* Scrollable Content Area */
-      .scrollable-content {
-        max-height: calc(100vh - 200px);
-        overflow-y: auto;
-        padding-right: 10px;
-      }
-
-      .scrollable-content::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      .scrollable-content::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-      }
-
-      .scrollable-content::-webkit-scrollbar-thumb {
-        background: var(--primary-pink);
-        border-radius: 10px;
-      }
-
-      .scrollable-content::-webkit-scrollbar-thumb:hover {
-        background: var(--dark-pink);
-      }
-
-      /* Responsive Design */
-      @media (max-width: 991px) {
-        .mobile-header {
-          display: block;
-        }
-
-        .sidebar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 280px;
-          transform: translateX(-100%);
-          z-index: 100;
-        }
-
-        .sidebar.mobile-open {
-          transform: translateX(0);
-        }
-
-        .sidebar-overlay.active {
-          display: block;
-        }
-
-        main {
-          margin-left: 0 !important;
-          width: 100% !important;
-          margin-top: 70px;
-        }
-
-        .settings-container {
-          grid-template-columns: 1fr;
-        }
-
-        .settings-nav {
-          position: relative;
-          top: 0;
-        }
-      }
-
-      @media (max-width: 575px) {
-        .modal-actions {
-          flex-direction: column;
-        }
-
-        .color-picker {
-          justify-content: center;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <div class="mobile-header-content">
-        <button class="hamburger-btn" id="hamburgerBtn">
-          <i class="fas fa-bars"></i>
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content">
+      <div class="modal-icon">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Save Changes?</h3>
+      <p class="modal-text">
+        Are you sure you want to save these changes? This will update your
+        store settings and may affect how customers see your store.
+      </p>
+      <div class="modal-actions">
+        <button class="modal-btn confirm" id="confirmSave">
+          Yes, Save Changes
         </button>
-        <div class="mobile-logo">
-          <img src="images/mainlogo.png" alt="Store Logo" />
-          <span>Store Name</span>
-        </div>
+        <button class="modal-btn cancel" id="cancelSave">No, Cancel</button>
       </div>
     </div>
+  </div>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Confirmation Modal -->
-    <div class="confirmation-modal" id="confirmationModal">
-      <div class="modal-content">
-        <div class="modal-icon">
-          <i class="fas fa-question-circle"></i>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-2 d-md-block sidebar" id="sidebar">
+        <div class="logo-container">
+          <a href="admin.html">
+            <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
+          </a>
+          <div class="store-name">Beauty & Blessed</div>
+
         </div>
-        <h3 class="modal-title">Save Changes?</h3>
-        <p class="modal-text">
-          Are you sure you want to save these changes? This will update your
-          store settings and may affect how customers see your store.
-        </p>
-        <div class="modal-actions">
-          <button class="modal-btn confirm" id="confirmSave">
-            Yes, Save Changes
-          </button>
-          <button class="modal-btn cancel" id="cancelSave">No, Cancel</button>
+        <div class="nav flex-column">
+          <a href="product-management.html" class="nav-link">
+            <i class="fa-solid fa-box"></i>
+            <span>Product Management</span>
+          </a>
+          <a href="recommendation-insights.html" class="nav-link">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Recommendation Insights</span>
+          </a>
+          <a href="customer-managemnet.html" class="nav-link">
+            <i class="fa-solid fa-users"></i>
+            <span>Customer Management</span>
+          </a>
+          <a href="order-transactions.html" class="nav-link">
+            <i class="fa-solid fa-credit-card"></i>
+            <span>Order Transaction</span>
+          </a>
+          <a href="store-settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            <span>Store Setting</span>
+          </a>
+          <a href="activity-log.html" class="nav-link">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Activity Log</span>
+          </a>
         </div>
-      </div>
-    </div>
+      </nav>
 
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-2 d-md-block sidebar" id="sidebar">
-          <div class="logo-container">
-            <a href="admin.html">
-              <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
-            </a>
-            <div class="store-name">Beauty & Blessed</div>
-          <div class="nav flex-column">
-            <a href="product-management.html" class="nav-link">
-              <i class="fa-solid fa-box"></i>
-              <span>Product Management</span>
-            </a>
-            <a href="recommendation-insights.html" class="nav-link">
-              <i class="fa-solid fa-lightbulb"></i>
-              <span>Recommendation Insights</span>
-            </a>
-            <a href="customer-managemnet.html" class="nav-link">
-              <i class="fa-solid fa-users"></i>
-              <span>Customer Management</span>
-            </a>
-            <a href="order-transactions.html" class="nav-link">
-              <i class="fa-solid fa-credit-card"></i>
-              <span>Order Transaction</span>
-            </a>
-            <a href="store-settings.html" class="nav-link active">
-              <i class="fa-solid fa-gear"></i>
-              <span>Store Setting</span>
-            </a>
-            <a href="activity-log.html" class="nav-link">
-              <i class="fa-solid fa-clock-rotate-left"></i>
-              <span>Activity Log</span>
-            </a>
-          </div>
-        </nav>
+      <!-- Main content -->
+      <main class="col-md-10">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h2 class="page-title">Store Settings</h2>
+          <p class="text-muted">
+            Customize your store appearance, information, and preferences.
+          </p>
+        </div>
 
-        <!-- Main content -->
-        <main class="col-md-10">
-          <!-- Page Header -->
-          <div class="page-header">
-            <h2 class="page-title">Store Settings</h2>
-            <p class="text-muted">
-              Customize your store appearance, information, and preferences.
-            </p>
+        <!-- Settings Container -->
+        <div class="settings-container">
+          <!-- Settings Navigation - Fixed -->
+          <div class="settings-nav">
+            <div class="settings-nav-item active" onclick="showSection('general')">
+              <i class="fas fa-store"></i>
+              <span>General Settings</span>
+            </div>
+            <div class="settings-nav-item" onclick="showSection('appearance')">
+              <i class="fas fa-palette"></i>
+              <span>Appearance</span>
+            </div>
+            <div class="settings-nav-item" onclick="showSection('contact')">
+              <i class="fas fa-address-book"></i>
+              <span>Contact Information</span>
+            </div>
+            <div class="settings-nav-item" onclick="showSection('social')">
+              <i class="fas fa-share-alt"></i>
+              <span>Social Media</span>
+            </div>
+            <div class="settings-nav-item" onclick="showSection('payment')">
+              <i class="fas fa-credit-card"></i>
+              <span>Payment Methods</span>
+            </div>
           </div>
 
-          <!-- Settings Container -->
-          <div class="settings-container">
-            <!-- Settings Navigation - Fixed -->
-            <div class="settings-nav">
-              <div
-                class="settings-nav-item active"
-                onclick="showSection('general')"
-              >
-                <i class="fas fa-store"></i>
-                <span>General Settings</span>
+          <!-- Settings Content - Scrollable -->
+          <div class="settings-content">
+            <div class="scrollable-content">
+              <!-- General Settings -->
+              <div id="general" class="settings-section active">
+                <h3 class="section-title">General Store Settings</h3>
+
+                <div class="form-group">
+                  <label class="form-label">Store Name</label>
+                  <input type="text" class="form-control" id="storeName" placeholder="Enter your store name" />
+                  <div class="form-text">
+                    This name will be displayed throughout your store and in
+                    customer communications.
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Store Description</label>
+                  <textarea class="form-control" id="storeDescription" rows="4"
+                    placeholder="Describe your store"></textarea>
+                  <div class="form-text">
+                    A brief description of your store that appears in search
+                    results and social media.
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Store Logo</label>
+                  <div class="logo-upload" onclick="document.getElementById('logoUpload').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div class="logo-upload-text">
+                      Click to upload your store logo
+                    </div>
+                    <button class="logo-upload-btn">Choose File</button>
+                    <input type="file" id="logoUpload" accept="image/*" style="display: none"
+                      onchange="handleLogoUpload(event)" />
+                  </div>
+                  <div class="logo-preview">
+                    <img id="logoPreview" src="" alt="Current Logo" style="display: none" />
+                  </div>
+                  <div class="form-text">
+                    Recommended size: 200x100 pixels. PNG or JPG format.
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Store Currency</label>
+                  <select class="form-control" id="storeCurrency">
+                    <option value="">Select currency</option>
+                    <option value="PHP">Philippine Peso (₱)</option>
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="EUR">Euro (€)</option>
+                    <option value="GBP">British Pound (£)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Store Language</label>
+                  <select class="form-control" id="storeLanguage">
+                    <option value="">Select language</option>
+                    <option value="en">English</option>
+                    <option value="fil">Filipino</option>
+                  </select>
+                </div>
               </div>
-              <div
-                class="settings-nav-item"
-                onclick="showSection('appearance')"
-              >
-                <i class="fas fa-palette"></i>
-                <span>Appearance</span>
+
+              <!-- Appearance Settings -->
+              <div id="appearance" class="settings-section">
+                <h3 class="section-title">Store Appearance</h3>
+
+                <div class="form-group">
+                  <label class="form-label">Primary Color</label>
+                  <div class="color-picker">
+                    <div class="color-option active" style="background: #e497aa" onclick="selectColor(this, '#e497aa')">
+                    </div>
+                    <div class="color-option" style="background: #4a6fa5" onclick="selectColor(this, '#4a6fa5')"></div>
+                    <div class="color-option" style="background: #6b8e23" onclick="selectColor(this, '#6b8e23')"></div>
+                    <div class="color-option" style="background: #d4a574" onclick="selectColor(this, '#d4a574')"></div>
+                  </div>
+                  <div class="form-text">
+                    Choose the primary color that represents your brand.
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Store Theme</label>
+                  <select class="form-control" id="storeTheme">
+                    <option value="">Select theme</option>
+                    <option value="light">Light Theme</option>
+                    <option value="dark">Dark Theme</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Font Family</label>
+                  <select class="form-control" id="storeFont">
+                    <option value="">Select font</option>
+                    <option value="segoe">Segoe UI</option>
+                    <option value="roboto">Roboto</option>
+                    <option value="opensans">Open Sans</option>
+                  </select>
+                </div>
               </div>
-              <div class="settings-nav-item" onclick="showSection('contact')">
-                <i class="fas fa-address-book"></i>
-                <span>Contact Information</span>
+
+              <!-- Contact Information -->
+              <div id="contact" class="settings-section">
+                <h3 class="section-title">Contact Information</h3>
+
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-control" id="storeEmail" placeholder="yourstore@example.com" />
+                  <div class="form-text">
+                    This email will be used for customer communications and
+                    notifications.
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Phone Number</label>
+                  <input type="tel" class="form-control" id="storePhone" placeholder="+63 912 345 6789" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Store Address</label>
+                  <input type="text" class="form-control" id="storeAddress" placeholder="Street address" />
+                  <input type="text" class="form-control mt-2" id="storeCity" placeholder="City" />
+                  <div class="row mt-2">
+                    <div class="col-md-6">
+                      <input type="text" class="form-control" id="storeState" placeholder="State/Province" />
+                    </div>
+                    <div class="col-md-6">
+                      <input type="text" class="form-control" id="storeZip" placeholder="ZIP Code" />
+                    </div>
+                  </div>
+                  <select class="form-control mt-2" id="storeCountry">
+                    <option value="">Select country</option>
+                    <option value="PH">Philippines</option>
+                    <option value="US">United States</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Business Hours</label>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <input type="time" class="form-control" id="openTime" />
+                    </div>
+                    <div class="col-md-6">
+                      <input type="time" class="form-control" id="closeTime" />
+                    </div>
+                  </div>
+                  <div class="form-text">
+                    Set your store's operating hours for customer reference.
+                  </div>
+                </div>
               </div>
-              <div class="settings-nav-item" onclick="showSection('social')">
-                <i class="fas fa-share-alt"></i>
-                <span>Social Media</span>
+
+              <!-- Social Media -->
+              <div id="social" class="settings-section">
+                <h3 class="section-title">Social Media Links</h3>
+
+                <div class="form-group">
+                  <label class="form-label">Facebook</label>
+                  <input type="url" class="form-control" id="facebookUrl"
+                    placeholder="https://facebook.com/yourstore" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Instagram</label>
+                  <input type="url" class="form-control" id="instagramUrl"
+                    placeholder="https://instagram.com/yourstore" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Twitter</label>
+                  <input type="url" class="form-control" id="twitterUrl" placeholder="https://twitter.com/yourstore" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">TikTok</label>
+                  <input type="url" class="form-control" id="tiktokUrl" placeholder="https://tiktok.com/@yourstore" />
+                </div>
               </div>
-              <div class="settings-nav-item" onclick="showSection('payment')">
-                <i class="fas fa-credit-card"></i>
-                <span>Payment Methods</span>
+
+              <!-- Payment Methods -->
+              <div id="payment" class="settings-section">
+                <h3 class="section-title">Payment Methods</h3>
+
+                <div class="toggle-label">
+                  <span>Credit/Debit Cards</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-label">
+                  <span>GCash</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-label">
+                  <span>PayMaya</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-label">
+                  <span>Bank Transfer</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
               </div>
             </div>
 
-            <!-- Settings Content - Scrollable -->
-            <div class="settings-content">
-              <div class="scrollable-content">
-                <!-- General Settings -->
-                <div id="general" class="settings-section active">
-                  <h3 class="section-title">General Store Settings</h3>
-
-                  <div class="form-group">
-                    <label class="form-label">Store Name</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="storeName"
-                      placeholder="Enter your store name"
-                    />
-                    <div class="form-text">
-                      This name will be displayed throughout your store and in
-                      customer communications.
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Store Description</label>
-                    <textarea
-                      class="form-control"
-                      id="storeDescription"
-                      rows="4"
-                      placeholder="Describe your store"
-                    ></textarea>
-                    <div class="form-text">
-                      A brief description of your store that appears in search
-                      results and social media.
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Store Logo</label>
-                    <div
-                      class="logo-upload"
-                      onclick="document.getElementById('logoUpload').click()"
-                    >
-                      <i class="fas fa-cloud-upload-alt"></i>
-                      <div class="logo-upload-text">
-                        Click to upload your store logo
-                      </div>
-                      <button class="logo-upload-btn">Choose File</button>
-                      <input
-                        type="file"
-                        id="logoUpload"
-                        accept="image/*"
-                        style="display: none"
-                        onchange="handleLogoUpload(event)"
-                      />
-                    </div>
-                    <div class="logo-preview">
-                      <img
-                        id="logoPreview"
-                        src=""
-                        alt="Current Logo"
-                        style="display: none"
-                      />
-                    </div>
-                    <div class="form-text">
-                      Recommended size: 200x100 pixels. PNG or JPG format.
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Store Currency</label>
-                    <select class="form-control" id="storeCurrency">
-                      <option value="">Select currency</option>
-                      <option value="PHP">Philippine Peso (₱)</option>
-                      <option value="USD">US Dollar ($)</option>
-                      <option value="EUR">Euro (€)</option>
-                      <option value="GBP">British Pound (£)</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Store Language</label>
-                    <select class="form-control" id="storeLanguage">
-                      <option value="">Select language</option>
-                      <option value="en">English</option>
-                      <option value="fil">Filipino</option>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- Appearance Settings -->
-                <div id="appearance" class="settings-section">
-                  <h3 class="section-title">Store Appearance</h3>
-
-                  <div class="form-group">
-                    <label class="form-label">Primary Color</label>
-                    <div class="color-picker">
-                      <div
-                        class="color-option active"
-                        style="background: #e497aa"
-                        onclick="selectColor(this, '#e497aa')"
-                      ></div>
-                      <div
-                        class="color-option"
-                        style="background: #4a6fa5"
-                        onclick="selectColor(this, '#4a6fa5')"
-                      ></div>
-                      <div
-                        class="color-option"
-                        style="background: #6b8e23"
-                        onclick="selectColor(this, '#6b8e23')"
-                      ></div>
-                      <div
-                        class="color-option"
-                        style="background: #d4a574"
-                        onclick="selectColor(this, '#d4a574')"
-                      ></div>
-                    </div>
-                    <div class="form-text">
-                      Choose the primary color that represents your brand.
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Store Theme</label>
-                    <select class="form-control" id="storeTheme">
-                      <option value="">Select theme</option>
-                      <option value="light">Light Theme</option>
-                      <option value="dark">Dark Theme</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Font Family</label>
-                    <select class="form-control" id="storeFont">
-                      <option value="">Select font</option>
-                      <option value="segoe">Segoe UI</option>
-                      <option value="roboto">Roboto</option>
-                      <option value="opensans">Open Sans</option>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- Contact Information -->
-                <div id="contact" class="settings-section">
-                  <h3 class="section-title">Contact Information</h3>
-
-                  <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="storeEmail"
-                      placeholder="yourstore@example.com"
-                    />
-                    <div class="form-text">
-                      This email will be used for customer communications and
-                      notifications.
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input
-                      type="tel"
-                      class="form-control"
-                      id="storePhone"
-                      placeholder="+63 912 345 6789"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Store Address</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="storeAddress"
-                      placeholder="Street address"
-                    />
-                    <input
-                      type="text"
-                      class="form-control mt-2"
-                      id="storeCity"
-                      placeholder="City"
-                    />
-                    <div class="row mt-2">
-                      <div class="col-md-6">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="storeState"
-                          placeholder="State/Province"
-                        />
-                      </div>
-                      <div class="col-md-6">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="storeZip"
-                          placeholder="ZIP Code"
-                        />
-                      </div>
-                    </div>
-                    <select class="form-control mt-2" id="storeCountry">
-                      <option value="">Select country</option>
-                      <option value="PH">Philippines</option>
-                      <option value="US">United States</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Business Hours</label>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <input type="time" class="form-control" id="openTime" />
-                      </div>
-                      <div class="col-md-6">
-                        <input
-                          type="time"
-                          class="form-control"
-                          id="closeTime"
-                        />
-                      </div>
-                    </div>
-                    <div class="form-text">
-                      Set your store's operating hours for customer reference.
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Social Media -->
-                <div id="social" class="settings-section">
-                  <h3 class="section-title">Social Media Links</h3>
-
-                  <div class="form-group">
-                    <label class="form-label">Facebook</label>
-                    <input
-                      type="url"
-                      class="form-control"
-                      id="facebookUrl"
-                      placeholder="https://facebook.com/yourstore"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Instagram</label>
-                    <input
-                      type="url"
-                      class="form-control"
-                      id="instagramUrl"
-                      placeholder="https://instagram.com/yourstore"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Twitter</label>
-                    <input
-                      type="url"
-                      class="form-control"
-                      id="twitterUrl"
-                      placeholder="https://twitter.com/yourstore"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">TikTok</label>
-                    <input
-                      type="url"
-                      class="form-control"
-                      id="tiktokUrl"
-                      placeholder="https://tiktok.com/@yourstore"
-                    />
-                  </div>
-                </div>
-
-                <!-- Payment Methods -->
-                <div id="payment" class="settings-section">
-                  <h3 class="section-title">Payment Methods</h3>
-
-                  <div class="toggle-label">
-                    <span>Credit/Debit Cards</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" />
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="toggle-label">
-                    <span>GCash</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" />
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="toggle-label">
-                    <span>PayMaya</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" />
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="toggle-label">
-                    <span>Bank Transfer</span>
-                    <label class="toggle-switch">
-                      <input type="checkbox" />
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Save Actions -->
-              <div class="save-actions">
-                <button class="cancel-btn">Cancel</button>
-                <button class="save-btn" onclick="showConfirmation()">
-                  <i class="fas fa-save"></i>
-                  Save Changes
-                </button>
-              </div>
+            <!-- Save Actions -->
+            <div class="save-actions">
+              <button class="cancel-btn">Cancel</button>
+              <button class="save-btn" onclick="showConfirmation()">
+                <i class="fas fa-save"></i>
+                Save Changes
+              </button>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
+  </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-      // Mobile menu functionality
-      const hamburgerBtn = document.getElementById("hamburgerBtn");
-      const sidebar = document.getElementById("sidebar");
-      const sidebarOverlay = document.getElementById("sidebarOverlay");
+  <script>
+    // Mobile menu functionality
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
 
-      // Toggle sidebar on hamburger click
-      hamburgerBtn.addEventListener("click", function () {
-        sidebar.classList.toggle("mobile-open");
-        sidebarOverlay.classList.toggle("active");
-      });
+    // Toggle sidebar on hamburger click
+    hamburgerBtn.addEventListener("click", function () {
+      sidebar.classList.toggle("mobile-open");
+      sidebarOverlay.classList.toggle("active");
+    });
 
-      // Close sidebar when overlay is clicked
-      sidebarOverlay.addEventListener("click", function () {
-        sidebar.classList.remove("mobile-open");
-        sidebarOverlay.classList.remove("active");
-      });
+    // Close sidebar when overlay is clicked
+    sidebarOverlay.addEventListener("click", function () {
+      sidebar.classList.remove("mobile-open");
+      sidebarOverlay.classList.remove("active");
+    });
 
-      // Close sidebar when a nav link is clicked (on mobile)
-      const navLinks = document.querySelectorAll(".sidebar .nav-link");
-      navLinks.forEach((link) => {
-        link.addEventListener("click", function () {
-          if (window.innerWidth < 992) {
-            sidebar.classList.remove("mobile-open");
-            sidebarOverlay.classList.remove("active");
-          }
-        });
-      });
-
-      // Settings navigation
-      function showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll(".settings-section").forEach((section) => {
-          section.classList.remove("active");
-        });
-
-        // Remove active class from all nav items
-        document.querySelectorAll(".settings-nav-item").forEach((item) => {
-          item.classList.remove("active");
-        });
-
-        // Show selected section
-        document.getElementById(sectionId).classList.add("active");
-
-        // Add active class to clicked nav item
-        event.currentTarget.classList.add("active");
-      }
-
-      // Color selection
-      function selectColor(element, color) {
-        document.querySelectorAll(".color-option").forEach((option) => {
-          option.classList.remove("active");
-        });
-        element.classList.add("active");
-      }
-
-      // Logo upload handling
-      function handleLogoUpload(event) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            const logoPreview = document.getElementById("logoPreview");
-            logoPreview.src = e.target.result;
-            logoPreview.style.display = "block";
-          };
-          reader.readAsDataURL(file);
-        }
-      }
-
-      // Confirmation modal
-      const confirmationModal = document.getElementById("confirmationModal");
-      const confirmSave = document.getElementById("confirmSave");
-      const cancelSave = document.getElementById("cancelSave");
-
-      function showConfirmation() {
-        confirmationModal.classList.add("active");
-      }
-
-      confirmSave.addEventListener("click", function () {
-        // Here you would save the settings to your backend
-        alert("Settings saved successfully!");
-        confirmationModal.classList.remove("active");
-      });
-
-      cancelSave.addEventListener("click", function () {
-        confirmationModal.classList.remove("active");
-      });
-
-      // Close modal when clicking outside
-      confirmationModal.addEventListener("click", function (e) {
-        if (e.target === confirmationModal) {
-          confirmationModal.classList.remove("active");
+    // Close sidebar when a nav link is clicked (on mobile)
+    const navLinks = document.querySelectorAll(".sidebar .nav-link");
+    navLinks.forEach((link) => {
+      link.addEventListener("click", function () {
+        if (window.innerWidth < 992) {
+          sidebar.classList.remove("mobile-open");
+          sidebarOverlay.classList.remove("active");
         }
       });
-    </script>
-  </body>
+    });
+
+    // Settings navigation
+    function showSection(sectionId) {
+      // Hide all sections
+      document.querySelectorAll(".settings-section").forEach((section) => {
+        section.classList.remove("active");
+      });
+
+      // Remove active class from all nav items
+      document.querySelectorAll(".settings-nav-item").forEach((item) => {
+        item.classList.remove("active");
+      });
+
+      // Show selected section
+      document.getElementById(sectionId).classList.add("active");
+
+      // Add active class to clicked nav item
+      event.currentTarget.classList.add("active");
+    }
+
+    // Color selection
+    function selectColor(element, color) {
+      document.querySelectorAll(".color-option").forEach((option) => {
+        option.classList.remove("active");
+      });
+      element.classList.add("active");
+    }
+
+    // Logo upload handling
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const logoPreview = document.getElementById("logoPreview");
+          logoPreview.src = e.target.result;
+          logoPreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Confirmation modal
+    const confirmationModal = document.getElementById("confirmationModal");
+    const confirmSave = document.getElementById("confirmSave");
+    const cancelSave = document.getElementById("cancelSave");
+
+    function showConfirmation() {
+      confirmationModal.classList.add("active");
+    }
+
+    confirmSave.addEventListener("click", function () {
+      // Here you would save the settings to your backend
+      alert("Settings saved successfully!");
+      confirmationModal.classList.remove("active");
+    });
+
+    cancelSave.addEventListener("click", function () {
+      confirmationModal.classList.remove("active");
+    });
+
+    // Close modal when clicking outside
+    confirmationModal.addEventListener("click", function (e) {
+      if (e.target === confirmationModal) {
+        confirmationModal.classList.remove("active");
+      }
+    });
+    // Highlight active sidebar link based on current URL
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.sidebar .nav-link');
+    const currentPath = window.location.pathname.split('/').pop();
+
+    navLinks.forEach(link => {
+      const linkPath = link.getAttribute('href');
+      if (linkPath === currentPath) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  });
+  </script>
+</body>
+
 </html>

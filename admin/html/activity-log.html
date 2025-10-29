@@ -1,1069 +1,899 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Activity Log - Beauty & Blessed</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Activity Log - Beauty & Blessed</title>
 
-    <style>
-      :root {
-        --primary-pink: #e497aa;
-        --secondary-pink: #db8299;
-        --dark-pink: #c36c82;
-        --darker-pink: #b05a70;
-        --light-bg: #f8f9fa;
-        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      }
+  <link rel="stylesheet" href="../styles/styles.css">
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-      body {
-        background: linear-gradient(135deg, #fef5f8 0%, #f8f9fa 100%);
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        overflow-x: hidden;
-      }
+  <style>
+    /* Page header */
+    .page-header {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+    }
 
-      /* Mobile Header */
+    .page-title {
+      color: var(--dark-pink);
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+      color: #6c757d;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    /* Main content padding */
+    main {
+      padding: 35px !important;
+      margin-left: 16.666667%;
+      width: calc(100% - 16.666667%);
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Filter Section */
+    .filter-section {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
+      margin-bottom: 25px;
+      position: sticky;
+      top: 20px;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .filter-section.sticky {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      border-color: rgba(228, 151, 170, 0.3);
+    }
+
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .filter-title {
+      color: var(--dark-pink);
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin: 0;
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .form-control {
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-pink);
+      box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
+      outline: none;
+    }
+
+    .search-btn {
+      background: var(--primary-pink);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-btn:hover {
+      background: var(--secondary-pink);
+      transform: translateY(-2px);
+    }
+
+    /* Activity Table */
+    .activity-table-container {
+      background: white;
+      border-radius: 20px;
+      padding: 0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
+      overflow: hidden;
+    }
+
+    .activity-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+    }
+
+    .activity-table thead {
+      background: linear-gradient(135deg,
+          var(--primary-pink),
+          var(--secondary-pink));
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .activity-table th {
+      padding: 20px;
+      text-align: left;
+      font-weight: 600;
+      color: white;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: none;
+    }
+
+    .activity-table th:first-child {
+      border-radius: 20px 0 0 0;
+    }
+
+    .activity-table th:last-child {
+      border-radius: 0 20px 0 0;
+    }
+
+    .activity-table td {
+      padding: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+      color: #333;
+    }
+
+    .activity-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .activity-table tbody tr:hover {
+      background: rgba(228, 151, 170, 0.03);
+    }
+
+    .activity-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* User Column */
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,
+          var(--primary-pink),
+          var(--secondary-pink));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .user-details h5 {
+      margin: 0;
+      font-size: 1rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .user-details p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+
+    .system-user {
+      background: linear-gradient(135deg, #6c757d, #495057);
+    }
+
+    /* Action Column */
+    .action-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .action-create {
+      background: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+      border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+
+    .action-update {
+      background: rgba(255, 193, 7, 0.1);
+      color: #ffc107;
+      border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+
+    .action-delete {
+      background: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .action-system {
+      background: rgba(108, 117, 125, 0.1);
+      color: #6c757d;
+      border: 1px solid rgba(108, 117, 125, 0.2);
+    }
+
+    /* Date Column */
+    .date-time {
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .date-relative {
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+
+    /* Changes Column */
+    .change-details {
+      font-size: 0.9rem;
+    }
+
+    .change-item {
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 3px solid var(--primary-pink);
+    }
+
+    .change-field {
+      font-weight: 600;
+      color: var(--dark-pink);
+    }
+
+    .change-before {
+      color: #dc3545;
+      text-decoration: line-through;
+      margin-right: 8px;
+    }
+
+    .change-after {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    .change-arrow {
+      color: #6c757d;
+      margin: 0 8px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
       .mobile-header {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        background: linear-gradient(
-          180deg,
-          var(--primary-pink) 0%,
-          var(--darker-pink) 100%
-        );
-        color: white;
-        padding: 15px 20px;
-        z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-      }
-
-      .mobile-header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .hamburger-btn {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-      }
-
-      .hamburger-btn:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-
-      .mobile-logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .mobile-logo img {
-        height: 30px;
-        filter: brightness(0) invert(1);
-      }
-
-      .mobile-logo span {
-        font-weight: 600;
-        font-size: 1.1rem;
-      }
-
-      /* Sidebar */
-      .sidebar {
-        min-height: 100vh;
-        background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
-        color: white;
-        box-shadow: 3px 0 20px rgba(0,0,0,0.15);
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 16.666667%;
-        height: 100vh;
-        z-index: 100;
-        transition: transform 0.3s ease;
-        overflow-y: auto;
-      }
-
-      .sidebar .nav-link {
-        color: rgba(255, 255, 255, 0.85);
-        font-weight: 500;
-        margin: 8px 15px;
-        border-radius: 12px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        padding: 14px 18px;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .sidebar .nav-link::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 4px;
-        background: white;
-        transform: scaleY(0);
-        transition: transform 0.3s ease;
-      }
-
-      .sidebar .nav-link:hover::before,
-      .sidebar .nav-link.active::before {
-        transform: scaleY(1);
-      }
-
-      .sidebar .nav-link:hover,
-      .sidebar .nav-link.active {
-        background: rgba(255, 255, 255, 0.25);
-        color: #fff;
-        transform: translateX(8px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-
-      .sidebar .nav-link i {
-        margin-right: 12px;
-        font-size: 1.1rem;
-        width: 20px;
-        text-align: center;
-      }
-
-      .logo-container {
-        padding: 30px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        margin-bottom: 15px;
-        text-align: center;
-      }
-
-      .logo {
-        max-width: 140px;
         display: block;
-        margin: 0 auto;
-        filter: brightness(0) invert(1)
-          drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       }
 
-      .store-name {
-        margin-top: 12px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-      }
-
-      /* Overlay for mobile menu */
-      .sidebar-overlay {
-        display: none;
+      .sidebar {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 99;
+        width: 280px;
+        transform: translateX(-100%);
+        z-index: 100;
       }
 
-      /* Page header */
-      .page-header {
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+      .sidebar.mobile-open {
+        transform: translateX(0);
       }
 
-      .page-title {
-        color: var(--dark-pink);
-        font-weight: 700;
-        font-size: 2rem;
-        margin-bottom: 8px;
-        letter-spacing: -0.5px;
+      .sidebar-overlay.active {
+        display: block;
       }
 
-      .page-header p {
-        color: #6c757d;
-        font-size: 1rem;
-        margin: 0;
-      }
-
-      /* Main content padding */
       main {
-        padding: 35px !important;
-        margin-left: 16.666667%;
-        width: calc(100% - 16.666667%);
-        transition: margin-left 0.3s ease;
-      }
-
-      /* Filter Section */
-      .filter-section {
-        background: white;
-        border-radius: 20px;
-        padding: 25px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(228, 151, 170, 0.1);
-        margin-bottom: 25px;
-        position: sticky;
-        top: 20px;
-        z-index: 10;
-        transition: all 0.3s ease;
-      }
-
-      .filter-section.sticky {
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-        border-color: rgba(228, 151, 170, 0.3);
+        margin-left: 0 !important;
+        width: 100% !important;
+        margin-top: 70px;
+        padding: 20px !important;
       }
 
       .filter-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .filter-title {
-        color: var(--dark-pink);
-        font-weight: 700;
-        font-size: 1.3rem;
-        margin: 0;
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
       }
 
       .filter-controls {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-      }
-
-      .form-control {
-        padding: 10px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-      }
-
-      .form-control:focus {
-        border-color: var(--primary-pink);
-        box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
-        outline: none;
-      }
-
-      .search-btn {
-        background: var(--primary-pink);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 20px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .search-btn:hover {
-        background: var(--secondary-pink);
-        transform: translateY(-2px);
-      }
-
-      /* Activity Table */
-      .activity-table-container {
-        background: white;
-        border-radius: 20px;
-        padding: 0;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(228, 151, 170, 0.1);
-        overflow: hidden;
+        width: 100%;
+        justify-content: space-between;
       }
 
       .activity-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 0;
+        display: block;
+        overflow-x: auto;
       }
 
-      .activity-table thead {
-        background: linear-gradient(
-          135deg,
-          var(--primary-pink),
-          var(--secondary-pink)
-        );
-        position: sticky;
-        top: 0;
-        z-index: 5;
-      }
-
-      .activity-table th {
-        padding: 20px;
-        text-align: left;
-        font-weight: 600;
-        color: white;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: none;
-      }
-
-      .activity-table th:first-child {
-        border-radius: 20px 0 0 0;
-      }
-
-      .activity-table th:last-child {
-        border-radius: 0 20px 0 0;
-      }
-
-      .activity-table td {
-        padding: 20px;
-        border-bottom: 1px solid #f0f0f0;
-        vertical-align: top;
-        color: #333;
-      }
-
-      .activity-table tbody tr {
-        transition: all 0.3s ease;
-      }
-
-      .activity-table tbody tr:hover {
-        background: rgba(228, 151, 170, 0.03);
-      }
-
-      .activity-table tbody tr:last-child td {
-        border-bottom: none;
-      }
-
-      /* User Column */
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(
-          135deg,
-          var(--primary-pink),
-          var(--secondary-pink)
-        );
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 0.9rem;
-      }
-
-      .user-details h5 {
-        margin: 0;
-        font-size: 1rem;
-        color: #333;
-        font-weight: 600;
-      }
-
-      .user-details p {
-        margin: 0;
-        font-size: 0.8rem;
-        color: #6c757d;
-      }
-
-      .system-user {
-        background: linear-gradient(135deg, #6c757d, #495057);
-      }
-
-      /* Action Column */
-      .action-badge {
-        display: inline-block;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      .action-create {
-        background: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-        border: 1px solid rgba(40, 167, 69, 0.2);
-      }
-
-      .action-update {
-        background: rgba(255, 193, 7, 0.1);
-        color: #ffc107;
-        border: 1px solid rgba(255, 193, 7, 0.2);
-      }
-
-      .action-delete {
-        background: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-        border: 1px solid rgba(220, 53, 69, 0.2);
-      }
-
-      .action-system {
-        background: rgba(108, 117, 125, 0.1);
-        color: #6c757d;
-        border: 1px solid rgba(108, 117, 125, 0.2);
-      }
-
-      /* Date Column */
-      .date-time {
-        color: #333;
-        font-weight: 600;
-        margin-bottom: 5px;
-      }
-
-      .date-relative {
-        color: #6c757d;
-        font-size: 0.8rem;
-      }
-
-      /* Changes Column */
-      .change-details {
-        font-size: 0.9rem;
-      }
-
-      .change-item {
-        margin-bottom: 8px;
-        padding: 8px 12px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border-left: 3px solid var(--primary-pink);
-      }
-
-      .change-field {
-        font-weight: 600;
-        color: var(--dark-pink);
-      }
-
-      .change-before {
-        color: #dc3545;
-        text-decoration: line-through;
-        margin-right: 8px;
-      }
-
-      .change-after {
-        color: #28a745;
-        font-weight: 600;
-      }
-
-      .change-arrow {
-        color: #6c757d;
-        margin: 0 8px;
-      }
-
-      /* Responsive Design */
-      @media (max-width: 991px) {
-        .mobile-header {
-          display: block;
-        }
-
-        .sidebar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 280px;
-          transform: translateX(-100%);
-          z-index: 100;
-        }
-
-        .sidebar.mobile-open {
-          transform: translateX(0);
-        }
-
-        .sidebar-overlay.active {
-          display: block;
-        }
-
-        main {
-          margin-left: 0 !important;
-          width: 100% !important;
-          margin-top: 70px;
-          padding: 20px !important;
-        }
-
-        .filter-header {
-          flex-direction: column;
-          gap: 15px;
-          align-items: flex-start;
-        }
-
-        .filter-controls {
-          width: 100%;
-          justify-content: space-between;
-        }
-
-        .activity-table {
-          display: block;
-          overflow-x: auto;
-        }
-
-        /* FIX: Remove the position:relative that was disabling sticky on mobile */
-        /* .filter-section {
+      /* FIX: Remove the position:relative that was disabling sticky on mobile */
+      /* .filter-section {
         position: relative;
         top: 0;
       } */
 
-        /* Adjust top position for mobile to account for fixed header */
-        .filter-section {
-          top: 80px; /* Account for mobile header height */
-        }
-
-        .activity-table thead {
-          top: 80px; /* Account for mobile header + filter section */
-        }
+      /* Adjust top position for mobile to account for fixed header */
+      .filter-section {
+        top: 80px;
+        /* Account for mobile header height */
       }
 
-      @media (max-width: 575px) {
-        .filter-controls {
-          flex-direction: column;
-          width: 100%;
-        }
-
-        .form-control {
-          width: 100%;
-        }
-
-        .search-btn {
-          width: 100%;
-          justify-content: center;
-        }
-
-        .activity-table th,
-        .activity-table td {
-          padding: 12px 8px;
-          font-size: 0.8rem;
-        }
-
-        /* Adjust for smaller screens */
-        .filter-section {
-          top: 70px;
-        }
-
-        .activity-table thead {
-          top: 70px;
-        }
+      .activity-table thead {
+        top: 80px;
+        /* Account for mobile header + filter section */
       }
-    </style>
-  </head>
-  <body>
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <div class="mobile-header-content">
-        <button class="hamburger-btn" id="hamburgerBtn">
-          <i class="fas fa-bars"></i>
-        </button>
-        <div class="mobile-logo">
-          <img src="images/mainlogo.png" alt="Store Logo" />
-          <span>Beauty & Blessed</span>
-        </div>
+    }
+
+    @media (max-width: 575px) {
+      .filter-controls {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .form-control {
+        width: 100%;
+      }
+
+      .search-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .activity-table th,
+      .activity-table td {
+        padding: 12px 8px;
+        font-size: 0.8rem;
+      }
+
+      /* Adjust for smaller screens */
+      .filter-section {
+        top: 70px;
+      }
+
+      .activity-table thead {
+        top: 70px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <div class="mobile-header-content">
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="mobile-logo">
+        <img src="images/mainlogo.png" alt="Store Logo" />
+        <span>Beauty & Blessed</span>
       </div>
     </div>
+  </div>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-2 d-md-block sidebar" id="sidebar">
-          <div class="logo-container">
-            <a href="admin.html">
-              <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
-            </a>
-            <div class="store-name">Beauty & Blessed</div>
-          <div class="nav flex-column">
-            <a href="product-management.html" class="nav-link">
-              <i class="fa-solid fa-box"></i>
-              <span>Product Management</span>
-            </a>
-            <a href="recommendation-insights.html" class="nav-link">
-              <i class="fa-solid fa-lightbulb"></i>
-              <span>Recommendation Insights</span>
-            </a>
-            <a href="customer-managemnet.html" class="nav-link">
-              <i class="fa-solid fa-users"></i>
-              <span>Customer Management</span>
-            </a>
-            <a href="order-transactions.html" class="nav-link">
-              <i class="fa-solid fa-credit-card"></i>
-              <span>Order Transaction</span>
-            </a>
-            <a href="store-settings.html" class="nav-link">
-              <i class="fa-solid fa-gear"></i>
-              <span>Store Setting</span>
-            </a>
-            <a href="activity-log.html" class="nav-link active">
-              <i class="fa-solid fa-clock-rotate-left"></i>
-              <span>Activity Log</span>
-            </a>
-          </div>
-        </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-2 d-md-block sidebar" id="sidebar">
+        <div class="logo-container">
+          <a href="admin.html">
+            <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
+          </a>
+          <div class="store-name">Beauty & Blessed</div>
 
-        <!-- Main content -->
-        <main class="col-md-10">
-          <!-- Page Header -->
-          <div class="page-header">
-            <h2 class="page-title">Activity Log</h2>
-            <p class="text-muted">
-              Track all user activities and system changes in your store.
-            </p>
-          </div>
+        </div>
+        <div class="nav flex-column">
+          <a href="product-management.html" class="nav-link">
+            <i class="fa-solid fa-box"></i>
+            <span>Product Management</span>
+          </a>
+          <a href="recommendation-insights.html" class="nav-link">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Recommendation Insights</span>
+          </a>
+          <a href="customer-managemnet.html" class="nav-link">
+            <i class="fa-solid fa-users"></i>
+            <span>Customer Management</span>
+          </a>
+          <a href="order-transactions.html" class="nav-link">
+            <i class="fa-solid fa-credit-card"></i>
+            <span>Order Transaction</span>
+          </a>
+          <a href="store-settings.html" class="nav-link">
+            <i class="fa-solid fa-gear"></i>
+            <span>Store Setting</span>
+          </a>
+          <a href="activity-log.html" class="nav-link">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Activity Log</span>
+          </a>
+        </div>
+      </nav>
 
-          <!-- Filter Section -->
-          <div class="filter-section" id="filterSection">
-            <div class="filter-header">
-              <h3 class="filter-title">Filter Activities</h3>
-              <div class="filter-controls">
-                <input
-                  type="date"
-                  class="form-control"
-                  id="dateFrom"
-                  placeholder="From Date"
-                />
-                <input
-                  type="date"
-                  class="form-control"
-                  id="dateTo"
-                  placeholder="To Date"
-                />
-                <select class="form-control" id="actionType">
-                  <option value="">All Actions</option>
-                  <option value="create">Created</option>
-                  <option value="update">Updated</option>
-                  <option value="delete">Deleted</option>
-                  <option value="system">System</option>
-                </select>
-                <button class="search-btn">
-                  <i class="fas fa-search"></i>
-                  Search
-                </button>
-              </div>
+      <!-- Main content -->
+      <main class="col-md-10">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h2 class="page-title">Activity Log</h2>
+          <p class="text-muted">
+            Track all user activities and system changes in your store.
+          </p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section" id="filterSection">
+          <div class="filter-header">
+            <h3 class="filter-title">Filter Activities</h3>
+            <div class="filter-controls">
+              <input type="date" class="form-control" id="dateFrom" placeholder="From Date" />
+              <input type="date" class="form-control" id="dateTo" placeholder="To Date" />
+              <select class="form-control" id="actionType">
+                <option value="">All Actions</option>
+                <option value="create">Created</option>
+                <option value="update">Updated</option>
+                <option value="delete">Deleted</option>
+                <option value="system">System</option>
+              </select>
+              <button class="search-btn">
+                <i class="fas fa-search"></i>
+                Search
+              </button>
             </div>
           </div>
+        </div>
 
-          <!-- Activity Table -->
-          <div class="activity-table-container">
-            <table class="activity-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Actions</th>
-                  <th>Date</th>
-                  <th>Changes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Activity 1 - User Update -->
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar">SJ</div>
-                      <div class="user-details">
-                        <h5>Sarah Johnson</h5>
-                        <p>Store Admin</p>
-                      </div>
+        <!-- Activity Table -->
+        <div class="activity-table-container">
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Actions</th>
+                <th>Date</th>
+                <th>Changes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Activity 1 - User Update -->
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">SJ</div>
+                    <div class="user-details">
+                      <h5>Sarah Johnson</h5>
+                      <p>Store Admin</p>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-update">Updated</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 20, 2023 - 2:30 PM</div>
-                    <div class="date-relative">2 hours ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Product Price:</span>
-                        <span class="change-before">$45.99</span>
-                        <span class="change-arrow">→</span>
-                        <span class="change-after">$42.99</span>
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Product:</span> Rose Quartz
-                        Facial Serum
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-update">Updated</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 20, 2023 - 2:30 PM</div>
+                  <div class="date-relative">2 hours ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Product Price:</span>
+                      <span class="change-before">$45.99</span>
+                      <span class="change-arrow">→</span>
+                      <span class="change-after">$42.99</span>
                     </div>
-                  </td>
-                </tr>
+                    <div class="change-item">
+                      <span class="change-field">Product:</span> Rose Quartz
+                      Facial Serum
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <!-- Activity 2 - System Activity -->
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar system-user">
-                        <i class="fas fa-robot"></i>
-                      </div>
-                      <div class="user-details">
-                        <h5>System</h5>
-                        <p>Automated Process</p>
-                      </div>
+              <!-- Activity 2 - System Activity -->
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar system-user">
+                      <i class="fas fa-robot"></i>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-system">System</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 20, 2023 - 1:15 PM</div>
-                    <div class="date-relative">3 hours ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Low Stock Alert:</span>
-                        Hyaluronic Acid Moisturizer
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Current Stock:</span> 8 units
-                        remaining
-                      </div>
+                    <div class="user-details">
+                      <h5>System</h5>
+                      <p>Automated Process</p>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-system">System</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 20, 2023 - 1:15 PM</div>
+                  <div class="date-relative">3 hours ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Low Stock Alert:</span>
+                      Hyaluronic Acid Moisturizer
+                    </div>
+                    <div class="change-item">
+                      <span class="change-field">Current Stock:</span> 8 units
+                      remaining
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <!-- Activity 3 - User Create -->
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar">MC</div>
-                      <div class="user-details">
-                        <h5>Michael Chen</h5>
-                        <p>Store Manager</p>
-                      </div>
+              <!-- Activity 3 - User Create -->
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">MC</div>
+                    <div class="user-details">
+                      <h5>Michael Chen</h5>
+                      <p>Store Manager</p>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-create">Created</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 20, 2023 - 11:45 AM</div>
-                    <div class="date-relative">5 hours ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">New Product Added:</span>
-                        Vitamin C Brightening Cream
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Price:</span> $38.75
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Category:</span> Skincare
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-create">Created</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 20, 2023 - 11:45 AM</div>
+                  <div class="date-relative">5 hours ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">New Product Added:</span>
+                      Vitamin C Brightening Cream
                     </div>
-                  </td>
-                </tr>
+                    <div class="change-item">
+                      <span class="change-field">Price:</span> $38.75
+                    </div>
+                    <div class="change-item">
+                      <span class="change-field">Category:</span> Skincare
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <!-- Activity 4 - User Delete -->
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar">ER</div>
-                      <div class="user-details">
-                        <h5>Emma Rodriguez</h5>
-                        <p>Content Manager</p>
-                      </div>
+              <!-- Activity 4 - User Delete -->
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">ER</div>
+                    <div class="user-details">
+                      <h5>Emma Rodriguez</h5>
+                      <p>Content Manager</p>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-delete">Deleted</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 19, 2023 - 4:20 PM</div>
-                    <div class="date-relative">1 day ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Product Removed:</span> Old
-                        Formula Night Cream
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Reason:</span> Discontinued
-                        product line
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-delete">Deleted</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 19, 2023 - 4:20 PM</div>
+                  <div class="date-relative">1 day ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Product Removed:</span> Old
+                      Formula Night Cream
                     </div>
-                  </td>
-                </tr>
+                    <div class="change-item">
+                      <span class="change-field">Reason:</span> Discontinued
+                      product line
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <!-- Activity 5 - System Activity -->
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar system-user">
-                        <i class="fas fa-robot"></i>
-                      </div>
-                      <div class="user-details">
-                        <h5>System</h5>
-                        <p>Automated Process</p>
-                      </div>
+              <!-- Activity 5 - System Activity -->
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar system-user">
+                      <i class="fas fa-robot"></i>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-system">System</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 19, 2023 - 9:00 AM</div>
-                    <div class="date-relative">1 day ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Daily Backup:</span> Database
-                        backup completed successfully
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Size:</span> 45.2 MB
-                      </div>
+                    <div class="user-details">
+                      <h5>System</h5>
+                      <p>Automated Process</p>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-system">System</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 19, 2023 - 9:00 AM</div>
+                  <div class="date-relative">1 day ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Daily Backup:</span> Database
+                      backup completed successfully
+                    </div>
+                    <div class="change-item">
+                      <span class="change-field">Size:</span> 45.2 MB
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <!-- Activity 6 - User Update -->
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar">SJ</div>
-                      <div class="user-details">
-                        <h5>Sarah Johnson</h5>
-                        <p>Store Admin</p>
-                      </div>
+              <!-- Activity 6 - User Update -->
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">SJ</div>
+                    <div class="user-details">
+                      <h5>Sarah Johnson</h5>
+                      <p>Store Admin</p>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-update">Updated</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 18, 2023 - 3:10 PM</div>
-                    <div class="date-relative">2 days ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Store Settings:</span>
-                        <span class="change-before">Light Theme</span>
-                        <span class="change-arrow">→</span>
-                        <span class="change-after">Dark Theme</span>
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Primary Color:</span>
-                        <span class="change-before">#4a6fa5</span>
-                        <span class="change-arrow">→</span>
-                        <span class="change-after">#e497aa</span>
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-update">Updated</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 18, 2023 - 3:10 PM</div>
+                  <div class="date-relative">2 days ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Store Settings:</span>
+                      <span class="change-before">Light Theme</span>
+                      <span class="change-arrow">→</span>
+                      <span class="change-after">Dark Theme</span>
                     </div>
-                  </td>
-                </tr>
+                    <div class="change-item">
+                      <span class="change-field">Primary Color:</span>
+                      <span class="change-before">#4a6fa5</span>
+                      <span class="change-arrow">→</span>
+                      <span class="change-after">#e497aa</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <!-- Additional rows to demonstrate scrolling -->
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar">SJ</div>
-                      <div class="user-details">
-                        <h5>Sarah Johnson</h5>
-                        <p>Store Admin</p>
-                      </div>
+              <!-- Additional rows to demonstrate scrolling -->
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">SJ</div>
+                    <div class="user-details">
+                      <h5>Sarah Johnson</h5>
+                      <p>Store Admin</p>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-update">Updated</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 17, 2023 - 10:30 AM</div>
-                    <div class="date-relative">3 days ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Product Description:</span>
-                        Updated product description for better SEO
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-update">Updated</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 17, 2023 - 10:30 AM</div>
+                  <div class="date-relative">3 days ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Product Description:</span>
+                      Updated product description for better SEO
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </td>
+              </tr>
 
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar">MC</div>
-                      <div class="user-details">
-                        <h5>Michael Chen</h5>
-                        <p>Store Manager</p>
-                      </div>
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">MC</div>
+                    <div class="user-details">
+                      <h5>Michael Chen</h5>
+                      <p>Store Manager</p>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-create">Created</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 16, 2023 - 4:45 PM</div>
-                    <div class="date-relative">4 days ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">New Category:</span> Organic
-                        Skincare
-                      </div>
-                      <div class="change-item">
-                        <span class="change-field">Products Moved:</span> 12
-                        products moved to new category
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-create">Created</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 16, 2023 - 4:45 PM</div>
+                  <div class="date-relative">4 days ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">New Category:</span> Organic
+                      Skincare
                     </div>
-                  </td>
-                </tr>
+                    <div class="change-item">
+                      <span class="change-field">Products Moved:</span> 12
+                      products moved to new category
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar system-user">
-                        <i class="fas fa-robot"></i>
-                      </div>
-                      <div class="user-details">
-                        <h5>System</h5>
-                        <p>Automated Process</p>
-                      </div>
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar system-user">
+                      <i class="fas fa-robot"></i>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-system">System</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 15, 2023 - 2:00 AM</div>
-                    <div class="date-relative">5 days ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Weekly Report:</span> Sales
-                        report generated and sent to admin
-                      </div>
+                    <div class="user-details">
+                      <h5>System</h5>
+                      <p>Automated Process</p>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-system">System</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 15, 2023 - 2:00 AM</div>
+                  <div class="date-relative">5 days ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Weekly Report:</span> Sales
+                      report generated and sent to admin
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
-                <tr>
-                  <td>
-                    <div class="user-info">
-                      <div class="user-avatar">ER</div>
-                      <div class="user-details">
-                        <h5>Emma Rodriguez</h5>
-                        <p>Content Manager</p>
-                      </div>
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-avatar">ER</div>
+                    <div class="user-details">
+                      <h5>Emma Rodriguez</h5>
+                      <p>Content Manager</p>
                     </div>
-                  </td>
-                  <td>
-                    <span class="action-badge action-update">Updated</span>
-                  </td>
-                  <td>
-                    <div class="date-time">Oct 14, 2023 - 11:20 AM</div>
-                    <div class="date-relative">6 days ago</div>
-                  </td>
-                  <td>
-                    <div class="change-details">
-                      <div class="change-item">
-                        <span class="change-field">Product Images:</span>
-                        Updated product gallery for 5 products
-                      </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="action-badge action-update">Updated</span>
+                </td>
+                <td>
+                  <div class="date-time">Oct 14, 2023 - 11:20 AM</div>
+                  <div class="date-relative">6 days ago</div>
+                </td>
+                <td>
+                  <div class="change-details">
+                    <div class="change-item">
+                      <span class="change-field">Product Images:</span>
+                      Updated product gallery for 5 products
                     </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </main>
-      </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
     </div>
+  </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-      // Mobile menu functionality
-      const hamburgerBtn = document.getElementById("hamburgerBtn");
-      const sidebar = document.getElementById("sidebar");
-      const sidebarOverlay = document.getElementById("sidebarOverlay");
+  <script>
+    // Mobile menu functionality
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
 
-      // Toggle sidebar on hamburger click
-      hamburgerBtn.addEventListener("click", function () {
-        sidebar.classList.toggle("mobile-open");
-        sidebarOverlay.classList.toggle("active");
-      });
+    // Toggle sidebar on hamburger click
+    hamburgerBtn.addEventListener("click", function () {
+      sidebar.classList.toggle("mobile-open");
+      sidebarOverlay.classList.toggle("active");
+    });
 
-      // Close sidebar when overlay is clicked
-      sidebarOverlay.addEventListener("click", function () {
-        sidebar.classList.remove("mobile-open");
-        sidebarOverlay.classList.remove("active");
-      });
+    // Close sidebar when overlay is clicked
+    sidebarOverlay.addEventListener("click", function () {
+      sidebar.classList.remove("mobile-open");
+      sidebarOverlay.classList.remove("active");
+    });
 
-      // Close sidebar when a nav link is clicked (on mobile)
-      const navLinks = document.querySelectorAll(".sidebar .nav-link");
-      navLinks.forEach((link) => {
-        link.addEventListener("click", function () {
-          if (window.innerWidth < 992) {
-            sidebar.classList.remove("mobile-open");
-            sidebarOverlay.classList.remove("active");
-          }
-        });
-      });
-
-      // Filter functionality
-      document
-        .querySelector(".search-btn")
-        .addEventListener("click", function () {
-          const dateFrom = document.getElementById("dateFrom").value;
-          const dateTo = document.getElementById("dateTo").value;
-          const actionType = document.getElementById("actionType").value;
-
-          alert(
-            `Filtering by:\nDate From: ${dateFrom || "All"}\nDate To: ${
-              dateTo || "All"
-            }\nAction Type: ${actionType || "All"}`
-          );
-        });
-
-      // Add visual feedback when filter section becomes sticky
-      window.addEventListener("scroll", function () {
-        const filterSection = document.getElementById("filterSection");
-        const scrollPosition = window.scrollY;
-
-        if (scrollPosition > 100) {
-          filterSection.classList.add("sticky");
-        } else {
-          filterSection.classList.remove("sticky");
+    // Close sidebar when a nav link is clicked (on mobile)
+    const navLinks = document.querySelectorAll(".sidebar .nav-link");
+    navLinks.forEach((link) => {
+      link.addEventListener("click", function () {
+        if (window.innerWidth < 992) {
+          sidebar.classList.remove("mobile-open");
+          sidebarOverlay.classList.remove("active");
         }
       });
-    </script>
-  </body>
+    });
+
+    // Filter functionality
+    document
+      .querySelector(".search-btn")
+      .addEventListener("click", function () {
+        const dateFrom = document.getElementById("dateFrom").value;
+        const dateTo = document.getElementById("dateTo").value;
+        const actionType = document.getElementById("actionType").value;
+
+        alert(
+          `Filtering by:\nDate From: ${dateFrom || "All"}\nDate To: ${dateTo || "All"
+          }\nAction Type: ${actionType || "All"}`
+        );
+      });
+
+    // Add visual feedback when filter section becomes sticky
+    window.addEventListener("scroll", function () {
+      const filterSection = document.getElementById("filterSection");
+      const scrollPosition = window.scrollY;
+
+      if (scrollPosition > 100) {
+        filterSection.classList.add("sticky");
+      } else {
+        filterSection.classList.remove("sticky");
+      }
+    });
+
+    // Highlight active sidebar link based on current URL
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.sidebar .nav-link');
+    const currentPath = window.location.pathname.split('/').pop();
+
+    navLinks.forEach(link => {
+      const linkPath = link.getAttribute('href');
+      if (linkPath === currentPath) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  });
+  </script>
+</body>
+
 </html>
