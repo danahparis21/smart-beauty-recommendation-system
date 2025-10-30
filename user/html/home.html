@@ -122,34 +122,40 @@
         font-weight: 300;
       }
 
-      .user-info {
+      .user-section {
         display: flex;
         align-items: center;
         gap: 15px;
       }
 
       .user-greeting {
-        font-size: 16px;
         color: var(--dark-gray);
+        font-size: 14px;
         font-weight: 500;
       }
 
-      .user-avatar {
+      .profile-btn {
+        background: none;
+        border: none;
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-pink), var(--gold));
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-weight: 600;
         cursor: pointer;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        color: var(--primary-pink);
+        background: rgba(255, 182, 193, 0.2);
       }
 
-      .user-avatar:hover {
+      .profile-btn:hover {
+        background: rgba(255, 182, 193, 0.3);
         transform: scale(1.05);
+      }
+
+      .profile-btn i {
+        font-size: 18px;
       }
 
       /* Desktop Navigation - Top Position */
@@ -317,7 +323,6 @@
         flex-direction: column;
         height: 100%;
         cursor: pointer;
-        transition: all 0.3s ease;
       }
 
       .product-card:hover {
@@ -336,6 +341,7 @@
         overflow: hidden;
         flex-shrink: 0;
       }
+
       .product-card::before {
         content: "";
         position: absolute;
@@ -354,20 +360,6 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: opacity 0.4s ease-in-out, transform 0.3s ease;
-        opacity: 1; /* Ensure it's visible by default */
-      }
-
-      /* Class for fade transition */
-      .product-image.fade-out {
-        opacity: 0;
-      }
-
-      .product-image.fade-in {
-        opacity: 1;
-      }
-      .product-card:hover .product-image {
-        transform: scale(1.05);
       }
 
       .product-image i {
@@ -503,6 +495,7 @@
         background: var(--dark-pink);
         transform: translateY(-1px);
       }
+
       /* Fallback image styling */
       .no-image-placeholder {
         width: 80px;
@@ -551,6 +544,7 @@
         justify-content: center;
         overflow: hidden;
       }
+
       /* Floating Cart */
       .floating-cart {
         position: fixed;
@@ -752,8 +746,26 @@
         align-items: center;
       }
 
+      /* Mobile Profile Button */
+      .mobile-profile-btn {
+        display: none;
+        background: none;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--primary-pink);
+        background: rgba(255, 182, 193, 0.2);
+      }
+
+      .mobile-profile-btn i {
+        font-size: 16px;
+      }
+
       /* Responsive Design */
-      /* Improved Responsive Breakpoints */
       @media (min-width: 768px) {
         .products-grid {
           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -772,6 +784,7 @@
           font-size: 17px;
         }
       }
+
       @media (min-width: 1024px) {
         .desktop-nav {
           display: flex;
@@ -848,6 +861,14 @@
         .floating-cart {
           display: flex; /* Always show on mobile */
         }
+
+        .user-section {
+          display: none;
+        }
+
+        .mobile-profile-btn {
+          display: flex;
+        }
       }
 
       @media (max-width: 480px) {
@@ -861,15 +882,6 @@
 
         .brand-tagline {
           font-size: 11px;
-        }
-
-        .user-greeting {
-          font-size: 14px;
-        }
-
-        .user-avatar {
-          width: 35px;
-          height: 35px;
         }
 
         .search-container,
@@ -909,6 +921,7 @@
           height: 55px;
         }
       }
+
       /* Extra small devices (phones under 360px) */
       @media (max-width: 360px) {
         .products-grid {
@@ -947,10 +960,15 @@
         <h1 class="brand-name">Beauty & Blessed</h1>
         <p class="brand-tagline">Elevate Your Everyday Glam.</p>
       </div>
-      <div class="user-info">
-        <div class="user-greeting">Hi, Maria!</div>
-        <div class="user-avatar" onclick="openProfile()">M</div>
+      <div class="user-section">
+        <span class="user-greeting" id="user-greeting">Hi, User!</span>
+        <button class="profile-btn" onclick="window.location.href='user_profile.html'">
+          <i class="fas fa-user"></i>
+        </button>
       </div>
+      <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
+        <i class="fas fa-user"></i>
+      </button>
     </header>
 
     <!-- Desktop Navigation -->
@@ -1123,11 +1141,25 @@
     </nav>
 
     <script>
-      /// --- GLOBAL STATE ---
+      // --- GLOBAL STATE ---
       let products = [];
       let cart = [];
       const SHIPPING_FEE = 50.0; // Fixed shipping fee
       const normalizeCategory = (cat) => (cat || "").toLowerCase();
+
+      // Get username from localStorage or use default
+      function getUsername() {
+        return localStorage.getItem('username') || 'Maria';
+      }
+
+      // Update user greeting with actual username
+      function updateUserGreeting() {
+        const username = getUsername();
+        const greetingElement = document.getElementById('user-greeting');
+        if (greetingElement) {
+          greetingElement.textContent = `Hi, ${username}!`;
+        }
+      }
 
       // Helper to replace the forbidden window.alert()
       function showNotification(message) {
@@ -1316,50 +1348,8 @@
             });
           });
         }, 100);
-        // Rest of your event handlers...
-        // Rest of your event handlers...
+
         const img = card.querySelector(".product-image");
-        const productImageDiv = card.querySelector(".product-image-container");
-
-        productImageDiv.addEventListener("mouseenter", () => {
-          const preview = img.dataset.preview;
-          if (preview && preview !== img.src) {
-            // Add fade-out effect
-            img.classList.add("fade-out");
-
-            // Wait for fade-out to complete, then change image and fade in
-            setTimeout(() => {
-              img.src = preview;
-              img.classList.remove("fade-out");
-              img.classList.add("fade-in");
-
-              // Remove fade-in class after transition completes
-              setTimeout(() => {
-                img.classList.remove("fade-in");
-              }, 400);
-            }, 200);
-          }
-        });
-
-        productImageDiv.addEventListener("mouseleave", () => {
-          const defaultImg = img.dataset.default;
-          if (defaultImg && defaultImg !== img.src) {
-            // Add fade-out effect
-            img.classList.add("fade-out");
-
-            // Wait for fade-out to complete, then change image and fade in
-            setTimeout(() => {
-              img.src = defaultImg;
-              img.classList.remove("fade-out");
-              img.classList.add("fade-in");
-
-              // Remove fade-in class after transition completes
-              setTimeout(() => {
-                img.classList.remove("fade-in");
-              }, 400);
-            }, 200);
-          }
-        });
         const colorCircles = card.querySelectorAll(".color-circle");
         colorCircles.forEach((circle) => {
           circle.addEventListener("click", (e) => {
@@ -1380,6 +1370,7 @@
 
         return card;
       }
+
       // Toggle like status
       function toggleLike(productId) {
         // We need to find the product either by its own ID or its parent ID
@@ -1533,11 +1524,6 @@
         }
       }
 
-      // Open user profile (placeholder function)
-      function openProfile() {
-        showNotification("Profile page would open here!");
-      }
-
       // Setup category filters
       function handleCategoryFilter(category) {
         document
@@ -1626,6 +1612,9 @@
       // --- INITIALIZATION ---
 
       document.addEventListener("DOMContentLoaded", function () {
+        // Update user greeting with actual username
+        updateUserGreeting();
+
         const categoriesContainer = document.getElementById(
           "categories-container"
         );

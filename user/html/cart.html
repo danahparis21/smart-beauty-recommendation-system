@@ -62,7 +62,7 @@
             top: 0;
             z-index: 100;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 182, 193, 0.2);
@@ -71,6 +71,7 @@
         .brand-header {
             text-align: center;
             padding: 0 20px;
+            flex: 1;
         }
 
         .brand-name {
@@ -88,6 +89,61 @@
             font-size: 12px;
             letter-spacing: 1px;
             font-weight: 300;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-greeting {
+            color: var(--dark-gray);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--primary-pink);
+            background: rgba(255, 182, 193, 0.2);
+        }
+
+        .profile-btn:hover {
+            background: rgba(255, 182, 193, 0.3);
+            transform: scale(1.05);
+        }
+
+        .profile-btn i {
+            font-size: 18px;
+        }
+
+        /* Mobile Profile Button */
+        .mobile-profile-btn {
+            display: none;
+            background: none;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--primary-pink);
+            background: rgba(255, 182, 193, 0.2);
+        }
+
+        .mobile-profile-btn i {
+            font-size: 16px;
         }
 
         /* Desktop Navigation - Top Position */
@@ -133,38 +189,38 @@
             font-size: 20px;
         }
 
-              /* Search Bar */
-      .search-container {
-        padding: 15px 20px;
-        background-color: var(--soft-white);
-      }
+        /* Search Bar */
+        .search-container {
+            padding: 15px 20px;
+            background-color: var(--soft-white);
+        }
 
-      .search-bar {
-        display: flex;
-        align-items: center;
-        background-color: var(--light-gray);
-        border-radius: 25px;
-        padding: 10px 20px;
-        box-shadow: var(--card-shadow);
-      }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--light-gray);
+            border-radius: 25px;
+            padding: 10px 20px;
+            box-shadow: var(--card-shadow);
+        }
 
-      .search-bar i {
-        color: var(--text-gray);
-        margin-right: 10px;
-      }
+        .search-bar i {
+            color: var(--text-gray);
+            margin-right: 10px;
+        }
 
-      .search-bar input {
-        border: none;
-        background: transparent;
-        outline: none;
-        width: 100%;
-        font-size: 16px;
-        font-family: "Montserrat", sans-serif;
-      }
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 16px;
+            font-family: "Montserrat", sans-serif;
+        }
 
         .search-container,
         .categories {
-          padding: 12px 15px;
+            padding: 12px 15px;
         }
 
         /* Page Content */
@@ -760,6 +816,14 @@
             .products-grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
+            
+            .user-section {
+                display: none;
+            }
+
+            .mobile-profile-btn {
+                display: flex;
+            }
         }
 
         @media (max-width: 480px) {
@@ -807,6 +871,15 @@
             <h1 class="brand-name">Beauty & Blessed</h1>
             <p class="brand-tagline">Elevate Your Everyday Glam.</p>
         </div>
+        <div class="user-section">
+            <span class="user-greeting" id="user-greeting">Hi, User!</span>
+            <button class="profile-btn" onclick="window.location.href='user_profile.html'">
+                <i class="fas fa-user"></i>
+            </button>
+        </div>
+        <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
+            <i class="fas fa-user"></i>
+        </button>
     </header>
 
     <!-- Desktop Navigation -->
@@ -833,7 +906,7 @@
         </div>
     </nav>
 
-        <!-- Search Bar -->
+    <!-- Search Bar -->
     <div class="search-container">
       <div class="search-bar">
         <i class="fas fa-search"></i>
@@ -915,6 +988,20 @@
         let products = [];
         let cart = [];
         const SHIPPING_FEE = 50.0; // Fixed shipping fee
+
+        // Get username from localStorage or use default
+        function getUsername() {
+            return localStorage.getItem('username') || 'Maria';
+        }
+
+        // Update user greeting with actual username
+        function updateUserGreeting() {
+            const username = getUsername();
+            const greetingElement = document.getElementById('user-greeting');
+            if (greetingElement) {
+                greetingElement.textContent = `Hi, ${username}!`;
+            }
+        }
 
         // Helper to replace the forbidden window.alert()
         function showNotification(message) {
@@ -1237,58 +1324,6 @@
 
         // Initialize with sample data
         function initializeData() {
-            /* // Sample products data
-            products = [
-                { 
-                    id: 1, 
-                    name: "Matte Lipstick", 
-                    price: 299, 
-                    category: "lippies", 
-                    liked: true,
-                    image: "https://placehold.co/400x300/FEE2E2/B91C1C?text=Lipstick"
-                },
-                { 
-                    id: 2, 
-                    name: "Hydrating Foundation", 
-                    price: 599, 
-                    category: "foundation", 
-                    liked: true,
-                    image: "https://placehold.co/400x300/E6F3FF/1E40AF?text=Foundation"
-                },
-                { 
-                    id: 3, 
-                    name: "Glow Highlighter", 
-                    price: 399, 
-                    category: "others", 
-                    liked: false,
-                    image: "https://placehold.co/400x300/FEF3C7/D97706?text=Highlighter"
-                },
-                { 
-                    id: 4, 
-                    name: "Nourishing Face Cream", 
-                    price: 799, 
-                    category: "skin care", 
-                    liked: true,
-                    image: "https://placehold.co/400x300/DCFCE7/166534?text=Cream"
-                },
-                { 
-                    id: 5, 
-                    name: "Eyeshadow Palette", 
-                    price: 899, 
-                    category: "eyeshadow", 
-                    liked: false,
-                    image: "https://placehold.co/400x300/E0E7FF/4338CA?text=Eyeshadow"
-                },
-                { 
-                    id: 6, 
-                    name: "Blush", 
-                    price: 349, 
-                    category: "blush", 
-                    liked: true,
-                    image: "https://placehold.co/400x300/FCE7F3/BE185D?text=Blush"
-                }
-            ]; */
-
             // Sample cart data
             cart = [
                 { 
@@ -1334,6 +1369,9 @@
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // Update user greeting with actual username
+            updateUserGreeting();
+            
             initializeData();
             setupNavigation();
         });
