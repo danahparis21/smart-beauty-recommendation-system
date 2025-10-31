@@ -1,7 +1,5 @@
 <?php
-
-
-// Configuration (Your existing connection block)
+// Configuration
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
@@ -23,36 +21,37 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $variantID = $_GET['id'];
 
 try {
-    // 1. Fetch Variant Details and Attributes - ADD PARENT PRODUCT NAME
+    // Fetch Variant Details and Attributes - FIXED: Added Description field
     $sql_variant = '
-        SELECT 
-            p.ProductID, 
-            p.ParentProductID,
-            parent.Name as ParentProductName,  
-            p.Name, 
-            p.Description, 
-            p.Ingredients,
-            p.Stocks, 
-            p.Price, 
-            p.Category, 
-            p.ExpirationDate,
-            p.HexCode,
-            p.ShadeOrVariant,
-            
-            a.SkinType,
-            a.SkinTone,
-            a.Undertone,
-            a.Acne,
-            a.Dryness,
-            a.DarkSpots,
-            a.Matte,
-            a.Dewy,
-            a.LongLasting
-        FROM Products p
-        LEFT JOIN ProductAttributes a ON p.ProductID = a.ProductID
-        LEFT JOIN Products parent ON p.ParentProductID = parent.ProductID 
-        WHERE p.ProductID = ? AND p.ParentProductID IS NOT NULL 
-        LIMIT 1';
+    SELECT 
+        p.ProductID, 
+        p.ParentProductID,
+        parent.Name as ParentProductName,  
+        p.Name, 
+        p.Description,  
+        p.Ingredients,
+        p.Stocks, 
+        p.Price, 
+        p.Category, 
+        p.ExpirationDate,
+        p.Status,  
+        p.HexCode,
+        p.ShadeOrVariant,
+        
+        a.SkinType,
+        a.SkinTone,
+        a.Undertone,
+        a.Acne,
+        a.Dryness,
+        a.DarkSpots,
+        a.Matte,
+        a.Dewy,
+        a.LongLasting
+    FROM Products p
+    LEFT JOIN ProductAttributes a ON p.ProductID = a.ProductID
+    LEFT JOIN Products parent ON p.ParentProductID = parent.ProductID 
+    WHERE p.ProductID = ? AND p.ParentProductID IS NOT NULL 
+    LIMIT 1';
 
     $stmt_variant = $conn->prepare($sql_variant);
     $stmt_variant->bind_param('s', $variantID);
@@ -66,7 +65,7 @@ try {
         die(json_encode(['error' => 'Variant not found or is a Parent Product.']));
     }
 
-    // 2. Fetch the single Variant Image (MediaType = 'VARIANT')
+    // Fetch the single Variant Image
     $sql_media = "
         SELECT 
             ImagePath
@@ -82,7 +81,6 @@ try {
     $media = $result_media->fetch_assoc();
     $stmt_media->close();
 
-    // Attach the variant image path
     $variant['VariantImage'] = $media['ImagePath'] ?? null;
 
     echo json_encode($variant);

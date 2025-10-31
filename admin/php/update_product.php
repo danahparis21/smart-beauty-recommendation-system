@@ -46,10 +46,18 @@ try {
 
     // FIX: Convert empty date string '' to NULL for MySQL
     $expirationDate = $_POST['productExpiration'] ?? null;
+    if ($expirationDate && $expirationDate !== '') {
+        $today = date('Y-m-d');
+        if ($expirationDate < $today) {
+            http_response_code(400);
+            die(json_encode(['error' => 'Expiration date cannot be in the past']));
+        }
+    }
+
+    // Convert empty string to NULL for MySQL
     if ($expirationDate === '') {
         $expirationDate = null;
     }
-
     // Category is only updated for the Parent product
     $category = $isParentUpdate ? ($_POST['productCategory'] ?? null) : null;
 
@@ -91,7 +99,7 @@ try {
         $darkSpots = isset($_POST['darkspots']) ? 1 : 0;
         $matte = isset($_POST['matte']) ? 1 : 0;
         $dewy = isset($_POST['dewy']) ? 1 : 0;
-        $longLasting = isset($_POST['longlasting']) ? 1 : 0;
+        $longLasting = isset($_POST['longLasting']) ? 1 : 0;
 
         // This is the data array for the attributes table (used later)
         $attribute_data_for_insert_update = [

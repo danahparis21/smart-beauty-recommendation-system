@@ -39,7 +39,20 @@ $variantName = $_POST['productVariantName'];
 $price = $_POST['productPrice'];
 $description = $_POST['productDescription'];
 $stocks = $_POST['productStock'];
-$expiration = $_POST['productExpiration'] ?? null;
+// In your add_product.php around line 251, add this:
+$expirationDate = $_POST['productExpiration'] ?? null;
+if ($expirationDate && $expirationDate !== '') {
+    $today = date('Y-m-d');
+    if ($expirationDate < $today) {
+        http_response_code(400);
+        die(json_encode(['error' => 'Expiration date cannot be in the past']));
+    }
+}
+
+// Convert empty string to NULL for MySQL
+if ($expirationDate === '') {
+    $expirationDate = null;
+}
 $hexCode = $_POST['hexCode'] ?? null;
 if ($hexCode === '')
     $hexCode = null;
