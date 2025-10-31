@@ -1,6 +1,5 @@
 <?php
-// get_product_details.php - COMPLETE FIXED VERSION
-session_start();
+// get_product_details.php
 // Start output buffering to prevent any accidental output
 ob_start();
 header('Content-Type: application/json');
