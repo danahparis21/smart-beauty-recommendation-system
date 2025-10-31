@@ -5,6 +5,11 @@
   --darker-pink: #b05a70;
   --light-bg: #f8f9fa;
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --gradient-bg: linear-gradient(135deg,
+      #ffffff 0%,
+      #fff5f9 30%,
+      #ffe6f2 70%,
+      #ffd1dc 100%);
 }
 
 /* Reset */
@@ -14,11 +19,13 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
-  overflow: hidden; /* no scrollbars */
+  overflow: hidden;
+  /* no scrollbars */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #fef5f8 0%, #f8f9fa 100%);
+  background: var(--gradient-bg);
   overflow-x: hidden;
 }
 
@@ -29,11 +36,9 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  background: linear-gradient(
-    180deg,
-    var(--primary-pink) 0%,
-    var(--darker-pink) 100%
-  );
+  background: linear-gradient(180deg,
+      var(--primary-pink) 0%,
+      var(--darker-pink) 100%);
   color: white;
   padding: 15px 20px;
   z-index: 1000;
@@ -86,30 +91,34 @@ html, body {
   height: 100%;
   background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
   color: white;
-  box-shadow: 3px 0 20px rgba(0,0,0,0.15);
+  box-shadow: 3px 0 20px rgba(0, 0, 0, 0.15);
   z-index: 100;
   transition: transform 0.3s ease;
-  overflow: hidden; /* no scroll */
+  overflow: hidden;
+  /* no scroll */
 }
 
 /* Logo Container */
 .logo-container {
-  padding: 20px 15px; /* tighter spacing */
-  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding: 20px 15px;
+  /* tighter spacing */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   margin-bottom: 10px;
   text-align: center;
 }
 
 .logo {
-  max-width: 100px; /* smaller logo */
+  max-width: 100px;
+  /* smaller logo */
   display: block;
   margin: 0 auto;
-  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .store-name {
   margin-top: 8px;
-  font-size: 1rem; /* smaller text */
+  font-size: 1rem;
+  /* smaller text */
   font-weight: 600;
   color: white;
 }
@@ -118,11 +127,14 @@ html, body {
 .sidebar .nav-link {
   color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
-  margin: 5px 12px; /* reduced spacing */
+  margin: 5px 12px;
+  /* reduced spacing */
   border-radius: 10px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 10px 14px; /* tighter padding */
-  font-size: 0.85rem; /* smaller text */
+  padding: 10px 14px;
+  /* tighter padding */
+  font-size: 0.85rem;
+  /* smaller text */
   display: flex;
   align-items: center;
   position: relative;
@@ -215,6 +227,7 @@ main {
 
   main {
     margin-left: 0;
-    padding-top: 80px; /* adjust for mobile header */
+    padding-top: 80px;
+    /* adjust for mobile header */
   }
 }
