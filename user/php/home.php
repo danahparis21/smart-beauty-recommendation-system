@@ -1,14 +1,12 @@
 <?php
-// home.php
+// home.php - WITH VARIANT-LEVEL FILTERING
 session_start();
 
-// Add headers to prevent caching
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-// Auto-switch between Docker and XAMPP
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
@@ -22,14 +20,13 @@ if ($conn->connect_error) {
 
 function getPublicImagePath($dbPath)
 {
-    if (empty($dbPath)) {
+    if (empty($dbPath))
         return '';
-    }
     $filename = basename($dbPath);
     return '/admin/uploads/product_images/' . $filename;
 }
 
-// ===================== FETCH PRODUCTS ===================== //
+// ===================== IMPROVED SQL WITH VARIANT FILTERING ===================== //
 $sql = "
     SELECT 
         p.ProductID AS id, 
@@ -42,7 +39,11 @@ $sql = "
         p.Status AS status, 
         p.Stocks AS stockQuantity, 
         pm_v.ImagePath AS variantImage,
-        pm_p.ImagePath AS previewImage
+        pm_p.ImagePath AS previewImage,
+        -- Get the actual parent product name
+        parent.Name AS parentName,
+        -- Get parent status for reference
+        parent.Status AS parentStatus
     FROM 
         Products p
     LEFT JOIN ProductMedia pm_v 
@@ -51,8 +52,12 @@ $sql = "
     LEFT JOIN ProductMedia pm_p 
         ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
         AND pm_p.MediaType = 'PREVIEW'
+    LEFT JOIN Products parent 
+        ON p.ParentProductID = parent.ProductID
     WHERE 
-        p.Status IN ('Available', 'Low Stock') 
+        -- Filter out bad statuses for ALL products (parents and variants)
+        p.Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
+        AND p.Stocks > 0  -- Only products with stock
     ORDER BY 
         p.CreatedAt DESC
 ";
@@ -65,21 +70,24 @@ if (!$result) {
 }
 
 $groupedProducts = [];
+$processedParentIds = [];
 
-// In your PHP, add debug logging for the variant field
+error_log('Total rows from SQL (after filtering): ' . $result->num_rows);
+
 while ($row = $result->fetch_assoc()) {
     $parentID = $row['parentID'];
-
-    // Debug the variant field
-    error_log("DB ROW - ID: {$row['id']}, Name: {$row['name']}, Variant Field: " . ($row['variant'] ?? 'NULL') . ', HexCode: ' . ($row['hexCode'] ?? 'NULL'));
-
     $isParent = ($parentID === null || $parentID === $row['id']);
 
+    // Convert image paths
     $row['variantImage'] = getPublicImagePath($row['variantImage'] ?? '');
     $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
+    $row['name'] = trim(str_ireplace('Product Record', '', $row['name']));
+    $row['parentName'] = trim(str_ireplace('Product Record', '', $row['parentName'] ?? ''));
+
+    error_log("Processing: ID={$row['id']}, Name={$row['name']}, Status={$row['status']}, Stock={$row['stockQuantity']}");
 
     if ($isParent) {
-        // Parent product
+        // Parent product - only add if not already processed
         if (!isset($groupedProducts[$row['id']])) {
             $groupedProducts[$row['id']] = [
                 'id' => $row['id'],
@@ -92,30 +100,36 @@ while ($row = $result->fetch_assoc()) {
                 'previewImage' => $row['previewImage'],
                 'variants' => []
             ];
+            $processedParentIds[] = $row['id'];
+            error_log("Added parent: {$row['id']} - {$row['name']} - Status: {$row['status']}");
         }
     } else {
-        // Variant product
+        // Variant product - use the actual parent name
         $parentKey = $parentID;
+        $parentName = $row['parentName'] ?? $row['name'];
 
+        // Only create parent if it has at least one available variant
         if (!isset($groupedProducts[$parentKey])) {
             $groupedProducts[$parentKey] = [
                 'id' => $parentKey,
-                'name' => $row['name'],  // This might be wrong - we should get the actual parent name
+                'name' => $parentName,
                 'category' => strtolower($row['category']),
                 'price' => floatval($row['price']),
-                'status' => $row['status'],
-                'stockQuantity' => intval($row['stockQuantity']),
+                'status' => $row['parentStatus'] ?? 'Available',  // Use parent status
+                'stockQuantity' => 0,  // Will calculate total from variants
                 'image' => $row['previewImage'],
                 'previewImage' => $row['previewImage'],
                 'variants' => []
             ];
+            $processedParentIds[] = $parentKey;
+            error_log("Created parent from variant: {$parentKey} - {$parentName}");
         }
 
-        // FIX: Make sure we're using the actual variant name and hex code
+        // Add variant (already filtered by SQL to exclude bad statuses)
         $groupedProducts[$parentKey]['variants'][] = [
             'id' => $row['id'],
-            'name' => $row['variant'] ?? $row['name'],  // This should be "Rose", "Bear", etc.
-            'variant' => $row['variant'] ?? $row['name'],  // Add this field too
+            'name' => $row['variant'] ?? $row['name'],
+            'variant' => $row['variant'] ?? $row['name'],
             'price' => floatval($row['price']),
             'image' => $row['variantImage'],
             'hexCode' => $row['hexCode'] ?? '#CCCCCC',
@@ -123,53 +137,65 @@ while ($row = $result->fetch_assoc()) {
             'stockQuantity' => intval($row['stockQuantity']),
         ];
 
-        error_log("Added variant: {$row['variant']} with hex: {$row['hexCode']} to parent: {$parentKey}");
+        error_log("Added variant: {$row['variant']} - Status: {$row['status']} - Stock: {$row['stockQuantity']}");
     }
 }
-// ===================== SAFETY CHECK ===================== //
-// Ensure all products have status and stockQuantity
-foreach ($groupedProducts as &$product) {
-    if (!isset($product['status'])) {
-        $product['status'] = 'Available';  // Default status
-    }
-    if (!isset($product['stockQuantity'])) {
-        $product['stockQuantity'] = 0;  // Default stock
-    }
-}
-// Add this debug output in your PHP before the final output
-$debugInfo = [];
-foreach ($groupedProducts as $product) {
+
+// Calculate parent stock based on available variants and clean up empty parents
+$finalProducts = [];
+foreach ($groupedProducts as $productId => $product) {
+    // If parent has variants, calculate total stock from available variants
     if (!empty($product['variants'])) {
-        $debugInfo[$product['id']] = [
-            'product_name' => $product['name'],
-            'variants' => array_map(function ($v) {
-                return [
-                    'variant_name' => $v['name'],
-                    'hexCode' => $v['hexCode'],
-                    'has_hex' => !empty($v['hexCode'])
-                ];
-            }, $product['variants'])
-        ];
+        $totalStock = 0;
+        $hasAvailableVariants = false;
+
+        foreach ($product['variants'] as $variant) {
+            $totalStock += $variant['stockQuantity'];
+            if ($variant['stockQuantity'] > 0 && $variant['status'] !== 'No Stock') {
+                $hasAvailableVariants = true;
+            }
+        }
+
+        $product['stockQuantity'] = $totalStock;
+
+        // If no variants are available, skip this product
+        if (!$hasAvailableVariants) {
+            error_log("Skipping product {$productId} - no available variants");
+            continue;
+        }
     }
+
+    // Ensure required fields
+    if (!isset($product['status']))
+        $product['status'] = 'Available';
+    if (!isset($product['stockQuantity']))
+        $product['stockQuantity'] = 0;
+
+    $finalProducts[] = $product;
 }
 
-error_log('DEBUG - Variant Hex Codes: ' . json_encode($debugInfo));
+// Final cleanup: Remove parents with no variants (if any slipped through)
+$finalProducts = array_filter($finalProducts, function ($product) {
+    return !empty($product['variants']) || $product['stockQuantity'] > 0;
+});
 
-// Also add this to your response for frontend debugging
-$response['debug_hex_codes'] = $debugInfo;
+// Debug final output
+error_log('Final products count after filtering: ' . count($finalProducts));
+foreach ($finalProducts as $product) {
+    $variantStatuses = array_column($product['variants'], 'status');
+    error_log("Final product: {$product['id']} - {$product['name']} - Total Stock: {$product['stockQuantity']} - Variant Statuses: " . implode(', ', $variantStatuses));
+}
 
 // ===================== OUTPUT ===================== //
 $response = [
     'success' => true,
-    'products' => array_values($groupedProducts),
+    'products' => $finalProducts,
     'debug' => [
-        'sample_product' => !empty($groupedProducts) ? reset($groupedProducts) : null,
-        'total_products' => count($groupedProducts),
-        'fields_check' => !empty($groupedProducts) ? array_keys(reset($groupedProducts)) : []
+        'total_products' => count($finalProducts),
+        'product_ids' => array_column($finalProducts, 'id'),
+        'filter_info' => 'Excluded: No Stock, Expired, Deleted, Disabled, Zero Stock'
     ]
 ];
-error_log('=== DEBUG SAMPLE PRODUCT ===');
-error_log(print_r(reset($groupedProducts), true));
 
 echo json_encode($response);
 $conn->close();

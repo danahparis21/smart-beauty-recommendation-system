@@ -2199,6 +2199,54 @@
       let currentSort = "name-asc";
       let currentCategory = "";
       let filteredProducts = [];
+
+      async function deleteProduct(id, isParent) {
+        console.log("🧩 Deleting:", { id, isParent });
+
+        try {
+          const response = await fetch("../php/delete_product.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `id=${id}&isParent=${isParent ? 1 : 0}`,
+          });
+
+          const text = await response.text();
+          console.log("🧾 Raw response:", text);
+
+          if (text.trim().startsWith("{")) {
+            const result = JSON.parse(text);
+            if (result.success) {
+              const productType = isParent ? "Parent Product" : "Variant";
+              showModal(
+                "success",
+                `${productType} Deleted!`,
+                `${productType} has been successfully deleted!\n\nThe page will refresh automatically.`,
+                true
+              );
+            } else {
+              showModal(
+                "error",
+                "Delete Failed",
+                result.message || "Failed to delete the product."
+              );
+            }
+          } else {
+            showModal(
+              "error",
+              "Unexpected Response",
+              "Server returned an unexpected response."
+            );
+          }
+        } catch (error) {
+          console.error("Error deleting product:", error);
+          showModal(
+            "error",
+            "Delete Error",
+            "An error occurred while deleting the product."
+          );
+        }
+      }
+
       // Updated showModal function to handle delete confirmations
       function showModal(type, title, message, autoClose = false) {
         const modal = new bootstrap.Modal(
@@ -3182,53 +3230,6 @@
             );
           }
         });
-
-        async function deleteProduct(id, isParent) {
-          console.log("🧩 Deleting:", { id, isParent });
-
-          try {
-            const response = await fetch("../php/delete_product.php", {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded" },
-              body: `id=${id}&isParent=${isParent ? 1 : 0}`,
-            });
-
-            const text = await response.text();
-            console.log("🧾 Raw response:", text);
-
-            if (text.trim().startsWith("{")) {
-              const result = JSON.parse(text);
-              if (result.success) {
-                const productType = isParent ? "Parent Product" : "Variant";
-                showModal(
-                  "success",
-                  `${productType} Deleted!`,
-                  `${productType} has been successfully deleted!\n\nThe page will refresh automatically.`,
-                  true
-                );
-              } else {
-                showModal(
-                  "error",
-                  "Delete Failed",
-                  result.message || "Failed to delete the product."
-                );
-              }
-            } else {
-              showModal(
-                "error",
-                "Unexpected Response",
-                "Server returned an unexpected response."
-              );
-            }
-          } catch (error) {
-            console.error("Error deleting product:", error);
-            showModal(
-              "error",
-              "Delete Error",
-              "An error occurred while deleting the product."
-            );
-          }
-        }
 
         // ✅ ADD THIS NEW FUNCTION - Client-side filtering and rendering
         function renderFilteredProducts() {
