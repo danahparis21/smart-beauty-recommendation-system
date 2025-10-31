@@ -109,14 +109,34 @@
 
     /* Chart Container */
     .chart-container {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 25px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      transition: all 0.4s ease;
-      border: 1px solid rgba(228, 151, 170, 0.1);
-    }
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px 30px 30px; /* top padding bigger for title/legend */
+  margin-bottom: 25px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(228, 151, 170, 0.1);
+
+  height: 500px; /* default desktop height */
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container canvas {
+  flex: 1 1 auto;
+  width: 100% !important;
+  height: 75% !important;
+  display: block;
+}
+
+
+
+
+
+
+
+
 
     .chart-container:hover {
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
@@ -875,6 +895,69 @@
     .right-panel {
       animation-delay: 0.6s;
     }
+
+    /* Dynamic content styles */
+    .product-item,
+    .customer-item,
+    .insight-item {
+      transition: all 0.3s ease;
+      border: 1px solid rgba(228, 151, 170, 0.1);
+    }
+
+    .product-item:hover,
+    .customer-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(228, 151, 170, 0.15);
+      border-color: var(--primary-pink);
+    }
+
+    .rating-bar-item .progress {
+      background-color: #e9ecef;
+      border-radius: 4px;
+    }
+
+    .rating-bar-item .progress-bar {
+      border-radius: 4px;
+      transition: width 0.8s ease;
+    }
+
+    .customer-avatar {
+      transition: all 0.3s ease;
+    }
+
+    .customer-item:hover .customer-avatar {
+      transform: scale(1.1);
+      background: var(--secondary-pink) !important;
+    }
+
+    .insight-item {
+      transition: all 0.3s ease;
+    }
+
+    .insight-item:hover {
+      transform: translateX(5px);
+      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+    }
+
+    /* Animation for loaded content */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .product-item,
+    .customer-item,
+    .insight-item,
+    .rating-bar-item {
+      animation: fadeIn 0.5s ease forwards;
+    }
   </style>
 </head>
 
@@ -996,7 +1079,7 @@
                   <button class="btn btn-outline-secondary btn-sm">Annually</button>
                 </div>
               </div>
-              <canvas id="salesChart" style="height: 300px;"></canvas>
+              <canvas id="salesChart"></canvas>
             </div>
 
             <!-- AI Insights and Top Customers BELOW the chart -->
@@ -1111,6 +1194,406 @@
           // Also run after sidebar toggle to ensure proper layout
           document.getElementById('hamburgerBtn').addEventListener('click', function () {
             setTimeout(adjustContentForMobileHeader, 300);
+          });
+
+          // Fetch dashboard data
+          async function fetchDashboardData() {
+            try {
+              showLoadingState();
+
+              console.log('Fetching dashboard data...');
+              const response = await fetch('../php/admin.php');
+
+              console.log('Response status:', response.status);
+              console.log('Response ok:', response.ok);
+
+              // Check if response is ok
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const text = await response.text();
+              console.log('Raw response:', text);
+
+              let result;
+              try {
+                result = JSON.parse(text);
+              } catch (e) {
+                console.error('JSON parse error:', e);
+                throw new Error('Invalid JSON response: ' + text.substring(0, 100));
+              }
+
+              console.log('Parsed result:', result);
+
+              if (result.success) {
+                console.log('Updating dashboard with data:', result.data);
+                updateDashboard(result.data);
+                initializeChart(result.data.chart_data);
+              } else {
+                throw new Error(result.error || 'Failed to fetch data');
+              }
+            } catch (error) {
+              console.error('Error fetching dashboard data:', error);
+              showErrorState(error.message);
+
+              // Show error in UI
+              alert('Error loading dashboard: ' + error.message);
+            } finally {
+              hideLoadingState();
+            }
+          }
+
+          // Update stats cards
+          function updateStats(stats) {
+            const statElements = {
+              'orders_today': document.querySelector('.orders-today .stat-value'),
+              'orders_week': document.querySelector('.this-week .stat-value'),
+              'total_sales': document.querySelector('.total-sales .stat-value'),
+              'qr_codes': document.querySelector('.qr-code .stat-value')
+            };
+
+            statElements.orders_today.textContent = stats.orders_today;
+            statElements.orders_week.textContent = stats.orders_week;
+            statElements.total_sales.textContent = '₱' + stats.total_sales;
+            statElements.qr_codes.textContent = stats.qr_codes;
+          }
+
+          // Update best selling products
+          function updateBestSellers(products) {
+            const container = document.querySelector('.best-sellers-container');
+
+            if (products.length === 0) {
+              container.innerHTML = `
+            <div class="placeholder-box">
+                <i class="fas fa-cube fa-2x mb-3" style="color: var(--primary-pink);"></i>
+                <div style="font-size: 1rem; margin-bottom: 6px;">No sales data available</div>
+                <small class="text-muted">Best selling products will appear here</small>
+            </div>
+        `;
+              return;
+            }
+
+            const productsHTML = products.map((product, index) => `
+        <div class="product-item d-flex align-items-center justify-content-between p-3 mb-2" style="background: #f8f9fa; border-radius: 10px;">
+            <div class="d-flex align-items-center">
+                <span class="rank-badge me-3" style="background: var(--primary-pink); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;">${index + 1}</span>
+                <div>
+                    <div class="product-name fw-bold" style="color: var(--dark-pink);">${product.product_name}</div>
+                    <small class="text-muted">${product.Category} • ${product.total_quantity} sold</small>
+                </div>
+            </div>
+            <span class="badge" style="background: var(--secondary-pink); color: white;">${product.units_sold}</span>
+        </div>
+    `).join('');
+
+            container.innerHTML = productsHTML;
+          }
+
+          // Update store ratings
+          function updateStoreRatings(ratings) {
+            const container = document.querySelector('.ratings-container');
+            const averageRating = parseFloat(ratings.average_rating).toFixed(1);
+
+            const ratingsHTML = `
+        <div class="text-center mb-3">
+            <div class="average-rating" style="font-size: 2.5rem; font-weight: bold; color: var(--dark-pink);">${averageRating}</div>
+            <div class="stars mb-2">
+                ${generateStars(averageRating)}
+            </div>
+            <small class="text-muted">Based on ${ratings.total_reviews} reviews</small>
+        </div>
+        
+        <div class="rating-bars">
+            ${generateRatingBars(ratings)}
+        </div>
+    `;
+
+            container.innerHTML = ratingsHTML;
+          }
+
+          // Generate star rating display
+          function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+            let starsHTML = '';
+
+            // Full stars
+            for (let i = 0; i < fullStars; i++) {
+              starsHTML += '<i class="fas fa-star" style="color: #ffc107;"></i>';
+            }
+
+            // Half star
+            if (hasHalfStar) {
+              starsHTML += '<i class="fas fa-star-half-alt" style="color: #ffc107;"></i>';
+            }
+
+            // Empty stars
+            for (let i = 0; i < emptyStars; i++) {
+              starsHTML += '<i class="far fa-star" style="color: #ffc107;"></i>';
+            }
+
+            return starsHTML;
+          }
+
+          // Generate rating bars
+          function generateRatingBars(ratings) {
+            const total = ratings.total_reviews;
+            if (total === 0) return '<div class="text-muted text-center">No ratings yet</div>';
+
+            const bars = [5, 4, 3, 2, 1].map(stars => {
+              const count = ratings[`${stars}_star`] || 0;
+              const percentage = total > 0 ? (count / total) * 100 : 0;
+
+              return `
+            <div class="rating-bar-item d-flex align-items-center mb-2">
+                <span class="me-2" style="width: 20px;">${stars}</span>
+                <i class="fas fa-star me-2" style="color: #ffc107; font-size: 0.8rem;"></i>
+                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                    <div class="progress-bar" style="width: ${percentage}%; background-color: var(--primary-pink);"></div>
+                </div>
+                <small class="text-muted" style="width: 40px;">${count}</small>
+            </div>
+        `;
+            }).join('');
+
+            return bars;
+          }
+
+          // Update AI insights
+          function updateAIInsights(insights) {
+            const container = document.querySelector('.ai-insights-container');
+
+            if (insights.length === 0) {
+              container.innerHTML = `
+            <div class="placeholder-box">
+                <i class="fas fa-robot fa-2x mb-3" style="color: var(--primary-pink);"></i>
+                <div style="font-size: 1rem; margin-bottom: 6px;">AI-Powered Recommendations</div>
+                <small class="text-muted">Insights and suggestions will appear here</small>
+            </div>
+        `;
+              return;
+            }
+
+            const insightsHTML = insights.map(insight => `
+        <div class="insight-item p-3 mb-2" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px; border-left: 4px solid var(--primary-pink);">
+            <div class="d-flex align-items-start">
+                <i class="fas fa-lightbulb mt-1 me-2" style="color: var(--primary-pink);"></i>
+                <div style="flex: 1;">
+                    <small class="text-muted" style="font-size: 0.85rem;">${insight}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+            container.innerHTML = insightsHTML;
+          }
+
+          // Update top customers
+          function updateTopCustomers(customers) {
+            const container = document.querySelector('.top-customers-container');
+
+            if (customers.length === 0) {
+              container.innerHTML = `
+            <div class="placeholder-box">
+                <i class="fas fa-users fa-2x mb-3" style="color: var(--primary-pink);"></i>
+                <div style="font-size: 1rem; margin-bottom: 6px;">Customer Performance Data</div>
+                <small class="text-muted">Top customers will be listed here</small>
+            </div>
+        `;
+              return;
+            }
+
+            const customersHTML = customers.map((customer, index) => {
+              const displayName = customer.first_name && customer.last_name
+                ? `${customer.first_name} ${customer.last_name}`
+                : customer.username;
+
+              return `
+            <div class="customer-item d-flex align-items-center justify-content-between p-3 mb-2" style="background: #f8f9fa; border-radius: 10px;">
+                <div class="d-flex align-items-center">
+                    <div class="customer-avatar me-3" style="width: 40px; height: 40px; background: var(--primary-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                        ${displayName.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <div class="customer-name fw-bold" style="color: var(--dark-pink);">${displayName}</div>
+                        <small class="text-muted">${customer.total_orders} orders</small>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold" style="color: var(--dark-pink);">₱${parseFloat(customer.total_spent).toFixed(2)}</div>
+                    <small class="text-muted">total spent</small>
+                </div>
+            </div>
+        `;
+            }).join('');
+
+            container.innerHTML = customersHTML;
+          }
+
+          // Initialize sales chart
+          function initializeChart(chartData) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+
+            // Format dates and data for chart
+            const labels = chartData.map(item => {
+              const date = new Date(item.date);
+              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            });
+
+            const salesData = chartData.map(item => parseFloat(item.sales) || 0);
+            const ordersData = chartData.map(item => parseInt(item.orders) || 0);
+
+            new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: labels,
+                datasets: [
+                  {
+                    label: 'Sales (₱)',
+                    data: salesData,
+                    borderColor: '#e497aa',
+                    backgroundColor: 'rgba(228, 151, 170, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    yAxisID: 'y'
+                  },
+                  {
+                    label: 'Orders',
+                    data: ordersData,
+                    borderColor: '#db8299',
+                    backgroundColor: 'rgba(219, 130, 153, 0.1)',
+                    tension: 0.4,
+                    fill: false,
+                    yAxisID: 'y1'
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                  mode: 'index',
+                  intersect: false,
+                },
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    }
+                  },
+                  y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                      display: true,
+                      text: 'Sales (₱)'
+                    },
+                    grid: {
+                      color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                  },
+                  y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                      display: true,
+                      text: 'Orders'
+                    },
+                    grid: {
+                      drawOnChartArea: false,
+                    },
+                  }
+                },
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: {
+          padding: 20  // prevents legend from overlapping
+        }
+
+                  },
+                  tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#333',
+                    bodyColor: '#666',
+                    borderColor: '#e497aa',
+                    borderWidth: 1,
+                    callbacks: {
+                      label: function (context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                          label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                          if (context.dataset.label === 'Sales (₱)') {
+                            label += '₱' + context.parsed.y.toFixed(2);
+                          } else {
+                            label += context.parsed.y;
+                          }
+                        }
+                        return label;
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          }
+
+          // Update entire dashboard
+          function updateDashboard(data) {
+            updateStats(data.stats);
+            updateBestSellers(data.best_sellers);
+            updateStoreRatings(data.ratings);
+            updateAIInsights(data.ai_insights);
+            updateTopCustomers(data.top_customers);
+          }
+
+          // Loading states
+          function showLoadingState() {
+            document.querySelectorAll('.stat-value').forEach(el => {
+              el.textContent = '...';
+            });
+          }
+
+          function hideLoadingState() {
+            // Loading state is automatically removed when data is populated
+          }
+
+          function showErrorState(message) {
+            // You can implement error display here
+            console.error('Dashboard error:', message);
+          }
+
+          // Replace placeholder containers with dynamic content containers
+          function initializeDynamicContainers() {
+            const mappings = [
+              { placeholder: '.right-panel .panel-section:nth-child(1) .placeholder-box', className: 'best-sellers-container' },
+              { placeholder: '.right-panel .panel-section:nth-child(2) .placeholder-box', className: 'ratings-container' },
+              { placeholder: '.row.mt-4 .col-md-6:nth-child(1) .placeholder-box', className: 'ai-insights-container' },
+              { placeholder: '.row.mt-4 .col-md-6:nth-child(2) .placeholder-box', className: 'top-customers-container' }
+            ];
+
+            mappings.forEach(({ placeholder, className }) => {
+              const el = document.querySelector(placeholder);
+              if (el) {
+                el.outerHTML = `<div class="${className}"></div>`;
+              }
+            });
+          }
+
+
+          // Initialize dashboard when page loads
+          document.addEventListener('DOMContentLoaded', function () {
+            initializeDynamicContainers();
+            fetchDashboardData();
+
+            // Refresh data every 5 minutes
+            setInterval(fetchDashboardData, 300000);
           });
         </script>
 </body>
