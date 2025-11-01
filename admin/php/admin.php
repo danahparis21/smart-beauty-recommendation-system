@@ -1,9 +1,6 @@
 <?php
-// Include the database connection - adjust path based on your structure
-// If db.php is in smart-beauty-recommendation-system/config/db.php
 include __DIR__ . '/../../config/db.php';
 
-// Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -46,27 +43,171 @@ class AdminDashboard {
         return $result->fetch_assoc()['count'];
     }
     
-    // Get sales data for chart (last 7 days)
-    public function getSalesChartData() {
-        $query = "SELECT 
-                    DATE(order_date) as date,
-                    COALESCE(SUM(total_price), 0) as sales,
-                    COUNT(*) as orders
-                  FROM orders 
-                  WHERE order_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-                  AND status = 'completed'
-                  GROUP BY DATE(order_date)
-                  ORDER BY date";
-        
-        $result = $this->conn->query($query);
-        $data = [];
-        
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
-        }
-        
-        return $data;
+    // Updated getSalesChartData with proper filtering
+    public function getSalesChartData($period = 'All Time') {
+    $data = [];
+    $labels = [];
+
+    switch ($period) {
+        case 'Daily':
+            // Current week (Mon–Sun)
+            $start = date('Y-m-d', strtotime('monday this week'));
+            for ($i = 0; $i < 7; $i++) {
+                $day = date('Y-m-d', strtotime("$start +$i day"));
+                $labels[$day] = date('D', strtotime($day)); // Mon, Tue, etc.
+                $data[$day] = ['sales' => 0, 'orders' => 0];
+            }
+
+            $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders 
+                      FROM orders 
+                      WHERE order_date BETWEEN '$start' AND DATE_ADD('$start', INTERVAL 6 DAY)
+                      AND status = 'completed'
+                      GROUP BY DATE(order_date)";
+            break;
+
+        case 'Weekly':
+    // Current month weeks (up to 5)
+    $startOfMonth = date('Y-m-01');
+    $endOfMonth = date('Y-m-t');
+    $weeks = [];
+    $data = [];
+
+    // Find the Monday of the first week of this month
+    $firstMonday = date('Y-m-d', strtotime('monday this month'));
+    if (date('j', strtotime($firstMonday)) > 7) {
+        // If "monday this month" skips to next month, adjust back one week
+        $firstMonday = date('Y-m-d', strtotime('monday last month'));
     }
+
+    // Generate week ranges (up to 5)
+    for ($i = 0; $i < 5; $i++) {
+        $weekStart = date('Y-m-d', strtotime("$firstMonday +$i week"));
+        $weekEnd = date('Y-m-d', strtotime("$weekStart +6 days"));
+
+        if ($weekStart > $endOfMonth) break;
+
+        $label = 'Week ' . ($i + 1);
+        $weeks[$label] = [
+            'start' => $weekStart,
+            'end' => min($weekEnd, $endOfMonth)
+        ];
+        $data[$label] = ['sales' => 0, 'orders' => 0];
+    }
+
+    // Fetch all orders for current month
+    $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders
+              FROM orders
+              WHERE order_date BETWEEN '$startOfMonth' AND '$endOfMonth'
+              AND status = 'completed'
+              GROUP BY DATE(order_date)
+              ORDER BY date";
+    $result = $this->conn->query($query);
+
+    $raw = [];
+    while ($row = $result->fetch_assoc()) {
+        $raw[] = $row;
+    }
+
+    // Assign each order to its respective week
+    foreach ($raw as $row) {
+        foreach ($weeks as $label => $range) {
+            if ($row['date'] >= $range['start'] && $row['date'] <= $range['end']) {
+                $data[$label]['sales'] += (float)$row['sales'];
+                $data[$label]['orders'] += (int)$row['orders'];
+                break;
+            }
+        }
+    }
+
+    // Prepare final result for chart
+    $formatted = [];
+    foreach ($weeks as $label => $_) {
+        $formatted[] = [
+            'display_date' => $label,
+            'sales' => $data[$label]['sales'],
+            'orders' => $data[$label]['orders']
+        ];
+    }
+
+    return $formatted;
+
+
+        case 'Monthly':
+            $year = date('Y');
+            for ($m = 1; $m <= 12; $m++) {
+                $monthName = date('M', mktime(0, 0, 0, $m, 10));
+                $labels[$m] = $monthName;
+                $data[$m] = ['sales' => 0, 'orders' => 0];
+            }
+
+            $query = "SELECT MONTH(order_date) as month, SUM(total_price) as sales, COUNT(*) as orders
+                      FROM orders
+                      WHERE YEAR(order_date) = YEAR(CURDATE())
+                      AND status = 'completed'
+                      GROUP BY MONTH(order_date)";
+            break;
+
+        case 'Annually':
+            $currentYear = date('Y');
+            for ($y = $currentYear - 5; $y <= $currentYear; $y++) {
+                $labels[$y] = $y;
+                $data[$y] = ['sales' => 0, 'orders' => 0];
+            }
+
+            $query = "SELECT YEAR(order_date) as year, SUM(total_price) as sales, COUNT(*) as orders
+                      FROM orders
+                      WHERE YEAR(order_date) >= YEAR(CURDATE()) - 5
+                      AND status = 'completed'
+                      GROUP BY YEAR(order_date)";
+            break;
+
+        default: // All Time
+            $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders
+                      FROM orders
+                      WHERE status = 'completed'
+                      GROUP BY DATE(order_date)
+                      ORDER BY date";
+            $result = $this->conn->query($query);
+            while ($row = $result->fetch_assoc()) {
+                $data[] = [
+                    'display_date' => date('M d', strtotime($row['date'])),
+                    'sales' => $row['sales'],
+                    'orders' => $row['orders']
+                ];
+            }
+            return $data;
+    }
+
+    // Shared code for non-weekly modes
+    $result = $this->conn->query($query);
+    while ($row = $result->fetch_assoc()) {
+        if ($period === 'Daily') {
+            $key = $row['date'];
+        } elseif ($period === 'Monthly') {
+            $key = (int)$row['month'];
+        } else {
+            $key = $row['year'];
+        }
+
+        if (isset($data[$key])) {
+            $data[$key]['sales'] = (float)$row['sales'];
+            $data[$key]['orders'] = (int)$row['orders'];
+        }
+    }
+
+    // Format for frontend
+    $formatted = [];
+    foreach ($labels as $key => $label) {
+        $formatted[] = [
+            'display_date' => $label,
+            'sales' => $data[$key]['sales'],
+            'orders' => $data[$key]['orders']
+        ];
+    }
+
+    return $formatted;
+}
+
     
     // Get best selling products
     public function getBestSellingProducts() {
@@ -93,16 +234,16 @@ class AdminDashboard {
         return $products;
     }
     
-    // Get store ratings summary - FIXED column names
+    // Get store ratings summary
     public function getStoreRatings() {
         $query = "SELECT 
                     COUNT(*) as total_reviews,
                     COALESCE(AVG(stars), 0) as average_rating,
-                    COUNT(CASE WHEN stars = 5 THEN 1 END) as five_star,
-                    COUNT(CASE WHEN stars = 4 THEN 1 END) as four_star,
-                    COUNT(CASE WHEN stars = 3 THEN 1 END) as three_star,
-                    COUNT(CASE WHEN stars = 2 THEN 1 END) as two_star,
-                    COUNT(CASE WHEN stars = 1 THEN 1 END) as one_star
+                    COUNT(CASE WHEN stars = 5 THEN 1 END) as '5_star',
+                    COUNT(CASE WHEN stars = 4 THEN 1 END) as '4_star',
+                    COUNT(CASE WHEN stars = 3 THEN 1 END) as '3_star',
+                    COUNT(CASE WHEN stars = 2 THEN 1 END) as '2_star',
+                    COUNT(CASE WHEN stars = 1 THEN 1 END) as '1_star'
                   FROM ratings";
         
         $result = $this->conn->query($query);
@@ -183,36 +324,46 @@ class AdminDashboard {
         return $customers;
     }
     
-    // Get all dashboard data
-    public function getDashboardData() {
-        return [
-            'stats' => [
+    // Get all dashboard data with period parameter
+    public function getDashboardData($period = 'All Time', $chartOnly = false) {
+        $data = [
+            'chart_data' => $this->getSalesChartData($period)
+        ];
+        
+        // Only fetch other data if not chart-only request
+        if (!$chartOnly) {
+            $data['stats'] = [
                 'orders_today' => $this->getOrdersToday(),
                 'orders_week' => $this->getOrdersThisWeek(),
                 'total_sales' => $this->getTotalSales(),
                 'qr_codes' => $this->getQRCodeCount()
-            ],
-            'chart_data' => $this->getSalesChartData(),
-            'best_sellers' => $this->getBestSellingProducts(),
-            'ratings' => $this->getStoreRatings(),
-            'ai_insights' => $this->getAIInsights(),
-            'top_customers' => $this->getTopCustomers()
-        ];
+            ];
+            $data['best_sellers'] = $this->getBestSellingProducts();
+            $data['ratings'] = $this->getStoreRatings();
+            $data['ai_insights'] = $this->getAIInsights();
+            $data['top_customers'] = $this->getTopCustomers();
+        }
+        
+        return $data;
     }
 }
 
 try {
-    // Check if connection exists
     if (!isset($conn)) {
         throw new Exception('Database connection not established');
     }
     
+    // Get period from query parameter
+    $period = isset($_GET['period']) ? $_GET['period'] : 'All Time';
+    $chartOnly = isset($_GET['chartOnly']) ? filter_var($_GET['chartOnly'], FILTER_VALIDATE_BOOLEAN) : false;
+    
     $dashboard = new AdminDashboard($conn);
-    $data = $dashboard->getDashboardData();
+    $data = $dashboard->getDashboardData($period, $chartOnly);
     
     echo json_encode([
         'success' => true,
-        'data' => $data
+        'data' => $data,
+        'period' => $period
     ], JSON_PRETTY_PRINT);
     
 } catch (Exception $e) {
@@ -220,7 +371,7 @@ try {
     echo json_encode([
         'success' => false,
         'error' => $e->getMessage(),
-        'trace' => $e->getTraceAsString() // For debugging
+        'trace' => $e->getTraceAsString()
     ], JSON_PRETTY_PRINT);
 }
 
