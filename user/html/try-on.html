@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Recommender | Beauty & Blessed</title>
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Virtual Try-On */
+      .virtual-tryon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .tryon-container {
+        background: var(--gradient-card);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .tryon-image {
+        width: 100%;
+        height: 300px;
+        background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .tryon-image i {
+        font-size: 60px;
+        color: var(--primary-pink);
+      }
+
+      .tryon-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .tryon-btn {
+        background: var(--light-gray);
+        border: none;
+        border-radius: 20px;
+        padding: 8px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .tryon-btn.active {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="brand-header">
+        <h1 class="brand-name">Beauty & Blessed</h1>
+        <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+      </div>
+      <div class="user-section">
+        <span class="user-greeting" id="user-greeting">Hi, User!</span>
+        <button
+          class="profile-btn"
+          onclick="window.location.href='user_profile.html'"
+        >
+          <i class="fas fa-user"></i>
+        </button>
+      </div>
+      <button
+        class="mobile-profile-btn"
+        onclick="window.location.href='user_profile.html'"
+      >
+        <i class="fas fa-user"></i>
+      </button>
+    </header>
+
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav">
+      <a href="home.html" class="nav-item" data-page="home">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="favorites.html" class="nav-item" data-page="favorites">
+        <i class="fas fa-heart"></i>
+        <span>Favorites</span>
+      </a>
+      <a href="recommender.html" class="nav-item" data-page="recommender">
+        <i class="fas fa-star"></i>
+        <span>Recommender</span>
+        <span class="tooltip">Smart Recommender</span>
+      </a>
+      <a href="cart.html" class="nav-item" data-page="cart">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Cart</span>
+      </a>
+      <div class="nav-item active" data-page="tryon">
+        <i class="fas fa-camera"></i>
+        <span>Virtual Try-On</span>
+      </div>
+    </nav>
+
+    <main>
+      <!-- Virtual Try-On Page -->
+      <section id="tryon" class="page-content">
+        <div class="products-container">
+          <h2 class="section-title">Virtual Try-On</h2>
+          <div class="virtual-tryon">
+            <div class="tryon-container">
+              <div class="tryon-image">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="tryon-controls">
+                <button class="tryon-btn active">Lipstick</button>
+                <button class="tryon-btn">Eyeshadow</button>
+                <button class="tryon-btn">Foundation</button>
+                <button class="tryon-btn">Blush</button>
+              </div>
+            </div>
+            <div class="products-container">
+              <h3 class="section-title">Try These Products</h3>
+              <div class="products-grid" id="tryon-products">
+                <!-- Try-on products will be dynamically added here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav-items">
+        <a href="home.html" class="nav-item" data-page="home">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="favorites.html" class="nav-item" data-page="favorites">
+          <i class="fas fa-heart"></i>
+          <span>Favorites</span>
+        </a>
+        <a href="recommender.html" class="nav-item" data-page="recommender">
+          <i class="fas fa-star"></i>
+          <span>Recommender</span>
+        </a>
+        <a href="cart.html" class="nav-item" data-page="cart">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Cart</span>
+        </a>
+        <a href="try-on.html" class="nav-item active" data-page="tryon">
+          <i class="fas fa-camera"></i>
+          <span>Try-On</span>
+        </a>
+      </div>
+    </nav>
+  </body>
+</html>
