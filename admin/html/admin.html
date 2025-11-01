@@ -109,26 +109,27 @@
 
     /* Chart Container */
     .chart-container {
-  background: white;
-  border-radius: 20px;
-  padding: 40px 30px 30px 30px; /* top padding bigger for title/legend */
-  margin-bottom: 25px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(228, 151, 170, 0.1);
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px 30px 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
 
-  height: 500px; /* default desktop height */
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+      height: 500px;
+      /* default desktop height */
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-.chart-container canvas {
-  flex: 1 1 auto;
-  width: 100% !important;
-  height: 75% !important;
-  display: block;
-}
+    .chart-container canvas {
+      flex: 1 1 auto;
+      width: 100% !important;
+      height: 75% !important;
+      display: block;
+    }
 
 
 
@@ -958,6 +959,68 @@
     .rating-bar-item {
       animation: fadeIn 0.5s ease forwards;
     }
+
+    /* Add these to your existing CSS */
+
+    /* Chart Filter Animations */
+    .chart-container {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Filter Button States */
+    .btn-group .btn {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-group .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(228, 151, 170, 0.1);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    .btn-group .btn:active::before {
+      width: 100px;
+      height: 100px;
+    }
+
+    /* Error Animation */
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    /* Smooth chart transitions */
+    #salesChart {
+      transition: opacity 0.3s ease;
+    }
   </style>
 </head>
 
@@ -1024,11 +1087,6 @@
 
       <!-- Main content -->
       <main class="col-md-10">
-        <!-- Page Header -->
-        <div class="page-header">
-          <h2 class="page-title">Dashboard Overview</h2>
-          <p class="text-muted">Welcome back! Here's what's happening with your store today.</p>
-        </div>
 
         <!-- Stats Cards -->
         <div class="stats-buttons">
@@ -1070,7 +1128,6 @@
           <div class="col-md-8">
             <div class="chart-container">
               <div class="chart-header">
-                <h5><i class="fas fa-chart-line"></i> Sales Overview</h5>
                 <div class="btn-group" role="group">
                   <button class="btn btn-outline-secondary btn-sm active">All Time</button>
                   <button class="btn btn-outline-secondary btn-sm">Daily</button>
@@ -1166,14 +1223,24 @@
             });
           });
 
-          // Period buttons functionality
+          // Period buttons functionality with chart-only filtering
           const periodButtons = document.querySelectorAll('.btn-group .btn');
+          let currentChart = null; // Store chart instance globally
+          let isAnimating = false; // Prevent multiple animations
+
           periodButtons.forEach(button => {
             button.addEventListener('click', function () {
+              if (isAnimating) return;
+
               periodButtons.forEach(btn => btn.classList.remove('active'));
               this.classList.add('active');
+
+              // Get the period from button text
+              const period = this.textContent.trim();
+              fetchChartData(period);
             });
           });
+
           // Adjust content padding based on mobile header
           function adjustContentForMobileHeader() {
             const mobileHeader = document.querySelector('.mobile-header');
@@ -1196,18 +1263,61 @@
             setTimeout(adjustContentForMobileHeader, 300);
           });
 
-          // Fetch dashboard data
-          async function fetchDashboardData() {
+          // Fetch only chart data
+          async function fetchChartData(period = 'All Time') {
             try {
-              showLoadingState();
+              isAnimating = true;
+              showChartLoadingAnimation();
 
-              console.log('Fetching dashboard data...');
-              const response = await fetch('../php/admin.php');
+              console.log('Fetching chart data for period:', period);
+              const response = await fetch(`../php/admin.php?period=${encodeURIComponent(period)}&chartOnly=true`);
 
               console.log('Response status:', response.status);
               console.log('Response ok:', response.ok);
 
-              // Check if response is ok
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const text = await response.text();
+              console.log('Raw response:', text);
+
+              let result;
+              try {
+                result = JSON.parse(text);
+              } catch (e) {
+                console.error('JSON parse error:', e);
+                throw new Error('Invalid JSON response: ' + text.substring(0, 100));
+              }
+
+              console.log('Parsed result:', result);
+
+              if (result.success) {
+                console.log('Updating chart with data:', result.data.chart_data);
+                updateChart(result.data.chart_data, period);
+              } else {
+                throw new Error(result.error || 'Failed to fetch data');
+              }
+            } catch (error) {
+              console.error('Error fetching chart data:', error);
+              showChartErrorState(error.message);
+            } finally {
+              isAnimating = false;
+              hideChartLoadingAnimation();
+            }
+          }
+
+          // Fetch all dashboard data (for initial load)
+          async function fetchDashboardData() {
+            try {
+              showLoadingState();
+
+              console.log('Fetching dashboard data');
+              const response = await fetch(`../php/admin.php`);
+
+              console.log('Response status:', response.status);
+              console.log('Response ok:', response.ok);
+
               if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
               }
@@ -1228,20 +1338,295 @@
               if (result.success) {
                 console.log('Updating dashboard with data:', result.data);
                 updateDashboard(result.data);
-                initializeChart(result.data.chart_data);
+                updateChart(result.data.chart_data, 'All Time');
               } else {
                 throw new Error(result.error || 'Failed to fetch data');
               }
             } catch (error) {
               console.error('Error fetching dashboard data:', error);
               showErrorState(error.message);
-
-              // Show error in UI
-              alert('Error loading dashboard: ' + error.message);
             } finally {
               hideLoadingState();
             }
           }
+
+          // Professional Chart Filter System
+          class ChartFilterSystem {
+            constructor() {
+              this.currentChart = null;
+              this.isAnimating = false;
+              this.currentPeriod = 'All Time';
+              this.init();
+            }
+
+            init() {
+              this.bindEvents();
+              this.loadInitialData();
+            }
+
+            bindEvents() {
+              // Period filter buttons
+              document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                  const period = e.target.textContent.trim();
+                  this.handlePeriodChange(period);
+                });
+              });
+            }
+
+            async handlePeriodChange(period) {
+              if (this.isAnimating || period === this.currentPeriod) return;
+
+              // Update UI
+              this.updateActiveButton(period);
+              this.currentPeriod = period;
+
+              // Fetch and update chart
+              await this.fetchAndUpdateChart(period);
+            }
+
+            updateActiveButton(period) {
+              document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.trim() === period);
+              });
+            }
+
+            async fetchAndUpdateChart(period) {
+              try {
+                this.isAnimating = true;
+                this.startChartAnimation();
+
+                const response = await fetch(`../php/admin.php?period=${encodeURIComponent(period)}&chartOnly=true`);
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const result = await response.json();
+
+                if (result.success) {
+                  this.updateChart(result.data.chart_data, period);
+                } else {
+                  throw new Error(result.error || 'Failed to fetch data');
+                }
+              } catch (error) {
+                console.error('Chart filter error:', error);
+                this.showError('Failed to update chart');
+              } finally {
+                this.isAnimating = false;
+              }
+            }
+
+            startChartAnimation() {
+              const container = document.querySelector('.chart-container');
+              const canvas = document.getElementById('salesChart');
+
+              // Fade out current chart
+              container.style.opacity = '0.7';
+              container.style.transform = 'scale(0.98) translateY(8px)';
+
+              // Destroy existing chart
+              if (this.currentChart) {
+                this.currentChart.destroy();
+              }
+            }
+
+            updateChart(chartData, period) {
+              const ctx = document.getElementById('salesChart').getContext('2d');
+              const container = document.querySelector('.chart-container');
+
+              // Prepare data
+              const { labels, salesData, ordersData } = this.prepareChartData(chartData, period);
+
+              // Create new chart
+              this.currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: 'Sales (₱)',
+                      data: salesData,
+                      borderColor: '#e497aa',
+                      backgroundColor: this.createGradient(ctx, '#e497aa'),
+                      tension: 0.4,
+                      fill: true,
+                      yAxisID: 'y',
+                      borderWidth: 3,
+                      pointBackgroundColor: '#e497aa',
+                      pointBorderColor: '#ffffff',
+                      pointBorderWidth: 2,
+                      pointRadius: 4,
+                      pointHoverRadius: 6
+                    },
+                    {
+                      label: 'Orders',
+                      data: ordersData,
+                      borderColor: '#db8299',
+                      backgroundColor: 'rgba(219, 130, 153, 0.1)',
+                      tension: 0.4,
+                      fill: false,
+                      yAxisID: 'y1',
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      pointBackgroundColor: '#db8299',
+                      pointBorderColor: '#ffffff',
+                      pointBorderWidth: 2,
+                      pointRadius: 3,
+                      pointHoverRadius: 5
+                    }
+                  ]
+                },
+                options: this.getChartOptions(period)
+              });
+
+              // Animate chart in
+              this.animateChartIn(container);
+            }
+
+            prepareChartData(chartData, period) {
+              const labels = chartData.map(item => item.display_date || item.date);
+              const salesData = chartData.map(item => parseFloat(item.sales) || 0);
+              const ordersData = chartData.map(item => parseInt(item.orders) || 0);
+
+              return { labels, salesData, ordersData };
+            }
+
+            createGradient(ctx, color) {
+              const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+              gradient.addColorStop(0, this.hexToRgba(color, 0.3));
+              gradient.addColorStop(1, this.hexToRgba(color, 0.05));
+              return gradient;
+            }
+
+            hexToRgba(hex, alpha) {
+              const r = parseInt(hex.slice(1, 3), 16);
+              const g = parseInt(hex.slice(3, 5), 16);
+              const b = parseInt(hex.slice(5, 7), 16);
+              return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            }
+
+            getChartOptions(period) {
+              return {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                  duration: 800,
+                  easing: 'easeOutQuart'
+                },
+                interaction: {
+                  mode: 'index',
+                  intersect: false,
+                },
+                scales: {
+                  x: {
+                    grid: { display: false },
+                    ticks: {
+                      maxRotation: period === 'Daily' ? 0 : 45,
+                      minRotation: period === 'Daily' ? 0 : 45
+                    }
+                  },
+                  y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: false, text: 'Sales (₱)' },
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                    ticks: {
+                      callback: function (value) {
+                        return '₱' + value.toLocaleString();
+                      }
+                    }
+                  },
+                  y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: { display: false, text: 'Orders' },
+                    grid: { drawOnChartArea: false },
+                  }
+                },
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: {
+                      padding: 20,
+                      usePointStyle: true,
+                      pointStyle: 'circle'
+                    }
+                  },
+                  tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    titleColor: '#333',
+                    bodyColor: '#666',
+                    borderColor: '#e497aa',
+                    borderWidth: 1,
+                    usePointStyle: true,
+                    callbacks: {
+                      label: function (context) {
+                        let label = context.dataset.label || '';
+                        if (label) label += ': ';
+                        if (context.parsed.y !== null) {
+                          if (context.dataset.label === 'Sales (₱)') {
+                            label += '₱' + context.parsed.y.toLocaleString();
+                          } else {
+                            label += context.parsed.y;
+                          }
+                        }
+                        return label;
+                      }
+                    }
+                  }
+                }
+              };
+            }
+
+            animateChartIn(container) {
+              // Reset styles
+              container.style.opacity = '0';
+              container.style.transform = 'scale(1) translateY(0)';
+
+              // Animate in
+              requestAnimationFrame(() => {
+                container.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                container.style.opacity = '1';
+                container.style.transform = 'scale(1) translateY(0)';
+              });
+            }
+
+            showError(message) {
+              // Simple error notification
+              const errorDiv = document.createElement('div');
+              errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        `;
+              errorDiv.textContent = message;
+
+              document.body.appendChild(errorDiv);
+
+              setTimeout(() => {
+                errorDiv.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => errorDiv.remove(), 300);
+              }, 3000);
+            }
+
+            async loadInitialData() {
+              // Initial chart load
+              await this.fetchAndUpdateChart('All Time');
+            }
+          }
+
+          // Initialize when DOM is ready
+          document.addEventListener('DOMContentLoaded', function () {
+            new ChartFilterSystem();
+          });
 
           // Update stats cards
           function updateStats(stats) {
@@ -1252,10 +1637,16 @@
               'qr_codes': document.querySelector('.qr-code .stat-value')
             };
 
-            statElements.orders_today.textContent = stats.orders_today;
-            statElements.orders_week.textContent = stats.orders_week;
-            statElements.total_sales.textContent = '₱' + stats.total_sales;
-            statElements.qr_codes.textContent = stats.qr_codes;
+            // Add animation to stats update
+            Object.keys(statElements).forEach(key => {
+              if (statElements[key]) {
+                statElements[key].style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                  statElements[key].textContent = key === 'total_sales' ? '₱' + stats[key] : stats[key];
+                  statElements[key].style.transform = 'scale(1)';
+                }, 150);
+              }
+            });
           }
 
           // Update best selling products
@@ -1274,7 +1665,7 @@
             }
 
             const productsHTML = products.map((product, index) => `
-        <div class="product-item d-flex align-items-center justify-content-between p-3 mb-2" style="background: #f8f9fa; border-radius: 10px;">
+        <div class="product-item d-flex align-items-center justify-content-between p-3 mb-2" style="background: #f8f9fa; border-radius: 10px; animation: fadeInUp 0.5s ease ${index * 0.1}s both;">
             <div class="d-flex align-items-center">
                 <span class="rank-badge me-3" style="background: var(--primary-pink); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;">${index + 1}</span>
                 <div>
@@ -1295,7 +1686,7 @@
             const averageRating = parseFloat(ratings.average_rating).toFixed(1);
 
             const ratingsHTML = `
-        <div class="text-center mb-3">
+        <div class="text-center mb-3" style="animation: fadeIn 0.6s ease;">
             <div class="average-rating" style="font-size: 2.5rem; font-weight: bold; color: var(--dark-pink);">${averageRating}</div>
             <div class="stars mb-2">
                 ${generateStars(averageRating)}
@@ -1342,21 +1733,31 @@
             const total = ratings.total_reviews;
             if (total === 0) return '<div class="text-muted text-center">No ratings yet</div>';
 
-            const bars = [5, 4, 3, 2, 1].map(stars => {
+            const bars = [5, 4, 3, 2, 1].map((stars, index) => {
               const count = ratings[`${stars}_star`] || 0;
               const percentage = total > 0 ? (count / total) * 100 : 0;
 
               return `
-            <div class="rating-bar-item d-flex align-items-center mb-2">
+            <div class="rating-bar-item d-flex align-items-center mb-2" style="animation: fadeInRight 0.5s ease ${index * 0.1}s both;">
                 <span class="me-2" style="width: 20px;">${stars}</span>
                 <i class="fas fa-star me-2" style="color: #ffc107; font-size: 0.8rem;"></i>
                 <div class="progress flex-grow-1 me-2" style="height: 8px;">
-                    <div class="progress-bar" style="width: ${percentage}%; background-color: var(--primary-pink);"></div>
+                    <div class="progress-bar" style="width: 0%; background-color: var(--primary-pink); transition: width 1s ease ${index * 0.2}s;"></div>
                 </div>
                 <small class="text-muted" style="width: 40px;">${count}</small>
             </div>
         `;
             }).join('');
+
+            // Animate progress bars after DOM update
+            setTimeout(() => {
+              document.querySelectorAll('.progress-bar').forEach((bar, index) => {
+                const stars = 5 - index;
+                const count = ratings[`${stars}_star`] || 0;
+                const percentage = total > 0 ? (count / total) * 100 : 0;
+                bar.style.width = percentage + '%';
+              });
+            }, 100);
 
             return bars;
           }
@@ -1376,8 +1777,8 @@
               return;
             }
 
-            const insightsHTML = insights.map(insight => `
-        <div class="insight-item p-3 mb-2" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px; border-left: 4px solid var(--primary-pink);">
+            const insightsHTML = insights.map((insight, index) => `
+        <div class="insight-item p-3 mb-2" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px; border-left: 4px solid var(--primary-pink); animation: fadeInLeft 0.5s ease ${index * 0.1}s both;">
             <div class="d-flex align-items-start">
                 <i class="fas fa-lightbulb mt-1 me-2" style="color: var(--primary-pink);"></i>
                 <div style="flex: 1;">
@@ -1411,7 +1812,7 @@
                 : customer.username;
 
               return `
-            <div class="customer-item d-flex align-items-center justify-content-between p-3 mb-2" style="background: #f8f9fa; border-radius: 10px;">
+            <div class="customer-item d-flex align-items-center justify-content-between p-3 mb-2" style="background: #f8f9fa; border-radius: 10px; animation: fadeInUp 0.5s ease ${index * 0.1}s both;">
                 <div class="d-flex align-items-center">
                     <div class="customer-avatar me-3" style="width: 40px; height: 40px; background: var(--primary-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                         ${displayName.charAt(0).toUpperCase()}
@@ -1430,118 +1831,6 @@
             }).join('');
 
             container.innerHTML = customersHTML;
-          }
-
-          // Initialize sales chart
-          function initializeChart(chartData) {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-
-            // Format dates and data for chart
-            const labels = chartData.map(item => {
-              const date = new Date(item.date);
-              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            });
-
-            const salesData = chartData.map(item => parseFloat(item.sales) || 0);
-            const ordersData = chartData.map(item => parseInt(item.orders) || 0);
-
-            new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: labels,
-                datasets: [
-                  {
-                    label: 'Sales (₱)',
-                    data: salesData,
-                    borderColor: '#e497aa',
-                    backgroundColor: 'rgba(228, 151, 170, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y'
-                  },
-                  {
-                    label: 'Orders',
-                    data: ordersData,
-                    borderColor: '#db8299',
-                    backgroundColor: 'rgba(219, 130, 153, 0.1)',
-                    tension: 0.4,
-                    fill: false,
-                    yAxisID: 'y1'
-                  }
-                ]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                  mode: 'index',
-                  intersect: false,
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false
-                    }
-                  },
-                  y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: {
-                      display: true,
-                      text: 'Sales (₱)'
-                    },
-                    grid: {
-                      color: 'rgba(0, 0, 0, 0.1)'
-                    }
-                  },
-                  y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    title: {
-                      display: true,
-                      text: 'Orders'
-                    },
-                    grid: {
-                      drawOnChartArea: false,
-                    },
-                  }
-                },
-                plugins: {
-                  legend: {
-                    position: 'top',
-                    labels: {
-          padding: 20  // prevents legend from overlapping
-        }
-
-                  },
-                  tooltip: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    titleColor: '#333',
-                    bodyColor: '#666',
-                    borderColor: '#e497aa',
-                    borderWidth: 1,
-                    callbacks: {
-                      label: function (context) {
-                        let label = context.dataset.label || '';
-                        if (label) {
-                          label += ': ';
-                        }
-                        if (context.parsed.y !== null) {
-                          if (context.dataset.label === 'Sales (₱)') {
-                            label += '₱' + context.parsed.y.toFixed(2);
-                          } else {
-                            label += context.parsed.y;
-                          }
-                        }
-                        return label;
-                      }
-                    }
-                  }
-                }
-              }
-            });
           }
 
           // Update entire dashboard
@@ -1586,13 +1875,12 @@
             });
           }
 
-
           // Initialize dashboard when page loads
           document.addEventListener('DOMContentLoaded', function () {
             initializeDynamicContainers();
             fetchDashboardData();
 
-            // Refresh data every 5 minutes
+            // Refresh data every 5 minutes (only dashboard data, not chart)
             setInterval(fetchDashboardData, 300000);
           });
         </script>
