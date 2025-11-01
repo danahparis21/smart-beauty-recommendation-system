@@ -3,75 +3,511 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Recommender | Beauty & Blessed</title>
-    <link rel="stylesheet" href="../styles/styles.css" />
+    <title>Virtual Lipstick Try-On | Beauty & Blessed</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <link rel="stylesheet" href="../styles/styles.css" />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <style>
-      /* Virtual Try-On */
-      .virtual-tryon {
+      :root {
+        --primary-pink: #ff7eb9;
+        --dark-pink: #ff5c8d;
+        --light-pink: #ffc2d6;
+        --light-gray: #f8f8f8;
+        --medium-gray: #e0e0e0;
+        --dark-gray: #888;
+        --white: #ffffff;
+        --gradient-card: linear-gradient(135deg, #fff5f7, #ffe6f2);
+        --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      main {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .photobooth-container {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        gap: 25px;
+      }
+
+      @media (min-width: 992px) {
+        .photobooth-container {
+          flex-direction: row;
+          align-items: flex-start;
+        }
+      }
+
+      .camera-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
         gap: 20px;
       }
 
-      .tryon-container {
+      .camera-container {
         background: var(--gradient-card);
         border-radius: 18px;
         padding: 20px;
         box-shadow: var(--card-shadow);
-        width: 100%;
-        max-width: 500px;
         border: 1px solid rgba(255, 182, 193, 0.2);
+        position: relative;
       }
 
-      .tryon-image {
+      .camera-view {
         width: 100%;
-        height: 300px;
+        height: 400px;
         background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .camera-view img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: none; /* Keep this as none - we'll use canvas for display */
+      }
+
+      .camera-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-pink);
+        text-align: center;
+        padding: 30px 20px;
+        height: 100%;
+      }
+      .camera-placeholder i {
+        font-size: 80px;
+        margin-bottom: 15px;
+      }
+
+      .camera-placeholder p {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      #camera-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+        display: none;
+      }
+
+      #capture-btn,
+      #cancel-camera {
+        display: none;
+      }
+
+      .placeholder-icon {
         margin-bottom: 20px;
       }
 
-      .tryon-image i {
-        font-size: 60px;
-        color: var(--primary-pink);
+      .placeholder-icon i {
+        font-size: 80px;
+        color: var(--light-pink);
       }
 
-      .tryon-controls {
+      .camera-placeholder h3 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: var(--dark-pink);
+      }
+
+      .tutorial-steps {
         display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 25px;
+        width: 100%;
+        max-width: 300px;
       }
 
-      .tryon-btn {
+      .tutorial-step {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        border-left: 4px solid var(--primary-pink);
+      }
+
+      .tutorial-step i {
+        font-size: 16px;
+        color: var(--primary-pink);
+        width: 20px;
+        text-align: center;
+      }
+
+      .tutorial-step span {
+        font-size: 14px;
+        color: #666;
+        text-align: left;
+        flex: 1;
+      }
+
+      .placeholder-note {
+        background: rgba(255, 126, 185, 0.1);
+        border: 1px solid rgba(255, 126, 185, 0.3);
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 13px;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 300px;
+      }
+
+      .placeholder-note i {
+        color: var(--primary-pink);
+        font-size: 14px;
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 768px) {
+        .camera-placeholder h3 {
+          font-size: 20px;
+        }
+
+        .placeholder-icon i {
+          font-size: 60px;
+        }
+
+        .tutorial-step {
+          padding: 8px;
+        }
+
+        .tutorial-step span {
+          font-size: 13px;
+        }
+
+        .placeholder-note {
+          font-size: 12px;
+          padding: 10px 12px;
+        }
+      }
+
+      .camera-controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .camera-btn {
         background: var(--light-gray);
         border: none;
-        border-radius: 20px;
-        padding: 8px 15px;
-        font-size: 14px;
+        border-radius: 25px;
+        padding: 12px 25px;
+        font-size: 16px;
         cursor: pointer;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      .tryon-btn.active {
+      .camera-btn.primary {
         background: linear-gradient(
           135deg,
           var(--primary-pink),
           var(--dark-pink)
         );
         color: white;
+      }
+
+      .camera-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .camera-btn.primary:hover {
+        box-shadow: 0 5px 15px rgba(255, 126, 185, 0.3);
+      }
+
+      .shades-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .shade-option {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .shade-option.active {
+        border-color: var(--primary-pink);
+        transform: scale(1.1);
+      }
+
+      .shade-option::after {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .shade-option.active::after {
+        border-color: rgba(255, 126, 185, 0.3);
+      }
+
+      .products-section {
+        flex: 0 0 300px;
+      }
+
+      .products-container {
+        background: var(--white);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .products-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 22px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .products-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .product-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .product-item:hover {
+        background: var(--light-gray);
+      }
+
+      .product-item.active {
+        background: rgba(255, 126, 185, 0.1);
+        border: 1px solid rgba(255, 126, 185, 0.3);
+      }
+
+      .product-color {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .product-info {
+        flex: 1;
+      }
+
+      .product-name {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 3px;
+      }
+
+      .product-brand {
+        font-size: 12px;
+        color: var(--dark-gray);
+        margin-bottom: 5px;
+      }
+
+      .product-price {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-pink);
+      }
+
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--white);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        z-index: 100;
+      }
+
+      .mobile-nav-items {
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+      }
+
+      #lipstick-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      /* Loading animation */
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 126, 185, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-pink);
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .header {
+          padding: 12px 15px;
+        }
+
+        .brand-header h1 {
+          font-size: 20px;
+        }
+
+        .user-greeting {
+          display: none;
+        }
+
+        .profile-btn {
+          display: none;
+        }
+
+        .mobile-profile-btn {
+          display: flex;
+        }
+
+        .desktop-nav {
+          display: none;
+        }
+
+        .mobile-nav {
+          display: block;
+        }
+
+        main {
+          padding: 15px;
+          padding-bottom: 80px;
+        }
+
+        .section-title {
+          font-size: 24px;
+        }
+
+        .camera-container {
+          padding: 15px;
+        }
+
+        .camera-view {
+          height: 300px;
+        }
+
+        .camera-placeholder i {
+          font-size: 60px;
+        }
+
+        .camera-controls {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .camera-btn {
+          width: 100%;
+          max-width: 250px;
+          justify-content: center;
+        }
+
+        .products-section {
+          flex: 1;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .camera-view {
+          height: 250px;
+        }
+
+        .shade-option {
+          width: 40px;
+          height: 40px;
+        }
       }
     </style>
   </head>
@@ -83,7 +519,7 @@
         <p class="brand-tagline">Elevate Your Everyday Glam.</p>
       </div>
       <div class="user-section">
-        <span class="user-greeting" id="user-greeting">Hi, User!</span>
+        <span class="user-greeting" id="user-greeting">Hi, Maria!</span>
         <button
           class="profile-btn"
           onclick="window.location.href='user_profile.html'"
@@ -127,23 +563,89 @@
     <main>
       <!-- Virtual Try-On Page -->
       <section id="tryon" class="page-content">
-        <div class="products-container">
-          <h2 class="section-title">Virtual Try-On</h2>
-          <div class="virtual-tryon">
-            <div class="tryon-container">
-              <div class="tryon-image">
-                <i class="fas fa-user"></i>
+        <h2 class="section-title">Virtual Lipstick Try-On</h2>
+
+        <div class="photobooth-container">
+          <div class="camera-section">
+            <div class="camera-container">
+              <div class="camera-view">
+                <div class="camera-placeholder">
+                  <div class="placeholder-icon">
+                    <i class="fas fa-user-circle"></i>
+                  </div>
+                  <h3>Ready to Try On Lipstick?</h3>
+                  <div class="tutorial-steps">
+                    <div class="tutorial-step">
+                      <i class="fas fa-camera"></i>
+                      <span>Upload a clear selfie or photo</span>
+                    </div>
+                    <div class="tutorial-step">
+                      <i class="fas fa-lightbulb"></i>
+                      <span>Good lighting & front-facing works best</span>
+                    </div>
+                    <div class="tutorial-step">
+                      <i class="fas fa-smile"></i>
+                      <span>Neutral or smiling expression recommended</span>
+                    </div>
+                    <div class="tutorial-step">
+                      <i class="fas fa-palette"></i>
+                      <span>Choose your favorite lipstick shade</span>
+                    </div>
+                  </div>
+                  <div class="placeholder-note">
+                    <i class="fas fa-info-circle"></i>
+                    For best results, ensure your face is clearly visible and
+                    well-lit
+                  </div>
+                </div>
+                <img id="uploaded-image" src="" alt="Uploaded photo" />
+                <canvas id="lipstick-canvas"></canvas>
               </div>
-              <div class="tryon-controls">
-                <button class="tryon-btn active">Lipstick</button>
-                <button class="tryon-btn">Eyeshadow</button>
-                <button class="tryon-btn">Foundation</button>
-                <button class="tryon-btn">Blush</button>
+
+              <div class="camera-controls">
+                <button class="camera-btn primary" id="upload-btn">
+                  <i class="fas fa-upload"></i> Upload Photo
+                </button>
+                <button class="camera-btn" id="camera-btn">
+                  <i class="fas fa-camera"></i> Open Camera
+                </button>
+              </div>
+              <input type="file" id="file-input" accept="image/*" />
+
+              <div class="shades-container">
+                <div
+                  class="shade-option active"
+                  data-color="#D42F6E"
+                  style="background-color: #d42f6e"
+                ></div>
+                <div
+                  class="shade-option"
+                  data-color="#E75480"
+                  style="background-color: #e75480"
+                ></div>
+                <div
+                  class="shade-option"
+                  data-color="#FF69B4"
+                  style="background-color: #ff69b4"
+                ></div>
+                <div
+                  class="shade-option"
+                  data-color="#FFB6C1"
+                  style="background-color: #ffb6c1"
+                ></div>
               </div>
             </div>
+
+            <div class="loading" id="loading">
+              <div class="loading-spinner"></div>
+              <p>Detecting lips and applying lipstick...</p>
+            </div>
+          </div>
+
+          <div class="products-section">
             <div class="products-container">
-              <h3 class="section-title">Try These Products</h3>
-              <div class="products-grid" id="tryon-products">
+              <h3 class="products-title">Try These Products</h3>
+              <div class="products-list" id="tryon-products">
                 <!-- Try-on products will be dynamically added here -->
               </div>
             </div>
@@ -151,6 +653,7 @@
         </div>
       </section>
     </main>
+
     <!-- Mobile Navigation -->
     <nav class="mobile-nav">
       <div class="mobile-nav-items">
@@ -176,5 +679,745 @@
         </a>
       </div>
     </nav>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("file-input");
+        const uploadBtn = document.getElementById("upload-btn");
+        const cameraBtn = document.getElementById("camera-btn");
+        const uploadedImage = document.getElementById("uploaded-image");
+        const placeholder = document.querySelector(".camera-placeholder");
+        const canvas = document.getElementById("lipstick-canvas");
+        const ctx = canvas.getContext("2d");
+        const shadeOptions = document.querySelectorAll(".shade-option");
+        const loading = document.getElementById("loading");
+        const productsList = document.getElementById("tryon-products");
+
+        let currentShade = "#D42F6E";
+        let faceMesh = null;
+        let isProcessing = false;
+
+        // Restore last uploaded image if exists
+        const lastUploadedImage = localStorage.getItem("lastUploadedImage");
+        if (lastUploadedImage) {
+          uploadedImage.onload = function () {
+            // Trigger the same processing as when uploading a new image
+            const container = uploadedImage.parentElement;
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+
+            const imgAspectRatio =
+              uploadedImage.naturalWidth / uploadedImage.naturalHeight;
+            const containerAspectRatio = containerWidth / containerHeight;
+
+            let displayedWidth, displayedHeight, offsetX, offsetY;
+
+            if (imgAspectRatio > containerAspectRatio) {
+              displayedWidth = containerWidth;
+              displayedHeight = containerWidth / imgAspectRatio;
+              offsetX = 0;
+              offsetY = (containerHeight - displayedHeight) / 2;
+            } else {
+              displayedHeight = containerHeight;
+              displayedWidth = containerHeight * imgAspectRatio;
+              offsetX = (containerWidth - displayedWidth) / 2;
+              offsetY = 0;
+            }
+
+            canvas.width = containerWidth;
+            canvas.height = containerHeight;
+
+            canvas._displayInfo = {
+              displayedWidth,
+              displayedHeight,
+              offsetX,
+              offsetY,
+              imgAspectRatio,
+              containerWidth,
+              containerHeight,
+            };
+
+            uploadedImage.style.display = "none";
+            placeholder.style.display = "none";
+
+            processImageWithFaceMesh(uploadedImage);
+          };
+
+          uploadedImage.src = lastUploadedImage;
+        }
+
+        // Upload button click triggers file input
+        uploadBtn.addEventListener("click", function () {
+          fileInput.click();
+        });
+
+        fileInput.addEventListener("change", function (e) {
+          if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+              // Store the image in localStorage before reloading
+              localStorage.setItem("lastUploadedImage", event.target.result);
+
+              // Reload the page immediately
+              window.location.reload();
+            };
+
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        });
+
+        // Fix the shade selection event listener
+        shadeOptions.forEach((shade) => {
+          shade.addEventListener("click", function () {
+            // Remove active class from all shades
+            shadeOptions.forEach((s) => s.classList.remove("active"));
+
+            // Add active class to clicked shade
+            this.classList.add("active");
+
+            // Update current shade
+            currentShade = this.getAttribute("data-color");
+
+            // Update active product
+            updateActiveProduct(currentShade);
+
+            // Re-apply lipstick if an image is uploaded
+            // Check if we have displayInfo (meaning an image was uploaded and processed)
+            if (canvas._displayInfo && !isProcessing) {
+              // Just re-apply the lipstick without reprocessing FaceMesh
+              applyLipstickToCurrentImage();
+            }
+          });
+        });
+
+        // Replace the camera button event listener with this:
+        cameraBtn.addEventListener("click", function () {
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            startCamera();
+          } else {
+            alert(
+              "Camera access is not supported in your browser. Please use the upload button instead."
+            );
+          }
+        });
+
+        // Add these camera functions:
+        let cameraStream = null;
+        let isCameraActive = false;
+
+        function startCamera() {
+          // Hide placeholder and show camera interface
+          placeholder.style.display = "none";
+
+          // Create video element for camera if it doesn't exist
+          let video = document.getElementById("camera-video");
+          if (!video) {
+            video = document.createElement("video");
+            video.id = "camera-video";
+            video.autoplay = true;
+            video.playsinline = true;
+            document.querySelector(".camera-view").appendChild(video);
+          }
+
+          // Create capture button if it doesn't exist
+          let captureBtn = document.getElementById("capture-btn");
+          if (!captureBtn) {
+            captureBtn = document.createElement("button");
+            captureBtn.id = "capture-btn";
+            captureBtn.className = "camera-btn primary";
+            captureBtn.innerHTML = '<i class="fas fa-camera"></i> Take Photo';
+            captureBtn.style.marginTop = "10px";
+            document.querySelector(".camera-controls").appendChild(captureBtn);
+
+            captureBtn.addEventListener("click", capturePhoto);
+          }
+
+          // Create cancel button if it doesn't exist
+          let cancelBtn = document.getElementById("cancel-camera");
+          if (!cancelBtn) {
+            cancelBtn = document.createElement("button");
+            cancelBtn.id = "cancel-camera";
+            cancelBtn.className = "camera-btn";
+            cancelBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
+            cancelBtn.style.marginTop = "10px";
+            document.querySelector(".camera-controls").appendChild(cancelBtn);
+
+            cancelBtn.addEventListener("click", stopCamera);
+          }
+
+          // Hide upload button and show camera controls
+          uploadBtn.style.display = "none";
+          cameraBtn.style.display = "none";
+          captureBtn.style.display = "flex";
+          cancelBtn.style.display = "flex";
+
+          // Request camera access
+          navigator.mediaDevices
+            .getUserMedia({
+              video: {
+                facingMode: "user", // Use front camera
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+              },
+              audio: false,
+            })
+            .then(function (stream) {
+              cameraStream = stream;
+              video.srcObject = stream;
+              video.style.display = "block";
+              isCameraActive = true;
+
+              // Set canvas size to match video
+              video.onloadedmetadata = function () {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+              };
+            })
+            .catch(function (err) {
+              console.error("Camera error: ", err);
+              alert(
+                "Unable to access camera. Please check permissions and try again."
+              );
+              stopCamera();
+            });
+        }
+
+        function capturePhoto() {
+          if (!isCameraActive) return;
+
+          const video = document.getElementById("camera-video");
+          const captureCanvas = document.createElement("canvas");
+          const captureCtx = captureCanvas.getContext("2d");
+
+          // Set canvas to video dimensions
+          captureCanvas.width = video.videoWidth;
+          captureCanvas.height = video.videoHeight;
+
+          // Draw current video frame to canvas
+          captureCtx.drawImage(
+            video,
+            0,
+            0,
+            captureCanvas.width,
+            captureCanvas.height
+          );
+
+          // Convert to data URL and process like uploaded image
+          const imageData = captureCanvas.toDataURL("image/png");
+
+          // Stop camera
+          stopCamera();
+
+          // Process the captured photo
+          uploadedImage.onload = function () {
+            const container = uploadedImage.parentElement;
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+
+            const imgAspectRatio =
+              uploadedImage.naturalWidth / uploadedImage.naturalHeight;
+            const containerAspectRatio = containerWidth / containerHeight;
+
+            let displayedWidth, displayedHeight, offsetX, offsetY;
+
+            if (imgAspectRatio > containerAspectRatio) {
+              displayedWidth = containerWidth;
+              displayedHeight = containerWidth / imgAspectRatio;
+              offsetX = 0;
+              offsetY = (containerHeight - displayedHeight) / 2;
+            } else {
+              displayedHeight = containerHeight;
+              displayedWidth = containerHeight * imgAspectRatio;
+              offsetX = (containerWidth - displayedWidth) / 2;
+              offsetY = 0;
+            }
+
+            canvas.width = containerWidth;
+            canvas.height = containerHeight;
+
+            canvas._displayInfo = {
+              displayedWidth,
+              displayedHeight,
+              offsetX,
+              offsetY,
+              imgAspectRatio,
+              containerWidth,
+              containerHeight,
+            };
+
+            uploadedImage.style.display = "none";
+            placeholder.style.display = "none";
+
+            processImageWithFaceMesh(uploadedImage);
+          };
+
+          uploadedImage.src = imageData;
+          localStorage.setItem("lastUploadedImage", imageData);
+        }
+
+        function stopCamera() {
+          if (cameraStream) {
+            cameraStream.getTracks().forEach((track) => track.stop());
+            cameraStream = null;
+          }
+
+          // Hide video element
+          const video = document.getElementById("camera-video");
+          if (video) {
+            video.style.display = "none";
+            video.srcObject = null;
+          }
+
+          // Show original buttons, hide camera controls
+          uploadBtn.style.display = "flex";
+          cameraBtn.style.display = "flex";
+
+          const captureBtn = document.getElementById("capture-btn");
+          const cancelBtn = document.getElementById("cancel-camera");
+          if (captureBtn) captureBtn.style.display = "none";
+          if (cancelBtn) cancelBtn.style.display = "none";
+
+          isCameraActive = false;
+
+          // If no image is loaded, show placeholder again
+          if (uploadedImage.style.display === "none" && !canvas._displayInfo) {
+            placeholder.style.display = "flex";
+          }
+        }
+
+        // Initialize FaceMesh
+        function initializeFaceMesh() {
+          if (faceMesh) return;
+
+          faceMesh = new FaceMesh({
+            locateFile: (file) => {
+              return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+            },
+          });
+
+          faceMesh.setOptions({
+            maxNumFaces: 1,
+            refineLandmarks: true,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5,
+          });
+
+          faceMesh.onResults(onFaceResults);
+        }
+
+        // Add this new function to re-apply lipstick without FaceMesh processing
+        function applyLipstickToCurrentImage() {
+          if (!canvas._displayInfo) return;
+
+          // Just redraw the image with the new lipstick color
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          const displayInfo = canvas._displayInfo;
+
+          // Draw the uploaded image first
+          ctx.drawImage(
+            uploadedImage,
+            displayInfo.offsetX,
+            displayInfo.offsetY,
+            displayInfo.displayedWidth,
+            displayInfo.displayedHeight
+          );
+
+          // If we have stored landmarks from the last FaceMesh detection, use them
+          if (canvas._lastLandmarks) {
+            applyLipstickToLandmarks(canvas._lastLandmarks);
+          } else {
+            // Otherwise use fallback
+            applyFallbackLipstick();
+          }
+        }
+
+        // Update the onFaceResults function to show error message
+        function onFaceResults(results) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          if (
+            results.multiFaceLandmarks &&
+            results.multiFaceLandmarks.length > 0
+          ) {
+            const landmarks = results.multiFaceLandmarks[0];
+            // Store landmarks for later use when changing shades
+            canvas._lastLandmarks = landmarks;
+            applyLipstickToLandmarks(landmarks);
+            console.log("Lipstick applied successfully!");
+
+            // Hide any error message
+            hideFaceDetectionError();
+          } else {
+            console.log("No face detected");
+            // Clear stored landmarks
+            canvas._lastLandmarks = null;
+
+            // Show error message
+            showFaceDetectionError();
+
+            // Fallback: apply lipstick in the middle as backup
+            applyFallbackLipstick();
+          }
+
+          isProcessing = false;
+          loading.style.display = "none";
+        }
+
+        // Add these functions for error messaging
+        function showFaceDetectionError() {
+          let errorDiv = document.getElementById("face-detection-error");
+          if (!errorDiv) {
+            errorDiv = document.createElement("div");
+            errorDiv.id = "face-detection-error";
+            errorDiv.style.cssText = `
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      z-index: 1000;
+      text-align: center;
+      max-width: 80%;
+    `;
+            errorDiv.innerHTML = `
+      <i class="fas fa-exclamation-triangle"></i>
+      Face not detected properly. Try a clearer, front-facing photo.
+    `;
+            document.querySelector(".camera-view").appendChild(errorDiv);
+          }
+        }
+
+        function hideFaceDetectionError() {
+          const errorDiv = document.getElementById("face-detection-error");
+          if (errorDiv) {
+            errorDiv.remove();
+          }
+        }
+
+        function applyLipstickToLandmarks(landmarks) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          const displayInfo = canvas._displayInfo;
+
+          // Draw uploaded image first
+          ctx.drawImage(
+            uploadedImage,
+            displayInfo.offsetX,
+            displayInfo.offsetY,
+            displayInfo.displayedWidth,
+            displayInfo.displayedHeight
+          );
+
+          // --- Detect if lips are closed ---
+          const topLipY = landmarks[13].y;
+          const bottomLipY = landmarks[14].y;
+          const lipHeight = Math.abs(bottomLipY - topLipY);
+          const isClosedLips = lipHeight < 0.025; // Slightly more sensitive detection
+
+          // --- SIMPLIFIED APPROACH: Just fill the lip area directly ---
+          ctx.save();
+          ctx.globalCompositeOperation = "soft-light";
+          ctx.globalAlpha = 0.75; // Slightly more opacity
+          ctx.fillStyle = currentShade;
+
+          // Draw upper lip - use more points for better coverage
+          ctx.beginPath();
+
+          // Upper lip outer contour - WITH CLOSED MOUTH ADJUSTMENT
+          const upperLipPoints = [61, 84, 87, 314, 317, 14, 11, 302];
+          upperLipPoints.forEach((i, idx) => {
+            const p = landmarks[i];
+            let x = p.x * displayInfo.displayedWidth + displayInfo.offsetX;
+            let y = p.y * displayInfo.displayedHeight + displayInfo.offsetY;
+
+            // TINY adjustment for closed lips only - lifts top lip slightly
+            if (isClosedLips && [84, 87, 314, 317, 14, 11].includes(i)) {
+              y -= displayInfo.displayedHeight * 0.005; // Very subtle lift
+            }
+
+            idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          });
+
+          // Lower lip outer contour
+          const lowerLipPoints = [
+            61, 146, 91, 181, 84, 17, 314, 405, 320, 307, 308,
+          ];
+          lowerLipPoints.forEach((i) => {
+            const p = landmarks[i];
+            const x = p.x * displayInfo.displayedWidth + displayInfo.offsetX;
+            const y = p.y * displayInfo.displayedHeight + displayInfo.offsetY;
+            ctx.lineTo(x, y);
+          });
+
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+
+          // --- Add soft shine ---
+          const leftCorner = landmarks[61];
+          const rightCorner = landmarks[291];
+          const lipWidth =
+            Math.abs(rightCorner.x - leftCorner.x) * displayInfo.displayedWidth;
+
+          const topCenter = landmarks[13];
+          const bottomCenter = landmarks[14];
+          const lipCenterX =
+            ((topCenter.x + bottomCenter.x) / 2) * displayInfo.displayedWidth +
+            displayInfo.offsetX;
+          const lipCenterY =
+            ((topCenter.y + bottomCenter.y) / 2) * displayInfo.displayedHeight +
+            displayInfo.offsetY;
+
+          const shineWidth = lipWidth * 0.12;
+          const shineHeight = lipWidth * 0.03;
+
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          ctx.globalAlpha = 0.15;
+          ctx.fillStyle = "white";
+          ctx.beginPath();
+          ctx.ellipse(
+            lipCenterX,
+            lipCenterY - shineHeight,
+            shineWidth / 2,
+            shineHeight / 2,
+            0,
+            0,
+            2 * Math.PI
+          );
+          ctx.fill();
+          ctx.restore();
+        }
+        // Update the fallback function too:
+        function applyFallbackLipstick() {
+          const displayInfo = canvas._displayInfo;
+          const centerX = displayInfo.offsetX + displayInfo.displayedWidth / 2;
+          const centerY = displayInfo.offsetY + displayInfo.displayedHeight / 2;
+
+          const lipWidth = displayInfo.displayedWidth * 0.25;
+          const lipHeight = displayInfo.displayedWidth * 0.08;
+          const lipX = centerX - lipWidth / 2;
+          const lipY = centerY + displayInfo.displayedHeight * 0.15;
+
+          ctx.fillStyle = currentShade;
+          ctx.globalAlpha = 0.7;
+
+          // Draw upper lip
+          ctx.beginPath();
+          ctx.ellipse(
+            lipX + lipWidth / 2,
+            lipY,
+            lipWidth / 2,
+            lipHeight,
+            0,
+            0,
+            Math.PI
+          );
+          ctx.fill();
+
+          // Draw lower lip
+          ctx.beginPath();
+          ctx.ellipse(
+            lipX + lipWidth / 2,
+            lipY + lipHeight / 2,
+            lipWidth / 2,
+            lipHeight,
+            0,
+            Math.PI,
+            2 * Math.PI
+          );
+          ctx.fill();
+
+          // Add shine effect
+          ctx.globalAlpha = 0.3;
+          ctx.fillStyle = "white";
+          ctx.beginPath();
+          ctx.ellipse(
+            lipX + lipWidth / 2,
+            lipY - lipHeight / 4,
+            lipWidth / 4,
+            lipHeight / 3,
+            0,
+            0,
+            2 * Math.PI
+          );
+          ctx.fill();
+        }
+
+        // Fallback lipstick application when face detection fails
+        function applyFallbackLipstick() {
+          const lipWidth = canvas.width * 0.25;
+          const lipHeight = canvas.width * 0.08;
+          const lipX = (canvas.width - lipWidth) / 2;
+          const lipY = canvas.height * 0.65;
+
+          ctx.fillStyle = currentShade;
+          ctx.globalAlpha = 0.7;
+
+          // Draw upper lip
+          ctx.beginPath();
+          ctx.ellipse(
+            lipX + lipWidth / 2,
+            lipY,
+            lipWidth / 2,
+            lipHeight,
+            0,
+            0,
+            Math.PI
+          );
+          ctx.fill();
+
+          // Draw lower lip
+          ctx.beginPath();
+          ctx.ellipse(
+            lipX + lipWidth / 2,
+            lipY + lipHeight / 2,
+            lipWidth / 2,
+            lipHeight,
+            0,
+            Math.PI,
+            2 * Math.PI
+          );
+          ctx.fill();
+
+          // Add shine effect
+          ctx.globalAlpha = 0.3;
+          ctx.fillStyle = "white";
+          ctx.beginPath();
+          ctx.ellipse(
+            lipX + lipWidth / 2,
+            lipY - lipHeight / 4,
+            lipWidth / 4,
+            lipHeight / 3,
+            0,
+            0,
+            2 * Math.PI
+          );
+          ctx.fill();
+        }
+
+        // Process uploaded image with FaceMesh
+        function processImageWithFaceMesh(image) {
+          if (!faceMesh) {
+            initializeFaceMesh();
+          }
+
+          isProcessing = true;
+          loading.style.display = "block";
+
+          console.log("Processing image with FaceMesh...");
+
+          // Process with FaceMesh directly on the image
+          faceMesh
+            .send({ image: image })
+            .then(() => {
+              console.log("FaceMesh processing completed");
+            })
+            .catch((err) => {
+              console.error("FaceMesh processing error:", err);
+              // Apply fallback if FaceMesh fails
+              applyFallbackLipstick();
+              loading.style.display = "none";
+              isProcessing = false;
+            });
+        }
+        // Update active product based on selected shade
+        function updateActiveProduct(shade) {
+          const productItems = document.querySelectorAll(".product-item");
+          productItems.forEach((item) => {
+            if (item.getAttribute("data-color") === shade) {
+              item.classList.add("active");
+            } else {
+              item.classList.remove("active");
+            }
+          });
+        }
+
+        // Populate products list with sample products
+        function populateProducts() {
+          const products = [
+            {
+              name: "Matte Lipstick",
+              brand: "Beauty & Blessed",
+              price: "$24.99",
+              color: "#D42F6E",
+            },
+            {
+              name: "Satin Lipstick",
+              brand: "Beauty & Blessed",
+              price: "$22.99",
+              color: "#E75480",
+            },
+            {
+              name: "Glossy Lipstick",
+              brand: "Beauty & Blessed",
+              price: "$19.99",
+              color: "#FF69B4",
+            },
+            {
+              name: "Sheer Lipstick",
+              brand: "Beauty & Blessed",
+              price: "$21.99",
+              color: "#FFB6C1",
+            },
+          ];
+
+          productsList.innerHTML = "";
+
+          products.forEach((product) => {
+            const productItem = document.createElement("div");
+            productItem.className = "product-item";
+            if (product.color === currentShade) {
+              productItem.classList.add("active");
+            }
+            productItem.setAttribute("data-color", product.color);
+
+            productItem.innerHTML = `
+                        <div class="product-color" style="background-color: ${product.color};"></div>
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-brand">${product.brand}</div>
+                            <div class="product-price">${product.price}</div>
+                        </div>
+                    `;
+
+            // Add click event to select product and shade
+            productItem.addEventListener("click", function () {
+              const color = this.getAttribute("data-color");
+              currentShade = color;
+
+              // Update active shade
+              shadeOptions.forEach((shade) => {
+                if (shade.getAttribute("data-color") === color) {
+                  shade.classList.add("active");
+                } else {
+                  shade.classList.remove("active");
+                }
+              });
+
+              // Update active product
+              updateActiveProduct(color);
+
+              // Re-apply lipstick if an image is uploaded
+              if (uploadedImage.style.display === "block" && !isProcessing) {
+                processImageWithFaceMesh(uploadedImage);
+              }
+            });
+
+            productsList.appendChild(productItem);
+          });
+        }
+
+        // Initialize the page
+        populateProducts();
+        initializeFaceMesh();
+      });
+    </script>
   </body>
 </html>
