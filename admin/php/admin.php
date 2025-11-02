@@ -209,30 +209,41 @@ class AdminDashboard {
 }
 
     
-    // Get best selling products
     public function getBestSellingProducts() {
-        $query = "SELECT 
-                    p.Name as product_name,
-                    p.Category,
-                    COUNT(oi.order_item_id) as units_sold,
-                    SUM(oi.quantity) as total_quantity
-                  FROM orderitems oi
-                  JOIN products p ON oi.product_id = p.ProductID
-                  JOIN orders o ON oi.order_id = o.order_id
-                  WHERE o.status = 'completed'
-                  GROUP BY p.ProductID, p.Name, p.Category
-                  ORDER BY units_sold DESC
-                  LIMIT 5";
-        
-        $result = $this->conn->query($query);
-        $products = [];
-        
-        while ($row = $result->fetch_assoc()) {
-            $products[] = $row;
-        }
-        
-        return $products;
+    $query = "
+        SELECT 
+            p.Name AS product_name,
+            p.Category,
+            SUM(oi.quantity) AS total_sold,
+            COUNT(DISTINCT o.order_id) AS total_orders
+        FROM orderitems oi
+        INNER JOIN orders o ON oi.order_id = o.order_id
+        INNER JOIN products p ON oi.product_id = p.ProductID
+        WHERE o.status = 'completed'
+        GROUP BY p.ProductID, p.Name, p.Category
+        HAVING total_sold > 0
+        ORDER BY total_sold DESC
+        LIMIT 5
+    ";
+
+    $result = $this->conn->query($query);
+
+    if (!$result) {
+        throw new Exception("Best selling products query failed: " . $this->conn->error);
     }
+
+    $products = [];
+    while ($row = $result->fetch_assoc()) {
+        $products[] = $row;
+    }
+
+    return $products;
+}
+
+
+
+
+
     
     // Get store ratings summary
     public function getStoreRatings() {
@@ -255,16 +266,20 @@ class AdminDashboard {
         $insights = [];
         
         // Top category insight
-        $categoryQuery = "SELECT 
-                           p.Category,
-                           COUNT(oi.order_item_id) as sales
-                         FROM orderitems oi
-                         JOIN products p ON oi.product_id = p.ProductID
-                         JOIN orders o ON oi.order_id = o.order_id
-                         WHERE o.status = 'completed'
-                         GROUP BY p.Category
-                         ORDER BY sales DESC
-                         LIMIT 1";
+        $categoryQuery = "
+    SELECT 
+        p.Category,
+        COUNT(oi.order_id) AS sales
+    FROM orderitems oi
+    JOIN products p ON oi.product_id = p.ProductID
+    JOIN orders o ON oi.order_id = o.order_id
+    WHERE o.status = 'completed'
+    GROUP BY p.Category
+    ORDER BY sales DESC
+    LIMIT 1
+";
+
+
         
         $categoryResult = $this->conn->query($categoryQuery);
         if ($categoryRow = $categoryResult->fetch_assoc()) {
