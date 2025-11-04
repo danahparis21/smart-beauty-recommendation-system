@@ -1,5 +1,10 @@
 <?php
-include __DIR__ . '/../../config/db.php';
+// include __DIR__ . '/../../config/db.php';
+if (getenv('DOCKER_ENV') === 'true') {
+    require_once __DIR__ . '/../../config/db_docker.php';
+} else {
+    require_once __DIR__ . '/../../config/db.php';
+}
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

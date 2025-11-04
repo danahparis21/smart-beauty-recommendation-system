@@ -96,13 +96,22 @@ $longLasting = isset($_POST['longLasting']) ? 1 : 0;
 function getNextProductID($conn, $category)
 {
     $prefixMap = [
-        'Blush On' => 'BLUS',
+        'Blush On' => 'BLUSH',
         'Eyeliner' => 'EYLN',
         'Eyeshadow' => 'EYE',
         'Eyebrow' => 'EBR',
         'Concealer' => 'CONC',
         'Body Care' => 'BODY',
-        // Add more categories as needed
+        'Face Care' => 'FACE',
+        'Foundation' => 'FDN',
+        'Highlighter' => 'HIGH',
+        'Lipstick' => 'LIP',
+        'Mascara' => 'MASC',
+        'Makeup Tools' => 'MTOOL',
+        'Nails' => 'NAIL',
+        'Powder' => 'PDR',
+        'Hair Care' => 'HAIR',
+        'Contact Lense' => 'CONLENSE',
     ];
 
     $prefix = $prefixMap[$category] ?? 'PROD';
