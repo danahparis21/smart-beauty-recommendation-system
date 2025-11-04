@@ -50,195 +50,205 @@ class AdminDashboard {
     
     // Updated getSalesChartData with proper filtering
     public function getSalesChartData($period = 'All Time') {
-    $data = [];
-    $labels = [];
+        $data = [];
+        $labels = [];
 
-    switch ($period) {
-        case 'Daily':
-            // Current week (Mon–Sun)
-            $start = date('Y-m-d', strtotime('monday this week'));
-            for ($i = 0; $i < 7; $i++) {
-                $day = date('Y-m-d', strtotime("$start +$i day"));
-                $labels[$day] = date('D', strtotime($day)); // Mon, Tue, etc.
-                $data[$day] = ['sales' => 0, 'orders' => 0];
-            }
+        switch ($period) {
+            case 'Daily':
+                // Current week (Mon–Sun)
+                $start = date('Y-m-d', strtotime('monday this week'));
+                for ($i = 0; $i < 7; $i++) {
+                    $day = date('Y-m-d', strtotime("$start +$i day"));
+                    $labels[$day] = date('D', strtotime($day)); // Mon, Tue, etc.
+                    $data[$day] = ['sales' => 0, 'orders' => 0];
+                }
 
-            $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders 
-                      FROM orders 
-                      WHERE order_date BETWEEN '$start' AND DATE_ADD('$start', INTERVAL 6 DAY)
-                      AND status = 'completed'
-                      GROUP BY DATE(order_date)";
-            break;
-
-        case 'Weekly':
-    // Current month weeks (up to 5)
-    $startOfMonth = date('Y-m-01');
-    $endOfMonth = date('Y-m-t');
-    $weeks = [];
-    $data = [];
-
-    // Find the Monday of the first week of this month
-    $firstMonday = date('Y-m-d', strtotime('monday this month'));
-    if (date('j', strtotime($firstMonday)) > 7) {
-        // If "monday this month" skips to next month, adjust back one week
-        $firstMonday = date('Y-m-d', strtotime('monday last month'));
-    }
-
-    // Generate week ranges (up to 5)
-    for ($i = 0; $i < 5; $i++) {
-        $weekStart = date('Y-m-d', strtotime("$firstMonday +$i week"));
-        $weekEnd = date('Y-m-d', strtotime("$weekStart +6 days"));
-
-        if ($weekStart > $endOfMonth) break;
-
-        $label = 'Week ' . ($i + 1);
-        $weeks[$label] = [
-            'start' => $weekStart,
-            'end' => min($weekEnd, $endOfMonth)
-        ];
-        $data[$label] = ['sales' => 0, 'orders' => 0];
-    }
-
-    // Fetch all orders for current month
-    $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders
-              FROM orders
-              WHERE order_date BETWEEN '$startOfMonth' AND '$endOfMonth'
-              AND status = 'completed'
-              GROUP BY DATE(order_date)
-              ORDER BY date";
-    $result = $this->conn->query($query);
-
-    $raw = [];
-    while ($row = $result->fetch_assoc()) {
-        $raw[] = $row;
-    }
-
-    // Assign each order to its respective week
-    foreach ($raw as $row) {
-        foreach ($weeks as $label => $range) {
-            if ($row['date'] >= $range['start'] && $row['date'] <= $range['end']) {
-                $data[$label]['sales'] += (float)$row['sales'];
-                $data[$label]['orders'] += (int)$row['orders'];
+                $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders 
+                          FROM orders 
+                          WHERE order_date BETWEEN '$start' AND DATE_ADD('$start', INTERVAL 6 DAY)
+                          AND status = 'completed'
+                          GROUP BY DATE(order_date)";
                 break;
-            }
+
+            case 'Weekly':
+                // Current month weeks (up to 5)
+                $startOfMonth = date('Y-m-01');
+                $endOfMonth = date('Y-m-t');
+                $weeks = [];
+                $data = [];
+
+                // Find the Monday of the first week of this month
+                $firstMonday = date('Y-m-d', strtotime('monday this month'));
+                if (date('j', strtotime($firstMonday)) > 7) {
+                    // If "monday this month" skips to next month, adjust back one week
+                    $firstMonday = date('Y-m-d', strtotime('monday last month'));
+                }
+
+                // Generate week ranges (up to 5)
+                for ($i = 0; $i < 5; $i++) {
+                    $weekStart = date('Y-m-d', strtotime("$firstMonday +$i week"));
+                    $weekEnd = date('Y-m-d', strtotime("$weekStart +6 days"));
+
+                    if ($weekStart > $endOfMonth) break;
+
+                    $label = 'Week ' . ($i + 1);
+                    $weeks[$label] = [
+                        'start' => $weekStart,
+                        'end' => min($weekEnd, $endOfMonth)
+                    ];
+                    $data[$label] = ['sales' => 0, 'orders' => 0];
+                }
+
+                // Fetch all orders for current month
+                $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders
+                          FROM orders
+                          WHERE order_date BETWEEN '$startOfMonth' AND '$endOfMonth'
+                          AND status = 'completed'
+                          GROUP BY DATE(order_date)
+                          ORDER BY date";
+                $result = $this->conn->query($query);
+
+                $raw = [];
+                while ($row = $result->fetch_assoc()) {
+                    $raw[] = $row;
+                }
+
+                // Assign each order to its respective week
+                foreach ($raw as $row) {
+                    foreach ($weeks as $label => $range) {
+                        if ($row['date'] >= $range['start'] && $row['date'] <= $range['end']) {
+                            $data[$label]['sales'] += (float)$row['sales'];
+                            $data[$label]['orders'] += (int)$row['orders'];
+                            break;
+                        }
+                    }
+                }
+
+                // Prepare final result for chart
+                $formatted = [];
+                foreach ($weeks as $label => $_) {
+                    $formatted[] = [
+                        'display_date' => $label,
+                        'sales' => $data[$label]['sales'],
+                        'orders' => $data[$label]['orders']
+                    ];
+                }
+
+                return $formatted;
+
+            case 'Monthly':
+                $year = date('Y');
+                for ($m = 1; $m <= 12; $m++) {
+                    $monthName = date('M', mktime(0, 0, 0, $m, 10));
+                    $labels[$m] = $monthName;
+                    $data[$m] = ['sales' => 0, 'orders' => 0];
+                }
+
+                $query = "SELECT MONTH(order_date) as month, SUM(total_price) as sales, COUNT(*) as orders
+                          FROM orders
+                          WHERE YEAR(order_date) = YEAR(CURDATE())
+                          AND status = 'completed'
+                          GROUP BY MONTH(order_date)";
+                break;
+
+            case 'Annually':
+                $currentYear = date('Y');
+                for ($y = $currentYear - 5; $y <= $currentYear; $y++) {
+                    $labels[$y] = $y;
+                    $data[$y] = ['sales' => 0, 'orders' => 0];
+                }
+
+                $query = "SELECT YEAR(order_date) as year, SUM(total_price) as sales, COUNT(*) as orders
+                          FROM orders
+                          WHERE YEAR(order_date) >= YEAR(CURDATE()) - 5
+                          AND status = 'completed'
+                          GROUP BY YEAR(order_date)";
+                break;
+
+            default: // All Time
+                $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders
+                          FROM orders
+                          WHERE status = 'completed'
+                          GROUP BY DATE(order_date)
+                          ORDER BY date";
+                $result = $this->conn->query($query);
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = [
+                        'display_date' => date('M d', strtotime($row['date'])),
+                        'sales' => $row['sales'],
+                        'orders' => $row['orders']
+                    ];
+                }
+                return $data;
         }
-    }
 
-    // Prepare final result for chart
-    $formatted = [];
-    foreach ($weeks as $label => $_) {
-        $formatted[] = [
-            'display_date' => $label,
-            'sales' => $data[$label]['sales'],
-            'orders' => $data[$label]['orders']
-        ];
-    }
-
-    return $formatted;
-
-
-        case 'Monthly':
-            $year = date('Y');
-            for ($m = 1; $m <= 12; $m++) {
-                $monthName = date('M', mktime(0, 0, 0, $m, 10));
-                $labels[$m] = $monthName;
-                $data[$m] = ['sales' => 0, 'orders' => 0];
-            }
-
-            $query = "SELECT MONTH(order_date) as month, SUM(total_price) as sales, COUNT(*) as orders
-                      FROM orders
-                      WHERE YEAR(order_date) = YEAR(CURDATE())
-                      AND status = 'completed'
-                      GROUP BY MONTH(order_date)";
-            break;
-
-        case 'Annually':
-            $currentYear = date('Y');
-            for ($y = $currentYear - 5; $y <= $currentYear; $y++) {
-                $labels[$y] = $y;
-                $data[$y] = ['sales' => 0, 'orders' => 0];
-            }
-
-            $query = "SELECT YEAR(order_date) as year, SUM(total_price) as sales, COUNT(*) as orders
-                      FROM orders
-                      WHERE YEAR(order_date) >= YEAR(CURDATE()) - 5
-                      AND status = 'completed'
-                      GROUP BY YEAR(order_date)";
-            break;
-
-        default: // All Time
-            $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders
-                      FROM orders
-                      WHERE status = 'completed'
-                      GROUP BY DATE(order_date)
-                      ORDER BY date";
-            $result = $this->conn->query($query);
-            while ($row = $result->fetch_assoc()) {
-                $data[] = [
-                    'display_date' => date('M d', strtotime($row['date'])),
-                    'sales' => $row['sales'],
-                    'orders' => $row['orders']
-                ];
-            }
-            return $data;
-    }
-
-    // Shared code for non-weekly modes
-    $result = $this->conn->query($query);
-    while ($row = $result->fetch_assoc()) {
-        if ($period === 'Daily') {
-            $key = $row['date'];
-        } elseif ($period === 'Monthly') {
-            $key = (int)$row['month'];
-        } else {
-            $key = $row['year'];
-        }
-
-        if (isset($data[$key])) {
-            $data[$key]['sales'] = (float)$row['sales'];
-            $data[$key]['orders'] = (int)$row['orders'];
-        }
-    }
-
-    // Format for frontend
-    $formatted = [];
-    foreach ($labels as $key => $label) {
-        $formatted[] = [
-            'display_date' => $label,
-            'sales' => $data[$key]['sales'],
-            'orders' => $data[$key]['orders']
-        ];
-    }
-
-    return $formatted;
-}
-
-    
-    // Get best selling products
-    public function getBestSellingProducts() {
-        $query = "SELECT 
-                    p.Name as product_name,
-                    p.Category,
-                    COUNT(oi.order_item_id) as units_sold,
-                    SUM(oi.quantity) as total_quantity
-                  FROM orderitems oi
-                  JOIN products p ON oi.product_id = p.ProductID
-                  JOIN orders o ON oi.order_id = o.order_id
-                  WHERE o.status = 'completed'
-                  GROUP BY p.ProductID, p.Name, p.Category
-                  ORDER BY units_sold DESC
-                  LIMIT 5";
-        
+        // Shared code for non-weekly modes
         $result = $this->conn->query($query);
-        $products = [];
-        
         while ($row = $result->fetch_assoc()) {
-            $products[] = $row;
+            if ($period === 'Daily') {
+                $key = $row['date'];
+            } elseif ($period === 'Monthly') {
+                $key = (int)$row['month'];
+            } else {
+                $key = $row['year'];
+            }
+
+            if (isset($data[$key])) {
+                $data[$key]['sales'] = (float)$row['sales'];
+                $data[$key]['orders'] = (int)$row['orders'];
+            }
         }
-        
+
+        // Format for frontend
+        $formatted = [];
+        foreach ($labels as $key => $label) {
+            $formatted[] = [
+                'display_date' => $label,
+                'sales' => $data[$key]['sales'],
+                'orders' => $data[$key]['orders']
+            ];
+        }
+
+        return $formatted;
+    }
+
+    // FIXED: Get best selling products (updated to use new database structure)
+    public function getBestSellingProducts() {
+        $query = "
+            SELECT 
+                p.Name AS product_name,
+                p.Category,
+                SUM(oi.quantity) AS total_sold,
+                COUNT(DISTINCT o.order_id) AS total_orders
+            FROM orderitems oi
+            INNER JOIN orders o ON oi.order_id = o.order_id
+            INNER JOIN products p ON oi.product_id = p.ProductID
+            WHERE o.status = 'completed'
+            GROUP BY p.ProductID, p.Name, p.Category
+            HAVING total_sold > 0
+            ORDER BY total_sold DESC
+            LIMIT 5
+        ";
+
+        $result = $this->conn->query($query);
+
+        if (!$result) {
+            throw new Exception("Best selling products query failed: " . $this->conn->error);
+        }
+
+        $products = [];
+        while ($row = $result->fetch_assoc()) {
+            $products[] = [
+                'product_name' => $row['product_name'],
+                'Category' => $row['Category'],
+                'total_quantity' => $row['total_sold'],  // Renamed for consistency
+                'units_sold' => $row['total_sold']       // For badge display
+            ];
+        }
+
         return $products;
     }
-    
+
     // Get store ratings summary
     public function getStoreRatings() {
         $query = "SELECT 
@@ -255,31 +265,35 @@ class AdminDashboard {
         return $result->fetch_assoc();
     }
     
-    // Get AI insights data
+    // FIXED: Get AI insights data (updated to use new database structure)
     public function getAIInsights() {
         $insights = [];
         
-        // Top category insight
-        $categoryQuery = "SELECT 
-                           p.Category,
-                           COUNT(oi.order_item_id) as sales
-                         FROM orderitems oi
-                         JOIN products p ON oi.product_id = p.ProductID
-                         JOIN orders o ON oi.order_id = o.order_id
-                         WHERE o.status = 'completed'
-                         GROUP BY p.Category
-                         ORDER BY sales DESC
-                         LIMIT 1";
+        // Top category insight - FIXED query
+        $categoryQuery = "
+            SELECT 
+                p.Category,
+                COUNT(oi.order_item_id) AS sales
+            FROM orderitems oi
+            JOIN products p ON oi.product_id = p.ProductID
+            JOIN orders o ON oi.order_id = o.order_id
+            WHERE o.status = 'completed'
+            GROUP BY p.Category
+            ORDER BY sales DESC
+            LIMIT 1
+        ";
         
         $categoryResult = $this->conn->query($categoryQuery);
-        if ($categoryRow = $categoryResult->fetch_assoc()) {
+        if ($categoryResult && $categoryRow = $categoryResult->fetch_assoc()) {
             $insights[] = "🔥 " . $categoryRow['Category'] . " is your best-performing category with " . $categoryRow['sales'] . " sales";
         }
         
         // Low stock alert
         $lowStockQuery = "SELECT COUNT(*) as low_stock_count 
                          FROM products 
-                         WHERE Stocks <= 10 AND Status = 'Available'";
+                         WHERE Stocks <= 10 
+                         AND Status = 'Available'
+                         AND ParentProductID IS NULL";  // Only count parent products
         $lowStockResult = $this->conn->query($lowStockQuery);
         $lowStockCount = $lowStockResult->fetch_assoc()['low_stock_count'];
         
