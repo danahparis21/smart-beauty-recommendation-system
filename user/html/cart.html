@@ -575,11 +575,11 @@
     </div>
     <div class="user-section">
       <span class="user-greeting" id="user-greeting">Hi, User!</span>
-      <button class="profile-btn" onclick="window.location.href='user_profile.html'">
+      <button class="profile-btn" onclick="window.location.href='../../profile/html/user_profile.html'">
         <i class="fas fa-user"></i>
       </button>
     </div>
-    <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
+    <button class="mobile-profile-btn" onclick="window.location.href='../../profile/html/user_profile.html'">
       <i class="fas fa-user"></i>
     </button>
   </header>
@@ -1072,6 +1072,23 @@
       initializeData();
       setupNavigation();
     });
+
+    // --- Checkout Button Handler ---
+    document.getElementById("checkout-btn").addEventListener("click", function () {
+      const selectedItems = cart.filter((item) => item.selected);
+
+      if (selectedItems.length === 0) {
+        showNotification("Please select at least one item to check out.");
+        return;
+      }
+
+      // Optional: Save selected items to localStorage or session for checkout page use
+      localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+
+      // ✅ Redirect to your checkout page
+      window.location.href = "checkout.html"; // or "checkout.php" if you use PHP
+    });
+
   </script>
 </body>
 
