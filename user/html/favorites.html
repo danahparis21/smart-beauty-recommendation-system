@@ -384,6 +384,72 @@
         height: 16px;
       }
     }
+
+    /* Unlike Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px 30px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .modal-content p {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #272727;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: space-around;
+      gap: 15px;
+    }
+
+    .modal-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .cancel-btn {
+      background: #f3f3f3;
+      color: #272727;
+    }
+
+    .cancel-btn:hover {
+      background: #e0e0e0;
+    }
+
+    .confirm-btn {
+      background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+      color: white;
+    }
+
+    .confirm-btn:hover {
+      background: linear-gradient(135deg, var(--dark-pink), var(--primary-pink));
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 
@@ -425,264 +491,256 @@
     </section>
   </main>
 
+  <!-- Unlike Confirmation Modal -->
+  <div id="unlike-modal" class="modal">
+    <div class="modal-content">
+      <p>Are you sure you want to remove this product from your favorites?</p>
+      <div class="modal-buttons">
+        <button id="cancel-unlike" class="modal-btn cancel-btn">Cancel</button>
+        <button id="confirm-unlike" class="modal-btn confirm-btn">Yes, Remove</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Helper to show notifications
-    function showNotification(message) {
-      console.log(`[Notification] ${message}`);
-      const notificationBox = document.getElementById("notification-box");
-      if (notificationBox) {
-        notificationBox.textContent = message;
-        notificationBox.classList.add("show");
-        setTimeout(() => {
-          notificationBox.classList.remove("show");
-        }, 3000);
-      }
+let currentButton = null;
+let currentProductId = null;
+let currentUserId = null;
+
+// --- Notification ---
+function showNotification(message) {
+  const notificationBox = document.getElementById("notification-box");
+  if (notificationBox) {
+    notificationBox.textContent = message;
+    notificationBox.classList.add("show");
+    setTimeout(() => notificationBox.classList.remove("show"), 3000);
+  }
+}
+
+// --- Get User Session ---
+async function getUserSession() {
+  try {
+    const res = await fetch('../php/get-user-session.php');
+    const data = await res.json();
+    if (data.success && data.isLoggedIn) {
+      currentUserId = data.user.id;
+      return data.user;
     }
+  } catch (err) {
+    console.error('Error fetching session:', err);
+  }
+  return null;
+}
 
-    // Clean product name - Remove "Product Record" and "Parent Record"
-    const cleanProductName = (name) => {
-      if (!name) return "";
-      return name
-        .toString()
-        .replace(/Product Record/gi, "")
-        .replace(/Parent Record/gi, "")
-        .replace(/:\s*/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-    };
+// --- Clean Product Name ---
+const cleanProductName = (name) => {
+  if (!name) return "";
+  return name.toString()
+    .replace(/Product Record/gi, "")
+    .replace(/Parent Record/gi, "")
+    .replace(/:\s*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
 
-    // Create product card - EXACT SAME AS HOME.HTML
-    function createProductCard(product) {
-      const displayName = cleanProductName(product.name);
-      const card = document.createElement("div");
-      card.className = "product-card";
-      card.style.cursor = "pointer";
+// --- Create Product Card ---
+function createProductCard(product) {
+  const card = document.createElement("div");
+  card.className = "product-card";
+  card.style.cursor = "pointer";
 
-      // Price display
-      let priceDisplay = "₱0.00";
-      const productPrice = parseFloat(product.price);
-      if (!isNaN(productPrice) && productPrice > 0) {
-        priceDisplay = `₱${productPrice.toFixed(2)}`;
-      }
+  const LOCAL_FALLBACK_IMAGE = "/admin/uploads/product_images/no-image.png";
+  const previewImage = product.previewImage || product.image || LOCAL_FALLBACK_IMAGE;
+  const defaultImage = product.image || previewImage || LOCAL_FALLBACK_IMAGE;
 
-      const LOCAL_FALLBACK_IMAGE = "/admin/uploads/product_images/no-image.png";
-      const previewImage = product.previewImage || product.image || LOCAL_FALLBACK_IMAGE;
-      const defaultImage = product.image || previewImage || LOCAL_FALLBACK_IMAGE;
+  const priceDisplay = parseFloat(product.price) > 0 ? `₱${parseFloat(product.price).toFixed(2)}` : "₱0.00";
+  const stockAlert = product.stockQuantity && product.stockQuantity <= 5
+    ? `<div class="stock-alert">Only ${product.stockQuantity} left!</div>` : "";
 
-      const stockAlert = product.stockQuantity && product.stockQuantity <= 5
-        ? `<div class="stock-alert">Only ${product.stockQuantity} left!</div>`
-        : "";
+  const variantListHTML = (product.variants || []).length > 0
+    ? `<div class="variant-colors">
+        ${product.variants.map((variant, index) => {
+          const hex = variant.hexCode || "#CCCCCC";
+          return `<div class="color-circle ${index === 0 ? "active" : ""}" 
+                       style="background-color: ${hex}; border: 2px solid white;"
+                       data-variant-id="${variant.id}" 
+                       data-variant-image="${variant.image || LOCAL_FALLBACK_IMAGE}" 
+                       title="${cleanProductName(variant.name)}"></div>`;
+        }).join("")}
+      </div>` : "";
 
-      // Generate variant HTML
-      let variantListHTML = "";
-      if (product.variants && product.variants.length > 0) {
-        variantListHTML = `
-          <div class="variant-colors">
-            ${product.variants.map((variant, index) => {
-              const hexCode = variant.hexCode || "#CCCCCC";
-              const cleanVariantName = cleanProductName(variant.name);
-              return `
-                <div
-                  class="color-circle ${index === 0 ? "active" : ""}"
-                  style="background-color: ${hexCode}; border: 2px solid white;"
-                  data-variant-id="${variant.id}"
-                  data-variant-image="${variant.image || LOCAL_FALLBACK_IMAGE}"
-                  title="${cleanVariantName}">
-                </div>
-              `;
-            }).join("")}
-          </div>
-        `;
-      }
-
-      // Ratings HTML
-      const ratingsHTML = `
-        <div class="product-ratings">
-          <div class="stars">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-          </div>
-          <span class="rating-count">(0)</span>
+  card.innerHTML = `
+    <div class="product-image-container">
+      ${stockAlert}
+      <img src="${previewImage}" alt="${cleanProductName(product.name)}" class="product-image"
+           data-default="${defaultImage}" data-preview="${previewImage}"
+           onerror="this.onerror=null; this.src='${LOCAL_FALLBACK_IMAGE}'; this.classList.add('no-image-placeholder')">
+    </div>
+    <div class="product-info">
+      <div class="product-name">${cleanProductName(product.name)}</div>
+      <div class="product-price">${priceDisplay}</div>
+      <div class="product-ratings">
+        <div class="stars">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
-      `;
+        <span class="rating-count">(0)</span>
+      </div>
+      ${variantListHTML}
+      <div class="product-actions">
+        <button class="like-btn liked" onclick="event.stopPropagation(); toggleFavorite('${product.id}', this)">
+          <i class="fas fa-heart"></i>
+        </button>
+        <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart('${product.id}')">
+          <i class="fas fa-shopping-cart"></i>Add to Cart
+        </button>
+      </div>
+    </div>
+  `;
 
-      card.innerHTML = `
-        <div class="product-image-container">
-          ${stockAlert}
-          <img
-            src="${previewImage}"
-            alt="${displayName}"
-            class="product-image"
-            data-default="${defaultImage}"
-            data-preview="${previewImage}"
-            onerror="this.onerror=null; this.src='${LOCAL_FALLBACK_IMAGE}'; this.classList.add('no-image-placeholder')">
-        </div>
-        <div class="product-info">
-          <div class="product-name">${displayName}</div>
-          <div class="product-price">${priceDisplay}</div>
-          ${ratingsHTML}
-          ${variantListHTML}
-          <div class="product-actions">
-            <button class="like-btn liked" onclick="event.stopPropagation(); toggleFavorite('${product.id}', this)">
-              <i class="fas fa-heart"></i>
-            </button>
-            <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart('${product.id}')">
-              <i class="fas fa-shopping-cart"></i>Add to Cart
-            </button>
-          </div>
-        </div>
-      `;
+  // Card click redirects to detail page
+  card.addEventListener("click", (e) => {
+    if (e.target.closest(".like-btn") || e.target.closest(".add-to-cart-btn") || e.target.closest(".color-circle")) return;
+    window.location.href = `productdetail.html?productId=${product.id}`;
+  });
 
-      // Click to view product details
-      card.addEventListener("click", (e) => {
-        if (e.target.closest(".like-btn") || e.target.closest(".add-to-cart-btn") || e.target.closest(".color-circle")) {
-          return;
-        }
-        window.location.href = `productdetail.html?productId=${product.id}`;
-      });
-
-      // Variant switching and hover effects - EXACT SAME AS HOME
-      const img = card.querySelector(".product-image");
-      const productImageDiv = card.querySelector(".product-image-container");
-      const colorCircles = card.querySelectorAll(".color-circle");
-
-      // Variant image switching
-      colorCircles.forEach((circle) => {
-        circle.addEventListener("click", (e) => {
-          e.stopPropagation();
-          colorCircles.forEach((c) => c.classList.remove("active"));
-          circle.classList.add("active");
-          const variantImage = circle.dataset.variantImage;
-          if (variantImage && variantImage !== LOCAL_FALLBACK_IMAGE) {
-            img.src = variantImage;
-            img.dataset.default = variantImage;
-            img.classList.remove("no-image-placeholder");
-            img.style.objectFit = "cover";
-          }
-        });
-      });
-
-      // Hover effect
-      productImageDiv.addEventListener("mouseenter", () => {
-        const preview = img.dataset.preview;
-        if (preview && preview !== img.src) {
-          img.classList.add("fade-out");
-          setTimeout(() => {
-            img.src = preview;
-            img.classList.remove("fade-out");
-            img.classList.add("fade-in");
-            setTimeout(() => img.classList.remove("fade-in"), 400);
-          }, 200);
-        }
-      });
-
-      productImageDiv.addEventListener("mouseleave", () => {
-        const defaultImg = img.dataset.default;
-        if (defaultImg && defaultImg !== img.src) {
-          img.classList.add("fade-out");
-          setTimeout(() => {
-            img.src = defaultImg;
-            img.classList.remove("fade-out");
-            img.classList.add("fade-in");
-            setTimeout(() => img.classList.remove("fade-in"), 400);
-          }, 200);
-        }
-      });
-
-      return card;
-    }
-
-    // Toggle favorite
-    async function toggleFavorite(productId, button) {
-      try {
-        const response = await fetch('../php/toggle-favorite.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ product_id: productId })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          const card = button.closest('.product-card');
-          card.style.opacity = '0';
-          card.style.transform = 'scale(0.8)';
-          setTimeout(() => {
-            card.remove();
-            const remainingCards = document.querySelectorAll('.product-card');
-            if (remainingCards.length === 0) {
-              document.getElementById('favorites-grid').innerHTML = 
-                "<p class='text-center p-4 text-gray-500'>You have no favorite products yet.</p>";
-            }
-          }, 300);
-          showNotification('Removed from favorites');
-        }
-      } catch (error) {
-        console.error('Error toggling favorite:', error);
-        showNotification('Failed to update favorite');
-      }
-    }
-
-    // Add to cart
-    async function addToCart(productId) {
-      try {
-        const response = await fetch('../php/add-to-cart.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ product_id: productId, quantity: 1 })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          showNotification('Product added to cart!');
-        } else {
-          showNotification(data.message || 'Failed to add to cart');
-        }
-      } catch (error) {
-        console.error('Error adding to cart:', error);
-        showNotification('Failed to add to cart');
-      }
-    }
-
-    // Load favorites on page load
-    document.addEventListener('DOMContentLoaded', async function () {
-      await updateUserGreeting();
-
-      const favoritesGrid = document.getElementById('favorites-grid');
-
-      try {
-        const response = await fetch('../php/favorites-handler.php');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        console.log('Favorites data:', data);
-
-        if (!data.success || !data.products || data.products.length === 0) {
-          favoritesGrid.innerHTML = "<p class='text-center p-4 text-gray-500'>You have no favorite products yet.</p>";
-          return;
-        }
-
-        favoritesGrid.innerHTML = '';
-
-        data.products.forEach(product => {
-          const card = createProductCard(product);
-          favoritesGrid.appendChild(card);
-        });
-
-      } catch (error) {
-        console.error('Error fetching favorites:', error);
-        favoritesGrid.innerHTML = `<p class='text-center text-red-500'>Error loading favorites: ${error.message}</p>`;
+  // Variant switching
+  const img = card.querySelector(".product-image");
+  card.querySelectorAll(".color-circle").forEach(circle => {
+    circle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      card.querySelectorAll(".color-circle").forEach(c => c.classList.remove("active"));
+      circle.classList.add("active");
+      const variantImage = circle.dataset.variantImage;
+      if (variantImage && variantImage !== LOCAL_FALLBACK_IMAGE) {
+        img.src = variantImage;
+        img.dataset.default = variantImage;
+        img.classList.remove("no-image-placeholder");
+        img.style.objectFit = "cover";
       }
     });
-  </script>
-</body>
+  });
 
+  return card;
+}
+
+// --- Toggle Favorite ---
+async function toggleFavorite(productId, button) {
+  currentButton = button;
+  currentProductId = productId;
+  document.getElementById('unlike-modal').style.display = 'flex';
+}
+
+document.getElementById('cancel-unlike').addEventListener('click', () => {
+  document.getElementById('unlike-modal').style.display = 'none';
+  currentButton = null;
+  currentProductId = null;
+});
+
+document.getElementById('confirm-unlike').addEventListener('click', async () => {
+  const modal = document.getElementById('unlike-modal');
+  modal.style.display = 'none';
+  if (!currentButton || !currentProductId) return;
+
+  const confirmBtn = document.getElementById('confirm-unlike');
+  confirmBtn.disabled = true;
+
+  const card = currentButton.closest('.product-card');
+  const favoritesGrid = document.getElementById('favorites-grid');
+
+  try {
+    const formData = new FormData();
+    formData.append('action', 'toggle');
+    formData.append('product_id', currentProductId);
+
+    const res = await fetch('../php/favorites-handler.php', {
+      method: 'POST',
+      body: formData,
+      credentials: 'same-origin'
+    });
+    const data = await res.json();
+
+    if (data.success && data.action === 'unliked') {
+      if (card) {
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+          card.remove();
+          if (!favoritesGrid.querySelector('.product-card')) {
+            favoritesGrid.innerHTML = "<p class='text-center p-4 text-gray-500'>You have no favorite products yet.</p>";
+          }
+        }, 300);
+      }
+      showNotification('Removed from favorites');
+    } else {
+      showNotification(data.message ?? 'Failed to remove favorite');
+    }
+  } catch (err) {
+    console.error('Error removing favorite:', err);
+    showNotification('Error removing favorite');
+  } finally {
+    currentButton = null;
+    currentProductId = null;
+    confirmBtn.disabled = false;
+  }
+});
+
+// Click outside modal closes it
+document.getElementById('unlike-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'unlike-modal') {
+    e.currentTarget.style.display = 'none';
+    currentButton = null;
+    currentProductId = null;
+  }
+});
+
+// --- Add to Cart ---
+async function addToCart(productId) {
+  try {
+    const res = await fetch('../php/add-to-cart.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({product_id: productId, quantity: 1}),
+      credentials: 'same-origin'
+    });
+    const data = await res.json();
+    showNotification(data.success ? 'Product added to cart!' : data.message ?? 'Failed to add to cart');
+  } catch (err) {
+    console.error(err);
+    showNotification('Failed to add to cart');
+  }
+}
+
+// --- Load Favorites on DOMContentLoaded ---
+document.addEventListener('DOMContentLoaded', async () => {
+  await updateUserGreeting();
+  const user = await getUserSession();
+  const favoritesGrid = document.getElementById('favorites-grid');
+
+  if (!user) {
+    favoritesGrid.innerHTML = "<p class='text-center p-4 text-gray-500'>Please log in to view your favorites.</p>";
+    return;
+  }
+
+  try {
+    const res = await fetch('../php/favorites-handler.php', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.success || !data.products?.length) {
+      favoritesGrid.innerHTML = "<p class='text-center p-4 text-gray-500'>You have no favorite products yet.</p>";
+      return;
+    }
+
+    favoritesGrid.innerHTML = '';
+    data.products.forEach(product => {
+      favoritesGrid.appendChild(createProductCard(product));
+    });
+  } catch (err) {
+    console.error(err);
+    favoritesGrid.innerHTML = `<p class='text-center text-red-500'>Error loading favorites: ${err.message}</p>`;
+  }
+});
+</script>
+
+</body>
 </html>
