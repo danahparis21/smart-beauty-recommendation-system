@@ -864,89 +864,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Favorites Page -->
-    <section id="favorites" class="page-content">
-      <div class="products-container">
-        <h2 class="section-title">Your Favorites</h2>
-        <div class="products-grid" id="favorites-grid">
-          <!-- Favorite products will be dynamically added here -->
-        </div>
-      </div>
-    </section>
-
-    <!-- Beauty Recommender Page -->
-    <section id="recommender" class="page-content">
-      <div class="products-container">
-        <h2 class="section-title">Beauty Recommender</h2>
-        <div class="recommender-container">
-          <h3 class="recommender-title">Find Your Perfect Products</h3>
-          <form class="recommender-form">
-            <div class="form-group">
-              <label for="skin-type">Skin Type</label>
-              <select id="skin-type">
-                <option value="">Select your skin type</option>
-                <option value="oily">Oily</option>
-                <option value="dry">Dry</option>
-                <option value="combination">Combination</option>
-                <option value="normal">Normal</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="skin-tone">Skin Tone</label>
-              <select id="skin-tone">
-                <option value="">Select your skin tone</option>
-                <option value="fair">Fair</option>
-                <option value="light">Light</option>
-                <option value="medium">Medium</option>
-                <option value="tan">Tan</option>
-                <option value="deep">Deep</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="concern">Main Concern</label>
-              <select id="concern">
-                <option value="">Select your main concern</option>
-                <option value="acne">Acne</option>
-                <option value="aging">Aging</option>
-                <option value="dryness">Dryness</option>
-                <option value="redness">Redness</option>
-                <option value="dark-spots">Dark Spots</option>
-              </select>
-            </div>
-            <button type="button" class="recommend-btn">
-              Get Recommendations
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- Virtual Try-On Page -->
-    <section id="tryon" class="page-content">
-      <div class="products-container">
-        <h2 class="section-title">Virtual Try-On</h2>
-        <div class="virtual-tryon">
-          <div class="tryon-container">
-            <div class="tryon-image">
-              <i class="fas fa-user"></i>
-            </div>
-            <div class="tryon-controls">
-              <button class="tryon-btn active">Lipstick</button>
-              <button class="tryon-btn">Eyeshadow</button>
-              <button class="tryon-btn">Foundation</button>
-              <button class="tryon-btn">Blush</button>
-            </div>
-          </div>
-          <div class="products-container">
-            <h3 class="section-title">Try These Products</h3>
-            <div class="products-grid" id="tryon-products">
-              <!-- Try-on products will be dynamically added here -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <!-- Floating Cart - Always visible -->
@@ -989,23 +906,23 @@
     const SHIPPING_FEE = 50.0; // Fixed shipping fee
     const normalizeCategory = (cat) => (cat || "").toLowerCase();
 
-  
+
 
     // Helper to replace the forbidden window.alert()
-  function showNotification(message) {
-    console.log(`[Notification] ${message}`);
+    function showNotification(message) {
+      console.log(`[Notification] ${message}`);
 
-    const notificationBox = document.getElementById("notification-box");
-    if (notificationBox) {
-      notificationBox.textContent = message;
-      notificationBox.classList.add("show");
-      setTimeout(() => {
-        notificationBox.classList.remove("show");
-      }, 3000);
-    } else {
-      console.warn("Please add <div id='notification-box'></div> to your HTML.");
+      const notificationBox = document.getElementById("notification-box");
+      if (notificationBox) {
+        notificationBox.textContent = message;
+        notificationBox.classList.add("show");
+        setTimeout(() => {
+          notificationBox.classList.remove("show");
+        }, 3000);
+      } else {
+        console.warn("Please add <div id='notification-box'></div> to your HTML.");
+      }
     }
-  }
 
     // --- RENDERING & HELPER FUNCTIONS (MOVED TO GLOBAL SCOPE) ---
 
@@ -1217,23 +1134,48 @@
       return card;
     }
     // Toggle like status
-    function toggleLike(productId) {
-      // We need to find the product either by its own ID or its parent ID
-      const productKey = products.find(
-        (p) => p.id === productId || p.parentID === productId
-      );
+    async function toggleLike(productId) {
+      const product = products.find(p => p.id === productId || p.parentID === productId);
+      if (!product) return;
 
-      if (productKey) {
-        productKey.liked = !productKey.liked;
-        // Re-render the relevant view to reflect the change
-        const currentPage = document.querySelector(".page-content.active");
-        if (currentPage && currentPage.id === "favorites") {
-          renderFavorites();
-        } else {
+      // Optimistic UI update — instant heart toggle
+      product.liked = !product.liked;
+      renderProducts();
+
+      try {
+        const response = await fetch("../php/favorites-handler.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `action=toggle&product_id=${encodeURIComponent(productId)}`
+        });
+
+        const result = await response.json();
+        console.log("Favorites handler response:", result);
+
+        if (!result.success) {
+          // Backend failed — revert UI
+          product.liked = !product.liked;
           renderProducts();
+          showNotification("Failed to update favorites.");
+          return;
         }
+
+        if (result.action === "liked") {
+          showNotification("Added to Favorites ❤️");
+        } else if (result.action === "unliked") {
+          showNotification("Removed from Favorites 💔");
+        }
+
+      } catch (err) {
+        console.error("Favorite toggle error:", err);
+        product.liked = !product.liked; // revert on error
+        renderProducts();
+        showNotification("Error updating favorites. Try again later.");
       }
     }
+
 
     // Add product to cart (now supports variants via product ID lookup)
     function addToCart(productId) {
@@ -1455,78 +1397,78 @@
     }
 
     // --- INITIALIZATION ---
-  document.addEventListener("DOMContentLoaded", async function () {
-    // FIRST: Initialize user session (from user-session.js)
-    await updateUserGreeting();
+    document.addEventListener("DOMContentLoaded", async function () {
+      // FIRST: Initialize user session (from user-session.js)
+      await updateUserGreeting();
 
-    // If not logged in, fetchUserSession will redirect
-    if (!currentUser) return;
+      // If not logged in, fetchUserSession will redirect
+      if (!currentUser) return;
 
-    // Log user info for debugging
-    console.log('Home - Logged in user:', currentUser);
-    console.log('Home - User ID:', currentUser.id);
-    console.log('Home - Username:', currentUser.username);
-    console.log('Home - First Name:', currentUser.firstName);
+      // Log user info for debugging
+      console.log('Home - Logged in user:', currentUser);
+      console.log('Home - User ID:', currentUser.id);
+      console.log('Home - Username:', currentUser.username);
+      console.log('Home - First Name:', currentUser.firstName);
 
-    const categoriesContainer = document.getElementById("categories-container");
+      const categoriesContainer = document.getElementById("categories-container");
 
-    // 1. Fetch Categories
-    fetch("../php/categories.php")
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        if (data.success && categoriesContainer) {
-          categoriesContainer.innerHTML = "";
+      // 1. Fetch Categories
+      fetch("../php/categories.php")
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          if (data.success && categoriesContainer) {
+            categoriesContainer.innerHTML = "";
 
-          // Add "All" button first
-          const allBtn = document.createElement("button");
-          allBtn.className = "category-btn bg-pink-500 text-white active px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md";
-          allBtn.textContent = "All";
-          allBtn.setAttribute("data-category", "all");
-          categoriesContainer.appendChild(allBtn);
-          allBtn.addEventListener("click", () => handleCategoryFilter("All"));
+            // Add "All" button first
+            const allBtn = document.createElement("button");
+            allBtn.className = "category-btn bg-pink-500 text-white active px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md";
+            allBtn.textContent = "All";
+            allBtn.setAttribute("data-category", "all");
+            categoriesContainer.appendChild(allBtn);
+            allBtn.addEventListener("click", () => handleCategoryFilter("All"));
 
-          data.categories
-            .filter((c) => normalizeCategory(c) !== "all")
-            .forEach((cat) => {
-              const btn = document.createElement("button");
-              btn.className = "category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors duration-200 ml-2";
-              btn.textContent = cat;
-              btn.setAttribute("data-category", normalizeCategory(cat));
-              categoriesContainer.appendChild(btn);
-              btn.addEventListener("click", () => handleCategoryFilter(cat));
-            });
-        }
-      })
-      .catch((err) => console.error("Category Fetch Error:", err));
+            data.categories
+              .filter((c) => normalizeCategory(c) !== "all")
+              .forEach((cat) => {
+                const btn = document.createElement("button");
+                btn.className = "category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors duration-200 ml-2";
+                btn.textContent = cat;
+                btn.setAttribute("data-category", normalizeCategory(cat));
+                categoriesContainer.appendChild(btn);
+                btn.addEventListener("click", () => handleCategoryFilter(cat));
+              });
+          }
+        })
+        .catch((err) => console.error("Category Fetch Error:", err));
 
-    // 2. Fetch Products
-    fetch("../php/home.php")
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          products = data.products;
-          console.log("Products loaded:", products.length);
-          renderProducts();
-        } else {
-          console.error("Failed to load products:", data.message);
-          showNotification("Failed to load products.");
-        }
-      })
-      .catch((err) => {
-        console.error("Product Fetch Error:", err);
-        showNotification("Error fetching products from server.");
-      });
+      // 2. Fetch Products
+      fetch("../php/home.php")
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            products = data.products;
+            console.log("Products loaded:", products.length);
+            renderProducts();
+          } else {
+            console.error("Failed to load products:", data.message);
+            showNotification("Failed to load products.");
+          }
+        })
+        .catch((err) => {
+          console.error("Product Fetch Error:", err);
+          showNotification("Error fetching products from server.");
+        });
 
-    // 3. Setup UI
-    initSearch();
-    updateCartCount();
-    setupNavigation();
+      // 3. Setup UI
+      initSearch();
+      updateCartCount();
+      setupNavigation();
     });
   </script>
 </body>

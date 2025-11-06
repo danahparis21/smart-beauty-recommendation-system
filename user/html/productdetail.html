@@ -889,7 +889,6 @@
         </div>
 
         <!-- Specifications -->
-        <!-- Specifications -->
         <div class="specs-section">
           <h2 class="section-title">Product Details</h2>
           <ul class="specs-list">
@@ -1005,6 +1004,7 @@
         // Remove the sample product data and replace with dynamic data
         let product = null;
         let reviews = [];
+        let isProductLiked = false;
 
         let productData = null;
         // Global variables for image gallery
@@ -1262,6 +1262,13 @@
             } else {
               console.error("Variations container not found - looking for .variations-container");
             }
+
+            // Check if product is liked
+if (selectedVariant?.id) {
+  checkIfProductIsLiked(selectedVariant.id);
+}
+
+console.log("✅ Product page setup completed successfully");
 
             console.log("✅ Product page setup completed successfully");
 
@@ -1590,23 +1597,52 @@
               }
             }
 
+            
+
           } catch (error) {
             console.error("❌ Error in updateProductDetails:", error);
           }
         }
         // Keep this function separate - it's different from updateProductDetails
-        function updateLikeButton() {
-          const likeButton = document.querySelector(".like-button");
-          const likeIcon = likeButton.querySelector("i");
+        function updateLikeButtonUI() {
+  const likeButton = document.querySelector(".like-button");
+  const likeIcon = likeButton.querySelector("i");
 
-          if (likeButton.classList.contains("active")) {
-            likeIcon.className = "fas fa-heart";
-            likeButton.innerHTML = '<i class="fas fa-heart"></i> <span>Liked</span>';
-          } else {
-            likeIcon.className = "far fa-heart";
-            likeButton.innerHTML = '<i class="far fa-heart"></i> <span>Like</span>';
-          }
+  if (isProductLiked) {
+    likeButton.classList.add("active");
+    likeIcon.className = "fas fa-heart";
+    likeButton.innerHTML = '<i class="fas fa-heart"></i> <span>Liked</span>';
+  } else {
+    likeButton.classList.remove("active");
+    likeIcon.className = "far fa-heart";
+    likeButton.innerHTML = '<i class="far fa-heart"></i> <span>Like</span>';
+  }
+}
+
+// Check if product is in user's favorites
+async function checkIfProductIsLiked(productId) {
+  try {
+    const response = await fetch(`../php/favorites-handler.php?action=list`);
+    const result = await response.json();
+
+    if (result.success && result.products) {
+      // Check if any product or variant matches
+      const isLiked = result.products.some(product => {
+        if (product.id === productId) return true;
+        if (product.variants) {
+          return product.variants.some(v => v.id === productId);
         }
+        return false;
+      });
+      
+      isProductLiked = isLiked;
+      updateLikeButtonUI();
+      console.log(`Product ${productId} liked status:`, isLiked);
+    }
+  } catch (err) {
+    console.error("Error checking favorite status:", err);
+  }
+}
         //   // Function to update reviews display
         //   function updateReviewsDisplay() {
         //     const reviewsContainer = document.querySelector(".reviews-list");
@@ -1807,6 +1843,59 @@
         function goBack() {
           window.location.href = "home.html";
         }
+
+        // Like button functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const likeButton = document.querySelector('.like-button');
+  
+  if (likeButton) {
+    likeButton.addEventListener('click', async function() {
+      if (!productData?.selectedVariant?.id) {
+        console.error('No product selected');
+        return;
+      }
+
+      const productId = productData.selectedVariant.id;
+      
+      // Optimistic UI update
+      isProductLiked = !isProductLiked;
+      updateLikeButtonUI();
+
+      try {
+        const response = await fetch("../php/favorites-handler.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `action=toggle&product_id=${encodeURIComponent(productId)}`
+        });
+
+        const result = await response.json();
+        console.log("Favorites handler response:", result);
+
+        if (!result.success) {
+          // Backend failed – revert UI
+          isProductLiked = !isProductLiked;
+          updateLikeButtonUI();
+          alert("Failed to update favorites.");
+          return;
+        }
+
+        if (result.action === "liked") {
+          console.log("Added to Favorites ❤️");
+        } else if (result.action === "unliked") {
+          console.log("Removed from Favorites 💔");
+        }
+
+      } catch (err) {
+        console.error("Favorite toggle error:", err);
+        isProductLiked = !isProductLiked; // revert on error
+        updateLikeButtonUI();
+        alert("Error updating favorites. Try again later.");
+      }
+    });
+  }
+});
       </script>
 </body>
 
