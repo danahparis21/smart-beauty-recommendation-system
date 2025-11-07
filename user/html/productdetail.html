@@ -10,6 +10,7 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
     rel="stylesheet" />
   <style>
+    /* Base Styles */
     * {
       margin: 0;
       padding: 0;
@@ -200,6 +201,41 @@
       right: 15px;
     }
 
+    /* Notification Box Styles */
+    .notification-box {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+      z-index: 9999;
+      font-weight: 500;
+      transform: translateX(400px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      max-width: 300px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .notification-box.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 480px) {
+      .notification-box {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        top: 70px;
+      }
+    }
+
     /* Product Info Section */
     .product-info-section {
       flex: 1;
@@ -256,6 +292,8 @@
       cursor: pointer;
       transition: all 0.3s ease;
       padding: 5px;
+      pointer-events: auto !important;
+      position: relative !important;
     }
 
     .variation-option.active {
@@ -266,26 +304,6 @@
       transform: scale(1.02);
     }
 
-    /* TEMPORARY: Ensure variants are clickable */
-    .variation-option {
-      pointer-events: auto !important;
-      cursor: pointer !important;
-      position: relative !important;
-    }
-
-    .variations-container {
-      pointer-events: auto !important;
-      position: relative !important
-    }
-
-    .variations-container * {
-      pointer-events: auto !important;
-    }
-
-    .color-circle {
-      pointer-events: auto !important;
-    }
-
     .color-circle {
       width: 40px;
       height: 40px;
@@ -293,6 +311,7 @@
       border: 2px solid #e0e0e0;
       transition: all 0.3s ease;
       margin-bottom: 8px;
+      pointer-events: auto !important;
     }
 
     .variation-option.active .color-circle {
@@ -384,6 +403,16 @@
       border-bottom: 1px solid var(--light-gray);
     }
 
+    .subsection-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: var(--dark-gray);
+      font-family: "Cormorant Garamond", serif;
+    }
+
+
     .specs-list {
       list-style: none;
     }
@@ -404,7 +433,8 @@
       color: var(--dark-gray);
     }
 
-    .product-description {
+    .product-description,
+    .product-ingredient {
       color: var(--dark-gray);
       line-height: 1.6;
       margin-top: 10px;
@@ -416,6 +446,8 @@
       border-radius: 15px;
       padding: 25px;
       box-shadow: var(--card-shadow);
+      margin-top: 30px;
+      /* Added margin for spacing on desktop */
     }
 
     .rating-summary {
@@ -497,6 +529,10 @@
       align-items: center;
       justify-content: center;
       color: var(--text-gray);
+    }
+
+    .rating-image i {
+      font-size: 24px;
     }
 
     .rating-text {
@@ -681,6 +717,8 @@
 
       .ratings-section {
         padding: 20px;
+        margin-top: 20px;
+        /* Adjust margin for mobile */
       }
 
       /* Action buttons stay horizontal on mobile */
@@ -696,11 +734,11 @@
         font-size: 14px;
       }
 
+      /* Hide text on very small screens, show icon only */
       .like-button span,
       .order-button span,
       .cart-button span {
         display: none;
-        /* Hide text on very small screens */
       }
 
       .like-button i,
@@ -716,19 +754,19 @@
         height: 55px;
       }
 
-      /* Move ratings section to be the last element on mobile */
-      .product-image-section .ratings-section {
+      /* Ratings section display toggle */
+      .product-image-section>.ratings-section {
         display: none;
-        /* Hide from inside product-image-section on mobile */
+        /* Hide desktop ratings section on mobile */
       }
 
       .ratings-section.mobile-placement {
         display: block;
-        /* Show the ratings section at the bottom */
+        /* Show mobile-specific ratings section */
       }
     }
 
-    /* Hide bottom reviews section on desktop */
+    /* Hide mobile reviews section on desktop */
     @media (min-width: 768px) {
       .ratings-section.mobile-placement {
         display: none;
@@ -806,8 +844,9 @@
           </button>
         </div>
 
-        <!-- Ratings Section - Hidden on mobile -->
-        <div class="ratings-section">
+        <!-- Ratings Section - Desktop Placement -->
+        <!-- This section will be hidden on mobile by CSS -->
+        <div class="ratings-section desktop-placement">
           <h2 class="section-title">Customer Reviews</h2>
 
           <div class="rating-summary">
@@ -852,7 +891,7 @@
           </div>
 
           <div class="view-all-reviews">
-            <button class="view-all-btn" id="viewAllReviewsBtn">
+            <button class="view-all-btn" id="viewAllReviewsBtnDesktop">
               <i class="fas fa-list"></i> View All Reviews
             </button>
           </div>
@@ -926,7 +965,8 @@
         </div>
 
 
-        <!-- Ratings Section for Mobile Placement - Hidden on Desktop -->
+        <!-- Ratings Section for Mobile Placement -->
+        <!-- This section will be hidden on desktop by CSS -->
         <div class="ratings-section mobile-placement">
           <h2 class="section-title">Customer Reviews</h2>
 
@@ -978,249 +1018,273 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- All Reviews Modal -->
-      <div class="modal-overlay" id="reviewsModal">
-        <div class="modal">
-          <div class="modal-header">
-            <h3 class="modal-title">All Customer Reviews</h3>
-            <button class="close-modal" id="closeModal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <div class="all-reviews" id="allReviews">
-              <!-- All reviews will be dynamically added here -->
-            </div>
-          </div>
+  <!-- All Reviews Modal -->
+  <div class="modal-overlay" id="reviewsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">All Customer Reviews</h3>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="all-reviews" id="allReviews">
+          <!-- All reviews will be dynamically added here -->
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Floating Cart -->
-      <div class="floating-cart" onclick="window.location.href='cart.html'">
-        <i class="fas fa-shopping-cart"></i>
-        <div class="cart-count">3</div>
-      </div>
+  <!-- Notification Box -->
+  <div id="notification-box" class="notification-box"></div>
 
-      <script>
-        // Remove the sample product data and replace with dynamic data
-        let product = null;
-        let reviews = [];
-        let isProductLiked = false;
+  <!-- Floating Cart -->
+  <div class="floating-cart" onclick="window.location.href='cart.html'">
+    <i class="fas fa-shopping-cart"></i>
+    <div class="cart-count">0</div>
+    <!-- Initial count set to 0, will be updated by JS -->
+  </div>
 
-        let productData = null;
-        // Global variables for image gallery
-        let currentImageIndex = 0;
-        let currentImageGallery = [];
-        // DOM Content Loaded
-        // DOM Content Loaded - Add more detailed logging
-        document.addEventListener("DOMContentLoaded", function () {
-          console.log("=== DOM CONTENT LOADED ===");
-          console.log("Window location:", window.location.href);
+  <script>
+    // Remove the sample product data and replace with dynamic data
+    let product = null; // This variable seems unused, `productData` is the main one now.
+    let reviews = []; // This needs to be populated from the fetched data
+    let isProductLiked = false;
 
-          const productId = getProductIdFromURL();
-          console.log("Product ID from URL:", productId);
+    let productData = null;
+    // Global variables for image gallery
+    let currentImageIndex = 0;
+    let currentImageGallery = [];
+
+    // DOM Content Loaded - Add more detailed logging
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("=== DOM CONTENT LOADED ===");
+      console.log("Window location:", window.location.href);
+
+      const productId = getProductIdFromURL();
+      console.log("Product ID from URL:", productId);
 
 
-          if (productId) {
-            console.log("Starting fetch for product details...");
-            fetchProductDetails(productId);
+      if (productId) {
+        console.log("Starting fetch for product details...");
+        fetchProductDetails(productId);
+      } else {
+        console.error("❌ No product ID found in URL");
+        console.log("Full URL search:", window.location.search);
+        showErrorState("Product not found. Please select a product from the home page.");
+      }
+
+      // Initialize event listeners for modal and cart count
+      setupModal();
+      updateCartCount(); // Get initial cart count
+    });
+
+    // Function to extract product ID from URL parameters
+    function getProductIdFromURL() {
+      console.log("=== EXTRACTING PRODUCT ID FROM URL ===");
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = urlParams.get("productId");
+
+      console.log("URL Search:", window.location.search);
+      console.log("Extracted productId:", productId);
+
+      return productId;
+    }
+
+    const productImage = document.querySelector('.product-image');
+    if (productImage) {
+      productImage.addEventListener('error', function () {
+        console.error('Failed to load image:', this.src);
+        // Fall back to placeholder
+        this.style.display = 'none';
+        const placeholder = document.querySelector('.image-placeholder');
+        if (placeholder) {
+          placeholder.style.display = 'flex';
+        }
+      });
+
+      productImage.addEventListener('load', function () {
+        console.log('Image loaded successfully:', this.src);
+      });
+    }
+
+    // Fetch real product details from PHP
+    async function fetchProductDetails(productId) {
+      console.log("=== FETCHING PRODUCT DETAILS ===");
+      console.log("Product ID:", productId);
+
+      const phpUrl = `../php/get_product_details.php?productId=${productId}`;
+      console.log("PHP URL:", phpUrl);
+
+      try {
+        console.log("🔄 Making fetch request...");
+        const response = await fetch(phpUrl);
+
+        console.log("✅ Fetch completed");
+        console.log("Response status:", response.status);
+        console.log("Response OK:", response.ok);
+
+        if (!response.ok) {
+          console.error("❌ Fetch failed with status:", response.status);
+          showErrorState(`Failed to load product details: Server responded with status ${response.status}`);
+          return;
+        }
+
+        const text = await response.text();
+        console.log("Raw response text:", text);
+
+        // Try to parse JSON
+        let data;
+        try {
+          data = JSON.parse(text);
+          console.log("✅ JSON parsed successfully");
+        } catch (parseError) {
+          console.error("❌ JSON parse error:", parseError);
+          console.log("Response text that failed to parse:", text);
+          showErrorState("Invalid product data received from server.");
+          return;
+        }
+
+        console.log("Parsed data:", data);
+
+        if (data.success) {
+          productData = data;
+          console.log("✅ Product data stored successfully");
+
+          // DEBUG: Check why variants are empty
+          console.log("=== DEBUG VARIANT DATA ===");
+          console.log("Parent Product ID:", data.parentProduct?.id);
+          console.log("Variants count:", data.variants?.length);
+          console.log("Variants data:", data.variants);
+          console.log("Selected variant:", data.selectedVariant);
+          console.log("Reviews data:", data.reviews); // Log reviews
+
+          // Store reviews globally
+          reviews = data.reviews || [];
+
+          setupProductPage();
+        } else {
+          console.error("❌ API returned success: false", data.error);
+          showErrorState(data.error || "Could not retrieve product details.");
+        }
+      } catch (error) {
+        console.error("❌ Fetch error:", error);
+        console.error("Error name:", error.name);
+        console.error("Error message:", error.message);
+        showErrorState("Network error: Could not connect to the server.");
+      }
+    }
+
+    function setupProductPage() {
+      console.log("Setting up product page with data:", productData);
+
+      if (!productData) {
+        console.error("No productData available!");
+        showErrorState("No product data available!");
+        return;
+      }
+
+      const {
+        parentProduct,
+        variants,
+        selectedVariant,
+        reviews: fetchedReviews
+      } = productData; // Destructure fetched reviews here
+
+      console.log("Parent product:", parentProduct);
+      console.log("Selected variant:", selectedVariant);
+      console.log("Variants:", variants);
+      console.log("Fetched reviews:", fetchedReviews); // Confirm fetched reviews
+
+      // Check if we have the essential data
+      if (!parentProduct || !selectedVariant) {
+        console.error("Missing essential product data");
+        showErrorState("Missing product information!");
+        return;
+      }
+
+      // Safe element selection and updates
+      try {
+        // Update product title
+        const productTitle = document.querySelector(".product-title");
+        if (productTitle) {
+          const parentName = parentProduct.name ? parentProduct.name.replace("Parent REcord: ", "") : 'Product';
+          const variantName = selectedVariant.name || "";
+          productTitle.textContent = `${parentName} - ${variantName}`;
+          console.log("Updated product title:", productTitle.textContent);
+        }
+
+        // Update product price
+        const priceElement = document.querySelector(".price");
+        if (priceElement) {
+          if (selectedVariant.price && parseFloat(selectedVariant.price) > 0) {
+            priceElement.textContent = `₱${parseFloat(selectedVariant.price).toFixed(2)}`;
+            console.log("Updated price to:", priceElement.textContent);
           } else {
-            console.error("❌ No product ID found in URL");
-            console.log("Full URL search:", window.location.search);
+            priceElement.textContent = "Price not available";
           }
-        });
-        // Function to extract product ID from URL parameters
-        function getProductIdFromURL() {
-          console.log("=== EXTRACTING PRODUCT ID FROM URL ===");
-
-          const urlParams = new URLSearchParams(window.location.search);
-          const productId = urlParams.get("productId");
-
-          console.log("URL Search:", window.location.search);
-          console.log("Extracted productId:", productId);
-
-          return productId;
-        }
-        const productImage = document.querySelector('.product-image');
-        if (productImage) {
-          productImage.addEventListener('error', function () {
-            console.error('Failed to load image:', this.src);
-            // Fall back to placeholder
-            this.style.display = 'none';
-            const placeholder = document.querySelector('.image-placeholder');
-            if (placeholder) {
-              placeholder.style.display = 'flex';
-            }
-          });
-
-          productImage.addEventListener('load', function () {
-            console.log('Image loaded successfully:', this.src);
-          });
+        } else {
+          console.error("Price element not found - looking for .price class");
         }
 
-        // Fetch real product details from PHP
-        async function fetchProductDetails(productId) {
-          console.log("=== FETCHING PRODUCT DETAILS ===");
-          console.log("Product ID:", productId);
 
-          const phpUrl = `../php/get_product_details.php?productId=${productId}`;
-          console.log("PHP URL:", phpUrl);
-
-          try {
-            console.log("🔄 Making fetch request...");
-            const response = await fetch(phpUrl);
-
-            console.log("✅ Fetch completed");
-            console.log("Response status:", response.status);
-            console.log("Response OK:", response.ok);
-
-            if (!response.ok) {
-              console.error("❌ Fetch failed with status:", response.status);
-              return;
-            }
-
-            const text = await response.text();
-            console.log("Raw response text:", text);
-
-            // Try to parse JSON
-            let data;
-            try {
-              data = JSON.parse(text);
-              console.log("✅ JSON parsed successfully");
-            } catch (parseError) {
-              console.error("❌ JSON parse error:", parseError);
-              console.log("Response text that failed to parse:", text);
-              return;
-            }
-
-            console.log("Parsed data:", data);
-
-            if (data.success) {
-              productData = data;
-              if (data.success) {
-                productData = data;
-                console.log("✅ Product data stored successfully");
-
-                // DEBUG: Check why variants are empty
-                console.log("=== DEBUG VARIANT DATA ===");
-                console.log("Parent Product ID:", data.parentProduct?.id);
-                console.log("Variants count:", data.variants?.length);
-                console.log("Variants data:", data.variants);
-                console.log("Selected variant:", data.selectedVariant);
-
-                setupProductPage();
-              }
-            } else {
-              console.error("❌ API returned success: false", data.error);
-            }
-          } catch (error) {
-            console.error("❌ Fetch error:", error);
-            console.error("Error name:", error.name);
-            console.error("Error message:", error.message);
+        // Update stock status
+        const stockElement = document.querySelector(".stock-status");
+        if (stockElement) {
+          if (selectedVariant.stock > 0) {
+            stockElement.textContent = `In Stock (${selectedVariant.stock} available)`;
+            stockElement.style.color = "green";
+          } else {
+            stockElement.textContent = "Out of Stock";
+            stockElement.style.color = "red";
           }
         }
 
-        function setupProductPage() {
-          console.log("Setting up product page with data:", productData);
+        // Update description
+        const descElement = document.querySelector(".product-description");
+        if (descElement) {
+          descElement.textContent = selectedVariant.description || "No description available";
+          console.log("Updated description");
+        }
 
-          if (!productData) {
-            console.error("No productData available!");
-            showErrorState("No product data available");
-            return;
-          }
+        // Update ingredients
+        const ingredientsElement = document.querySelector(".product-ingredient");
+        if (ingredientsElement) {
+          ingredientsElement.textContent = selectedVariant.ingredients || "No ingredients listed";
+          console.log("Updated ingredients");
+        }
 
-          const { parentProduct, variants, selectedVariant, reviews } = productData;
+        // UPDATE PRODUCT ATTRIBUTES
+        updateProductAttributes(selectedVariant.attributes, parentProduct);
 
-          console.log("Parent product:", parentProduct);
-          console.log("Selected variant:", selectedVariant);
-          console.log("Variants:", variants);
+        // ===== INITIALIZE IMAGE GALLERY =====
+        console.log("=== SETTING UP IMAGE GALLERY ===");
+        initializeImageGallery(selectedVariant, parentProduct);
 
-          // Check if we have the essential data
-          if (!parentProduct || !selectedVariant) {
-            console.error("Missing essential product data");
-            showErrorState("Missing product information");
-            return;
-          }
+        // Set up navigation buttons
+        const prevButton = document.querySelector(".prev-button");
+        const nextButton = document.querySelector(".next-button");
 
-          // Safe element selection and updates
-          try {
-            // Update product title 
-            const productTitle = document.querySelector(".product-title");
-            if (productTitle) {
-              const parentName = parentProduct.name.replace("Parent REcord: ", "");
-              const variantName = selectedVariant.name || "";
-              productTitle.textContent = `${parentName} - ${variantName}`;
-              console.log("Updated product title:", productTitle.textContent);
-            }
+        if (prevButton && nextButton) {
+          prevButton.addEventListener("click", showPreviousImage);
+          nextButton.addEventListener("click", showNextImage);
+          console.log("Navigation buttons set up");
+        }
 
-            // Update product price
-            const priceElement = document.querySelector(".price");
-            if (priceElement) {
-              if (selectedVariant.price && selectedVariant.price > 0) {
-                priceElement.textContent = `₱${parseFloat(selectedVariant.price).toFixed(2)}`;
-                console.log("Updated price to:", priceElement.textContent);
-              } else {
-                priceElement.textContent = "Price not available";
-              }
-            } else {
-              console.error("Price element not found - looking for .price class");
-            }
+        // ===== DEBUG AND SET UP VARIANTS =====
+        const variationsContainer = document.querySelector(".variations-container");
+        console.log("=== DEBUG VARIANT DISPLAY ===");
+        console.log("Variations container exists:", !!variationsContainer);
+        console.log("Variants array:", variants);
+        console.log("Variants length:", variants?.length);
+        console.log("Selected variant ID:", selectedVariant.id);
 
-
-            // Update stock status
-            const stockElement = document.querySelector(".stock-status");
-            if (stockElement) {
-              if (selectedVariant.stock > 0) {
-                stockElement.textContent = `In Stock (${selectedVariant.stock} available)`;
-                stockElement.style.color = "green";
-              } else {
-                stockElement.textContent = "Out of Stock";
-                stockElement.style.color = "red";
-              }
-            }
-
-            // Update description
-            const descElement = document.querySelector(".product-description");
-            if (descElement) {
-              descElement.textContent = selectedVariant.description || "No description available";
-              console.log("Updated description");
-            }
-
-            // Update ingredients
-            const ingredientsElement = document.querySelector(".product-ingredient");
-            if (ingredientsElement) {
-              ingredientsElement.textContent = selectedVariant.ingredients || "No ingredients listed";
-              console.log("Updated ingredients");
-            }
-
-            // UPDATE PRODUCT ATTRIBUTES
-            updateProductAttributes(selectedVariant.attributes, parentProduct);
-
-            // ===== INITIALIZE IMAGE GALLERY =====
-            console.log("=== SETTING UP IMAGE GALLERY ===");
-            initializeImageGallery(selectedVariant, parentProduct);
-
-            // Set up navigation buttons
-            const prevButton = document.querySelector(".prev-button");
-            const nextButton = document.querySelector(".next-button");
-
-            if (prevButton && nextButton) {
-              prevButton.addEventListener("click", showPreviousImage);
-              nextButton.addEventListener("click", showNextImage);
-              console.log("Navigation buttons set up");
-            }
-
-            // ===== DEBUG AND SET UP VARIANTS =====
-            const variationsContainer = document.querySelector(".variations-container");
-            console.log("=== DEBUG VARIANT DISPLAY ===");
-            console.log("Variations container exists:", !!variationsContainer);
-            console.log("Variants array:", variants);
-            console.log("Variants length:", variants?.length);
-            console.log("Selected variant ID:", selectedVariant.id);
-
-            if (variationsContainer) {
-              if (variants && variants.length > 0) {
-                console.log("Loading variants:", variants.length);
-                variationsContainer.innerHTML = variants.map((variant, index) => `
+        if (variationsContainer) {
+          if (variants && variants.length > 0) {
+            console.log("Loading variants:", variants.length);
+            variationsContainer.innerHTML = variants.map((variant) => `
           <div class="variation-option ${variant.id === selectedVariant.id ? "active" : ""}"
                data-variant-id="${variant.id}"
                data-variant-price="${variant.price || 0}"
@@ -1234,669 +1298,766 @@
           </div>
         `).join("");
 
-                // Set up variation selection with better debugging
-                const variationOptions = document.querySelectorAll(".variation-option");
-                console.log("Variation options found:", variationOptions.length);
+            // Set up variation selection with better debugging
+            const variationOptions = document.querySelectorAll(".variation-option");
+            console.log("Variation options found:", variationOptions.length);
 
-                variationOptions.forEach((option, index) => {
-                  console.log(`Setting up click event for variant ${index + 1}:`, option.querySelector('span').textContent);
+            variationOptions.forEach((option, index) => {
+              console.log(`Setting up click event for variant ${index + 1}:`, option.querySelector('span').textContent);
 
-                  option.addEventListener("click", function () {
-                    console.log("=== VARIANT CLICKED ===");
-                    console.log("Clicked variant:", this.querySelector('span').textContent);
-                    console.log("Variant ID:", this.getAttribute('data-variant-id'));
+              option.addEventListener("click", function () {
+                console.log("=== VARIANT CLICKED ===");
+                console.log("Clicked variant:", this.querySelector('span').textContent);
+                console.log("Variant ID:", this.getAttribute('data-variant-id'));
 
-                    variationOptions.forEach((opt) => opt.classList.remove("active"));
-                    this.classList.add("active");
+                variationOptions.forEach((opt) => opt.classList.remove("active"));
+                this.classList.add("active");
 
-                    // Call update function
-                    updateProductDetails(this);
-                  });
-                });
-
-                console.log("✅ Variants loaded successfully");
-              } else {
-                console.log("No variants found in data");
-                variationsContainer.innerHTML = "<p>No shades available</p>";
-              }
-            } else {
-              console.error("Variations container not found - looking for .variations-container");
-            }
-
-            // Check if product is liked
-if (selectedVariant?.id) {
-  checkIfProductIsLiked(selectedVariant.id);
-}
-
-console.log("✅ Product page setup completed successfully");
-
-            console.log("✅ Product page setup completed successfully");
-
-          } catch (error) {
-            console.error("Error during page setup:", error);
-            showErrorState("Error displaying product: " + error.message);
-          }
-        }
-
-
-        // Make sure this function exists
-        function showErrorState(message) {
-          const titleElement = document.querySelector(".product-title");
-          const priceElement = document.querySelector(".price");
-
-          if (titleElement) titleElement.textContent = message || "Error Loading Product";
-          if (priceElement) priceElement.textContent = "Please try again later";
-
-          console.error("Error state:", message);
-        }
-
-        // Function to initialize image gallery
-        function initializeImageGallery(selectedVariant, parentProduct) {
-          console.log("=== INITIALIZING IMAGE GALLERY ===");
-          console.log("Selected variant:", selectedVariant);
-          console.log("Parent product:", parentProduct);
-
-          // Reset gallery
-          currentImageGallery = [];
-          currentImageIndex = 0;
-
-          // 1. Add variant image if available
-          if (selectedVariant.image && selectedVariant.image.trim() !== "") {
-            currentImageGallery.push({
-              src: selectedVariant.image,
-              type: 'VARIANT'
+                // Call update function
+                updateProductDetails(this);
+              });
             });
-            console.log("Added variant image:", selectedVariant.image);
-          }
 
-          // 2. Add parent preview image if available
-          if (parentProduct.previewImage && parentProduct.previewImage.trim() !== "") {
-            currentImageGallery.push({
-              src: parentProduct.previewImage,
-              type: 'PREVIEW'
-            });
-            console.log("Added preview image:", parentProduct.previewImage);
-          }
-
-          // 3. Add parent gallery images if available
-          if (parentProduct.galleryImages && parentProduct.galleryImages.length > 0) {
-            parentProduct.galleryImages.forEach(galleryImage => {
-              if (galleryImage && galleryImage.trim() !== "") {
-                currentImageGallery.push({
-                  src: galleryImage,
-                  type: 'GALLERY'
-                });
-                console.log("Added gallery image:", galleryImage);
-              }
-            });
-          }
-
-          console.log("Final image gallery:", currentImageGallery);
-
-          // Display the first image
-          displayCurrentImage();
-        }
-
-        // Function to display current image
-        function displayCurrentImage() {
-          const productImage = document.querySelector(".product-image");
-          const imagePlaceholder = document.querySelector(".image-placeholder");
-          const prevButton = document.querySelector(".prev-button");
-          const nextButton = document.querySelector(".next-button");
-
-          console.log("Displaying image - Gallery length:", currentImageGallery.length);
-          console.log("Current image index:", currentImageIndex);
-
-          if (currentImageGallery.length > 0 && currentImageGallery[currentImageIndex]) {
-            const currentImage = currentImageGallery[currentImageIndex];
-            console.log("Loading image:", currentImage.src);
-
-            // Show actual image, hide placeholder
-            productImage.src = currentImage.src;
-            productImage.alt = `Product Image - ${currentImage.type}`;
-            productImage.style.display = 'block';
-
-            if (imagePlaceholder) {
-              imagePlaceholder.style.display = 'none';
-            }
-
-            // Show navigation buttons if there are multiple images
-            if (prevButton && nextButton) {
-              prevButton.style.display = currentImageIndex > 0 ? 'flex' : 'none';
-              nextButton.style.display = currentImageIndex < currentImageGallery.length - 1 ? 'flex' : 'none';
-            }
-
+            console.log("✅ Variants loaded successfully");
           } else {
-            // No images available, show placeholder
-            console.log("No images available, showing placeholder");
-            if (productImage) {
-              productImage.style.display = 'none';
-            }
-            if (imagePlaceholder) {
-              imagePlaceholder.style.display = 'flex';
-            }
-
-            // Hide navigation buttons
-            if (prevButton && nextButton) {
-              prevButton.style.display = 'none';
-              nextButton.style.display = 'none';
-            }
+            console.log("No variants found in data");
+            variationsContainer.innerHTML = "<p>No shades available</p>";
           }
+        } else {
+          console.error("Variations container not found - looking for .variations-container");
         }
 
-        // Navigation functions
-        function showNextImage() {
-          if (currentImageIndex < currentImageGallery.length - 1) {
-            currentImageIndex++;
-            displayCurrentImage();
-          }
+        // Check if product is liked
+        if (selectedVariant?.id) {
+          checkIfProductIsLiked(selectedVariant.id);
         }
 
-        function showPreviousImage() {
-          if (currentImageIndex > 0) {
-            currentImageIndex--;
-            displayCurrentImage();
-          }
-        }
-
-        // UPDATED FUNCTION: Update Product Attributes in Specifications Section
-        function updateProductAttributes(attributes, parentProduct) {
-          console.log("Updating product attributes:", attributes);
-          console.log("Parent product in attributes function:", parentProduct);
-
-          // Update basic product info
-          const categoryElement = document.getElementById('spec-category');
-          if (categoryElement && parentProduct?.category) {
-            categoryElement.textContent = parentProduct.category;
-          }
-
-          // Set default values
-          const defaultSpecs = {
-            'spec-type': parentProduct?.category || '-', // Use category as type fallback
-            'spec-finish': '-',
-            'spec-skin-type': '-',
-            'spec-skin-tone': '-',
-            'spec-undertone': '-',
-            'spec-concerns': 'Not Defined'
-          };
-
-          // Apply defaults first
-          Object.entries(defaultSpecs).forEach(([id, value]) => {
-            const element = document.getElementById(id);
-            if (element) {
-              element.textContent = value;
-            }
-          });
-
-          if (!attributes) {
-            console.log("No attributes available");
-            return;
-          }
-
-          // Process finish attributes - FIXED: Handle both numeric and string values
-          const finishTypes = [];
-          console.log("Debug finish attributes:", {
-            Matte: attributes.Matte,
-            Dewy: attributes.Dewy,
-            MatteType: typeof attributes.Matte,
-            DewyType: typeof attributes.Dewy
-          });
-
-          // Use loose comparison (==) to handle both 1 and '1'
-          if (attributes.Matte == 1) finishTypes.push('Matte');
-          if (attributes.Dewy == 1) finishTypes.push('Dewy');
-
-          if (finishTypes.length > 0) {
-            const finishElement = document.getElementById('spec-finish');
-            if (finishElement) {
-              finishElement.textContent = finishTypes.join(', ');
-              console.log("Updated finish to:", finishTypes.join(', '));
-            }
-          } else {
-            const finishElement = document.getElementById('spec-finish');
-            if (finishElement) {
-              finishElement.textContent = 'Natural';
-            }
-          }
-
-          // Process skin concerns - FIXED: Handle both numeric and string values
-          const concerns = [];
-          if (attributes.Acne == 1) concerns.push('Acne');           // Use == for loose comparison
-          if (attributes.Dryness == 1) concerns.push('Dryness');     // Use == for loose comparison
-          if (attributes.DarkSpots == 1) concerns.push('Dark Spots'); // Use == for loose comparison
-
-          const concernsElement = document.getElementById('spec-concerns');
-          if (concernsElement) {
-            concernsElement.textContent = concerns.length > 0 ? concerns.join(', ') : 'Not Defined';
-          }
-
-          // Process basic skin attributes
-          const skinAttributes = {
-            'SkinType': 'spec-skin-type',
-            'SkinTone': 'spec-skin-tone',
-            'Undertone': 'spec-undertone'
-          };
-
-          Object.entries(skinAttributes).forEach(([attrKey, elementId]) => {
-            if (attributes[attrKey]) {
-              const element = document.getElementById(elementId);
-              if (element) {
-                element.textContent = attributes[attrKey];
-              }
-            }
-          });
-
-          console.log("✅ Product specifications updated");
-        }
+        // Update reviews section with fetched reviews
+        updateReviewsDisplay();
 
 
-        function showErrorState(message) {
-          const titleElement = document.querySelector(".product-title");
-          const priceElement = document.querySelector(".product-price");
+        console.log("✅ Product page setup completed successfully");
 
-          if (titleElement)
-            titleElement.textContent = message || "Error Loading Product";
-          if (priceElement) priceElement.textContent = "Please try again later";
-        }
-
-        // Function to update product details when a variant is selected
-        function updateProductDetails(selectedOption) {
-          console.log("=== UPDATING PRODUCT DETAILS FOR VARIANT ===");
-
-          try {
-            if (!selectedOption) {
-              console.error("No selected option provided");
-              return;
-            }
-            console.log("Selected option:", selectedOption);
-            console.log("Selected option class:", selectedOption.className);
-
-            // Get data from the clicked variant option
-            const variantId = selectedOption.getAttribute('data-variant-id');
-            const variantPrice = selectedOption.getAttribute('data-variant-price');
-            const variantImage = selectedOption.getAttribute('data-variant-image');
-            const variantDescription = selectedOption.getAttribute('data-variant-description');
-            const variantIngredients = selectedOption.getAttribute('data-variant-ingredients');
-            const variantAttributes = JSON.parse(selectedOption.getAttribute('data-variant-attributes') || '{}');
-
-            console.log("Selected variant data:", {
-              variantId,
-              variantPrice,
-              variantImage,
-              variantDescription,
-              variantIngredients,
-              variantAttributes
-            });
-
-            // Update price
-            const priceElement = document.querySelector(".price");
-            if (priceElement && variantPrice) {
-              priceElement.textContent = `₱${parseFloat(variantPrice).toFixed(2)}`;
-              console.log("Updated price to:", priceElement.textContent);
-            }
-
-            // Update images when variant changes
-            if (productData?.parentProduct) {
-              console.log("Updating image gallery for new variant...");
-              initializeImageGallery(
-                {
-                  image: variantImage,
-                  id: variantId,
-                  name: selectedOption.querySelector('span').textContent
-                },
-                productData.parentProduct
-              );
-            }
-
-            // Update description
-            const descElement = document.querySelector(".product-description");
-            if (descElement) {
-              descElement.textContent = variantDescription || "No description available";
-              console.log("Updated description");
-            }
-
-            // Update ingredients
-            const ingredientsElement = document.querySelector(".product-ingredient");
-            if (ingredientsElement) {
-              ingredientsElement.textContent = variantIngredients || "No ingredients listed";
-              console.log("Updated ingredients");
-            }
-
-            // Update product title to show selected variant name
-            const productTitle = document.querySelector(".product-title");
-            if (productTitle && productData?.parentProduct) {
-              const variantName = selectedOption.querySelector('span').textContent;
-              productTitle.textContent = `${productData.parentProduct.name} - ${variantName}`;
-              console.log("Updated product title:", productTitle.textContent);
-            }
-
-            // Update stock status
-            const variantStock = selectedOption.getAttribute('data-variant-stock');
-            const stockElement = document.querySelector(".stock-status");
-            if (stockElement && variantStock !== null) {
-              const stock = parseInt(variantStock);
-              if (stock > 0) {
-                stockElement.textContent = `In Stock (${stock} available)`;
-                stockElement.style.color = "green";
-              } else {
-                stockElement.textContent = "Out of Stock";
-                stockElement.style.color = "red";
-              }
-              console.log("Updated stock to:", stockElement.textContent);
-            }
-
-            // Update product attributes
-            updateProductAttributes(variantAttributes, productData?.parentProduct);
-
-            // Update the selected variant in global productData
-            if (productData && productData.variants) {
-              const newSelectedVariant = productData.variants.find(v => v.id === variantId);
-              if (newSelectedVariant) {
-                productData.selectedVariant = newSelectedVariant;
-                console.log("Updated selected variant in productData:", newSelectedVariant);
-              }
-            }
-
-            
-
-          } catch (error) {
-            console.error("❌ Error in updateProductDetails:", error);
-          }
-        }
-        // Keep this function separate - it's different from updateProductDetails
-        function updateLikeButtonUI() {
-  const likeButton = document.querySelector(".like-button");
-  const likeIcon = likeButton.querySelector("i");
-
-  if (isProductLiked) {
-    likeButton.classList.add("active");
-    likeIcon.className = "fas fa-heart";
-    likeButton.innerHTML = '<i class="fas fa-heart"></i> <span>Liked</span>';
-  } else {
-    likeButton.classList.remove("active");
-    likeIcon.className = "far fa-heart";
-    likeButton.innerHTML = '<i class="far fa-heart"></i> <span>Like</span>';
-  }
-}
-
-// Check if product is in user's favorites
-async function checkIfProductIsLiked(productId) {
-  try {
-    const response = await fetch(`../php/favorites-handler.php?action=list`);
-    const result = await response.json();
-
-    if (result.success && result.products) {
-      // Check if any product or variant matches
-      const isLiked = result.products.some(product => {
-        if (product.id === productId) return true;
-        if (product.variants) {
-          return product.variants.some(v => v.id === productId);
-        }
-        return false;
-      });
-      
-      isProductLiked = isLiked;
-      updateLikeButtonUI();
-      console.log(`Product ${productId} liked status:`, isLiked);
+      } catch (error) {
+        console.error("Error during page setup:", error);
+        showErrorState("Error displaying product: " + error.message);
+      }
     }
-  } catch (err) {
-    console.error("Error checking favorite status:", err);
-  }
-}
-        //   // Function to update reviews display
-        //   function updateReviewsDisplay() {
-        //     const reviewsContainer = document.querySelector(".reviews-list");
-        //     const averageRating =
-        //       reviews.reduce((sum, review) => sum + review.rating, 0) /
-        //       reviews.length;
 
-        //     // Update average rating
-        //     document.querySelector(".average-rating").textContent =
-        //       averageRating.toFixed(1);
 
-        //     // Display top reviews
-        //     const topReviews = reviews.slice(0, 3); // Show first 3 reviews
-        //     reviewsContainer.innerHTML = topReviews
-        //       .map(
-        //         (review) => `
-        //                 <div class="review-item">
-        //                     <div class="review-header">
-        //                         <span class="reviewer-name">${
-        //                           review.userName
-        //                         }</span>
-        //                         <span class="review-rating">${"★".repeat(
-        //                           review.rating
-        //                         )}${"☆".repeat(5 - review.rating)}</span>
-        //                     </div>
-        //                     <p class="review-text">${review.text}</p>
-        //                     <span class="review-date">${review.date}</span>
-        //                 </div>
-        //             `
-        //       )
-        //       .join("");
-        //   }
+    function showErrorState(message) {
+      const titleElement = document.querySelector(".product-title");
+      const priceElement = document.querySelector(".price");
+      const descriptionElement = document.querySelector(".product-description");
+      const variantsContainer = document.querySelector(".variations-container");
+      const actionButtons = document.querySelector(".action-buttons");
 
-        // Setup modal functionality (keep your existing code)
-        function setupModal() {
-          const viewAllBtn = document.getElementById("viewAllReviewsBtn");
-          const viewAllBtnMobile = document.getElementById(
-            "viewAllReviewsBtnMobile"
-          );
-          const modal = document.getElementById("reviewsModal");
-          const closeModal = document.getElementById("closeModal");
+      if (titleElement) titleElement.textContent = message || "Error Loading Product";
+      if (priceElement) priceElement.textContent = "N/A";
+      if (descriptionElement) descriptionElement.textContent = "Could not load product information.";
+      if (variantsContainer) variantsContainer.innerHTML = "<p>No variants could be loaded.</p>";
+      if (actionButtons) actionButtons.style.display = 'none'; // Hide buttons on error
 
-          viewAllBtn.addEventListener("click", function () {
-            openAllReviewsModal();
+      console.error("Error state:", message);
+    }
+
+    // Function to initialize image gallery
+    function initializeImageGallery(selectedVariant, parentProduct) {
+      console.log("=== INITIALIZING IMAGE GALLERY ===");
+      console.log("Selected variant:", selectedVariant);
+      console.log("Parent product:", parentProduct);
+
+      // Reset gallery
+      currentImageGallery = [];
+      currentImageIndex = 0;
+
+      // 1. Add variant image if available
+      if (selectedVariant.image && selectedVariant.image.trim() !== "") {
+        currentImageGallery.push({
+          src: selectedVariant.image,
+          type: 'VARIANT'
+        });
+        console.log("Added variant image:", selectedVariant.image);
+      }
+
+      // 2. Add parent preview image if available
+      if (parentProduct.previewImage && parentProduct.previewImage.trim() !== "") {
+        currentImageGallery.push({
+          src: parentProduct.previewImage,
+          type: 'PREVIEW'
+        });
+        console.log("Added preview image:", parentProduct.previewImage);
+      }
+
+      // 3. Add parent gallery images if available
+      if (parentProduct.galleryImages && parentProduct.galleryImages.length > 0) {
+        // Ensure galleryImages is an array and filter out empty strings
+        const cleanedGalleryImages = Array.isArray(parentProduct.galleryImages) ?
+          parentProduct.galleryImages.filter(img => img && img.trim() !== "") : [];
+
+        cleanedGalleryImages.forEach(galleryImage => {
+          currentImageGallery.push({
+            src: galleryImage,
+            type: 'GALLERY'
           });
+          console.log("Added gallery image:", galleryImage);
+        });
+      }
 
-          viewAllBtnMobile.addEventListener("click", function () {
-            openAllReviewsModal();
-          });
+      console.log("Final image gallery:", currentImageGallery);
 
-          closeModal.addEventListener("click", function () {
-            closeAllReviewsModal();
-          });
+      // Display the first image
+      displayCurrentImage();
+    }
 
-          // Close modal when clicking outside
-          modal.addEventListener("click", function (e) {
-            if (e.target === modal) {
-              closeAllReviewsModal();
-            }
-          });
+    // Function to display current image
+    function displayCurrentImage() {
+      const productImage = document.querySelector(".product-image");
+      const imagePlaceholder = document.querySelector(".image-placeholder");
+      const prevButton = document.querySelector(".prev-button");
+      const nextButton = document.querySelector(".next-button");
+
+      console.log("Displaying image - Gallery length:", currentImageGallery.length);
+      console.log("Current image index:", currentImageIndex);
+
+      if (currentImageGallery.length > 0 && currentImageGallery[currentImageIndex]) {
+        const currentImage = currentImageGallery[currentImageIndex];
+        console.log("Loading image:", currentImage.src);
+
+        // Show actual image, hide placeholder
+        productImage.src = currentImage.src;
+        productImage.alt = `Product Image - ${currentImage.type}`;
+        productImage.style.display = 'block';
+
+        if (imagePlaceholder) {
+          imagePlaceholder.style.display = 'none';
         }
 
-        // Open all reviews modal (keep your existing code)
-        function openAllReviewsModal() {
-          const modal = document.getElementById("reviewsModal");
-          const allReviewsContainer = document.getElementById("allReviews");
-
-          // Clear previous content
-          allReviewsContainer.innerHTML = "";
-
-          // Sort reviews by rating (highest first)
-          const sortedReviews = [...reviews].sort((a, b) => b.rating - a.rating);
-
-          // Add all reviews to modal
-          sortedReviews.forEach((review) => {
-            const reviewElement = document.createElement("div");
-            reviewElement.className = "rating-item";
-
-            // Generate star rating
-            const stars =
-              "★".repeat(review.rating) + "☆".repeat(5 - review.rating);
-
-            reviewElement.innerHTML = `
-                                <div class="rating-header">
-                                    <div class="user-name">${review.userName
-              }</div>
-                                    <div class="rating-date">${review.date
-              }</div>
-                                </div>
-                                <div class="stars">${stars}</div>
-                                ${review.hasImage
-                ? `
-                                <div class="rating-images">
-                                    <div class="rating-image">
-                                        <i class="fas fa-image"></i>
-                                    </div>
-                                </div>
-                                `
-                : ""
-              }
-                                <p class="rating-text">${review.text}</p>
-                            `;
-
-            allReviewsContainer.appendChild(reviewElement);
-          });
-
-          modal.classList.add("active");
-        }
-
-        // Close all reviews modal (keep your existing code)
-        function closeAllReviewsModal() {
-          const modal = document.getElementById("reviewsModal");
-          modal.classList.remove("active");
-        }
-
-        // Update like button state (keep your existing code)
-        function updateLikeButton() {
-          if (!product) return;
-
-          const likeButton = document.querySelector(".like-button");
-          const likeIcon = likeButton.querySelector("i");
-
-          if (product.liked) {
-            likeButton.classList.add("active");
-            likeIcon.className = "fas fa-heart";
-            likeButton.innerHTML =
-              '<i class="fas fa-heart"></i> <span>Liked</span>';
+        // Show navigation buttons if there are multiple images
+        if (prevButton && nextButton) {
+          if (currentImageGallery.length > 1) {
+            prevButton.style.display = currentImageIndex > 0 ? 'flex' : 'none';
+            nextButton.style.display = currentImageIndex < currentImageGallery.length - 1 ? 'flex' : 'none';
           } else {
-            likeButton.classList.remove("active");
-            likeIcon.className = "far fa-heart";
-            likeButton.innerHTML =
-              '<i class="far fa-heart"></i> <span>Like</span>';
+            // Only one image, hide buttons
+            prevButton.style.display = 'none';
+            nextButton.style.display = 'none';
           }
         }
 
-        // Add product to cart (modified for real product)
-        function addToCart() {
-          if (!product) return;
-
-          // Get selected variant
-          const selectedVariant = document.querySelector(
-            ".variation-option.active"
-          );
-          const variantId = selectedVariant
-            ? selectedVariant.getAttribute("data-variant-id")
-            : product.id;
-
-          product.inCart = true;
-
-          // Update cart count
-          const cartCount = document.querySelector(".cart-count");
-          let currentCount = parseInt(cartCount.textContent);
-          cartCount.textContent = currentCount + 1;
-
-          // Show confirmation
-          alert(`${product.name} added to cart!`);
-
-          // Here you would call your addToCart function with the variant ID
-          // addToCart(variantId);
+      } else {
+        // No images available, show placeholder
+        console.log("No images available, showing placeholder");
+        if (productImage) {
+          productImage.style.display = 'none';
+        }
+        if (imagePlaceholder) {
+          imagePlaceholder.style.display = 'flex';
         }
 
-        // Order now functionality - redirects to checkout.html (modified for real product)
-        function orderNow() {
-          if (!product) return;
-
-          // Add product to cart first
-          const selectedVariant = document.querySelector(
-            ".variation-option.active"
-          );
-          const variantId = selectedVariant
-            ? selectedVariant.getAttribute("data-variant-id")
-            : product.id;
-
-          product.inCart = true;
-
-          // Update cart count
-          const cartCount = document.querySelector(".cart-count");
-          let currentCount = parseInt(cartCount.textContent);
-          cartCount.textContent = currentCount + 1;
-
-          // Redirect to checkout page with product info
-          window.location.href = `checkout.html?productId=${variantId}`;
+        // Hide navigation buttons
+        if (prevButton && nextButton) {
+          prevButton.style.display = 'none';
+          nextButton.style.display = 'none';
         }
+      }
+    }
 
-        // Navigate to previous product
-        function navigateToPreviousProduct() {
-          // You can implement product navigation logic here
-          alert("Loading previous product...");
+    // Navigation functions
+    function showNextImage() {
+      if (currentImageIndex < currentImageGallery.length - 1) {
+        currentImageIndex++;
+        displayCurrentImage();
+      }
+    }
+
+    function showPreviousImage() {
+      if (currentImageIndex > 0) {
+        currentImageIndex--;
+        displayCurrentImage();
+      }
+    }
+
+    // UPDATED FUNCTION: Update Product Attributes in Specifications Section
+    function updateProductAttributes(attributes, parentProduct) {
+      console.log("Updating product attributes:", attributes);
+      console.log("Parent product in attributes function:", parentProduct);
+
+      // Update basic product info
+      const categoryElement = document.getElementById('spec-category');
+      if (categoryElement && parentProduct?.category) {
+        categoryElement.textContent = parentProduct.category;
+      }
+
+      // Set default values for specs list
+      const defaultSpecs = {
+        'spec-category': parentProduct?.category || '-',
+        'spec-finish': '-',
+        'spec-skin-type': '-',
+        'spec-skin-tone': '-',
+        'spec-undertone': '-',
+        'spec-concerns': 'Not Defined'
+      };
+
+      // Apply defaults first
+      Object.entries(defaultSpecs).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = value;
         }
+      });
 
-        // Navigate to next product
-        function navigateToNextProduct() {
-          // You can implement product navigation logic here
-          alert("Loading next product...");
-        }
-
-        // Go back to home page
-        function goBack() {
-          window.location.href = "home.html";
-        }
-
-        // Like button functionality
-document.addEventListener('DOMContentLoaded', function() {
-  const likeButton = document.querySelector('.like-button');
-  
-  if (likeButton) {
-    likeButton.addEventListener('click', async function() {
-      if (!productData?.selectedVariant?.id) {
-        console.error('No product selected');
+      if (!attributes) {
+        console.log("No attributes available");
         return;
       }
 
-      const productId = productData.selectedVariant.id;
-      
-      // Optimistic UI update
-      isProductLiked = !isProductLiked;
-      updateLikeButtonUI();
+      // Process finish attributes
+      const finishTypes = [];
+      // Use loose comparison (==) to handle both 1 and '1'
+      if (attributes.Matte == 1) finishTypes.push('Matte');
+      if (attributes.Dewy == 1) finishTypes.push('Dewy');
+      if (attributes.Satin == 1) finishTypes.push('Satin'); // Added Satin
+      if (attributes.Glossy == 1) finishTypes.push('Glossy'); // Added Glossy
+
+      if (finishTypes.length > 0) {
+        const finishElement = document.getElementById('spec-finish');
+        if (finishElement) {
+          finishElement.textContent = finishTypes.join(', ');
+          console.log("Updated finish to:", finishTypes.join(', '));
+        }
+      } else {
+        const finishElement = document.getElementById('spec-finish');
+        if (finishElement) {
+          finishElement.textContent = 'Natural';
+        }
+      }
+
+      // Process skin concerns
+      const concerns = [];
+      if (attributes.Acne == 1) concerns.push('Acne');
+      if (attributes.Dryness == 1) concerns.push('Dryness');
+      if (attributes.DarkSpots == 1) concerns.push('Dark Spots');
+      if (attributes.Oiliness == 1) concerns.push('Oiliness'); // Added Oiliness
+      if (attributes.Sensitivity == 1) concerns.push('Sensitivity'); // Added Sensitivity
+
+
+      const concernsElement = document.getElementById('spec-concerns');
+      if (concernsElement) {
+        concernsElement.textContent = concerns.length > 0 ? concerns.join(', ') : 'Not Defined';
+      }
+
+      // Process basic skin attributes
+      const skinAttributes = {
+        'SkinType': 'spec-skin-type',
+        'SkinTone': 'spec-skin-tone',
+        'Undertone': 'spec-undertone'
+      };
+
+      Object.entries(skinAttributes).forEach(([attrKey, elementId]) => {
+        if (attributes[attrKey]) {
+          const element = document.getElementById(elementId);
+          if (element) {
+            element.textContent = attributes[attrKey];
+          }
+        }
+      });
+
+      console.log("✅ Product specifications updated");
+    }
+
+    // Function to update product details when a variant is selected
+    function updateProductDetails(selectedOption) {
+      console.log("=== UPDATING PRODUCT DETAILS FOR VARIANT ===");
 
       try {
-        const response = await fetch("../php/favorites-handler.php", {
+        if (!selectedOption) {
+          console.error("No selected option provided");
+          return;
+        }
+        console.log("Selected option:", selectedOption);
+        console.log("Selected option class:", selectedOption.className);
+
+        // Get data from the clicked variant option
+        const variantId = selectedOption.getAttribute('data-variant-id');
+        const variantPrice = selectedOption.getAttribute('data-variant-price');
+        const variantImage = selectedOption.getAttribute('data-variant-image');
+        const variantDescription = selectedOption.getAttribute('data-variant-description');
+        const variantIngredients = selectedOption.getAttribute('data-variant-ingredients');
+        const variantStock = selectedOption.getAttribute('data-variant-stock');
+        const variantAttributes = JSON.parse(selectedOption.getAttribute('data-variant-attributes') || '{}');
+
+        console.log("Selected variant data:", {
+          variantId,
+          variantPrice,
+          variantImage,
+          variantDescription,
+          variantIngredients,
+          variantStock,
+          variantAttributes
+        });
+
+        // Update price
+        const priceElement = document.querySelector(".price");
+        if (priceElement && variantPrice) {
+          priceElement.textContent = `₱${parseFloat(variantPrice).toFixed(2)}`;
+          console.log("Updated price to:", priceElement.textContent);
+        }
+
+        // Update images when variant changes
+        if (productData?.parentProduct) {
+          console.log("Updating image gallery for new variant...");
+          initializeImageGallery(
+            {
+              image: variantImage,
+              id: variantId,
+              name: selectedOption.querySelector('span').textContent
+            },
+            productData.parentProduct
+          );
+        }
+
+        // Update description
+        const descElement = document.querySelector(".product-description");
+        if (descElement) {
+          descElement.textContent = variantDescription || "No description available";
+          console.log("Updated description");
+        }
+
+        // Update ingredients
+        const ingredientsElement = document.querySelector(".product-ingredient");
+        if (ingredientsElement) {
+          ingredientsElement.textContent = variantIngredients || "No ingredients listed";
+          console.log("Updated ingredients");
+        }
+
+        // Update product title to show selected variant name
+        const productTitle = document.querySelector(".product-title");
+        if (productTitle && productData?.parentProduct) {
+          const variantName = selectedOption.querySelector('span').textContent;
+          productTitle.textContent = `${productData.parentProduct.name} - ${variantName}`;
+          console.log("Updated product title:", productTitle.textContent);
+        }
+
+        // Update stock status
+        const stockElement = document.querySelector(".stock-status");
+        if (stockElement && variantStock !== null) {
+          const stock = parseInt(variantStock);
+          if (stock > 0) {
+            stockElement.textContent = `In Stock (${stock} available)`;
+            stockElement.style.color = "green";
+          } else {
+            stockElement.textContent = "Out of Stock";
+            stockElement.style.color = "red";
+          }
+          console.log("Updated stock to:", stockElement.textContent);
+        }
+
+        // Update product attributes
+        updateProductAttributes(variantAttributes, productData?.parentProduct);
+
+        // Update the selected variant in global productData
+        if (productData && productData.variants) {
+          const newSelectedVariant = productData.variants.find(v => v.id === variantId);
+          if (newSelectedVariant) {
+            productData.selectedVariant = newSelectedVariant;
+            console.log("Updated selected variant in productData:", newSelectedVariant);
+          }
+        }
+
+        // Check favorite status for the newly selected variant
+        checkIfProductIsLiked(variantId);
+
+      } catch (error) {
+        console.error("❌ Error in updateProductDetails:", error);
+      }
+    }
+
+    // Keep this function separate - it's different from updateProductDetails
+    function updateLikeButtonUI() {
+      const likeButton = document.querySelector(".like-button");
+      const likeIcon = likeButton.querySelector("i");
+
+      if (likeButton && likeIcon) {
+        if (isProductLiked) {
+          likeButton.classList.add("active");
+          likeIcon.className = "fas fa-heart";
+          likeButton.innerHTML = '<i class="fas fa-heart"></i> <span>Liked</span>';
+        } else {
+          likeButton.classList.remove("active");
+          likeIcon.className = "far fa-heart";
+          likeButton.innerHTML = '<i class="far fa-heart"></i> <span>Like</span>';
+        }
+      }
+    }
+
+    // Check if product is in user's favorites
+    async function checkIfProductIsLiked(productId) {
+      try {
+        const response = await fetch(`../php/favorites-handler.php?action=list`);
+        const result = await response.json();
+
+        if (result.success && result.products) {
+          // Check if any product or variant matches the current productId
+          const isLiked = result.products.some(product => {
+            if (product.id === productId) return true; // Direct product match
+            if (product.variants) {
+              return product.variants.some(v => v.id === productId); // Variant match
+            }
+            return false;
+          });
+
+          isProductLiked = isLiked;
+          updateLikeButtonUI();
+          console.log(`Product ${productId} liked status:`, isLiked);
+        } else {
+          console.log("No favorite products found or API error checking favorites.");
+          isProductLiked = false;
+          updateLikeButtonUI();
+        }
+      } catch (err) {
+        console.error("Error checking favorite status:", err);
+        isProductLiked = false;
+        updateLikeButtonUI();
+      }
+    }
+
+    // Function to update reviews display on the product page
+    function updateReviewsDisplay() {
+      console.log("=== UPDATING REVIEWS DISPLAY ===");
+      if (!productData || !productData.reviews) {
+        console.log("No review data available.");
+        return;
+      }
+
+      reviews = productData.reviews; // Ensure global 'reviews' variable is updated
+
+      const reviewCount = reviews.length;
+      const averageRating = reviewCount > 0 ? (reviews.reduce((sum, review) => sum + parseFloat(review.rating), 0) / reviewCount).toFixed(1) : '0.0';
+
+      // Update average rating and count
+      const averageRatingElement = document.querySelector(".average-rating");
+      const ratingCountElement = document.querySelector(".rating-count");
+      const starsSummaryElement = document.querySelector(".rating-summary .stars");
+
+      if (averageRatingElement) averageRatingElement.textContent = averageRating;
+      if (ratingCountElement) ratingCountElement.textContent = `Based on ${reviewCount} review${reviewCount === 1 ? '' : 's'}`;
+      if (starsSummaryElement) starsSummaryElement.innerHTML = getStarHTML(averageRating);
+
+      // Display featured reviews (first two, or all if less than two)
+      const featuredReviewsContainer = document.querySelector(".featured-reviews");
+      if (featuredReviewsContainer) {
+        featuredReviewsContainer.innerHTML = ''; // Clear existing reviews
+        const reviewsToDisplay = reviews.slice(0, 2); // Show up to 2 featured reviews
+
+        if (reviewsToDisplay.length === 0) {
+          featuredReviewsContainer.innerHTML = '<p>No reviews yet. Be the first to review this product!</p>';
+        } else {
+          reviewsToDisplay.forEach(review => {
+            featuredReviewsContainer.innerHTML += createReviewItemHTML(review);
+          });
+        }
+      }
+
+      // Hide "View All Reviews" button if no reviews
+      const viewAllBtnDesktop = document.getElementById("viewAllReviewsBtnDesktop");
+      const viewAllBtnMobile = document.getElementById("viewAllReviewsBtnMobile");
+
+      if (viewAllBtnDesktop) viewAllBtnDesktop.style.display = reviewCount > 0 ? 'block' : 'none';
+      if (viewAllBtnMobile) viewAllBtnMobile.style.display = reviewCount > 0 ? 'block' : 'none';
+
+      console.log("✅ Reviews display updated.");
+    }
+
+    // Helper function to generate star HTML
+    function getStarHTML(rating) {
+      const fullStars = Math.floor(rating);
+      const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+      const emptyStars = 5 - fullStars - halfStar;
+      return '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars);
+    }
+
+    // Helper function to create HTML for a single review item
+    function createReviewItemHTML(review) {
+      const stars = getStarHTML(review.rating);
+      const reviewImagesHTML = review.image_url ?
+        `
+        <div class="rating-images">
+            <img src="${review.image_url}" alt="Review image" class="rating-image">
+        </div>
+        ` : '';
+
+      return `
+        <div class="rating-item">
+            <div class="rating-header">
+                <div class="user-name">${review.user_name || 'Anonymous'}</div>
+                <div class="rating-date">${review.review_date || ''}</div>
+            </div>
+            <div class="stars">${stars}</div>
+            ${reviewImagesHTML}
+            <p class="rating-text">${review.review_text || 'No text provided.'}</p>
+        </div>
+    `;
+    }
+
+
+    // Setup modal functionality (keep your existing code)
+    function setupModal() {
+      const viewAllBtnDesktop = document.getElementById("viewAllReviewsBtnDesktop");
+      const viewAllBtnMobile = document.getElementById(
+        "viewAllReviewsBtnMobile"
+      );
+      const modal = document.getElementById("reviewsModal");
+      const closeModal = document.getElementById("closeModal");
+
+      if (viewAllBtnDesktop) {
+        viewAllBtnDesktop.addEventListener("click", function () {
+          openAllReviewsModal();
+        });
+      }
+
+      if (viewAllBtnMobile) {
+        viewAllBtnMobile.addEventListener("click", function () {
+          openAllReviewsModal();
+        });
+      }
+
+      if (closeModal) {
+        closeModal.addEventListener("click", function () {
+          closeAllReviewsModal();
+        });
+      }
+
+
+      // Close modal when clicking outside
+      if (modal) {
+        modal.addEventListener("click", function (e) {
+          if (e.target === modal) {
+            closeAllReviewsModal();
+          }
+        });
+      }
+    }
+
+    // Open all reviews modal (keep your existing code)
+    function openAllReviewsModal() {
+      const modal = document.getElementById("reviewsModal");
+      const allReviewsContainer = document.getElementById("allReviews");
+
+      // Clear previous content
+      allReviewsContainer.innerHTML = "";
+
+      if (reviews.length === 0) {
+        allReviewsContainer.innerHTML = '<p style="text-align: center; color: var(--text-gray);">No reviews available yet.</p>';
+        modal.classList.add("active");
+        return;
+      }
+
+      // Sort reviews by rating (highest first)
+      const sortedReviews = [...reviews].sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+
+      // Add all reviews to modal
+      sortedReviews.forEach((review) => {
+        allReviewsContainer.innerHTML += createReviewItemHTML(review);
+      });
+
+      modal.classList.add("active");
+    }
+
+    // Close all reviews modal (keep your existing code)
+    function closeAllReviewsModal() {
+      const modal = document.getElementById("reviewsModal");
+      modal.classList.remove("active");
+    }
+
+    // Add product to cart (now supports variants via product ID lookup)
+    async function addToCart() {
+      if (!productData || !productData.selectedVariant || !productData.selectedVariant.id) {
+        showNotification("Please select a product variant first.", "error");
+        return;
+      }
+      const productId = productData.selectedVariant.id;
+
+      try {
+        const response = await fetch("../php/cart.php", {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          body: `action=toggle&product_id=${encodeURIComponent(productId)}`
+          body: `action=add&product_id=${encodeURIComponent(productId)}&quantity=1`
         });
 
         const result = await response.json();
-        console.log("Favorites handler response:", result);
+        console.log("Add to cart response:", result);
 
-        if (!result.success) {
-          // Backend failed – revert UI
+        if (result.success) {
+          // Update cart count
+          updateCartCount(result.cartCount);
+
+          // Show success notification
+          showNotification(result.message);
+
+          // Update cart button UI temporarily
+          const cartButton = document.querySelector('.cart-button');
+          if (cartButton) {
+            const originalHTML = cartButton.innerHTML;
+            const originalBackground = cartButton.style.background;
+            cartButton.innerHTML = '<i class="fas fa-check"></i> <span>Added!</span>';
+            cartButton.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
+            setTimeout(() => {
+              cartButton.innerHTML = originalHTML;
+              cartButton.style.background = originalBackground;
+            }, 2000);
+          }
+        } else {
+          showNotification(result.message || "Failed to add to cart", "error");
+        }
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        showNotification("Error adding to cart. Please try again.", "error");
+      }
+    }
+
+    // Show notification
+    function showNotification(message, type = "success") {
+      const notificationBox = document.getElementById("notification-box");
+
+      if (!notificationBox) {
+        console.error("Notification box not found");
+        return;
+      }
+
+      // Set message and icon
+      const iconClass = type === "success" ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
+      notificationBox.style.background = type === 'success' ? 'linear-gradient(135deg, var(--primary-pink), var(--dark-pink))' : 'linear-gradient(135deg, #ef4444, #dc2626)';
+
+      // Show notification
+      notificationBox.classList.add("show");
+
+      // Hide after 3 seconds
+      setTimeout(() => {
+        notificationBox.classList.remove("show");
+      }, 3000);
+    }
+
+    // Update cart count
+    function updateCartCount(count = null) {
+      const cartCountElement = document.querySelector(".cart-count");
+      if (cartCountElement) {
+        if (count !== null) {
+          cartCountElement.textContent = count;
+        } else {
+          // Fetch from server if count not provided
+          fetch("../php/cart.php?action=count")
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                cartCountElement.textContent = data.cartCount;
+              } else {
+                console.error("Failed to fetch cart count:", data.message);
+                cartCountElement.textContent = '0'; // Default to 0 on error
+              }
+            })
+            .catch(err => {
+              console.error("Error fetching cart count:", err);
+              cartCountElement.textContent = '0'; // Default to 0 on network error
+            });
+        }
+      } else {
+        console.warn("Cart count element not found.");
+      }
+    }
+
+    // Order now functionality - redirects to checkout.html (modified for real product)
+    function orderNow() {
+      if (!productData || !productData.selectedVariant || !productData.selectedVariant.id) {
+        showNotification("Please select a product variant before ordering.", "error");
+        return;
+      }
+
+      const variantId = productData.selectedVariant.id;
+
+      // First, add to cart (or ensure it's in cart)
+      addToCart(variantId)
+        .then(() => {
+          // Then redirect to checkout
+          window.location.href = `checkout.html?productId=${variantId}`;
+        })
+        .catch(error => {
+          console.error("Error during order now process:", error);
+          showNotification("Failed to add to cart or proceed to checkout.", "error");
+        });
+    }
+
+    // Go back to home page
+    function goBack() {
+      window.history.back(); // Go back to the previous page
+      // Alternatively, if you want to always go to a specific home page:
+      // window.location.href = "home.html";
+    }
+
+    // Like button functionality
+    document.addEventListener('DOMContentLoaded', function () {
+      const likeButton = document.querySelector('.like-button');
+      const cartButton = document.querySelector('.cart-button'); // Get cart button for event listener
+
+      if (likeButton) {
+        likeButton.addEventListener('click', async function () {
+          if (!productData?.selectedVariant?.id) {
+            console.error('No product selected for like/unlike operation');
+            showNotification("Please select a product variant.", "error");
+            return;
+          }
+
+          const productId = productData.selectedVariant.id;
+
+          // Optimistic UI update
           isProductLiked = !isProductLiked;
           updateLikeButtonUI();
-          alert("Failed to update favorites.");
-          return;
-        }
 
-        if (result.action === "liked") {
-          console.log("Added to Favorites ❤️");
-        } else if (result.action === "unliked") {
-          console.log("Removed from Favorites 💔");
-        }
+          try {
+            const response = await fetch("../php/favorites-handler.php", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: `action=toggle&product_id=${encodeURIComponent(productId)}`
+            });
 
-      } catch (err) {
-        console.error("Favorite toggle error:", err);
-        isProductLiked = !isProductLiked; // revert on error
-        updateLikeButtonUI();
-        alert("Error updating favorites. Try again later.");
+            const result = await response.json();
+            console.log("Favorites handler response:", result);
+
+            if (!result.success) {
+              // Backend failed – revert UI
+              isProductLiked = !isProductLiked;
+              updateLikeButtonUI();
+              showNotification("Failed to update favorites.", "error");
+              return;
+            }
+
+            if (result.action === "liked") {
+              console.log("Added to Favorites ❤️");
+              showNotification("Added to Favorites!");
+            } else if (result.action === "unliked") {
+              console.log("Removed from Favorites 💔");
+              showNotification("Removed from Favorites.");
+            }
+
+          } catch (err) {
+            console.error("Favorite toggle error:", err);
+            isProductLiked = !isProductLiked; // revert on error
+            updateLikeButtonUI();
+            showNotification("Error updating favorites. Try again later.", "error");
+          }
+        });
+      }
+
+      if (cartButton) {
+        cartButton.addEventListener('click', addToCart); // Attach addToCart to cart button
       }
     });
-  }
-});
-      </script>
+  </script>
 </body>
 
 </html>
