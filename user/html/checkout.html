@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beauty & Blessed | Generate QR</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
@@ -838,257 +839,273 @@
     </div>
 
     <script>
-        // Global functions accessible to the back button
-        function showThankYouModal() {
-            // Generate order reference
-            const orderRef = generateOrderReference();
-            document.getElementById('orderRefNumber').textContent = orderRef;
+// Replace the entire <script> section in checkout.html with this:
 
-            // Update confirmation total with current order total
-            const total = document.getElementById('total').textContent;
-            document.getElementById('confirmationTotal').textContent = total;
+document.addEventListener('DOMContentLoaded', () => {
+    // Get order details from localStorage
+    const orderDetails = JSON.parse(localStorage.getItem('checkoutOrder') || '{}');
+    
+    if (!orderDetails.order_id) {
+        alert('No order found. Redirecting to home...');
+        window.location.href = 'home.html';
+        return;
+    }
 
-            // Show the modal
-            document.getElementById('thankYouModal').classList.add('active');
-        }
+    // DOM elements
+    const orderItemsEl = document.getElementById('orderItems');
+    const totalEl = document.getElementById('total');
+    const generateQrBtn = document.getElementById('generateQrBtn');
+    const saveQrBtn = document.getElementById('saveQrBtn');
+    const qrPlaceholder = document.getElementById('qrPlaceholder');
+    const qrModal = document.getElementById('qrModal');
+    const closeModal = document.getElementById('closeModal');
+    const doneBtn = document.getElementById('doneBtn');
+    const saveModalBtn = document.getElementById('saveModalBtn');
+    const modalQrCode = document.getElementById('modalQrCode');
+    const paymentAmount = document.getElementById('paymentAmount');
+    const paymentReference = document.getElementById('paymentReference');
+    const thankYouModal = document.getElementById('thankYouModal');
+    const closeThankYouModal = document.getElementById('closeThankYouModal');
+    const goHomeBtn = document.getElementById('goHomeBtn');
+    const orderRefNumber = document.getElementById('orderRefNumber');
+    const confirmationTotal = document.getElementById('confirmationTotal');
 
-        function generateOrderReference() {
-            const timestamp = new Date().getTime();
-            const randomNum = Math.floor(1000 + Math.random() * 9000);
-            return `BB-${timestamp}-${randomNum}`;
-        }
+    // Format price
+    const formatPrice = price => '₱' + Number(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 
-        function goToHome() {
-            window.location.href = 'home.html';
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Sample order data
-            const orderItems = [
-                {
-                    id: 1,
-                    name: "Luxury Lipstick Set",
-                    shade: "Ruby Red",
-                    quantity: 2,
-                    price: 1299.00
-                },
-                {
-                    id: 2,
-                    name: "Hydrating Face Serum",
-                    shade: "Clear",
-                    quantity: 1,
-                    price: 1899.00
-                },
-                {
-                    id: 3,
-                    name: "Matte Foundation",
-                    shade: "Natural Beige",
-                    quantity: 1,
-                    price: 1599.00
-                }
-            ];
-
-            // DOM Elements
-            const backButton = document.getElementById('backButton');
-            const orderItemsEl = document.getElementById('orderItems');
-            const totalEl = document.getElementById('total');
-            const generateQrBtn = document.getElementById('generateQrBtn');
-            const saveQrBtn = document.getElementById('saveQrBtn');
-            const qrPlaceholder = document.getElementById('qrPlaceholder');
-            const qrModal = document.getElementById('qrModal');
-            const closeModal = document.getElementById('closeModal');
-            const doneBtn = document.getElementById('doneBtn');
-            const saveModalBtn = document.getElementById('saveModalBtn');
-            const modalQrCode = document.getElementById('modalQrCode');
-            const paymentAmount = document.getElementById('paymentAmount');
-            const paymentReference = document.getElementById('paymentReference');
-
-            // Thank You Modal Elements
-            const thankYouModal = document.getElementById('thankYouModal');
-            const closeThankYouModal = document.getElementById('closeThankYouModal');
-            const goHomeBtn = document.getElementById('goHomeBtn');
-            const orderRefNumber = document.getElementById('orderRefNumber');
-            const confirmationTotal = document.getElementById('confirmationTotal');
-
-            // Format price with commas for thousands
-            function formatPrice(price) {
-                return '₱' + price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    // Display order summary
+    function displayOrderSummary() {
+        console.log('📋 Fetching order details for order_id:', orderDetails.order_id);
+        orderItemsEl.innerHTML = '<p style="text-align:center; color: var(--text-gray);">Loading order details...</p>';
+        
+        // Fetch order details from backend
+        fetch(`../php/get_order.php?order_id=${orderDetails.order_id}`, {
+            credentials: 'same-origin'
+        })
+        .then(res => {
+            console.log('📡 Response status:', res.status);
+            return res.json();
+        })
+        .then(data => {
+            console.log('📦 Received data:', data);
+            
+            if (!data.success) {
+                console.error('❌ API returned error:', data.message);
+                orderItemsEl.innerHTML = `<p style="text-align:center; color: var(--text-gray);">Failed to load order: ${data.message || 'Unknown error'}</p>`;
+                return;
             }
-
-            // Initialize the page
-            function initPage() {
-                renderOrderItems();
-                calculateTotals();
-
-                // Add event listener to back button
-                backButton.addEventListener('click', showThankYouModal);
+            
+            if (!data.items || data.items.length === 0) {
+                console.warn('⚠️ No items found in order');
+                orderItemsEl.innerHTML = '<p style="text-align:center; color: var(--text-gray);">No items found in this order.</p>';
+                return;
             }
-
-            // Render order items
-            function renderOrderItems() {
-                orderItemsEl.innerHTML = '';
-
-                orderItems.forEach(item => {
-                    const itemHTML = `
-                        <div class="order-item">
-                            <div class="item-image">
-                                <i class="fas fa-palette"></i>
-                            </div>
-                            <div class="item-details">
-                                <div class="item-name">${item.name}</div>
-                                <div class="item-specs">Shade: ${item.shade}</div>
-                                <div class="item-price">${formatPrice(item.price)}</div>
-                                <div class="item-quantity">
-                                    <i class="fas fa-shopping-bag"></i>
-                                    <span>Quantity: ${item.quantity}</span>
-                                </div>
+            
+            console.log('✅ Loading', data.items.length, 'items');
+            orderItemsEl.innerHTML = '';
+            
+            data.items.forEach(item => {
+                const itemHTML = `
+                    <div class="order-item">
+                        <div class="item-image">
+                            <img src="${item.image}" alt="${item.name}" 
+                                 style="width:100%;height:100%;object-fit:cover;border-radius:10px;"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-palette\\'></i>'">
+                        </div>
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-specs">Shade: ${item.ShadeOrVariant || 'N/A'}</div>
+                            <div class="item-price">${formatPrice(item.price)}</div>
+                            <div class="item-quantity">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span>Quantity: ${item.quantity}</span>
                             </div>
                         </div>
-                    `;
-
-                    orderItemsEl.innerHTML += itemHTML;
-                });
-            }
-
-            // Calculate order totals
-            function calculateTotals() {
-                const total = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-                totalEl.textContent = formatPrice(total);
-
-                // Update payment amount in modal
-                paymentAmount.textContent = formatPrice(total);
-
-                // Update confirmation total
-                confirmationTotal.textContent = formatPrice(total);
-            }
-
-            // Generate QR Code
-            function generateQRCode() {
-                // Calculate total amount
-                const total = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-                // Generate a random reference number
-                const refNumber = 'BB-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
-                paymentReference.textContent = refNumber;
-
-                // In a real application, you would generate an actual QR code here
-                // For this example, we'll create a simple visual representation
-
-                // Create QR code visual (simulated)
-                const qrSize = 220;
-                const qrCanvas = document.createElement('canvas');
-                qrCanvas.width = qrSize;
-                qrCanvas.height = qrSize;
-                const ctx = qrCanvas.getContext('2d');
-
-                // Draw QR code background
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, qrSize, qrSize);
-
-                // Draw QR code pattern (simulated)
-                ctx.fillStyle = 'black';
-                const blockSize = qrSize / 25;
-
-                for (let i = 0; i < 25; i++) {
-                    for (let j = 0; j < 25; j++) {
-                        if (Math.random() > 0.5) {
-                            ctx.fillRect(i * blockSize, j * blockSize, blockSize, blockSize);
-                        }
-                    }
-                }
-
-                // Add logo in center (simulated)
-                ctx.fillStyle = 'white';
-                ctx.fillRect(qrSize / 2 - blockSize * 3, qrSize / 2 - blockSize * 3, blockSize * 6, blockSize * 6);
-                ctx.fillStyle = 'black';
-                ctx.font = 'bold 20px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('BB', qrSize / 2, qrSize / 2 + 5);
-
-                // Convert canvas to image
-                const qrImage = new Image();
-                qrImage.src = qrCanvas.toDataURL();
-
-                // Update QR code display
-                qrPlaceholder.innerHTML = '';
-                qrPlaceholder.appendChild(qrImage.cloneNode());
-
-                modalQrCode.innerHTML = '';
-                modalQrCode.appendChild(qrImage);
-
-                // Show success message
-                generateQrBtn.innerHTML = '<i class="fas fa-check"></i> QR Code Generated';
-                generateQrBtn.disabled = true;
-
-                // Show save button
-                saveQrBtn.style.display = 'flex';
-
-                // Open modal
-                openQRModal();
-            }
-
-            // Save QR Code
-            function saveQRCode() {
-                // In a real application, this would save the QR code image
-                // For this example, we'll simulate the save action
-
-                // Create a temporary link to download the QR code
-                const qrCanvas = document.querySelector('#modalQrCode canvas');
-                if (qrCanvas) {
-                    const link = document.createElement('a');
-                    link.download = 'beauty-blessed-qr-code.png';
-                    link.href = qrCanvas.toDataURL();
-                    link.click();
-                }
-
-                // Show success message
-                alert('QR Code saved successfully!');
-            }
-
-            // Open QR modal
-            function openQRModal() {
-                qrModal.classList.add('active');
-            }
-
-            // Close QR modal
-            function closeQRModal() {
-                qrModal.classList.remove('active');
-            }
-
-            // Close Thank You modal
-            function closeThankYouModalFunc() {
-                thankYouModal.classList.remove('active');
-            }
-
-            // Event Listeners
-            generateQrBtn.addEventListener('click', generateQRCode);
-            saveQrBtn.addEventListener('click', saveQRCode);
-            saveModalBtn.addEventListener('click', saveQRCode);
-            closeModal.addEventListener('click', closeQRModal);
-            doneBtn.addEventListener('click', closeQRModal);
-
-            // Thank You Modal Event Listeners
-            closeThankYouModal.addEventListener('click', closeThankYouModalFunc);
-            goHomeBtn.addEventListener('click', goToHome);
-
-            // Close modals when clicking outside
-            qrModal.addEventListener('click', function (e) {
-                if (e.target === qrModal) {
-                    closeQRModal();
-                }
+                    </div>
+                `;
+                orderItemsEl.innerHTML += itemHTML;
             });
-
-            thankYouModal.addEventListener('click', function (e) {
-                if (e.target === thankYouModal) {
-                    closeThankYouModalFunc();
-                }
-            });
-
-            // Initialize the page
-            initPage();
+            
+            // Use data from backend for totals
+            totalEl.textContent = formatPrice(data.order.total_price);
+            paymentAmount.textContent = formatPrice(data.order.total_price);
+            
+            // Show order ID in payment reference
+            paymentReference.textContent = `#${data.order.order_id}`;
+            orderRefNumber.textContent = data.order.qr_code || `BB-${String(data.order.order_id).padStart(6, '0')}`;
+            confirmationTotal.textContent = formatPrice(data.order.total_price);
+            
+            console.log('✅ Order display complete');
+        })
+        .catch(err => {
+            console.error('❌ Fetch error:', err);
+            orderItemsEl.innerHTML = `<p style="text-align:center; color: var(--text-gray);">Error loading order: ${err.message}</p>`;
         });
-    </script>
+    }
+
+    // Generate REAL scannable QR Code using only order_id
+    function generateQRCode() {
+        console.log('🎨 Generating QR code for order ID:', orderDetails.order_id);
+        
+        // Use order ID as the QR data
+        const qrData = String(orderDetails.order_id);
+        
+        // Create container for QR code
+        const qrContainer = document.createElement('div');
+        qrContainer.style.padding = '10px';
+        qrContainer.style.background = 'white';
+        qrContainer.style.display = 'inline-block';
+        
+        // Generate QR code using QRCode.js library
+        try {
+            // Clear previous QR codes
+            qrPlaceholder.innerHTML = '';
+            modalQrCode.innerHTML = '';
+            
+            // Create QR code for placeholder
+            const qrPlaceholderDiv = document.createElement('div');
+            qrPlaceholderDiv.id = 'qr-placeholder-canvas';
+            qrPlaceholder.appendChild(qrPlaceholderDiv);
+            
+            new QRCode(qrPlaceholderDiv, {
+                text: qrData,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Create QR code for modal
+            const qrModalDiv = document.createElement('div');
+            qrModalDiv.id = 'qr-modal-canvas';
+            modalQrCode.appendChild(qrModalDiv);
+            
+            new QRCode(qrModalDiv, {
+                text: qrData,
+                width: 220,
+                height: 220,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Add order ID label below QR code
+            const label = document.createElement('div');
+            label.style.textAlign = 'center';
+            label.style.marginTop = '10px';
+            label.style.fontWeight = 'bold';
+            label.style.color = '#ff69b4';
+            label.textContent = `Order #${orderDetails.order_id}`;
+            qrPlaceholder.appendChild(label);
+            
+            generateQrBtn.innerHTML = '<i class="fas fa-check"></i> QR Code Generated';
+            generateQrBtn.disabled = true;
+            saveQrBtn.style.display = 'flex';
+            
+            qrModal.classList.add('active');
+            
+            console.log('✅ QR code generated successfully');
+            
+        } catch (error) {
+            console.error('❌ QR generation error:', error);
+            alert('Error generating QR code. Please refresh the page.');
+        }
+    }
+    
+    // Remove the helper functions as they're no longer needed
+
+    // Save QR Code - updated to work with QRCode.js
+    function saveQRCode() {
+        try {
+            // Get the canvas from QRCode.js
+            const canvas = modalQrCode.querySelector('canvas');
+            if (!canvas) {
+                alert('QR code not found. Please generate it first.');
+                return;
+            }
+            
+            // Convert to blob and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `beauty-blessed-order-${orderDetails.order_id}.png`;
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+                alert('QR Code saved successfully!');
+            });
+            
+        } catch (error) {
+            console.error('Error saving QR code:', error);
+            alert('Error saving QR code. Please try again.');
+        }
+    }
+
+    // Show Thank You modal and complete the order
+    async function showThankYouModal() {
+        console.log('🎉 Completing order:', orderDetails.order_id);
+        
+        try {
+            // Call backend to mark order as completed and remove cart items
+            const formData = new FormData();
+            formData.append('order_id', orderDetails.order_id);
+            
+            const response = await fetch('../php/complete_order.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: formData
+            });
+            
+            const result = await response.json();
+            console.log('✅ Order completion result:', result);
+            
+            if (!result.success) {
+                console.warn('⚠️ Failed to complete order:', result.message);
+            }
+            
+        } catch (err) {
+            console.error('❌ Error completing order:', err);
+        }
+        
+        // Show thank you modal regardless
+        thankYouModal.classList.add('active');
+        
+        // Clear checkout order after showing confirmation
+        localStorage.removeItem('checkoutOrder');
+    }
+
+    function closeQRModal() { qrModal.classList.remove('active'); }
+    function closeThankYouModalFunc() { 
+        thankYouModal.classList.remove('active');
+        window.location.href = 'home.html';
+    }
+    function goToHome() { window.location.href = 'home.html'; }
+
+    // Event listeners
+    generateQrBtn.addEventListener('click', generateQRCode);
+    saveQrBtn.addEventListener('click', saveQRCode);
+    saveModalBtn.addEventListener('click', saveQRCode);
+    closeModal.addEventListener('click', closeQRModal);
+    doneBtn.addEventListener('click', () => {
+        closeQRModal();
+        showThankYouModal();
+    });
+
+    closeThankYouModal.addEventListener('click', closeThankYouModalFunc);
+    goHomeBtn.addEventListener('click', goToHome);
+
+    qrModal.addEventListener('click', e => { if (e.target === qrModal) closeQRModal(); });
+    thankYouModal.addEventListener('click', e => { if (e.target === thankYouModal) closeThankYouModalFunc(); });
+
+    // Back button triggers Thank You modal
+    document.getElementById('backButton').addEventListener('click', showThankYouModal);
+
+    // Initialize
+    displayOrderSummary();
+});
+</script>
+
 </body>
 
 </html>
