@@ -65,7 +65,8 @@ try {
 echo json_encode($response);
 $conn->close();
 
-// ==================== FUNCTIONS ====================
+
+// ==================== FUNCTIONS ==================== //
 
 /**
  * Add product to cart
@@ -78,12 +79,10 @@ function addToCart($conn, $userId, &$response) {
         $response['message'] = 'Product ID is required';
         return;
     }
+
+    if ($quantity < 1) $quantity = 1;
     
-    if ($quantity < 1) {
-        $quantity = 1;
-    }
-    
-    // Check if product exists and get details
+    // Validate product existence
     $productQuery = "SELECT ProductID, Name, Price, Stocks FROM products WHERE ProductID = ?";
     $stmt = $conn->prepare($productQuery);
     $stmt->bind_param("s", $productId);
@@ -96,14 +95,14 @@ function addToCart($conn, $userId, &$response) {
     }
     
     $product = $productResult->fetch_assoc();
-    
+
     // Check stock availability
     if ($product['Stocks'] < $quantity) {
         $response['message'] = 'Insufficient stock available';
         return;
     }
     
-    // Check if product already in cart
+    // Check if already in cart
     $checkCart = "SELECT cart_id, quantity FROM cart WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($checkCart);
     $stmt->bind_param("is", $userId, $productId);
@@ -111,11 +110,10 @@ function addToCart($conn, $userId, &$response) {
     $cartResult = $stmt->get_result();
     
     if ($cartResult->num_rows > 0) {
-        // Product exists in cart, update quantity
+        // Already in cart → update quantity
         $cartItem = $cartResult->fetch_assoc();
         $newQuantity = $cartItem['quantity'] + $quantity;
         
-        // Check if new quantity exceeds stock
         if ($newQuantity > $product['Stocks']) {
             $response['message'] = 'Cannot add more items. Stock limit reached.';
             return;
@@ -124,26 +122,23 @@ function addToCart($conn, $userId, &$response) {
         $updateQuery = "UPDATE cart SET quantity = ? WHERE cart_id = ?";
         $stmt = $conn->prepare($updateQuery);
         $stmt->bind_param("ii", $newQuantity, $cartItem['cart_id']);
-        
-        if ($stmt->execute()) {
-            $response['success'] = true;
-            $response['message'] = 'Cart updated successfully! 🛒';
-            $response['action'] = 'updated';
-        }
+        $stmt->execute();
+
+        $response['success'] = true;
+        $response['message'] = 'Cart updated successfully 🛒';
+        $response['action'] = 'updated';
     } else {
-        // Add new item to cart
+        // Add new item
         $insertQuery = "INSERT INTO cart (user_id, product_id, quantity, added_at) VALUES (?, ?, ?, NOW())";
         $stmt = $conn->prepare($insertQuery);
         $stmt->bind_param("isi", $userId, $productId, $quantity);
-        
-        if ($stmt->execute()) {
-            $response['success'] = true;
-            $response['message'] = 'Added to cart! 🎉';
-            $response['action'] = 'added';
-        }
+        $stmt->execute();
+
+        $response['success'] = true;
+        $response['message'] = 'Added to cart 🎉';
+        $response['action'] = 'added';
     }
-    
-    // Get updated cart
+
     getCart($conn, $userId, $response);
 }
 
@@ -157,27 +152,25 @@ function removeFromCart($conn, $userId, &$response) {
         $response['message'] = 'Product ID is required';
         return;
     }
-    
+
     $deleteQuery = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($deleteQuery);
     $stmt->bind_param("is", $userId, $productId);
-    
-    if ($stmt->execute()) {
-        if ($stmt->affected_rows > 0) {
-            $response['success'] = true;
-            $response['message'] = 'Removed from cart 🗑️';
-            $response['action'] = 'removed';
-        } else {
-            $response['message'] = 'Item not found in cart';
-        }
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $response['success'] = true;
+        $response['message'] = 'Removed from cart 🗑️';
+        $response['action'] = 'removed';
+    } else {
+        $response['message'] = 'Item not found in cart';
     }
-    
-    // Get updated cart
+
     getCart($conn, $userId, $response);
 }
 
 /**
- * Update cart item quantity
+ * Update quantity
  */
 function updateCartQuantity($conn, $userId, &$response) {
     $productId = $_POST['product_id'] ?? '';
@@ -187,13 +180,13 @@ function updateCartQuantity($conn, $userId, &$response) {
         $response['message'] = 'Product ID is required';
         return;
     }
-    
+
     if ($quantity < 1) {
         $response['message'] = 'Quantity must be at least 1';
         return;
     }
-    
-    // Check stock availability
+
+    // Check stock
     $stockQuery = "SELECT Stocks FROM products WHERE ProductID = ?";
     $stmt = $conn->prepare($stockQuery);
     $stmt->bind_param("s", $productId);
@@ -204,35 +197,31 @@ function updateCartQuantity($conn, $userId, &$response) {
         $response['message'] = 'Product not found';
         return;
     }
-    
+
     $product = $stockResult->fetch_assoc();
-    
     if ($quantity > $product['Stocks']) {
-        $response['message'] = 'Quantity exceeds available stock';
+        $response['message'] = 'Quantity exceeds stock';
         return;
     }
-    
-    // Update quantity
-    $updateQuery = "UPDATE cart SET quantity = ?, updated_at = NOW() WHERE user_id = ? AND product_id = ?";
+
+    $updateQuery = "UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($updateQuery);
     $stmt->bind_param("iis", $quantity, $userId, $productId);
-    
-    if ($stmt->execute()) {
-        if ($stmt->affected_rows > 0) {
-            $response['success'] = true;
-            $response['message'] = 'Quantity updated ✓';
-            $response['action'] = 'updated';
-        } else {
-            $response['message'] = 'Item not found in cart';
-        }
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $response['success'] = true;
+        $response['message'] = 'Quantity updated ✓';
+        $response['action'] = 'updated';
+    } else {
+        $response['message'] = 'Item not found in cart';
     }
-    
-    // Get updated cart
+
     getCart($conn, $userId, $response);
 }
 
 /**
- * Get user's cart
+ * Get cart
  */
 function getCart($conn, $userId, &$response) {
     $query = "
@@ -240,12 +229,12 @@ function getCart($conn, $userId, &$response) {
             c.cart_id,
             c.product_id,
             c.quantity,
-            p.Name as name,
-            p.Price as price,
-            p.Category as category,
-            p.Stocks as stock_quantity,
-            (c.quantity * p.Price) as subtotal,
-            COALESCE(pm_variant.ImagePath, pm_preview.ImagePath) as image
+            p.Name AS name,
+            p.Price AS price,
+            p.Category AS category,
+            p.Stocks AS stock_quantity,
+            (c.quantity * p.Price) AS subtotal,
+            COALESCE(pm_variant.ImagePath, pm_preview.ImagePath) AS image
         FROM cart c
         INNER JOIN products p ON c.product_id = p.ProductID
         LEFT JOIN productmedia pm_variant 
@@ -257,32 +246,25 @@ function getCart($conn, $userId, &$response) {
         WHERE c.user_id = ?
         ORDER BY c.added_at DESC
     ";
-    
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $cartItems = [];
     $totalAmount = 0;
-    
+
     while ($row = $result->fetch_assoc()) {
-        // Clean product name
         $row['name'] = cleanProductName($row['name']);
-        
-        // Use fallback image if none available
-        if (empty($row['image'])) {
-            $row['image'] = '/admin/uploads/product_images/no-image.png';
-        } else {
-            // Convert to public path
-            $filename = basename($row['image']);
-            $row['image'] = '/admin/uploads/product_images/' . $filename;
-        }
+        $row['image'] = !empty($row['image'])
+            ? '/admin/uploads/product_images/' . basename($row['image'])
+            : '/admin/uploads/product_images/no-image.png';
         
         $cartItems[] = $row;
         $totalAmount += $row['subtotal'];
     }
-    
+
     $response['success'] = true;
     $response['cart'] = $cartItems;
     $response['cartCount'] = count($cartItems);
@@ -291,54 +273,43 @@ function getCart($conn, $userId, &$response) {
 }
 
 /**
- * Clear entire cart
+ * Clear cart
  */
 function clearCart($conn, $userId, &$response) {
-    $deleteQuery = "DELETE FROM cart WHERE user_id = ?";
-    $stmt = $conn->prepare($deleteQuery);
+    $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
     $stmt->bind_param("i", $userId);
-    
-    if ($stmt->execute()) {
-        $response['success'] = true;
-        $response['message'] = 'Cart cleared successfully';
-        $response['cart'] = [];
-        $response['cartCount'] = 0;
-        $response['totalAmount'] = 0;
-    }
+    $stmt->execute();
+
+    $response['success'] = true;
+    $response['message'] = 'Cart cleared successfully';
+    $response['cart'] = [];
+    $response['cartCount'] = 0;
+    $response['totalAmount'] = 0;
 }
 
 /**
- * Get cart count only
+ * Count only
  */
 function getCartCount($conn, $userId, &$response) {
-    $query = "SELECT COUNT(*) as count FROM cart WHERE user_id = ?";
-    $stmt = $conn->prepare($query);
+    $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM cart WHERE user_id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    
+    $result = $stmt->get_result()->fetch_assoc();
+
     $response['success'] = true;
-    $response['cartCount'] = $row['count'];
+    $response['cartCount'] = $result['count'];
     $response['message'] = 'Cart count retrieved';
 }
 
 /**
- * Clean product name helper function
+ * Clean product name
  */
 function cleanProductName($name) {
-    if (!$name) return "";
-    
     return trim(preg_replace([
         '/Product Record/i',
         '/Parent Record/i',
         '/:\s*/',
         '/\s+/'
-    ], [
-        '',
-        '',
-        '',
-        ' '
-    ], $name));
+    ], ['', '', '', ' '], $name ?? ''));
 }
 ?>
