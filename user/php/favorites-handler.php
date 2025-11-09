@@ -42,79 +42,77 @@ try {
         throw new Exception('Missing user_id. Please log in.');
     }
 
-    $user_id = (int)$user_id;
+    $user_id = (int) $user_id;
 
     function getPublicImagePath($dbPath)
     {
-        if (empty($dbPath)) return '';
+        if (empty($dbPath))
+            return '';
         $filename = basename($dbPath);
         return '/admin/uploads/product_images/' . $filename;
     }
 
     // ===================== TOGGLE FAVORITE ===================== //
-if ($action === 'toggle') {
-    if (!$product_id) {
-        echo json_encode(['success' => false, 'message' => 'Missing product_id']);
-        exit;
-    }
+    if ($action === 'toggle') {
+        if (!$product_id) {
+            echo json_encode(['success' => false, 'message' => 'Missing product_id']);
+            exit;
+        }
 
-    $product_id = (string)$product_id;
+        $product_id = (string) $product_id;
 
-    // 1. Get the parent product ID (if it exists)
-    $stmtParent = $conn->prepare("SELECT ParentProductID FROM Products WHERE ProductID=?");
-    $stmtParent->bind_param("s", $product_id);
-    $stmtParent->execute();
-    $resParent = $stmtParent->get_result();
-    $parentID = null;
+        // 1. Get the parent product ID (if it exists)
+        $stmtParent = $conn->prepare('SELECT ParentProductID FROM Products WHERE ProductID=?');
+        $stmtParent->bind_param('s', $product_id);
+        $stmtParent->execute();
+        $resParent = $stmtParent->get_result();
+        $parentID = null;
 
-    if ($row = $resParent->fetch_assoc()) {
-        $parentID = $row['ParentProductID'] ?? $product_id; // if no parent, use product itself
-    }
+        if ($row = $resParent->fetch_assoc()) {
+            $parentID = $row['ParentProductID'] ?? $product_id;  // if no parent, use product itself
+        }
 
-    // 2. Check if the product is already in favorites
-    $stmtCheck = $conn->prepare("SELECT favorite_id FROM favorites WHERE user_id=? AND product_id=?");
-    $stmtCheck->bind_param("is", $user_id, $product_id);
-    $stmtCheck->execute();
-    $res = $stmtCheck->get_result();
+        // 2. Check if the product is already in favorites
+        $stmtCheck = $conn->prepare('SELECT favorite_id FROM favorites WHERE user_id=? AND product_id=?');
+        $stmtCheck->bind_param('is', $user_id, $product_id);
+        $stmtCheck->execute();
+        $res = $stmtCheck->get_result();
 
-    if ($res->num_rows > 0) {
-        // 3. Remove all favorites for the parent product and its variants
-        $stmtDelete = $conn->prepare("
+        if ($res->num_rows > 0) {
+            // 3. Remove all favorites for the parent product and its variants
+            $stmtDelete = $conn->prepare('
             DELETE f 
             FROM favorites f
             JOIN Products p ON f.product_id = p.ProductID
             WHERE f.user_id = ? 
             AND (p.ProductID = ? OR p.ParentProductID = ?)
-        ");
-        $stmtDelete->bind_param("iss", $user_id, $parentID, $parentID);
-        $stmtDelete->execute();
+        ');
+            $stmtDelete->bind_param('iss', $user_id, $parentID, $parentID);
+            $stmtDelete->execute();
 
-        echo json_encode([
-            'success' => $stmtDelete->affected_rows > 0,
-            'action' => 'unliked'
-        ]);
-    } else {
-        // 4. Add favorite for the single product
-        $stmtInsert = $conn->prepare("INSERT INTO favorites (user_id, product_id) VALUES (?, ?)");
-        $stmtInsert->bind_param("is", $user_id, $product_id);
-        $stmtInsert->execute();
+            echo json_encode([
+                'success' => $stmtDelete->affected_rows > 0,
+                'action' => 'unliked'
+            ]);
+        } else {
+            // 4. Add favorite for the single product
+            $stmtInsert = $conn->prepare('INSERT INTO favorites (user_id, product_id) VALUES (?, ?)');
+            $stmtInsert->bind_param('is', $user_id, $product_id);
+            $stmtInsert->execute();
 
-        echo json_encode([
-            'success' => $stmtInsert->affected_rows > 0,
-            'action' => 'liked'
-        ]);
+            echo json_encode([
+                'success' => $stmtInsert->affected_rows > 0,
+                'action' => 'liked'
+            ]);
+        }
+
+        $conn->close();
+        exit;
     }
 
-    $conn->close();
-    exit;
-}
-
-
-    // ===================== FETCH FAVORITES ===================== //
-// This version shows ALL items under the same parent when any variant/parent is favorited
-$sql = "
-    SELECT 
-        DISTINCT p.ProductID AS id,
+    $sql = "
+    SELECT DISTINCT 
+        p.ProductID AS id,
         p.Name AS name,
         p.Category AS category,
         p.ParentProductID AS parentID,
@@ -123,6 +121,7 @@ $sql = "
         p.HexCode AS hexCode,
         p.Status AS status,
         p.Stocks AS stockQuantity,
+        p.CreatedAt AS createdAt,
         pm_v.ImagePath AS variantImage,
         pm_p.ImagePath AS previewImage,
         parent.Name AS parentName,
@@ -152,76 +151,78 @@ $sql = "
         AND p.Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
         AND p.Stocks > 0
     ORDER BY p.CreatedAt DESC
-";
+    ";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt)
+        throw new Exception('Prepare failed: ' . $conn->error);
+    $stmt->bind_param('ii', $user_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-$stmt = $conn->prepare($sql);
-if (!$stmt) throw new Exception('Prepare failed: ' . $conn->error);
-$stmt->bind_param('ii', $user_id, $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
+    // Group products by parent
+    $groupedProducts = [];
+    while ($row = $result->fetch_assoc()) {
+        $parentID = $row['parentID'];
+        $isParent = ($parentID === null || $parentID === $row['id']);
 
-// Group products by parent
-$groupedProducts = [];
-while ($row = $result->fetch_assoc()) {
-    $parentID = $row['parentID'];
-    $isParent = ($parentID === null || $parentID === $row['id']);
+        $row['variantImage'] = getPublicImagePath($row['variantImage'] ?? '');
+        $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
+        $row['name'] = trim(str_ireplace('Product Record', '', $row['name']));
+        $row['parentName'] = trim(str_ireplace('Product Record', '', $row['parentName'] ?? ''));
 
-    $row['variantImage'] = getPublicImagePath($row['variantImage'] ?? '');
-    $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
-    $row['name'] = trim(str_ireplace('Product Record', '', $row['name']));
-    $row['parentName'] = trim(str_ireplace('Product Record', '', $row['parentName'] ?? ''));
+        $parentKey = $isParent ? $row['id'] : $parentID;
+        $parentName = $row['parentName'] ?? $row['name'];
 
-    $parentKey = $isParent ? $row['id'] : $parentID;
-    $parentName = $row['parentName'] ?? $row['name'];
+        if (!isset($groupedProducts[$parentKey])) {
+            $groupedProducts[$parentKey] = [
+                'id' => $parentKey,
+                'name' => $parentName,
+                'category' => strtolower($row['category']),
+                'price' => floatval($row['price']),
+                'status' => $row['status'] ?? ($row['parentStatus'] ?? 'Available'),
+                'stockQuantity' => intval($row['stockQuantity']),
+                'image' => $row['previewImage'],
+                'previewImage' => $row['previewImage'],
+                'variants' => []
+            ];
+        }
 
-    if (!isset($groupedProducts[$parentKey])) {
-        $groupedProducts[$parentKey] = [
-            'id' => $parentKey,
-            'name' => $parentName,
-            'category' => strtolower($row['category']),
+        $groupedProducts[$parentKey]['variants'][] = [
+            'id' => $row['id'],
+            'name' => $row['variant'] ?? $row['name'],
+            'variant' => $row['variant'] ?? $row['name'],
             'price' => floatval($row['price']),
-            'status' => $row['status'] ?? ($row['parentStatus'] ?? 'Available'),
+            'image' => $row['variantImage'],
+            'hexCode' => $row['hexCode'] ?? '#CCCCCC',
+            'status' => $row['status'],
             'stockQuantity' => intval($row['stockQuantity']),
-            'image' => $row['previewImage'],
-            'previewImage' => $row['previewImage'],
-            'variants' => []
+            'favorited' => 1
         ];
     }
 
-    $groupedProducts[$parentKey]['variants'][] = [
-        'id' => $row['id'],
-        'name' => $row['variant'] ?? $row['name'],
-        'variant' => $row['variant'] ?? $row['name'],
-        'price' => floatval($row['price']),
-        'image' => $row['variantImage'],
-        'hexCode' => $row['hexCode'] ?? '#CCCCCC',
-        'status' => $row['status'],
-        'stockQuantity' => intval($row['stockQuantity']),
-        'favorited' => 1
-    ];
-}
-
-// Final cleanup (same as before)
-$finalProducts = [];
-foreach ($groupedProducts as $productId => $product) {
-    if (!empty($product['variants'])) {
-        $totalStock = 0;
-        $hasAvailable = false;
-        foreach ($product['variants'] as $variant) {
-            $totalStock += $variant['stockQuantity'];
-            if ($variant['stockQuantity'] > 0) $hasAvailable = true;
+    // Final cleanup (same as before)
+    $finalProducts = [];
+    foreach ($groupedProducts as $productId => $product) {
+        if (!empty($product['variants'])) {
+            $totalStock = 0;
+            $hasAvailable = false;
+            foreach ($product['variants'] as $variant) {
+                $totalStock += $variant['stockQuantity'];
+                if ($variant['stockQuantity'] > 0)
+                    $hasAvailable = true;
+            }
+            $product['stockQuantity'] = $totalStock;
+            if (!$hasAvailable)
+                continue;
         }
-        $product['stockQuantity'] = $totalStock;
-        if (!$hasAvailable) continue;
+
+        if (!isset($product['status']))
+            $product['status'] = 'Available';
+        if (!isset($product['stockQuantity']))
+            $product['stockQuantity'] = 0;
+
+        $finalProducts[] = $product;
     }
-
-    if (!isset($product['status'])) $product['status'] = 'Available';
-    if (!isset($product['stockQuantity'])) $product['stockQuantity'] = 0;
-
-    $finalProducts[] = $product;
-}
-
-
 
     echo json_encode([
         'success' => true,
@@ -233,7 +234,6 @@ foreach ($groupedProducts as $productId => $product) {
     ]);
 
     $conn->close();
-
 } catch (Exception $e) {
     ob_clean();
     http_response_code(500);
