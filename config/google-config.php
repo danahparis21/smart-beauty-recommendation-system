@@ -2,8 +2,8 @@
 // Google OAuth Configuration
 define('GOOGLE_CLIENT_ID', '1002579907182-03h0l3s7dend47reghc4j805herork3l.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET', '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');
-define('GOOGLE_REDIRECT_URI', 'http://localhost:8000/user/php/google-callback.php');
-define('GOOGLE_LOGIN_REDIRECT_URI', 'http://localhost:8000/user/php/google-callback.php');
+define('GOOGLE_REDIRECT_URI', 'http://localhost:8080/user/php/google-callback.php');
+define('GOOGLE_LOGIN_REDIRECT_URI', 'http://localhost:8080/user/php/google-callback.php');
 
 // Email Configuration (for sending verification emails)
 define('SMTP_HOST', 'smtp.gmail.com');
@@ -14,7 +14,7 @@ define('SMTP_FROM_EMAIL', 'christianpaulmendoza10@gmail.com');
 define('SMTP_FROM_NAME', 'Beauty & Blessed');
 
 // Base URL
-define('BASE_URL', 'http://localhost:8000');
+define('BASE_URL', 'http://localhost:8080');
 
 // ===== DEVELOPMENT MODE =====
 define('DEV_MODE', false);  // Set to false in production
