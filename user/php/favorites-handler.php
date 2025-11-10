@@ -110,8 +110,6 @@ if ($action === 'toggle') {
 }
 
 
-    // ===================== FETCH FAVORITES ===================== //
-// This version shows ALL items under the same parent when any variant/parent is favorited
 $sql = "
 SELECT DISTINCT 
     p.ProductID AS id,
