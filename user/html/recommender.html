@@ -1,1713 +1,1492 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Recommender | Beauty & Blessed</title>
-  <link rel="stylesheet" href="../styles/styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
-    rel="stylesheet" />
-  <!-- Add this BEFORE your page-specific scripts -->
-  <script src="../js/user-session.js"></script>
-  <style>
-    /* recommender.css - Quiz-specific styles */
-    .recommender-main {
-      padding: 40px 20px;
-      max-width: 800px;
-      margin: 0 auto;
-      min-height: calc(100vh - 200px);
-    }
-
-    .quiz-container {
-      background: var(--gradient-card);
-      border-radius: 20px;
-      box-shadow: var(--card-shadow);
-      border: 1px solid rgba(255, 182, 193, 0.2);
-      overflow: hidden;
-    }
-
-    .quiz-step {
-      display: none;
-      padding: 40px;
-    }
-
-    .quiz-step.active {
-      display: block;
-    }
-
-    /* Quiz Intro Styles */
-    .quiz-hero {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .hero-icon {
-      width: 100px;
-      height: 100px;
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 30px;
-      color: white;
-      font-size: 40px;
-      box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
-    }
-
-    .quiz-hero h1 {
-      font-size: 2.5rem;
-      color: var(--dark-gray);
-      margin-bottom: 20px;
-      font-family: "Cormorant Garamond", serif;
-    }
-
-    .quiz-hero p {
-      font-size: 1.1rem;
-      color: var(--text-gray);
-      margin-bottom: 40px;
-      line-height: 1.6;
-    }
-
-    .quiz-start-btn {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-      border: none;
-      border-radius: 25px;
-      padding: 15px 40px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
-    }
-
-    .quiz-start-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4);
-    }
-
-    /* Quiz Header */
-    .quiz-header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: var(--light-gray);
-      border-radius: 3px;
-      margin-bottom: 30px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(to right,
-          var(--primary-pink),
-          var(--dark-pink));
-      border-radius: 3px;
-      transition: width 0.3s ease;
-    }
-
-    .quiz-header h2 {
-      font-size: 2rem;
-      color: var(--dark-gray);
-      margin-bottom: 10px;
-      font-family: "Cormorant Garamond", serif;
-    }
-
-    .quiz-header p {
-      color: var(--text-gray);
-      font-size: 1rem;
-    }
-
-    /* Options Grid */
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-
-    .option-card {
-      background: white;
-      border: 2px solid var(--light-gray);
-      border-radius: 15px;
-      padding: 25px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .option-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--primary-pink);
-      box-shadow: 0 10px 25px rgba(255, 105, 180, 0.1);
-    }
-
-    .option-card.selected {
-      border-color: var(--primary-pink);
-      background: linear-gradient(135deg, #fff5f9, #ffe6f2);
-      box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
-    }
-
-    .option-icon {
-      width: 60px;
-      height: 60px;
-      background: var(--light-gray);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 15px;
-      color: var(--primary-pink);
-      font-size: 24px;
-      transition: all 0.3s ease;
-    }
-
-    .option-card.selected .option-icon {
-      background: var(--primary-pink);
-      color: white;
-    }
-
-    .option-card h3 {
-      font-size: 1.2rem;
-      color: var(--dark-gray);
-      margin-bottom: 8px;
-    }
-
-    .option-card p {
-      font-size: 0.9rem;
-      color: var(--text-gray);
-      line-height: 1.4;
-    }
-
-    /* Skin Tone Options */
-    .skin-tone-options {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
-
-    .tone-option {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .tone-option:hover {
-      transform: scale(1.05);
-    }
-
-    .tone-option.selected .tone-swatch {
-      transform: scale(1.1);
-      box-shadow: 0 0 0 3px var(--primary-pink);
-    }
-
-    .tone-swatch {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 3px solid white;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .tone-option span {
-      font-size: 0.9rem;
-      color: var(--dark-gray);
-      font-weight: 500;
-    }
-
-    /* Quiz Navigation */
-    .quiz-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 40px;
-    }
-
-    .nav-btn {
-      padding: 12px 25px;
-      border: none;
-      border-radius: 25px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-btn.primary {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
-    }
-
-    .nav-btn.primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-    }
-
-    .nav-btn.primary:disabled {
-      background: var(--medium-gray);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .nav-btn.secondary {
-      background: transparent;
-      color: var(--text-gray);
-      border: 2px solid var(--medium-gray);
-    }
-
-    .nav-btn.secondary:hover {
-      border-color: var(--primary-pink);
-      color: var(--primary-pink);
-    }
-
-    /* Results Styles */
-    .results-container {
-      text-align: center;
-    }
-
-    .results-hero {
-      margin-bottom: 40px;
-    }
-
-    .results-hero i {
-      font-size: 4rem;
-      color: var(--primary-pink);
-      margin-bottom: 20px;
-    }
-
-    .results-hero h2 {
-      font-size: 2.2rem;
-      color: var(--dark-gray);
-      margin-bottom: 15px;
-      font-family: "Cormorant Garamond", serif;
-    }
-
-    .results-hero p {
-      font-size: 1.1rem;
-      color: var(--text-gray);
-    }
-
-    .recommended-products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin: 40px 0;
-    }
-
-    .results-actions {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .retake-btn,
-    .shop-all-btn {
-      padding: 12px 25px;
-      border: none;
-      border-radius: 25px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .retake-btn {
-      background: transparent;
-      color: var(--text-gray);
-      border: 2px solid var(--medium-gray);
-    }
-
-    .retake-btn:hover {
-      border-color: var(--primary-pink);
-      color: var(--primary-pink);
-    }
-
-    .shop-all-btn {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
-    }
-
-    .shop-all-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-    }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      backdrop-filter: blur(5px);
-    }
-
-    .modal-overlay.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .exit-modal {
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 182, 193, 0.2);
-    }
-
-    .modal-icon {
-      font-size: 3rem;
-      color: var(--gold);
-      margin-bottom: 20px;
-    }
-
-    .exit-modal h3 {
-      font-size: 1.5rem;
-      color: var(--dark-gray);
-      margin-bottom: 10px;
-      font-family: "Cormorant Garamond", serif;
-    }
-
-    .exit-modal p {
-      color: var(--text-gray);
-      margin-bottom: 25px;
-    }
-
-    .modal-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .modal-btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 25px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-
-    .modal-btn.primary {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-    }
-
-    .modal-btn.secondary {
-      background: var(--light-gray);
-      color: var(--dark-gray);
-    }
-
-    .modal-btn.tertiary {
-      background: transparent;
-      color: var(--text-gray);
-      border: 2px solid var(--medium-gray);
-    }
-
-    .modal-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Concerns Grid (Checkbox Style) */
-    .concerns-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 40px;
-    }
-
-    .concern-option {
-      position: relative;
-    }
-
-    .concern-checkbox {
-      display: none;
-    }
-
-    .concern-label {
-      display: block;
-      background: white;
-      border: 2px solid var(--light-gray);
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .concern-checkbox:checked+.concern-label {
-      border-color: var(--primary-pink);
-      background: linear-gradient(135deg, #fff5f9, #ffe6f2);
-      box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
-    }
-
-    .concern-label:hover {
-      transform: translateY(-3px);
-      border-color: var(--primary-pink);
-      box-shadow: 0 8px 20px rgba(255, 105, 180, 0.1);
-    }
-
-    .concern-icon {
-      width: 50px;
-      height: 50px;
-      background: var(--light-gray);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 12px;
-      color: var(--primary-pink);
-      font-size: 20px;
-      transition: all 0.3s ease;
-    }
-
-    .concern-checkbox:checked+.concern-label .concern-icon {
-      background: var(--primary-pink);
-      color: white;
-    }
-
-    .concern-label h3 {
-      font-size: 1.1rem;
-      color: var(--dark-gray);
-      margin-bottom: 5px;
-    }
-
-    .concern-label p {
-      font-size: 0.8rem;
-      color: var(--text-gray);
-      line-height: 1.3;
-    }
-
-    /* Loading Step */
-    .loading-container {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .loading-spinner {
-      font-size: 4rem;
-      color: var(--primary-pink);
-      margin-bottom: 30px;
-    }
-
-    .loading-container h2 {
-      font-size: 2.2rem;
-      color: var(--dark-gray);
-      margin-bottom: 40px;
-      font-family: "Cormorant Garamond", serif;
-    }
-
-    .loading-messages {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    .loading-message {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 15px 20px;
-      background: white;
-      border-radius: 12px;
-      border: 2px solid var(--light-gray);
-      transition: all 0.3s ease;
-      opacity: 0.5;
-    }
-
-    .loading-message.active {
-      border-color: var(--primary-pink);
-      background: linear-gradient(135deg, #fff5f9, #ffe6f2);
-      opacity: 1;
-      transform: translateX(10px);
-    }
-
-    .loading-message i {
-      color: var(--primary-pink);
-      font-size: 1.2rem;
-    }
-
-    .loading-message span {
-      color: var(--dark-gray);
-      font-weight: 500;
-    }
-
-    /* Update progress bar for 5 steps */
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(to right,
-          var(--primary-pink),
-          var(--dark-pink));
-      border-radius: 3px;
-      transition: width 0.3s ease;
-    }
-
-    /* Update icon in nav */
-    .nav-item[data-page="recommender"] i {
-      font-size: 22px !important;
-    }
-
-    /* Enhanced Mobile Responsiveness */
-    @media (max-width: 768px) {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Recommender | Beauty & Blessed</title>
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Add this BEFORE your page-specific scripts -->
+    <script src="../js/user-session.js"></script>
+    <style>
+      .nav-item {
+        position: relative; /* Add this */
+      }
+
+      .nav-cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--primary-pink);
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+      .nav-cart-count.show {
+        display: flex;
+        animation: bounce 0.3s ease;
+      }
+
+      @keyframes bounce {
+        0% {
+          transform: scale(0.5);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      /* recommender.css - Quiz-specific styles */
       .recommender-main {
-        padding: 15px 10px;
-        min-height: calc(100vh - 150px);
+        padding: 40px 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        min-height: calc(100vh - 200px);
       }
 
       .quiz-container {
-        border-radius: 16px;
-        margin: 0 auto;
+        background: var(--gradient-card);
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        overflow: hidden;
       }
 
       .quiz-step {
-        padding: 25px 15px !important;
+        display: none;
+        padding: 40px;
       }
 
-      /* Quiz Intro Mobile */
+      .quiz-step.active {
+        display: block;
+      }
+
+      /* Quiz Intro Styles */
       .quiz-hero {
-        padding: 30px 15px;
+        text-align: center;
+        padding: 40px 20px;
       }
 
       .hero-icon {
-        width: 80px;
-        height: 80px;
-        font-size: 32px;
-        margin-bottom: 20px;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        color: white;
+        font-size: 40px;
+        box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
       }
 
       .quiz-hero h1 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-        line-height: 1.3;
+        font-size: 2.5rem;
+        color: var(--dark-gray);
+        margin-bottom: 20px;
+        font-family: "Cormorant Garamond", serif;
       }
 
       .quiz-hero p {
-        font-size: 1rem;
-        margin-bottom: 30px;
-        line-height: 1.5;
+        font-size: 1.1rem;
+        color: var(--text-gray);
+        margin-bottom: 40px;
+        line-height: 1.6;
       }
 
       .quiz-start-btn {
-        padding: 14px 35px;
-        font-size: 1rem;
-        width: 100%;
-        max-width: 280px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
       }
 
-      /* Quiz Header Mobile */
+      .quiz-start-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4);
+      }
+
+      /* Quiz Header */
       .quiz-header {
-        margin-bottom: 30px;
+        text-align: center;
+        margin-bottom: 40px;
       }
 
       .progress-bar {
-        height: 5px;
-        margin-bottom: 20px;
+        width: 100%;
+        height: 6px;
+        background: var(--light-gray);
+        border-radius: 3px;
+        margin-bottom: 30px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          to right,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        border-radius: 3px;
+        transition: width 0.3s ease;
       }
 
       .quiz-header h2 {
-        font-size: 1.6rem;
-        margin-bottom: 8px;
-        line-height: 1.3;
+        font-size: 2rem;
+        color: var(--dark-gray);
+        margin-bottom: 10px;
+        font-family: "Cormorant Garamond", serif;
       }
 
       .quiz-header p {
-        font-size: 0.9rem;
-        line-height: 1.4;
+        color: var(--text-gray);
+        font-size: 1rem;
       }
 
-      /* Options Grid Mobile */
+      /* Options Grid */
       .options-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
       }
 
       .option-card {
-        padding: 20px 15px;
-        border-radius: 12px;
+        background: white;
+        border: 2px solid var(--light-gray);
+        border-radius: 15px;
+        padding: 25px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
       }
 
       .option-card:hover {
-        transform: translateY(-2px);
+        transform: translateY(-5px);
+        border-color: var(--primary-pink);
+        box-shadow: 0 10px 25px rgba(255, 105, 180, 0.1);
+      }
+
+      .option-card.selected {
+        border-color: var(--primary-pink);
+        background: linear-gradient(135deg, #fff5f9, #ffe6f2);
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
       }
 
       .option-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-        margin-bottom: 12px;
+        width: 60px;
+        height: 60px;
+        background: var(--light-gray);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        color: var(--primary-pink);
+        font-size: 24px;
+        transition: all 0.3s ease;
+      }
+
+      .option-card.selected .option-icon {
+        background: var(--primary-pink);
+        color: white;
       }
 
       .option-card h3 {
-        font-size: 1.1rem;
-        margin-bottom: 6px;
+        font-size: 1.2rem;
+        color: var(--dark-gray);
+        margin-bottom: 8px;
       }
 
       .option-card p {
-        font-size: 0.85rem;
-        line-height: 1.3;
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        line-height: 1.4;
       }
 
-      /* Skin Tone Options Mobile */
+      /* Skin Tone Options */
       .skin-tone-options {
-        gap: 12px;
-        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
       }
 
       .tone-option {
-        gap: 8px;
-      }
-
-      .tone-swatch {
-        width: 45px;
-        height: 45px;
-        border-width: 2px;
-      }
-
-      .tone-option span {
-        font-size: 0.8rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
       }
 
       .tone-option:hover {
-        transform: scale(1.03);
+        transform: scale(1.05);
       }
 
       .tone-option.selected .tone-swatch {
-        transform: scale(1.08);
-        box-shadow: 0 0 0 2px var(--primary-pink);
+        transform: scale(1.1);
+        box-shadow: 0 0 0 3px var(--primary-pink);
       }
 
-      /* Concerns Grid Mobile */
-      .concerns-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 30px;
+      .tone-swatch {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
       }
 
-      .concern-label {
-        padding: 18px 15px;
-        border-radius: 12px;
+      .tone-option span {
+        font-size: 0.9rem;
+        color: var(--dark-gray);
+        font-weight: 500;
       }
 
-      .concern-label:hover {
-        transform: translateY(-2px);
-      }
-
-      .concern-icon {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-        margin-bottom: 10px;
-      }
-
-      .concern-label h3 {
-        font-size: 1rem;
-        margin-bottom: 4px;
-      }
-
-      .concern-label p {
-        font-size: 0.75rem;
-        line-height: 1.2;
-      }
-
-      /* Quiz Navigation Mobile */
+      /* Quiz Navigation */
       .quiz-nav {
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
       }
 
       .nav-btn {
-        padding: 14px 20px;
-        width: 100%;
-        justify-content: center;
-        font-size: 1rem;
-        border-radius: 20px;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-btn.primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
       }
 
       .nav-btn.primary:hover:not(:disabled) {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
       }
 
-      /* Loading Step Mobile */
-      .loading-container {
-        padding: 40px 15px;
+      .nav-btn.primary:disabled {
+        background: var(--medium-gray);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
 
-      .loading-spinner {
-        font-size: 3rem;
-        margin-bottom: 25px;
+      .nav-btn.secondary {
+        background: transparent;
+        color: var(--text-gray);
+        border: 2px solid var(--medium-gray);
       }
 
-      .loading-container h2 {
-        font-size: 1.8rem;
-        margin-bottom: 30px;
+      .nav-btn.secondary:hover {
+        border-color: var(--primary-pink);
+        color: var(--primary-pink);
       }
 
-      .loading-messages {
-        gap: 15px;
-        max-width: 100%;
+      /* Results Styles */
+      .results-container {
+        text-align: center;
       }
 
-      .loading-message {
-        padding: 12px 15px;
-        border-radius: 10px;
-        gap: 12px;
-      }
-
-      .loading-message.active {
-        transform: translateX(5px);
-      }
-
-      .loading-message i {
-        font-size: 1.1rem;
-        min-width: 20px;
-      }
-
-      .loading-message span {
-        font-size: 0.9rem;
-        text-align: left;
-      }
-
-      /* Results Mobile */
       .results-hero {
-        margin-bottom: 30px;
+        margin-bottom: 40px;
       }
 
       .results-hero i {
-        font-size: 3rem;
-        margin-bottom: 15px;
+        font-size: 4rem;
+        color: var(--primary-pink);
+        margin-bottom: 20px;
       }
 
       .results-hero h2 {
-        font-size: 1.8rem;
-        margin-bottom: 12px;
+        font-size: 2.2rem;
+        color: var(--dark-gray);
+        margin-bottom: 15px;
+        font-family: "Cormorant Garamond", serif;
       }
 
       .results-hero p {
-        font-size: 1rem;
+        font-size: 1.1rem;
+        color: var(--text-gray);
       }
 
       .recommended-products {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        margin: 30px 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 40px 0;
       }
 
       .results-actions {
-        flex-direction: column;
-        gap: 12px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
       }
 
       .retake-btn,
       .shop-all-btn {
-        padding: 14px 20px;
-        width: 100%;
-        justify-content: center;
-        font-size: 1rem;
-        border-radius: 20px;
-      }
-
-      /* Modal Mobile */
-      .exit-modal {
-        padding: 25px 20px;
-        margin: 20px;
-        border-radius: 16px;
-      }
-
-      .modal-icon {
-        font-size: 2.5rem;
-        margin-bottom: 15px;
-      }
-
-      .exit-modal h3 {
-        font-size: 1.3rem;
-        margin-bottom: 8px;
-      }
-
-      .exit-modal p {
-        font-size: 0.9rem;
-        margin-bottom: 20px;
-      }
-
-      .modal-actions {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
         gap: 8px;
       }
 
-      .modal-btn {
-        padding: 14px 20px;
-        font-size: 1rem;
-        border-radius: 20px;
-      }
-    }
-
-    /* Clean Floating Product Styles - Glow Behind Image */
-    .floating-product {
-      margin: 50px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .product-image {
-      width: 250px;
-      height: 250px;
-      object-fit: contain;
-      position: relative;
-      z-index: 10;
-
-      filter: drop-shadow(0 15px 30px rgba(255, 105, 180, 0.4)) drop-shadow(0 5px 15px rgba(255, 20, 147, 0.3));
-
-      animation: float 3s ease-in-out infinite;
-
-      background: transparent !important;
-      border: none !important;
-      border-radius: 0 !important;
-      padding: 0 !important;
-    }
-
-    .floating-product::before {
-      content: "";
-      position: absolute;
-      width: 260px;
-      /* Slightly smaller */
-      height: 260px;
-      background: radial-gradient(circle at center,
-          rgba(255, 182, 193, 0.25) 0%,
-          /* Much softer pink */
-          rgba(255, 105, 180, 0.15) 40%,
-          /* Reduced opacity */
-          rgba(255, 20, 147, 0.08) 70%,
-          /* Very subtle */
-          transparent 85%);
-      border-radius: 50%;
-      filter: blur(20px);
-      /* Less blur */
-      z-index: 1;
-      animation: glow 4s ease-in-out infinite;
-      opacity: 0.5;
-      /* Reduced overall opacity */
-    }
-
-    /* Secondary glow layer - FARTHER BEHIND */
-    .floating-product::after {
-      content: "";
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle at center,
-          rgba(255, 182, 193, 0.15) 0%,
-          /* Very subtle */
-          rgba(255, 105, 180, 0.08) 25%,
-          /* Almost transparent */
-          rgba(255, 20, 147, 0.05) 50%,
-          /* Barely visible */
-          transparent 70%);
-      border-radius: 50%;
-      z-index: 0;
-      animation: pulse 8s ease-in-out infinite;
-      /* Slower pulse */
-      opacity: 0.3;
-      /* Much more subtle */
-    }
-
-    /* Softer glow animation */
-    @keyframes glow {
-
-      0%,
-      100% {
-        opacity: 0.4;
-        transform: scale(1) rotate(0deg);
+      .retake-btn {
+        background: transparent;
+        color: var(--text-gray);
+        border: 2px solid var(--medium-gray);
       }
 
-      50% {
-        opacity: 0.6;
-        transform: scale(1.05) rotate(3deg);
-        /* Smaller scale change */
-      }
-    }
-
-    /* Slower, more subtle pulse */
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 0.2;
-        transform: scale(1);
+      .retake-btn:hover {
+        border-color: var(--primary-pink);
+        color: var(--primary-pink);
       }
 
-      50% {
-        opacity: 0.4;
-        transform: scale(1.03);
-        /* Very subtle scale change */
-      }
-    }
-
-    /* Enhanced 3D Floating Animation */
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0px) scale(1) rotate(0deg);
+      .shop-all-btn {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
       }
 
-      33% {
-        transform: translateY(-15px) scale(1.08) rotate(2deg);
+      .shop-all-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
       }
 
-      66% {
-        transform: translateY(-8px) scale(1.04) rotate(-1deg);
-      }
-    }
-
-    /* Remove all the old conflicting styles */
-    .remove-white-bg,
-    .product-image[src*=".png"] {
-      /* Reset any previous filters that might cause issues */
-      mix-blend-mode: normal;
-      filter: drop-shadow(0 15px 30px rgba(255, 105, 180, 0.4)) drop-shadow(0 5px 15px rgba(255, 20, 147, 0.3)) !important;
-    }
-
-    /* Extra Small Devices (Phones under 375px) */
-    @media (max-width: 375px) {
-      .recommender-main {
-        padding: 10px 8px;
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
       }
 
-      .quiz-step {
-        padding: 20px 12px !important;
-      }
-
-      .quiz-hero h1 {
-        font-size: 1.6rem;
-      }
-
-      .quiz-header h2 {
-        font-size: 1.4rem;
-      }
-
-      .hero-icon {
-        width: 70px;
-        height: 70px;
-        font-size: 28px;
-      }
-
-      .option-card {
-        padding: 18px 12px;
-      }
-
-      .tone-swatch {
-        width: 40px;
-        height: 40px;
-      }
-
-      .concern-label {
-        padding: 16px 12px;
-      }
-
-      .nav-btn {
-        padding: 12px 18px;
-        font-size: 0.95rem;
-      }
-    }
-
-    /* Tablet Optimization (768px - 1024px) */
-    @media (min-width: 769px) and (max-width: 1024px) {
-      .floating-product {
-        margin: 30px 0;
-      }
-
-      .product-image {
-        width: 140px;
-        height: 140px;
-      }
-
-      .floating-product::before {
-        width: 160px;
-        height: 160px;
-      }
-
-      .recommender-main {
-        padding: 30px 20px;
-        max-width: 700px;
-      }
-
-      .quiz-step {
-        padding: 35px 30px;
-      }
-
-      .options-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-      }
-
-      .concerns-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-
-      .skin-tone-options {
-        gap: 15px;
-      }
-
-      .tone-swatch {
-        width: 55px;
-        height: 55px;
-      }
-    }
-
-    /* Large Mobile Landscape (568px - 767px) */
-    @media (max-width: 767px) and (orientation: landscape) {
-      .recommender-main {
-        padding: 15px 10px;
-        min-height: auto;
-      }
-
-      .quiz-step {
-        padding: 20px 15px !important;
-      }
-
-      .quiz-hero {
-        padding: 20px 15px;
-      }
-
-      .hero-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 24px;
-        margin-bottom: 15px;
-      }
-
-      .quiz-hero h1 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-      }
-
-      .quiz-hero p {
-        font-size: 0.9rem;
-        margin-bottom: 20px;
-      }
-
-      .options-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-
-      .option-card {
-        padding: 15px 10px;
-      }
-
-      .option-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-        margin-bottom: 8px;
-      }
-
-      .option-card h3 {
-        font-size: 1rem;
-      }
-
-      .option-card p {
-        font-size: 0.8rem;
-      }
-
-      .skin-tone-options {
-        gap: 10px;
-      }
-
-      .tone-swatch {
-        width: 40px;
-        height: 40px;
-      }
-
-      .quiz-nav {
-        margin-top: 20px;
-      }
-    }
-
-    /* Prevent zoom on input focus for iOS */
-    @media (max-width: 768px) {
-
-      input,
-      select,
-      textarea {
-        font-size: 16px;
-        /* Prevents zoom on iOS */
-      }
-    }
-
-    /* Touch-friendly improvements */
-    @media (max-width: 768px) {
-
-      .option-card,
-      .tone-option,
-      .concern-label,
-      .nav-btn,
-      .modal-btn {
-        min-height: 44px;
-        /* Apple's recommended minimum touch target size */
-      }
-
-      .option-card,
-      .concern-label {
-        cursor: default;
-        /* Remove cursor on touch devices */
-      }
-    }
-
-    /* Safe area insets for notched devices */
-    @supports (padding: max(0px)) {
-      .recommender-main {
-        padding-left: max(15px, env(safe-area-inset-left));
-        padding-right: max(15px, env(safe-area-inset-right));
-        padding-bottom: max(15px, env(safe-area-inset-bottom));
-      }
-    }
-
-    /* High DPI screen optimizations */
-    @media (-webkit-min-device-pixel-ratio: 2),
-    (min-resolution: 192dpi) {
-
-      .progress-bar,
-      .tone-swatch,
-      .option-icon,
-      .concern-icon {
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        transform: translateZ(0);
-      }
-    }
-
-    /* Reduced motion for accessibility */
-    @media (prefers-reduced-motion: reduce) {
-
-      .option-card,
-      .tone-option,
-      .concern-label,
-      .nav-btn,
-      .modal-btn,
-      .loading-message {
-        transition: none;
-        transform: none;
-      }
-
-      .loading-spinner {
-        animation: none;
-      }
-    }
-
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-      .quiz-container {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 182, 193, 0.1);
-      }
-
-      .option-card,
-      .concern-label {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
+      .modal-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .exit-modal {
-        background: #1a1a1a;
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .modal-icon {
+        font-size: 3rem;
+        color: var(--gold);
+        margin-bottom: 20px;
+      }
+
+      .exit-modal h3 {
+        font-size: 1.5rem;
+        color: var(--dark-gray);
+        margin-bottom: 10px;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .exit-modal p {
+        color: var(--text-gray);
+        margin-bottom: 25px;
+      }
+
+      .modal-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .modal-btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      .modal-btn.primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         color: white;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <!-- Header -->
-  <header class="header">
-    <div class="brand-header">
-      <h1 class="brand-name">Beauty & Blessed</h1>
-      <p class="brand-tagline">Elevate Your Everyday Glam.</p>
-    </div>
-    <div class="user-section">
-      <span class="user-greeting" id="user-greeting">Hi, Maria!</span>
-      <button class="profile-btn" onclick="window.location.href='../../profile/html/user_profile.html'">
+      .modal-btn.secondary {
+        background: var(--light-gray);
+        color: var(--dark-gray);
+      }
+
+      .modal-btn.tertiary {
+        background: transparent;
+        color: var(--text-gray);
+        border: 2px solid var(--medium-gray);
+      }
+
+      .modal-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Concerns Grid (Checkbox Style) */
+      .concerns-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 40px;
+      }
+
+      .concern-option {
+        position: relative;
+      }
+
+      .concern-checkbox {
+        display: none;
+      }
+
+      .concern-label {
+        display: block;
+        background: white;
+        border: 2px solid var(--light-gray);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .concern-checkbox:checked + .concern-label {
+        border-color: var(--primary-pink);
+        background: linear-gradient(135deg, #fff5f9, #ffe6f2);
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
+      }
+
+      .concern-label:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary-pink);
+        box-shadow: 0 8px 20px rgba(255, 105, 180, 0.1);
+      }
+
+      .concern-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--light-gray);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        color: var(--primary-pink);
+        font-size: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .concern-checkbox:checked + .concern-label .concern-icon {
+        background: var(--primary-pink);
+        color: white;
+      }
+
+      .concern-label h3 {
+        font-size: 1.1rem;
+        color: var(--dark-gray);
+        margin-bottom: 5px;
+      }
+
+      .concern-label p {
+        font-size: 0.8rem;
+        color: var(--text-gray);
+        line-height: 1.3;
+      }
+
+      /* Loading Step */
+      .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .loading-spinner {
+        font-size: 4rem;
+        color: var(--primary-pink);
+        margin-bottom: 30px;
+      }
+
+      .loading-container h2 {
+        font-size: 2.2rem;
+        color: var(--dark-gray);
+        margin-bottom: 40px;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .loading-messages {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .loading-message {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 20px;
+        background: white;
+        border-radius: 12px;
+        border: 2px solid var(--light-gray);
+        transition: all 0.3s ease;
+        opacity: 0.5;
+      }
+
+      .loading-message.active {
+        border-color: var(--primary-pink);
+        background: linear-gradient(135deg, #fff5f9, #ffe6f2);
+        opacity: 1;
+        transform: translateX(10px);
+      }
+
+      .loading-message i {
+        color: var(--primary-pink);
+        font-size: 1.2rem;
+      }
+
+      .loading-message span {
+        color: var(--dark-gray);
+        font-weight: 500;
+      }
+
+      /* Update progress bar for 5 steps */
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          to right,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+
+      /* Update icon in nav */
+      .nav-item[data-page="recommender"] i {
+        font-size: 22px !important;
+      }
+
+      /* Enhanced Mobile Responsiveness */
+      @media (max-width: 768px) {
+        .recommender-main {
+          padding: 15px 10px;
+          min-height: calc(100vh - 150px);
+        }
+
+        .quiz-container {
+          border-radius: 16px;
+          margin: 0 auto;
+        }
+
+        .quiz-step {
+          padding: 25px 15px !important;
+        }
+
+        /* Quiz Intro Mobile */
+        .quiz-hero {
+          padding: 30px 15px;
+        }
+
+        .hero-icon {
+          width: 80px;
+          height: 80px;
+          font-size: 32px;
+          margin-bottom: 20px;
+        }
+
+        .quiz-hero h1 {
+          font-size: 1.8rem;
+          margin-bottom: 15px;
+          line-height: 1.3;
+        }
+
+        .quiz-hero p {
+          font-size: 1rem;
+          margin-bottom: 30px;
+          line-height: 1.5;
+        }
+
+        .quiz-start-btn {
+          padding: 14px 35px;
+          font-size: 1rem;
+          width: 100%;
+          max-width: 280px;
+        }
+
+        /* Quiz Header Mobile */
+        .quiz-header {
+          margin-bottom: 30px;
+        }
+
+        .progress-bar {
+          height: 5px;
+          margin-bottom: 20px;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.6rem;
+          margin-bottom: 8px;
+          line-height: 1.3;
+        }
+
+        .quiz-header p {
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+
+        /* Options Grid Mobile */
+        .options-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          margin-bottom: 30px;
+        }
+
+        .option-card {
+          padding: 20px 15px;
+          border-radius: 12px;
+        }
+
+        .option-card:hover {
+          transform: translateY(-2px);
+        }
+
+        .option-icon {
+          width: 50px;
+          height: 50px;
+          font-size: 20px;
+          margin-bottom: 12px;
+        }
+
+        .option-card h3 {
+          font-size: 1.1rem;
+          margin-bottom: 6px;
+        }
+
+        .option-card p {
+          font-size: 0.85rem;
+          line-height: 1.3;
+        }
+
+        /* Skin Tone Options Mobile */
+        .skin-tone-options {
+          gap: 12px;
+          margin-bottom: 30px;
+        }
+
+        .tone-option {
+          gap: 8px;
+        }
+
+        .tone-swatch {
+          width: 45px;
+          height: 45px;
+          border-width: 2px;
+        }
+
+        .tone-option span {
+          font-size: 0.8rem;
+        }
+
+        .tone-option:hover {
+          transform: scale(1.03);
+        }
+
+        .tone-option.selected .tone-swatch {
+          transform: scale(1.08);
+          box-shadow: 0 0 0 2px var(--primary-pink);
+        }
+
+        /* Concerns Grid Mobile */
+        .concerns-grid {
+          grid-template-columns: 1fr;
+          gap: 10px;
+          margin-bottom: 30px;
+        }
+
+        .concern-label {
+          padding: 18px 15px;
+          border-radius: 12px;
+        }
+
+        .concern-label:hover {
+          transform: translateY(-2px);
+        }
+
+        .concern-icon {
+          width: 45px;
+          height: 45px;
+          font-size: 18px;
+          margin-bottom: 10px;
+        }
+
+        .concern-label h3 {
+          font-size: 1rem;
+          margin-bottom: 4px;
+        }
+
+        .concern-label p {
+          font-size: 0.75rem;
+          line-height: 1.2;
+        }
+
+        /* Quiz Navigation Mobile */
+        .quiz-nav {
+          flex-direction: column;
+          gap: 12px;
+          margin-top: 30px;
+        }
+
+        .nav-btn {
+          padding: 14px 20px;
+          width: 100%;
+          justify-content: center;
+          font-size: 1rem;
+          border-radius: 20px;
+        }
+
+        .nav-btn.primary:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+
+        /* Loading Step Mobile */
+        .loading-container {
+          padding: 40px 15px;
+        }
+
+        .loading-spinner {
+          font-size: 3rem;
+          margin-bottom: 25px;
+        }
+
+        .loading-container h2 {
+          font-size: 1.8rem;
+          margin-bottom: 30px;
+        }
+
+        .loading-messages {
+          gap: 15px;
+          max-width: 100%;
+        }
+
+        .loading-message {
+          padding: 12px 15px;
+          border-radius: 10px;
+          gap: 12px;
+        }
+
+        .loading-message.active {
+          transform: translateX(5px);
+        }
+
+        .loading-message i {
+          font-size: 1.1rem;
+          min-width: 20px;
+        }
+
+        .loading-message span {
+          font-size: 0.9rem;
+          text-align: left;
+        }
+
+        /* Results Mobile */
+        .results-hero {
+          margin-bottom: 30px;
+        }
+
+        .results-hero i {
+          font-size: 3rem;
+          margin-bottom: 15px;
+        }
+
+        .results-hero h2 {
+          font-size: 1.8rem;
+          margin-bottom: 12px;
+        }
+
+        .results-hero p {
+          font-size: 1rem;
+        }
+
+        .recommended-products {
+          grid-template-columns: 1fr;
+          gap: 15px;
+          margin: 30px 0;
+        }
+
+        .results-actions {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .retake-btn,
+        .shop-all-btn {
+          padding: 14px 20px;
+          width: 100%;
+          justify-content: center;
+          font-size: 1rem;
+          border-radius: 20px;
+        }
+
+        /* Modal Mobile */
+        .exit-modal {
+          padding: 25px 20px;
+          margin: 20px;
+          border-radius: 16px;
+        }
+
+        .modal-icon {
+          font-size: 2.5rem;
+          margin-bottom: 15px;
+        }
+
+        .exit-modal h3 {
+          font-size: 1.3rem;
+          margin-bottom: 8px;
+        }
+
+        .exit-modal p {
+          font-size: 0.9rem;
+          margin-bottom: 20px;
+        }
+
+        .modal-actions {
+          gap: 8px;
+        }
+
+        .modal-btn {
+          padding: 14px 20px;
+          font-size: 1rem;
+          border-radius: 20px;
+        }
+      }
+
+      /* Clean Floating Product Styles - Glow Behind Image */
+      .floating-product {
+        margin: 50px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
+      .product-image {
+        width: 250px;
+        height: 250px;
+        object-fit: contain;
+        position: relative;
+        z-index: 10;
+
+        filter: drop-shadow(0 15px 30px rgba(255, 105, 180, 0.4))
+          drop-shadow(0 5px 15px rgba(255, 20, 147, 0.3));
+
+        animation: float 3s ease-in-out infinite;
+
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+      }
+
+      .floating-product::before {
+        content: "";
+        position: absolute;
+        width: 260px;
+        /* Slightly smaller */
+        height: 260px;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 182, 193, 0.25) 0%,
+          /* Much softer pink */ rgba(255, 105, 180, 0.15) 40%,
+          /* Reduced opacity */ rgba(255, 20, 147, 0.08) 70%,
+          /* Very subtle */ transparent 85%
+        );
+        border-radius: 50%;
+        filter: blur(20px);
+        /* Less blur */
+        z-index: 1;
+        animation: glow 4s ease-in-out infinite;
+        opacity: 0.5;
+        /* Reduced overall opacity */
+      }
+
+      /* Secondary glow layer - FARTHER BEHIND */
+      .floating-product::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 182, 193, 0.15) 0%,
+          /* Very subtle */ rgba(255, 105, 180, 0.08) 25%,
+          /* Almost transparent */ rgba(255, 20, 147, 0.05) 50%,
+          /* Barely visible */ transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+        animation: pulse 8s ease-in-out infinite;
+        /* Slower pulse */
+        opacity: 0.3;
+        /* Much more subtle */
+      }
+
+      /* Softer glow animation */
+      @keyframes glow {
+        0%,
+        100% {
+          opacity: 0.4;
+          transform: scale(1) rotate(0deg);
+        }
+
+        50% {
+          opacity: 0.6;
+          transform: scale(1.05) rotate(3deg);
+          /* Smaller scale change */
+        }
+      }
+
+      /* Slower, more subtle pulse */
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.2;
+          transform: scale(1);
+        }
+
+        50% {
+          opacity: 0.4;
+          transform: scale(1.03);
+          /* Very subtle scale change */
+        }
+      }
+
+      /* Enhanced 3D Floating Animation */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) scale(1) rotate(0deg);
+        }
+
+        33% {
+          transform: translateY(-15px) scale(1.08) rotate(2deg);
+        }
+
+        66% {
+          transform: translateY(-8px) scale(1.04) rotate(-1deg);
+        }
+      }
+
+      /* Remove all the old conflicting styles */
+      .remove-white-bg,
+      .product-image[src*=".png"] {
+        /* Reset any previous filters that might cause issues */
+        mix-blend-mode: normal;
+        filter: drop-shadow(0 15px 30px rgba(255, 105, 180, 0.4))
+          drop-shadow(0 5px 15px rgba(255, 20, 147, 0.3)) !important;
+      }
+
+      /* Extra Small Devices (Phones under 375px) */
+      @media (max-width: 375px) {
+        .recommender-main {
+          padding: 10px 8px;
+        }
+
+        .quiz-step {
+          padding: 20px 12px !important;
+        }
+
+        .quiz-hero h1 {
+          font-size: 1.6rem;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.4rem;
+        }
+
+        .hero-icon {
+          width: 70px;
+          height: 70px;
+          font-size: 28px;
+        }
+
+        .option-card {
+          padding: 18px 12px;
+        }
+
+        .tone-swatch {
+          width: 40px;
+          height: 40px;
+        }
+
+        .concern-label {
+          padding: 16px 12px;
+        }
+
+        .nav-btn {
+          padding: 12px 18px;
+          font-size: 0.95rem;
+        }
+      }
+
+      /* Tablet Optimization (768px - 1024px) */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .floating-product {
+          margin: 30px 0;
+        }
+
+        .product-image {
+          width: 140px;
+          height: 140px;
+        }
+
+        .floating-product::before {
+          width: 160px;
+          height: 160px;
+        }
+
+        .recommender-main {
+          padding: 30px 20px;
+          max-width: 700px;
+        }
+
+        .quiz-step {
+          padding: 35px 30px;
+        }
+
+        .options-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+        }
+
+        .concerns-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+
+        .skin-tone-options {
+          gap: 15px;
+        }
+
+        .tone-swatch {
+          width: 55px;
+          height: 55px;
+        }
+      }
+
+      /* Large Mobile Landscape (568px - 767px) */
+      @media (max-width: 767px) and (orientation: landscape) {
+        .recommender-main {
+          padding: 15px 10px;
+          min-height: auto;
+        }
+
+        .quiz-step {
+          padding: 20px 15px !important;
+        }
+
+        .quiz-hero {
+          padding: 20px 15px;
+        }
+
+        .hero-icon {
+          width: 60px;
+          height: 60px;
+          font-size: 24px;
+          margin-bottom: 15px;
+        }
+
+        .quiz-hero h1 {
+          font-size: 1.5rem;
+          margin-bottom: 10px;
+        }
+
+        .quiz-hero p {
+          font-size: 0.9rem;
+          margin-bottom: 20px;
+        }
+
+        .options-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+
+        .option-card {
+          padding: 15px 10px;
+        }
+
+        .option-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+          margin-bottom: 8px;
+        }
+
+        .option-card h3 {
+          font-size: 1rem;
+        }
+
+        .option-card p {
+          font-size: 0.8rem;
+        }
+
+        .skin-tone-options {
+          gap: 10px;
+        }
+
+        .tone-swatch {
+          width: 40px;
+          height: 40px;
+        }
+
+        .quiz-nav {
+          margin-top: 20px;
+        }
+      }
+
+      /* Prevent zoom on input focus for iOS */
+      @media (max-width: 768px) {
+        input,
+        select,
+        textarea {
+          font-size: 16px;
+          /* Prevents zoom on iOS */
+        }
+      }
+
+      /* Touch-friendly improvements */
+      @media (max-width: 768px) {
+        .option-card,
+        .tone-option,
+        .concern-label,
+        .nav-btn,
+        .modal-btn {
+          min-height: 44px;
+          /* Apple's recommended minimum touch target size */
+        }
+
+        .option-card,
+        .concern-label {
+          cursor: default;
+          /* Remove cursor on touch devices */
+        }
+      }
+
+      /* Safe area insets for notched devices */
+      @supports (padding: max(0px)) {
+        .recommender-main {
+          padding-left: max(15px, env(safe-area-inset-left));
+          padding-right: max(15px, env(safe-area-inset-right));
+          padding-bottom: max(15px, env(safe-area-inset-bottom));
+        }
+      }
+
+      /* High DPI screen optimizations */
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .progress-bar,
+        .tone-swatch,
+        .option-icon,
+        .concern-icon {
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+          transform: translateZ(0);
+        }
+      }
+
+      /* Reduced motion for accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .option-card,
+        .tone-option,
+        .concern-label,
+        .nav-btn,
+        .modal-btn,
+        .loading-message {
+          transition: none;
+          transform: none;
+        }
+
+        .loading-spinner {
+          animation: none;
+        }
+      }
+
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        .quiz-container {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 182, 193, 0.1);
+        }
+
+        .option-card,
+        .concern-label {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .exit-modal {
+          background: #1a1a1a;
+          color: white;
+        }
+      }
+
+      /* Preferences Modals */
+      #current-preferences-display {
+        background: var(--light-gray);
+        padding: 20px;
+        border-radius: 12px;
+        margin: 15px 0;
+        text-align: left;
+      }
+
+      .preference-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--medium-gray);
+      }
+
+      .preference-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+      }
+
+      .preference-label {
+        font-weight: 600;
+        color: var(--dark-gray);
+      }
+
+      .preference-value {
+        color: var(--primary-pink);
+        text-transform: capitalize;
+      }
+
+      .concerns-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .concern-tag {
+        background: var(--primary-pink);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        text-transform: capitalize;
+      }
+      /* Hide new preference modals by default */
+      #existing-prefs-modal,
+      #current-prefs-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+      }
+
+      /* Show modals when active */
+      #existing-prefs-modal.active,
+      #current-prefs-modal.active {
+        display: flex;
+      }
+
+      /* Modal content styling */
+      #existing-prefs-modal .modal-content,
+      #current-prefs-modal .modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      /* Modal buttons */
+      .modal-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal-btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .modal-btn.primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+      }
+
+      .modal-btn.secondary {
+        background: var(--light-gray);
+        color: var(--dark-gray);
+        border: 2px solid var(--medium-gray);
+      }
+
+      .modal-btn.cancel-btn {
+        background: transparent;
+        color: var(--text-gray);
+        border: 2px solid var(--medium-gray);
+      }
+
+      .modal-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-btn.primary:hover {
+        box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+      }
+
+      /* Modal headers */
+      #existing-prefs-modal h3,
+      #current-prefs-modal h3 {
+        font-size: 1.5rem;
+        color: var(--dark-gray);
+        margin-bottom: 15px;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      #existing-prefs-modal p,
+      #current-prefs-modal p {
+        color: var(--text-gray);
+        margin-bottom: 25px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="brand-header">
+        <h1 class="brand-name">Beauty & Blessed</h1>
+        <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+      </div>
+      <div class="user-section">
+        <span class="user-greeting" id="user-greeting">Hi, Maria!</span>
+        <button
+          class="profile-btn"
+          onclick="window.location.href='../../profile/html/user_profile.html'"
+        >
+          <i class="fas fa-user"></i>
+        </button>
+      </div>
+      <button
+        class="mobile-profile-btn"
+        onclick="window.location.href='../../profile/html/user_profile.html'"
+      >
         <i class="fas fa-user"></i>
       </button>
-    </div>
-    <button class="mobile-profile-btn" onclick="window.location.href='../../profile/html/user_profile.html'">
-      <i class="fas fa-user"></i>
-    </button>
-  </header>
+    </header>
 
-  <!-- Desktop Navigation -->
-  <nav class="desktop-nav">
-    <a href="home.html" class="nav-item" data-page="home">
-      <i class="fas fa-home"></i>
-      <span>Home</span>
-    </a>
-    <a href="favorites.html" class="nav-item" data-page="favorites">
-      <i class="fas fa-heart"></i>
-      <span>Favorites</span>
-    </a>
-    <a href="recommender.html" class="nav-item active" data-page="recommender">
-      <i class="fas fa-star"></i>
-      <!-- Keep this as star -->
-      <span>Recommender</span>
-      <span class="tooltip">Smart Recommender</span>
-    </a>
-    <a href="cart.html" class="nav-item" data-page="cart">
-      <i class="fas fa-shopping-cart"></i>
-      <span>Cart</span>
-    </a>
-    <a href="try-on.html" class="nav-item" data-page="tryon">
-      <i class="fas fa-camera"></i>
-      <span>Virtual Try-On</span>
-    </a>
-  </nav>
-
-  <!-- Exit Confirmation Modal -->
-  <div class="modal-overlay" id="exit-modal">
-    <div class="modal-content exit-modal">
-      <div class="modal-icon">
-        <i class="fas fa-exclamation-triangle"></i>
-      </div>
-      <h3>Are you sure you want to exit?</h3>
-      <p>Your quiz progress will not be saved.</p>
-      <div class="modal-actions">
-        <button class="modal-btn primary" onclick="confirmExit()">
-          Yes, Exit
-        </button>
-        <button class="modal-btn tertiary" onclick="closeExitModal()">
-          No, Continue
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recommender Content -->
-  <main class="recommender-main">
-    <div class="quiz-container">
-      <div class="quiz-step active" id="step-intro">
-        <div class="quiz-hero">
-          <h1>Find Your Perfect Beauty Match!</h1>
-          <p>
-            Take our quick 5-step quiz to discover personalized product
-            recommendations tailored to your unique skin needs and
-            preferences.
-          </p>
-
-          <!-- Simple Floating Product Display -->
-          <div class="floating-product">
-            <img src="" alt="Beauty Product" class="product-image" id="floating-product-img" />
-          </div>
-
-          <button class="quiz-start-btn" onclick="nextStep(1)">
-            Start Quiz
-            <i class="fas fa-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-      <!-- Step 1: Skin Type -->
-      <div class="quiz-step" id="step-1">
-        <div class="quiz-header">
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 20%"></div>
-          </div>
-          <h2>What's Your Skin Type?</h2>
-          <p>This helps us recommend products that work best for your skin</p>
-        </div>
-
-        <div class="options-grid">
-          <div class="option-card" data-value="normal">
-            <div class="option-icon">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <h3>Normal</h3>
-            <p>Balanced, not too oily or dry, few imperfections</p>
-          </div>
-
-          <div class="option-card" data-value="oily">
-            <div class="option-icon">
-              <i class="fas fa-tint"></i>
-            </div>
-            <h3>Oily</h3>
-            <p>Shiny appearance, large pores, prone to breakouts</p>
-          </div>
-
-          <div class="option-card" data-value="dry">
-            <div class="option-icon">
-              <i class="fas fa-leaf"></i>
-            </div>
-            <h3>Dry</h3>
-            <p>Flaky, rough texture, feels tight after washing</p>
-          </div>
-
-          <div class="option-card" data-value="combination">
-            <div class="option-icon">
-              <i class="fas fa-balance-scale"></i>
-            </div>
-            <h3>Combination</h3>
-            <p>Oily T-zone, dry cheeks, mixed characteristics</p>
-          </div>
-
-          <div class="option-card" data-value="sensitive">
-            <div class="option-icon">
-              <i class="fas fa-heartbeat"></i>
-            </div>
-            <h3>Sensitive</h3>
-            <p>Easily irritated, prone to redness and reactions</p>
-          </div>
-        </div>
-
-        <div class="quiz-nav">
-          <button class="nav-btn secondary" onclick="prevStep()">
-            <i class="fas fa-arrow-left"></i>
-            Back
-          </button>
-          <button class="nav-btn primary" id="step1-next" onclick="nextStep(2)" disabled>
-            Next
-            <i class="fas fa-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 2: Skin Tone -->
-      <div class="quiz-step" id="step-2">
-        <div class="quiz-header">
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 40%"></div>
-          </div>
-          <h2>What's Your Skin Tone?</h2>
-          <p>Choose the shade that most closely matches your complexion</p>
-        </div>
-
-        <div class="skin-tone-options">
-          <div class="tone-option" data-value="fair">
-            <div class="tone-swatch" style="background: #f8e0c8"></div>
-            <span>Fair</span>
-          </div>
-          <div class="tone-option" data-value="medium">
-            <div class="tone-swatch" style="background: #d2a679"></div>
-            <span>Medium</span>
-          </div>
-          <div class="tone-option" data-value="tan">
-            <div class="tone-swatch" style="background: #b88c67"></div>
-            <span>Tan</span>
-          </div>
-          <div class="tone-option" data-value="deep">
-            <div class="tone-swatch" style="background: #8c6b4f"></div>
-            <span>Deep</span>
-          </div>
-        </div>
-
-        <div class="quiz-nav">
-          <button class="nav-btn secondary" onclick="prevStep()">
-            <i class="fas fa-arrow-left"></i>
-            Back
-          </button>
-          <button class="nav-btn primary" id="step2-next" onclick="nextStep(3)" disabled>
-            Next
-            <i class="fas fa-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 3: Undertone -->
-      <div class="quiz-step" id="step-3">
-        <div class="quiz-header">
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 60%"></div>
-          </div>
-          <h2>What's Your Undertone?</h2>
-          <p>This helps match foundations and concealers perfectly</p>
-        </div>
-
-        <div class="options-grid">
-          <div class="option-card" data-value="warm">
-            <div class="option-icon">
-              <i class="fas fa-sun"></i>
-            </div>
-            <h3>Warm</h3>
-            <p>Yellow, golden, or peachy undertones</p>
-          </div>
-
-          <div class="option-card" data-value="cool">
-            <div class="option-icon">
-              <i class="fas fa-snowflake"></i>
-            </div>
-            <h3>Cool</h3>
-            <p>Pink, red, or bluish undertones</p>
-          </div>
-
-          <div class="option-card" data-value="neutral">
-            <div class="option-icon">
-              <i class="fas fa-adjust"></i>
-            </div>
-            <h3>Neutral</h3>
-            <p>Balance of warm and cool undertones</p>
-          </div>
-
-          <div class="option-card" data-value="not-sure">
-            <div class="option-icon">
-              <i class="fas fa-question"></i>
-            </div>
-            <h3>Not Sure</h3>
-            <p>I'm not sure about my undertone</p>
-          </div>
-        </div>
-
-        <div class="quiz-nav">
-          <button class="nav-btn secondary" onclick="prevStep()">
-            <i class="fas fa-arrow-left"></i>
-            Back
-          </button>
-          <button class="nav-btn primary" id="step3-next" onclick="nextStep(4)" disabled>
-            Next
-            <i class="fas fa-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 4: Skin Concerns -->
-      <div class="quiz-step" id="step-4">
-        <div class="quiz-header">
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 80%"></div>
-          </div>
-          <h2>What Are Your Skin Concerns?</h2>
-          <p>Select all that apply (multiple choices allowed)</p>
-        </div>
-
-        <div class="concerns-grid">
-          <div class="concern-option" data-value="acne">
-            <input type="checkbox" id="concern-acne" class="concern-checkbox" />
-            <label for="concern-acne" class="concern-label">
-              <div class="concern-icon">
-                <i class="fas fa-dot-circle"></i>
-              </div>
-              <h3>Acne & Breakouts</h3>
-              <p>Pimples, blackheads, and blemishes</p>
-            </label>
-          </div>
-
-          <div class="concern-option" data-value="dryness">
-            <input type="checkbox" id="concern-dryness" class="concern-checkbox" />
-            <label for="concern-dryness" class="concern-label">
-              <div class="concern-icon">
-                <i class="fas fa-wind"></i>
-              </div>
-              <h3>Dryness</h3>
-              <p>Flaky, dehydrated, or tight skin</p>
-            </label>
-          </div>
-
-          <div class="concern-option" data-value="dark-spots">
-            <input type="checkbox" id="concern-dark-spots" class="concern-checkbox" />
-            <label for="concern-dark-spots" class="concern-label">
-              <div class="concern-icon">
-                <i class="fas fa-circle"></i>
-              </div>
-              <h3>Dark Spots</h3>
-              <p>Hyperpigmentation and uneven tone</p>
-            </label>
-          </div>
-
-          <div class="concern-option" data-value="aging">
-            <input type="checkbox" id="concern-aging" class="concern-checkbox" />
-            <label for="concern-aging" class="concern-label">
-              <div class="concern-icon">
-                <i class="fas fa-clock"></i>
-              </div>
-              <h3>Aging</h3>
-              <p>Fine lines, wrinkles, and firmness</p>
-            </label>
-          </div>
-
-          <div class="concern-option" data-value="none">
-            <input type="checkbox" id="concern-none" class="concern-checkbox" />
-            <label for="concern-none" class="concern-label">
-              <div class="concern-icon">
-                <i class="fas fa-times"></i>
-              </div>
-              <h3>None</h3>
-              <p>No specific concerns</p>
-            </label>
-          </div>
-        </div>
-
-        <div class="quiz-nav">
-          <button class="nav-btn secondary" onclick="prevStep()">
-            <i class="fas fa-arrow-left"></i>
-            Back
-          </button>
-          <button class="nav-btn primary" id="step4-next" onclick="nextStep(5)" disabled>
-            Next
-            <i class="fas fa-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 5: Product Finish -->
-      <div class="quiz-step" id="step-5">
-        <div class="quiz-header">
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 100%"></div>
-          </div>
-          <h2>What Product Finish Do You Prefer?</h2>
-          <p>Choose your desired makeup finish</p>
-        </div>
-
-        <div class="options-grid">
-          <div class="option-card" data-value="matte">
-            <div class="option-icon">
-              <i class="fas fa-circle"></i>
-            </div>
-            <h3>Matte</h3>
-            <p>Flat, shine-free finish</p>
-          </div>
-
-          <div class="option-card" data-value="dewy">
-            <div class="option-icon">
-              <i class="fas fa-circle"></i>
-            </div>
-            <h3>Dewy</h3>
-            <p>Luminous, glowing finish</p>
-          </div>
-
-          <div class="option-card" data-value="long-lasting">
-            <div class="option-icon">
-              <i class="fas fa-shield-alt"></i>
-            </div>
-            <h3>Long-lasting</h3>
-            <p>Stays put all day</p>
-          </div>
-
-          <div class="option-card" data-value="dont-care">
-            <div class="option-icon">
-              <i class="fas fa-infinity"></i>
-            </div>
-            <h3>Don't Care</h3>
-            <p>Any finish is fine</p>
-          </div>
-        </div>
-
-        <div class="quiz-nav">
-          <button class="nav-btn secondary" onclick="prevStep()">
-            <i class="fas fa-arrow-left"></i>
-            Back
-          </button>
-          <button class="nav-btn primary" id="step5-next" onclick="showLoading()">
-            Get Results
-            <i class="fas fa-sparkles"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Loading Step -->
-      <div class="quiz-step" id="step-loading">
-        <div class="loading-container">
-          <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-          </div>
-          <h2>Quiz Complete!</h2>
-          <div class="loading-messages">
-            <div class="loading-message active">
-              <i class="fas fa-check-circle"></i>
-              <span>Preparing your product matches...</span>
-            </div>
-            <div class="loading-message">
-              <i class="fas fa-gem"></i>
-              <span>Polishing your personalized recommendations...</span>
-            </div>
-            <div class="loading-message">
-              <i class="fas fa-rocket"></i>
-              <span>Almost there...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Results Step -->
-      <div class="quiz-step" id="step-results">
-        <div class="results-container">
-          <div class="results-hero">
-            <i class="fas fa-sparkles"></i>
-            <h2>Your Personalized Recommendations!</h2>
-            <p>
-              Based on your answers, we've curated these perfect products for
-              you
-            </p>
-          </div>
-
-          <div class="recommended-products" id="recommended-products">
-            <!-- Products will be dynamically inserted here -->
-          </div>
-
-          <div class="results-actions">
-            <button class="retake-btn" onclick="restartQuiz()">
-              <i class="fas fa-redo"></i>
-              Retake Quiz
-            </button>
-            <button class="shop-all-btn" onclick="window.location.href='home.html'">
-              Shop All Products
-              <i class="fas fa-shopping-bag"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Mobile Navigation -->
-  <nav class="mobile-nav">
-    <div class="mobile-nav-items">
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav">
       <a href="home.html" class="nav-item" data-page="home">
         <i class="fas fa-home"></i>
         <span>Home</span>
@@ -1716,88 +1495,820 @@
         <i class="fas fa-heart"></i>
         <span>Favorites</span>
       </a>
-      <a href="recommender.html" class="nav-item active" data-page="recommender">
+      <a
+        href="recommender.html"
+        class="nav-item active"
+        data-page="recommender"
+      >
         <i class="fas fa-star"></i>
+        <!-- Keep this as star -->
         <span>Recommender</span>
+        <span class="tooltip">Smart Recommender</span>
       </a>
       <a href="cart.html" class="nav-item" data-page="cart">
         <i class="fas fa-shopping-cart"></i>
         <span>Cart</span>
+        <div class="nav-cart-count">0</div>
+        <!-- ADD THIS -->
       </a>
       <a href="try-on.html" class="nav-item" data-page="tryon">
         <i class="fas fa-camera"></i>
-        <span>Try-On</span>
+        <span>Virtual Try-On</span>
       </a>
+    </nav>
+
+    <!-- Exit Confirmation Modal -->
+    <div class="modal-overlay" id="exit-modal">
+      <div class="modal-content exit-modal">
+        <div class="modal-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Are you sure you want to exit?</h3>
+        <p>Your quiz progress will not be saved.</p>
+        <div class="modal-actions">
+          <button class="modal-btn primary" onclick="confirmExit()">
+            Yes, Exit
+          </button>
+          <button class="modal-btn tertiary" onclick="closeExitModal()">
+            No, Continue
+          </button>
+        </div>
+      </div>
     </div>
-  </nav>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', async function () {
-      // Initialize user session
-      await updateUserGreeting();
+    <!-- Recommender Content -->
+    <main class="recommender-main">
+      <div class="quiz-container">
+        <div class="quiz-step active" id="step-intro">
+          <div class="quiz-hero">
+            <h1>Find Your Perfect Beauty Match!</h1>
+            <p>
+              Take our quick 5-step quiz to discover personalized product
+              recommendations tailored to your unique skin needs and
+              preferences.
+            </p>
 
-      if (!currentUser) return; // Will redirect if not logged in
+            <!-- Simple Floating Product Display -->
+            <div class="floating-product">
+              <img
+                src=""
+                alt="Beauty Product"
+                class="product-image"
+                id="floating-product-img"
+              />
+            </div>
 
-      // Now you can use currentUser anywhere in your page
-      console.log('User ID:', currentUser.id);
-      console.log('Username:', currentUser.username);
+            <button class="nav-btn primary" onclick="startQuizWithCheck()">
+              Start Quiz
+            </button>
+          </div>
+        </div>
+        <!-- Step 1: Skin Type -->
+        <div class="quiz-step" id="step-1">
+          <div class="quiz-header">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 20%"></div>
+            </div>
+            <h2>What's Your Skin Type?</h2>
+            <p>This helps us recommend products that work best for your skin</p>
+          </div>
 
-      // Continue with page-specific initialization...
-    });
-    
-    // recommender.js
-    let currentStep = 0;
-    let quizData = {
-      skinType: "",
-      skinTone: "",
-      undertone: "",
-      concerns: [],
-      finish: "",
-    };
+          <div class="options-grid">
+            <div class="option-card" data-value="normal">
+              <div class="option-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <h3>Normal</h3>
+              <p>Balanced, not too oily or dry, few imperfections</p>
+            </div>
 
-    function nextStep(step) {
-      document
-        .querySelectorAll(".quiz-step")
-        .forEach((step) => step.classList.remove("active"));
+            <div class="option-card" data-value="oily">
+              <div class="option-icon">
+                <i class="fas fa-tint"></i>
+              </div>
+              <h3>Oily</h3>
+              <p>Shiny appearance, large pores, prone to breakouts</p>
+            </div>
 
-      if (step === 0) {
-        document.getElementById("step-intro").classList.add("active");
-      } else {
-        document.getElementById(`step-${step}`).classList.add("active");
+            <div class="option-card" data-value="dry">
+              <div class="option-icon">
+                <i class="fas fa-leaf"></i>
+              </div>
+              <h3>Dry</h3>
+              <p>Flaky, rough texture, feels tight after washing</p>
+            </div>
+
+            <div class="option-card" data-value="combination">
+              <div class="option-icon">
+                <i class="fas fa-balance-scale"></i>
+              </div>
+              <h3>Combination</h3>
+              <p>Oily T-zone, dry cheeks, mixed characteristics</p>
+            </div>
+
+            <div class="option-card" data-value="sensitive">
+              <div class="option-icon">
+                <i class="fas fa-heartbeat"></i>
+              </div>
+              <h3>Sensitive</h3>
+              <p>Easily irritated, prone to redness and reactions</p>
+            </div>
+          </div>
+
+          <div class="quiz-nav">
+            <button class="nav-btn secondary" onclick="prevStep()">
+              <i class="fas fa-arrow-left"></i>
+              Back
+            </button>
+            <button
+              class="nav-btn primary"
+              id="step1-next"
+              onclick="nextStep(2)"
+              disabled
+            >
+              Next
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Skin Tone -->
+        <div class="quiz-step" id="step-2">
+          <div class="quiz-header">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 40%"></div>
+            </div>
+            <h2>What's Your Skin Tone?</h2>
+            <p>Choose the shade that most closely matches your complexion</p>
+          </div>
+
+          <div class="skin-tone-options">
+            <div class="tone-option" data-value="fair">
+              <div class="tone-swatch" style="background: #f8e0c8"></div>
+              <span>Fair</span>
+            </div>
+            <div class="tone-option" data-value="medium">
+              <div class="tone-swatch" style="background: #d2a679"></div>
+              <span>Medium</span>
+            </div>
+            <div class="tone-option" data-value="tan">
+              <div class="tone-swatch" style="background: #b88c67"></div>
+              <span>Tan</span>
+            </div>
+            <div class="tone-option" data-value="deep">
+              <div class="tone-swatch" style="background: #8c6b4f"></div>
+              <span>Deep</span>
+            </div>
+          </div>
+
+          <div class="quiz-nav">
+            <button class="nav-btn secondary" onclick="prevStep()">
+              <i class="fas fa-arrow-left"></i>
+              Back
+            </button>
+            <button
+              class="nav-btn primary"
+              id="step2-next"
+              onclick="nextStep(3)"
+              disabled
+            >
+              Next
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Undertone -->
+        <div class="quiz-step" id="step-3">
+          <div class="quiz-header">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 60%"></div>
+            </div>
+            <h2>What's Your Undertone?</h2>
+            <p>This helps match foundations and concealers perfectly</p>
+          </div>
+
+          <div class="options-grid">
+            <div class="option-card" data-value="warm">
+              <div class="option-icon">
+                <i class="fas fa-sun"></i>
+              </div>
+              <h3>Warm</h3>
+              <p>Yellow, golden, or peachy undertones</p>
+            </div>
+
+            <div class="option-card" data-value="cool">
+              <div class="option-icon">
+                <i class="fas fa-snowflake"></i>
+              </div>
+              <h3>Cool</h3>
+              <p>Pink, red, or bluish undertones</p>
+            </div>
+
+            <div class="option-card" data-value="neutral">
+              <div class="option-icon">
+                <i class="fas fa-adjust"></i>
+              </div>
+              <h3>Neutral</h3>
+              <p>Balance of warm and cool undertones</p>
+            </div>
+
+            <div class="option-card" data-value="not-sure">
+              <div class="option-icon">
+                <i class="fas fa-question"></i>
+              </div>
+              <h3>Not Sure</h3>
+              <p>I'm not sure about my undertone</p>
+            </div>
+          </div>
+
+          <div class="quiz-nav">
+            <button class="nav-btn secondary" onclick="prevStep()">
+              <i class="fas fa-arrow-left"></i>
+              Back
+            </button>
+            <button
+              class="nav-btn primary"
+              id="step3-next"
+              onclick="nextStep(4)"
+              disabled
+            >
+              Next
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 4: Skin Concerns -->
+        <div class="quiz-step" id="step-4">
+          <div class="quiz-header">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 80%"></div>
+            </div>
+            <h2>What Are Your Skin Concerns?</h2>
+            <p>Select all that apply (multiple choices allowed)</p>
+          </div>
+
+          <div class="concerns-grid">
+            <div class="concern-option" data-value="acne">
+              <input
+                type="checkbox"
+                id="concern-acne"
+                class="concern-checkbox"
+              />
+              <label for="concern-acne" class="concern-label">
+                <div class="concern-icon">
+                  <i class="fas fa-dot-circle"></i>
+                </div>
+                <h3>Acne & Breakouts</h3>
+                <p>Pimples, blackheads, and blemishes</p>
+              </label>
+            </div>
+
+            <div class="concern-option" data-value="dryness">
+              <input
+                type="checkbox"
+                id="concern-dryness"
+                class="concern-checkbox"
+              />
+              <label for="concern-dryness" class="concern-label">
+                <div class="concern-icon">
+                  <i class="fas fa-wind"></i>
+                </div>
+                <h3>Dryness</h3>
+                <p>Flaky, dehydrated, or tight skin</p>
+              </label>
+            </div>
+
+            <div class="concern-option" data-value="dark-spots">
+              <input
+                type="checkbox"
+                id="concern-dark-spots"
+                class="concern-checkbox"
+              />
+              <label for="concern-dark-spots" class="concern-label">
+                <div class="concern-icon">
+                  <i class="fas fa-circle"></i>
+                </div>
+                <h3>Dark Spots</h3>
+                <p>Hyperpigmentation and uneven tone</p>
+              </label>
+            </div>
+
+            <div class="concern-option" data-value="aging">
+              <input
+                type="checkbox"
+                id="concern-aging"
+                class="concern-checkbox"
+              />
+              <label for="concern-aging" class="concern-label">
+                <div class="concern-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <h3>Aging</h3>
+                <p>Fine lines, wrinkles, and firmness</p>
+              </label>
+            </div>
+
+            <div class="concern-option" data-value="none">
+              <input
+                type="checkbox"
+                id="concern-none"
+                class="concern-checkbox"
+              />
+              <label for="concern-none" class="concern-label">
+                <div class="concern-icon">
+                  <i class="fas fa-times"></i>
+                </div>
+                <h3>None</h3>
+                <p>No specific concerns</p>
+              </label>
+            </div>
+          </div>
+
+          <div class="quiz-nav">
+            <button class="nav-btn secondary" onclick="prevStep()">
+              <i class="fas fa-arrow-left"></i>
+              Back
+            </button>
+            <button
+              class="nav-btn primary"
+              id="step4-next"
+              onclick="nextStep(5)"
+              disabled
+            >
+              Next
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 5: Product Finish -->
+        <div class="quiz-step" id="step-5">
+          <div class="quiz-header">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 100%"></div>
+            </div>
+            <h2>What Product Finish Do You Prefer?</h2>
+            <p>Choose your desired makeup finish</p>
+          </div>
+
+          <div class="options-grid">
+            <div class="option-card" data-value="matte">
+              <div class="option-icon">
+                <i class="fas fa-circle"></i>
+              </div>
+              <h3>Matte</h3>
+              <p>Flat, shine-free finish</p>
+            </div>
+
+            <div class="option-card" data-value="dewy">
+              <div class="option-icon">
+                <i class="fas fa-circle"></i>
+              </div>
+              <h3>Dewy</h3>
+              <p>Luminous, glowing finish</p>
+            </div>
+
+            <div class="option-card" data-value="long-lasting">
+              <div class="option-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3>Long-lasting</h3>
+              <p>Stays put all day</p>
+            </div>
+
+            <div class="option-card" data-value="dont-care">
+              <div class="option-icon">
+                <i class="fas fa-infinity"></i>
+              </div>
+              <h3>Don't Care</h3>
+              <p>Any finish is fine</p>
+            </div>
+          </div>
+
+          <div class="quiz-nav">
+            <button class="nav-btn secondary" onclick="prevStep()">
+              <i class="fas fa-arrow-left"></i>
+              Back
+            </button>
+            <button
+              class="nav-btn primary"
+              id="step5-next"
+              onclick="showLoading()"
+            >
+              Get Results
+              <i class="fas fa-sparkles"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading Step -->
+        <div class="quiz-step" id="step-loading">
+          <div class="loading-container">
+            <div class="loading-spinner">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h2>Quiz Complete!</h2>
+            <div class="loading-messages">
+              <div class="loading-message active">
+                <i class="fas fa-check-circle"></i>
+                <span>Preparing your product matches...</span>
+              </div>
+              <div class="loading-message">
+                <i class="fas fa-gem"></i>
+                <span>Polishing your personalized recommendations...</span>
+              </div>
+              <div class="loading-message">
+                <i class="fas fa-rocket"></i>
+                <span>Almost there...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Step -->
+        <div class="quiz-step" id="step-results">
+          <div class="results-container">
+            <div class="results-hero">
+              <i class="fas fa-sparkles"></i>
+              <h2>Your Personalized Recommendations!</h2>
+              <p>
+                Based on your answers, we've curated these perfect products for
+                you
+              </p>
+            </div>
+
+            <div class="recommended-products" id="recommended-products">
+              <!-- Products will be dynamically inserted here -->
+            </div>
+
+            <div class="results-actions">
+              <button class="retake-btn" onclick="restartQuiz()">
+                <i class="fas fa-redo"></i>
+                Retake Quiz
+              </button>
+              <button
+                class="shop-all-btn"
+                onclick="window.location.href='home.html'"
+              >
+                Shop All Products
+                <i class="fas fa-shopping-bag"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav-items">
+        <a href="home.html" class="nav-item" data-page="home">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="favorites.html" class="nav-item" data-page="favorites">
+          <i class="fas fa-heart"></i>
+          <span>Favorites</span>
+        </a>
+        <a
+          href="recommender.html"
+          class="nav-item active"
+          data-page="recommender"
+        >
+          <i class="fas fa-star"></i>
+          <span>Recommender</span>
+        </a>
+        <a href="cart.html" class="nav-item" data-page="cart">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Cart</span>
+          <div class="nav-cart-count">0</div>
+          <!-- ADD THIS -->
+        </a>
+        <a href="try-on.html" class="nav-item" data-page="tryon">
+          <i class="fas fa-camera"></i>
+          <span>Try-On</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Remove style="display: none" from both modals -->
+    <div id="existing-prefs-modal" class="modal">
+      <div class="modal-content">
+        <h3>Existing Preferences Found</h3>
+        <p>
+          You already have beauty preferences saved from
+          <span id="preferences-date">a previous quiz</span>. Would you like to:
+        </p>
+        <div class="modal-buttons">
+          <button
+            class="modal-btn secondary"
+            onclick="viewCurrentPreferences()"
+          >
+            <i class="fas fa-eye"></i> View Current Preferences
+          </button>
+          <button class="modal-btn primary" onclick="replacePreferences()">
+            <i class="fas fa-sync"></i> Retake Quiz & Replace
+          </button>
+          <button
+            class="modal-btn cancel-btn"
+            onclick="closeExistingPrefsModal()"
+          >
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="current-prefs-modal" class="modal">
+      <div class="modal-content">
+        <h3>Your Current Preferences</h3>
+        <div id="current-preferences-display">
+          <!-- Preferences will be loaded here -->
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-btn primary" onclick="closeCurrentPrefsModal()">
+            <i class="fas fa-check"></i> Keep Current Preferences
+          </button>
+          <button
+            class="modal-btn secondary"
+            onclick="showReplaceConfirmation()"
+          >
+            <i class="fas fa-sync"></i> Retake Quiz Anyway
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        // Initialize user session
+        await updateUserGreeting();
+
+        if (!currentUser) return;
+
+        console.log("User ID:", currentUser.id);
+        console.log("Username:", currentUser.username);
+
+        // Check if user already has preferences
+        await checkExistingPreferences();
+
+        // Continue with other initializations
+        updateCartCount();
+        initFloatingProduct();
+      });
+
+      // Global variable to track if user has existing preferences
+      let hasExistingPreferences = false;
+      let currentPreferences = null;
+
+      // Check if user already has preferences
+      async function checkExistingPreferences() {
+        try {
+          const response = await fetch("../php/check-user-preferences.php");
+          const data = await response.json();
+
+          if (data.success && data.hasPreferences) {
+            hasExistingPreferences = true;
+            currentPreferences = data.preferences;
+            console.log("User has existing preferences:", currentPreferences);
+          }
+        } catch (error) {
+          console.error("Error checking preferences:", error);
+        }
       }
-      currentStep = step;
+      function showExistingPrefsModal() {
+        // Update the date in the modal if we have currentPreferences
+        if (currentPreferences && currentPreferences.updated_at) {
+          const dateElement = document.getElementById("preferences-date");
+          if (dateElement) {
+            const lastUpdated = new Date(
+              currentPreferences.updated_at
+            ).toLocaleDateString();
+            dateElement.textContent = lastUpdated;
+          }
+        }
 
-      // Update progress bar based on current step
-      updateProgressBar();
-    }
-
-    function prevStep() {
-      if (currentStep > 1) {
-        nextStep(currentStep - 1);
-      } else {
-        // Go back to intro when on step 1
-        nextStep(0);
+        document.getElementById("existing-prefs-modal").classList.add("active");
       }
-    }
+      // Start quiz with preference check
+      function startQuizWithCheck() {
+        if (hasExistingPreferences) {
+          showExistingPrefsModal();
+        } else {
+          nextStep(1); // Start quiz normally
+        }
+      }
 
-    function updateProgressBar() {
-      const progressFill = document.querySelector(".progress-fill");
-      if (!progressFill) return;
+      // Modal functions
+      function showExistingPrefsModal() {
+        document.getElementById("existing-prefs-modal").classList.add("active");
+      }
 
-      const progressPercentages = {
-        0: 0, // Intro
-        1: 20, // Step 1
-        2: 40, // Step 2
-        3: 60, // Step 3
-        4: 80, // Step 4
-        5: 100, // Step 5
-      };
+      function closeExistingPrefsModal() {
+        document
+          .getElementById("existing-prefs-modal")
+          .classList.remove("active");
+      }
 
-      progressFill.style.width = `${progressPercentages[currentStep] || 0}%`;
-    }
+      function viewCurrentPreferences() {
+        closeExistingPrefsModal();
+        showCurrentPreferences();
+      }
 
-    function restartQuiz() {
-      quizData = {
+      function showCurrentPreferences() {
+        const display = document.getElementById("current-preferences-display");
+
+        if (currentPreferences) {
+          display.innerHTML = `
+      <div class="preference-item">
+        <span class="preference-label">Skin Type:</span>
+        <span class="preference-value">${currentPreferences.skin_type}</span>
+      </div>
+      <div class="preference-item">
+        <span class="preference-label">Skin Tone:</span>
+        <span class="preference-value">${currentPreferences.skin_tone}</span>
+      </div>
+      <div class="preference-item">
+        <span class="preference-label">Undertone:</span>
+        <span class="preference-value">${currentPreferences.undertone}</span>
+      </div>
+      <div class="preference-item">
+        <span class="preference-label">Preferred Finish:</span>
+        <span class="preference-value">${
+          currentPreferences.preferred_finish
+        }</span>
+      </div>
+      <div class="preference-item">
+        <span class="preference-label">Skin Concerns:</span>
+        <div class="concerns-list">
+          ${JSON.parse(currentPreferences.skin_concerns || "[]")
+            .map((concern) => `<span class="concern-tag">${concern}</span>`)
+            .join("")}
+        </div>
+      </div>
+      <div class="preference-item">
+        <span class="preference-label">Last Updated:</span>
+        <span class="preference-value">${new Date(
+          currentPreferences.updated_at
+        ).toLocaleDateString()}</span>
+      </div>
+    `;
+        }
+
+        document.getElementById("current-prefs-modal").classList.add("active");
+      }
+
+      function closeCurrentPrefsModal() {
+        document
+          .getElementById("current-prefs-modal")
+          .classList.remove("active");
+      }
+
+      function showReplaceConfirmation() {
+        closeCurrentPrefsModal();
+        showExistingPrefsModal();
+      }
+
+      function replacePreferences() {
+        closeExistingPrefsModal();
+        resetQuizAndRestart();
+      }
+
+      async function showResults() {
+        nextStep("results");
+        console.log("🎯 Getting recommendations...");
+
+        // Show loading state
+        const container = document.getElementById("recommended-products");
+        container.innerHTML = `
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <h3>Finding your perfect matches...</h3>
+            <p>Analyzing ${quizData.concerns.length} concerns across our product database</p>
+        </div>
+    `;
+
+        try {
+          const response = await fetch("../php/recommend-products.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              skinType: quizData.skinType,
+              skinTone: quizData.skinTone,
+              undertone: quizData.undertone,
+              concerns: quizData.concerns,
+              finish: quizData.finish,
+            }),
+          });
+
+          const result = await response.json();
+          console.log("📦 Full response:", result);
+
+          if (result.error) {
+            console.warn("⚠️ ML system error, using fallback:", result.error);
+            // Continue with fallback recommendations
+          }
+
+          if (result.success && result.recommendations) {
+            displayRecommendations(result.recommendations);
+          } else {
+            showErrorState("No recommendations available");
+          }
+        } catch (error) {
+          console.error("Error getting recommendations:", error);
+          showErrorState("Connection error - please try again");
+        }
+      }
+
+      function showErrorState(
+        message = "We're still building our product database. Check back soon!"
+      ) {
+        const container = document.getElementById("recommended-products");
+        container.innerHTML = `
+        <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h3>No Perfect Matches Found</h3>
+            <p>${message}</p>
+            <button class="btn-primary" onclick="showResults()">
+                <i class="fas fa-redo"></i> Try Again
+            </button>
+        </div>
+    `;
+      }
+
+      function displayRecommendations(recommendations) {
+        const container = document.getElementById("recommended-products");
+
+        if (!recommendations || recommendations.length === 0) {
+          container.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>No Perfect Matches Found</h3>
+                <p>We're still building our product database. Check back soon!</p>
+            </div>
+        `;
+          return;
+        }
+
+        let html = "<h3>✨ Your Personalized Recommendations</h3>";
+
+        recommendations.forEach((product) => {
+          html += `
+            <div class="product-card" data-match-type="${product.Match_Type}">
+                <div class="match-badge">${product.Match_Type}</div>
+                <h4>${product.name}</h4>
+                <p class="product-category">${product.category}</p>
+                <p class="product-price">₱${product.price}</p>
+                <p class="match-score">Match Score: ${product.Predicted_Score.toFixed(
+                  2
+                )}/5.0</p>
+                <button class="btn-primary" onclick="addToCart(${product.id})">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </div>
+        `;
+        });
+
+        container.innerHTML = html;
+      }
+      // Save preferences to database - ENHANCED WITH DEBUGGING
+      async function saveUserPreferences() {
+        try {
+          console.log("🚀 Starting saveUserPreferences...");
+
+          const response = await fetch("../php/save-user-preferences.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              skinType: quizData.skinType,
+              skinTone: quizData.skinTone,
+              undertone: quizData.undertone,
+              concerns: quizData.concerns,
+              finish: quizData.finish,
+            }),
+          });
+
+          console.log("📡 Response status:", response.status);
+
+          const data = await response.json();
+          console.log("📦 Response data:", data);
+
+          return data.success;
+        } catch (error) {
+          console.error("❌ Error saving preferences:", error);
+          return false;
+        }
+      }
+
+      // recommender.js
+      let currentStep = 0;
+      let quizData = {
         skinType: "",
         skinTone: "",
         undertone: "",
@@ -1805,239 +2316,298 @@
         finish: "",
       };
 
-      // Reset all selections visually
-      document.querySelectorAll(".option-card").forEach((card) => {
-        card.classList.remove("selected");
-      });
+      function nextStep(step) {
+        document
+          .querySelectorAll(".quiz-step")
+          .forEach((step) => step.classList.remove("active"));
 
-      document.querySelectorAll(".tone-option").forEach((option) => {
-        option.classList.remove("selected");
-      });
-
-      document.querySelectorAll(".concern-checkbox").forEach((checkbox) => {
-        checkbox.checked = false;
-      });
-
-      // Reset next buttons
-      document.querySelectorAll(".nav-btn.primary").forEach((btn) => {
-        btn.disabled = true;
-      });
-
-      // Go back to intro step
-      nextStep(0);
-    }
-
-    // Also make sure to update the progress bar when steps change
-    function nextStep(step) {
-      document
-        .querySelectorAll(".quiz-step")
-        .forEach((step) => step.classList.remove("active"));
-
-      if (step === 0) {
-        document.getElementById("step-intro").classList.add("active");
-      } else {
-        document.getElementById(`step-${step}`).classList.add("active");
-      }
-      currentStep = step;
-
-      // Update progress bar
-      updateProgressBar();
-    }
-
-    // Option selection
-    document.addEventListener("DOMContentLoaded", function () {
-      // Single selection options
-      document.querySelectorAll(".option-card").forEach((card) => {
-        card.addEventListener("click", function () {
-          const step = this.closest(".quiz-step").id.replace("step-", "");
-          const value = this.getAttribute("data-value");
-
-          // Clear other selections in this step
-          this.closest(".options-grid")
-            .querySelectorAll(".option-card")
-            .forEach((c) => {
-              c.classList.remove("selected");
-            });
-
-          // Select this card
-          this.classList.add("selected");
-
-          // Update data
-          if (step === "1") quizData.skinType = value;
-          if (step === "2") quizData.skinTone = value;
-          if (step === "3") quizData.undertone = value;
-          if (step === "5") quizData.finish = value;
-
-          // Enable next button
-          const nextBtn = document.getElementById(`step${step}-next`);
-          if (nextBtn) nextBtn.disabled = false;
-        });
-      });
-
-      // Skin tone selection
-      document.querySelectorAll(".tone-option").forEach((option) => {
-        option.addEventListener("click", function () {
-          document.querySelectorAll(".tone-option").forEach((o) => {
-            o.classList.remove("selected");
-          });
-          this.classList.add("selected");
-          quizData.skinTone = this.getAttribute("data-value");
-          document.getElementById("step2-next").disabled = false;
-        });
-      });
-
-      // Concerns selection (multiple)
-      document.querySelectorAll(".concern-checkbox").forEach((checkbox) => {
-        checkbox.addEventListener("change", function () {
-          const value =
-            this.closest(".concern-option").getAttribute("data-value");
-
-          if (value === "none") {
-            // If "none" is selected, uncheck all others
-            if (this.checked) {
-              document.querySelectorAll(".concern-checkbox").forEach((cb) => {
-                if (cb !== this) cb.checked = false;
-              });
-              quizData.concerns = ["none"];
-            } else {
-              quizData.concerns = [];
-            }
-          } else {
-            // If other concern is selected, uncheck "none"
-            if (this.checked) {
-              const noneCheckbox = document.querySelector(
-                '[data-value="none"] .concern-checkbox'
-              );
-              noneCheckbox.checked = false;
-              quizData.concerns = quizData.concerns.filter(
-                (c) => c !== "none"
-              );
-              quizData.concerns.push(value);
-            } else {
-              quizData.concerns = quizData.concerns.filter(
-                (c) => c !== value
-              );
-            }
-          }
-
-          // Enable next button if at least one concern is selected
-          document.getElementById("step4-next").disabled =
-            quizData.concerns.length === 0;
-        });
-      });
-    });
-
-    // Exit confirmation
-    function showExitModal() {
-      document.getElementById("exit-modal").classList.add("active");
-    }
-
-    function closeExitModal() {
-      document.getElementById("exit-modal").classList.remove("active");
-    }
-
-    function confirmExit() {
-      window.location.href = "home.html";
-    }
-
-    // Navigation exit handlers
-    document
-      .querySelectorAll('.nav-item:not([data-page="recommender"])')
-      .forEach((item) => {
-        item.addEventListener("click", function (e) {
-          if (currentStep > 0 && currentStep < 6) {
-            e.preventDefault();
-            showExitModal();
-          }
-        });
-      });
-
-    // Loading animation
-    function showLoading() {
-      nextStep("loading");
-
-      // Simulate loading messages
-      const messages = document.querySelectorAll(".loading-message");
-      let currentMessage = 0;
-
-      const messageInterval = setInterval(() => {
-        messages.forEach((msg) => msg.classList.remove("active"));
-        if (currentMessage < messages.length) {
-          messages[currentMessage].classList.add("active");
-          currentMessage++;
+        if (step === 0) {
+          document.getElementById("step-intro").classList.add("active");
         } else {
-          clearInterval(messageInterval);
-          // Show results after loading
-          setTimeout(() => {
-            showResults();
-          }, 1000);
+          document.getElementById(`step-${step}`).classList.add("active");
         }
-      }, 1500);
-    }
+        currentStep = step;
 
-    function showResults() {
-      nextStep("results");
-      // Here you would typically fetch recommendations based on quizData
-      console.log("Quiz completed with data:", quizData);
-      // For now, we'll just show a message
-      document.getElementById("recommended-products").innerHTML = `
-        <div class="no-results">
-            <i class="fas fa-sparkles"></i>
-        </div>
-    `;
-    }
-    function initFloatingProduct() {
-      const productImages = [
-        "/admin/uploads/product_images/blush-nobg.png",
-        "/admin/uploads/product_images/concealer-nobg.png",
-        "/admin/uploads/product_images/blush-nobg.png",
-        "/admin/uploads/product_images/blush-nobg.png",
-        "/admin/uploads/product_images/blush-nobg.png",
-        "/admin/uploads/product_images/blush-nobg.png",
-      ];
-
-      const productImg = document.getElementById("floating-product-img");
-
-      let currentIndex = 0;
-
-      function changeProduct() {
-        currentIndex = (currentIndex + 1) % productImages.length;
-        const newImagePath = productImages[currentIndex];
-
-        productImg.style.opacity = "0";
-
-        setTimeout(() => {
-          productImg.src = newImagePath;
-
-          productImg.onload = function () {
-            productImg.style.opacity = "1";
-          };
-
-          productImg.onerror = function () {
-            console.error("❌ Failed to load image:", this.src);
-            productImg.style.opacity = "1";
-            // If one image fails, just continue with others
-          };
-        }, 300);
+        // Update progress bar based on current step
+        updateProgressBar();
       }
 
-      // Set first image
-      productImg.src = productImages[0];
-      productImg.style.transition = "opacity 0.5s ease";
+      function prevStep() {
+        if (currentStep > 1) {
+          nextStep(currentStep - 1);
+        } else {
+          // Go back to intro when on step 1
+          nextStep(0);
+        }
+      }
 
-      productImg.onload = function () { };
+      function updateProgressBar() {
+        const progressFill = document.querySelector(".progress-fill");
+        if (!progressFill) return;
 
-      productImg.onerror = function () { };
+        const progressPercentages = {
+          0: 0, // Intro
+          1: 20, // Step 1
+          2: 40, // Step 2
+          3: 60, // Step 3
+          4: 80, // Step 4
+          5: 100, // Step 5
+        };
 
-      // Change image every 3 seconds
-      setInterval(changeProduct, 3000);
-    }
+        progressFill.style.width = `${progressPercentages[currentStep] || 0}%`;
+      }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      console.log("📄 DOM loaded, initializing carousel...");
-      initFloatingProduct();
-    });
-  </script>
-</body>
+      function restartQuiz() {
+        // Check if user has existing preferences
+        if (hasExistingPreferences) {
+          // Show the existing preferences modal instead of immediately restarting
+          showExistingPrefsModal();
+        } else {
+          // If no existing preferences, restart normally
+          resetQuizAndRestart();
+        }
+      }
 
+      // New function to handle the actual quiz reset
+      function resetQuizAndRestart() {
+        quizData = {
+          skinType: "",
+          skinTone: "",
+          undertone: "",
+          concerns: [],
+          finish: "",
+        };
+
+        // Reset all selections visually
+        document.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+
+        document.querySelectorAll(".tone-option").forEach((option) => {
+          option.classList.remove("selected");
+        });
+
+        document.querySelectorAll(".concern-checkbox").forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+
+        // Reset next buttons
+        document.querySelectorAll(".nav-btn.primary").forEach((btn) => {
+          btn.disabled = true;
+        });
+
+        nextStep(1);
+      }
+
+      // Option selection
+      document.addEventListener("DOMContentLoaded", function () {
+        // Single selection options
+        document.querySelectorAll(".option-card").forEach((card) => {
+          card.addEventListener("click", function () {
+            const step = this.closest(".quiz-step").id.replace("step-", "");
+            const value = this.getAttribute("data-value");
+
+            // Clear other selections in this step
+            this.closest(".options-grid")
+              .querySelectorAll(".option-card")
+              .forEach((c) => {
+                c.classList.remove("selected");
+              });
+
+            // Select this card
+            this.classList.add("selected");
+
+            // Update data
+            if (step === "1") quizData.skinType = value;
+            if (step === "2") quizData.skinTone = value;
+            if (step === "3") quizData.undertone = value;
+            if (step === "5") quizData.finish = value;
+
+            // Enable next button
+            const nextBtn = document.getElementById(`step${step}-next`);
+            if (nextBtn) nextBtn.disabled = false;
+          });
+        });
+
+        // Skin tone selection
+        document.querySelectorAll(".tone-option").forEach((option) => {
+          option.addEventListener("click", function () {
+            document.querySelectorAll(".tone-option").forEach((o) => {
+              o.classList.remove("selected");
+            });
+            this.classList.add("selected");
+            quizData.skinTone = this.getAttribute("data-value");
+            document.getElementById("step2-next").disabled = false;
+          });
+        });
+
+        // Concerns selection (multiple)
+        document.querySelectorAll(".concern-checkbox").forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            const value =
+              this.closest(".concern-option").getAttribute("data-value");
+
+            if (value === "none") {
+              // If "none" is selected, uncheck all others
+              if (this.checked) {
+                document.querySelectorAll(".concern-checkbox").forEach((cb) => {
+                  if (cb !== this) cb.checked = false;
+                });
+                quizData.concerns = ["none"];
+              } else {
+                quizData.concerns = [];
+              }
+            } else {
+              // If other concern is selected, uncheck "none"
+              if (this.checked) {
+                const noneCheckbox = document.querySelector(
+                  '[data-value="none"] .concern-checkbox'
+                );
+                noneCheckbox.checked = false;
+                quizData.concerns = quizData.concerns.filter(
+                  (c) => c !== "none"
+                );
+                quizData.concerns.push(value);
+              } else {
+                quizData.concerns = quizData.concerns.filter(
+                  (c) => c !== value
+                );
+              }
+            }
+
+            // Enable next button if at least one concern is selected
+            document.getElementById("step4-next").disabled =
+              quizData.concerns.length === 0;
+          });
+        });
+      });
+
+      // Exit confirmation
+      function showExitModal() {
+        document.getElementById("exit-modal").classList.add("active");
+      }
+
+      function closeExitModal() {
+        document.getElementById("exit-modal").classList.remove("active");
+      }
+
+      function confirmExit() {
+        window.location.href = "home.html";
+      }
+
+      // Navigation exit handlers
+      document
+        .querySelectorAll('.nav-item:not([data-page="recommender"])')
+        .forEach((item) => {
+          item.addEventListener("click", function (e) {
+            if (currentStep > 0 && currentStep < 6) {
+              e.preventDefault();
+              showExitModal();
+            }
+          });
+        });
+
+      // Loading animation
+      function showLoading() {
+        nextStep("loading");
+
+        // Simulate loading messages
+        const messages = document.querySelectorAll(".loading-message");
+        let currentMessage = 0;
+
+        const messageInterval = setInterval(() => {
+          messages.forEach((msg) => msg.classList.remove("active"));
+          if (currentMessage < messages.length) {
+            messages[currentMessage].classList.add("active");
+            currentMessage++;
+          } else {
+            clearInterval(messageInterval);
+            // Show results after loading
+            setTimeout(() => {
+              showResults();
+            }, 1000);
+          }
+        }, 1500);
+      }
+
+      function initFloatingProduct() {
+        const productImages = [
+          "/admin/uploads/product_images/blush-nobg.png",
+          "/admin/uploads/product_images/concealer-nobg.png",
+          "/admin/uploads/product_images/blush-nobg.png",
+          "/admin/uploads/product_images/blush-nobg.png",
+          "/admin/uploads/product_images/blush-nobg.png",
+          "/admin/uploads/product_images/blush-nobg.png",
+        ];
+
+        const productImg = document.getElementById("floating-product-img");
+
+        let currentIndex = 0;
+
+        function changeProduct() {
+          currentIndex = (currentIndex + 1) % productImages.length;
+          const newImagePath = productImages[currentIndex];
+
+          productImg.style.opacity = "0";
+
+          setTimeout(() => {
+            productImg.src = newImagePath;
+
+            productImg.onload = function () {
+              productImg.style.opacity = "1";
+            };
+
+            productImg.onerror = function () {
+              console.error("❌ Failed to load image:", this.src);
+              productImg.style.opacity = "1";
+              // If one image fails, just continue with others
+            };
+          }, 300);
+        }
+
+        // Set first image
+        productImg.src = productImages[0];
+        productImg.style.transition = "opacity 0.5s ease";
+
+        productImg.onload = function () {};
+
+        productImg.onerror = function () {};
+
+        // Change image every 3 seconds
+        setInterval(changeProduct, 3000);
+      }
+
+      async function updateCartCount() {
+        try {
+          const response = await fetch("../php/get-cart-count.php");
+          const data = await response.json();
+
+          if (data.success) {
+            const cartCounts = document.querySelectorAll(".nav-cart-count");
+            cartCounts.forEach((count) => {
+              count.textContent = data.count;
+              if (data.count > 0) {
+                count.classList.add("show"); // Use class instead of inline style
+              } else {
+                count.classList.remove("show");
+              }
+            });
+          }
+        } catch (error) {
+          console.log("Cart count update failed, setting to 0");
+          const cartCounts = document.querySelectorAll(".nav-cart-count");
+          cartCounts.forEach((count) => {
+            count.textContent = "0";
+            count.classList.remove("show");
+          });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("📄 DOM loaded, initializing carousel...");
+        initFloatingProduct();
+        updateCartCount();
+      });
+    </script>
+  </body>
 </html>
