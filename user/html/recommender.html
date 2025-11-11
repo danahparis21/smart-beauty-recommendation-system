@@ -77,7 +77,6 @@
       }
 
       /* ===== MAIN QUIZ CONTAINER ===== */
-      /* ===== MAIN QUIZ CONTAINER ===== */
       .recommender-main {
         padding: 40px 20px;
         max-width: 1000px; /* Increased from 800px */
@@ -610,7 +609,6 @@
       }
 
       /* ===== RECOMMENDATIONS GRID ===== */
-      /* ===== RECOMMENDATIONS GRID ===== */
       .recommendations-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -884,8 +882,7 @@
         }
       }
 
-      
-@media (min-width: 360px) and (max-width: 768px) {
+      @media (min-width: 360px) and (max-width: 768px) {
         .recommender-main {
           padding: 20px 15px;
           min-height: calc(100vh - 150px);
@@ -979,22 +976,22 @@
       }
 
       @media (max-width: 380px) {
-  .recommendations-grid .product-actions {
-    flex-direction: column;
-  }
+        .recommendations-grid .product-actions {
+          flex-direction: column;
+        }
 
-  .recommendations-grid .btn-primary,
-  .recommendations-grid .btn-secondary {
-    width: 100%;
-    text-align: center;
-  }
+        .recommendations-grid .btn-primary,
+        .recommendations-grid .btn-secondary {
+          width: 100%;
+          text-align: center;
+        }
 
-  .recommendations-grid .attribute-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
-  }
-}
+        .recommendations-grid .attribute-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 3px;
+        }
+      }
 
       /* Tablet */
       @media (min-width: 769px) and (max-width: 1024px) {
@@ -1234,7 +1231,7 @@
       .results-hero {
         text-align: center;
         margin-bottom: 40px;
-        padding: 40px 20px;
+        padding: 2px 2px;
       }
 
       .results-hero i {
@@ -1400,7 +1397,7 @@
         /* Results Hero Mobile */
         .results-hero {
           padding: 30px 15px;
-          margin-bottom: 30px;
+          margin-bottom: 15px;
         }
 
         .results-hero i {
@@ -1734,6 +1731,295 @@
 
       #external-attribute-card::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
+      }
+      /* ===== ELEGANT COMPACT FILTERS ===== */
+      .filters-section {
+        margin: 20px auto 30px auto;
+        padding: 0;
+        background: transparent;
+        border: none;
+        max-width: 900px;
+      }
+
+      .filters-container {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: center;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 0 1 auto;
+      }
+
+      .filter-group label {
+        font-weight: 500;
+        font-size: 11px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-family: "Inter", sans-serif;
+      }
+
+      .filter-group select {
+        padding: 10px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: white;
+        font-size: 13px;
+        color: #374151;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        appearance: none;
+        background-position: right 12px center;
+        background-size: 14px;
+        padding-right: 36px;
+        min-width: 140px;
+        font-family: "Inter", sans-serif;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .filter-group select:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+      }
+
+      .filter-group select:focus {
+        outline: none;
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+      }
+
+      .results-count {
+        font-weight: 500;
+        color: #6b7280;
+        font-size: 12px;
+        text-align: center;
+        margin-top: 8px;
+        font-family: "Inter", sans-serif;
+        letter-spacing: 0.3px;
+      }
+
+      /* ===== REDUCE SPACING IN RESULTS CONTAINER ===== */
+      .results-container {
+        text-align: center;
+        padding: 10px 0 0 0;
+      }
+
+      .results-hero {
+        margin-bottom: 25px;
+      }
+
+      .results-hero h2 {
+        margin-bottom: 8px;
+      }
+
+      .results-hero p {
+        margin-bottom: 0;
+        line-height: 1.5;
+      }
+      /* ===== FILTER DESCRIPTION ===== */
+      .filter-description {
+        color: var(--primary-pink);
+        font-size: 12px;
+        text-align: center;
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: rgba(236, 72, 153, 0.05);
+        border-radius: 8px;
+        border: 1px solid rgba(236, 72, 153, 0.1);
+        line-height: 1.4;
+        transition: all 0.3s ease;
+      }
+
+      .filter-description strong {
+        color: var(--primary-pink);
+        font-weight: 600;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .filter-description {
+          font-size: 11px;
+          padding: 6px 10px;
+          margin-top: 6px;
+        }
+      }
+
+      /* ===== RESPONSIVE DESIGN ===== */
+      @media (max-width: 1024px) {
+        .filters-container {
+          gap: 12px;
+        }
+
+        .filter-group select {
+          min-width: 130px;
+          padding: 9px 12px;
+          font-size: 12.5px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .filters-section {
+          margin: 15px auto 25px auto;
+          padding: 0 16px;
+        }
+
+        .filters-container {
+          gap: 10px;
+          flex-direction: row;
+          justify-content: space-between;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding-bottom: 8px;
+          margin-bottom: 15px;
+        }
+
+        .filter-group {
+          flex: 0 0 auto;
+          min-width: 120px;
+        }
+
+        .filter-group select {
+          min-width: 120px;
+          padding: 8px 12px;
+          font-size: 12px;
+          padding-right: 32px;
+          background-position: right 10px center;
+        }
+
+        .results-hero {
+          margin-bottom: 20px;
+        }
+
+        .results-hero h2 {
+          font-size: 1.8rem;
+        }
+
+        .results-hero p {
+          font-size: 1rem;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .filters-container {
+          gap: 8px;
+        }
+
+        .filter-group {
+          min-width: 110px;
+        }
+
+        .filter-group select {
+          min-width: 110px;
+          padding: 7px 10px;
+          font-size: 11.5px;
+        }
+
+        .filter-group label {
+          font-size: 10px;
+        }
+
+        .results-count {
+          font-size: 11px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .filters-section {
+          margin: 12px auto 20px auto;
+          padding: 0 12px;
+        }
+
+        .filters-container {
+          gap: 6px;
+        }
+
+        .filter-group {
+          min-width: 100px;
+        }
+
+        .filter-group select {
+          min-width: 100px;
+          padding: 6px 8px;
+          font-size: 11px;
+          padding-right: 28px;
+          background-size: 12px;
+        }
+
+        .results-hero h2 {
+          font-size: 1.6rem;
+        }
+
+        .results-hero p {
+          font-size: 0.9rem;
+        }
+      }
+      /* ===== USER RATINGS ===== */
+      .user-rating {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 12px 0;
+        padding: 8px 0;
+      }
+
+      .stars {
+        display: flex;
+        gap: 2px;
+      }
+
+      .stars i {
+        font-size: 12px;
+        color: #e5e7eb; /* Empty star color */
+        transition: color 0.2s ease;
+      }
+
+      .stars i.active {
+        color: #fbbf24; /* Gold color for filled stars */
+      }
+
+      .rating-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+      }
+
+      .user-rating.no-ratings .stars i {
+        color: #d1d5db;
+      }
+
+      .user-rating.no-ratings .rating-text {
+        color: #9ca3af;
+        font-weight: normal;
+      }
+
+      /* Hover effects */
+      .user-rating:not(.no-ratings):hover .stars i.active {
+        color: #f59e0b; /* Slightly darker gold on hover */
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .user-rating {
+          margin: 10px 0;
+          padding: 6px 0;
+        }
+
+        .stars i {
+          font-size: 11px;
+        }
+
+        .rating-text {
+          font-size: 11px;
+        }
       }
     </style>
   </head>
@@ -2216,6 +2502,50 @@
               </p>
             </div>
 
+            <!-- Filters Section -->
+            <div class="filters-section">
+              <div class="filters-container">
+                <div class="filter-group">
+                  <label for="category-filter">Category</label>
+                  <select id="category-filter">
+                    <option value="all">All Categories</option>
+                    <!-- Categories will be dynamically loaded here -->
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label for="match-type-filter">Match Type</label>
+                  <select id="match-type-filter">
+                    <option value="all">All Matches</option>
+                    <option value="💎 PERFECT MATCH">Perfect Matches</option>
+                    <option value="💖 CLOSE MATCH">Close Matches</option>
+                    <option value="🌸 NORMAL MATCH">Normal Matches</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label for="sort-by-filter">Sort By</label>
+                  <select id="sort-by-filter">
+                    <option value="relevance">Relevance</option>
+                    <option value="matches">Most Matches</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="results-count" class="results-count">
+                12 products found
+              </div>
+
+              <!-- Dynamic Description Area -->
+              <div id="filter-description" class="filter-description">
+                💫 <strong>How it works:</strong> These products are
+                personalized based on your skin profile and preferences
+              </div>
+            </div>
+
             <div class="recommended-products" id="recommended-products">
               <!-- Products will be dynamically inserted here -->
             </div>
@@ -2350,12 +2680,12 @@
 
           const container = document.getElementById("recommended-products");
           container.innerHTML = `
-                  <div class="loading">
-                      <i class="fas fa-spinner fa-spin"></i>
-                      <h3>Loading your recommendations...</h3>
-                      <p>Fetching your personalized product matches</p>
-                  </div>
-              `;
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <h3>Loading your recommendations...</h3>
+                            <p>Fetching your personalized product matches</p>
+                        </div>
+                    `;
 
           // Use the existing preferences to get recommendations
           const response = await fetch("../php/recommend-products.php", {
@@ -2394,19 +2724,19 @@
               const existingTitle = resultsHero.querySelector("h2");
               if (existingTitle) {
                 existingTitle.innerHTML = `Your Personalized Recommendations
-                `;
+                      `;
               }
 
               const existingSubtitle = resultsHero.querySelector("p");
               if (existingSubtitle) {
                 existingSubtitle.innerHTML = `
-                  Based on your quiz from ${new Date(
-                    currentPreferences.updated_at
-                  ).toLocaleDateString()}
-                  <br><small style="color: var(--text-gray); font-size: 0.9em;">
-                      Want different results? <button onclick="restartQuiz()" style="background: none; border: none; color: var(--primary-pink); text-decoration: underline; cursor: pointer;">Retake the quiz</button>
-                  </small>
-              `;
+                        Based on your quiz from ${new Date(
+                          currentPreferences.updated_at
+                        ).toLocaleDateString()}
+                        <br><small style="color: var(--text-gray); font-size: 0.9em;">
+                            Want different results? <button onclick="restartQuiz()" style="background: none; border: none; color: var(--primary-pink); text-decoration: underline; cursor: pointer;">Retake the quiz</button>
+                        </small>
+                    `;
               }
             }
           } else {
@@ -2488,47 +2818,48 @@
 
         if (currentPreferences) {
           display.innerHTML = `
-            <div class="preference-item">
-              <span class="preference-label">Skin Type:</span>
-              <span class="preference-value">${
-                currentPreferences.skin_type
-              }</span>
-            </div>
-            <div class="preference-item">
-              <span class="preference-label">Skin Tone:</span>
-              <span class="preference-value">${
-                currentPreferences.skin_tone
-              }</span>
-            </div>
-            <div class="preference-item">
-              <span class="preference-label">Undertone:</span>
-              <span class="preference-value">${
-                currentPreferences.undertone
-              }</span>
-            </div>
-            <div class="preference-item">
-              <span class="preference-label">Preferred Finish:</span>
-              <span class="preference-value">${
-                currentPreferences.preferred_finish
-              }</span>
-            </div>
-            <div class="preference-item">
-              <span class="preference-label">Skin Concerns:</span>
-              <div class="concerns-list">
-                ${JSON.parse(currentPreferences.skin_concerns || "[]")
-                  .map(
-                    (concern) => `<span class="concern-tag">${concern}</span>`
-                  )
-                  .join("")}
-              </div>
-            </div>
-            <div class="preference-item">
-              <span class="preference-label">Last Updated:</span>
-              <span class="preference-value">${new Date(
-                currentPreferences.updated_at
-              ).toLocaleDateString()}</span>
-            </div>
-          `;
+                  <div class="preference-item">
+                    <span class="preference-label">Skin Type:</span>
+                    <span class="preference-value">${
+                      currentPreferences.skin_type
+                    }</span>
+                  </div>
+                  <div class="preference-item">
+                    <span class="preference-label">Skin Tone:</span>
+                    <span class="preference-value">${
+                      currentPreferences.skin_tone
+                    }</span>
+                  </div>
+                  <div class="preference-item">
+                    <span class="preference-label">Undertone:</span>
+                    <span class="preference-value">${
+                      currentPreferences.undertone
+                    }</span>
+                  </div>
+                  <div class="preference-item">
+                    <span class="preference-label">Preferred Finish:</span>
+                    <span class="preference-value">${
+                      currentPreferences.preferred_finish
+                    }</span>
+                  </div>
+                  <div class="preference-item">
+                    <span class="preference-label">Skin Concerns:</span>
+                    <div class="concerns-list">
+                      ${JSON.parse(currentPreferences.skin_concerns || "[]")
+                        .map(
+                          (concern) =>
+                            `<span class="concern-tag">${concern}</span>`
+                        )
+                        .join("")}
+                    </div>
+                  </div>
+                  <div class="preference-item">
+                    <span class="preference-label">Last Updated:</span>
+                    <span class="preference-value">${new Date(
+                      currentPreferences.updated_at
+                    ).toLocaleDateString()}</span>
+                  </div>
+                `;
         }
 
         document.getElementById("current-prefs-modal").classList.add("active");
@@ -2556,12 +2887,12 @@
         // Show loading state
         const container = document.getElementById("recommended-products");
         container.innerHTML = `
-          <div class="loading">
-              <i class="fas fa-spinner fa-spin"></i>
-              <h3>Finding your perfect matches...</h3>
-              <p>Analyzing ${quizData.concerns.length} concerns across our product database</p>
-          </div>
-          `;
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <h3>Finding your perfect matches...</h3>
+                    <p>Analyzing ${quizData.concerns.length} concerns across our product database</p>
+                </div>
+                `;
 
         try {
           const saveSuccess = await saveUserPreferences();
@@ -2625,21 +2956,28 @@
       ) {
         const container = document.getElementById("recommended-products");
         container.innerHTML = `
-              <div class="no-results">
-                  <i class="fas fa-search"></i>
-                  <h3>No Perfect Matches Found</h3>
-                  <p>${message}</p>
-                  <button class="btn-primary" onclick="showResults()">
-                      <i class="fas fa-redo"></i> Try Again
-                  </button>
-              </div>
-          `;
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No Perfect Matches Found</h3>
+                        <p>${message}</p>
+                        <button class="btn-primary" onclick="showResults()">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
       }
 
+      // Update your displayRecommendations function to load categories
       function displayRecommendations(recommendations) {
         const container = document.getElementById("recommended-products");
 
-        if (!recommendations || recommendations.length === 0) {
+        console.log("🎯 Displaying recommendations:", recommendations?.length);
+
+        if (
+          !recommendations ||
+          !Array.isArray(recommendations) ||
+          recommendations.length === 0
+        ) {
           container.innerHTML = `
             <div class="no-results">
                 <i class="fas fa-search"></i>
@@ -2652,21 +2990,30 @@
 
         let html = '<div class="recommendations-grid">';
 
-        recommendations.forEach((product) => {
-          // Clean the product name
-          const cleanName = product.Name.replace(/Parent Record:/gi, "")
-            .replace(/Product Record:/gi, "")
-            .replace(/:/g, "")
-            .trim();
+        recommendations.forEach((product, index) => {
+          const cleanName = product.Name
+            ? product.Name.replace(/Parent Record:/gi, "")
+                .replace(/Product Record:/gi, "")
+                .replace(/:/g, "")
+                .trim()
+            : "Unnamed Product";
 
           const matchType = product.Match_Type || "🌸 RECOMMENDED";
-          const predictedScore = product.Predicted_Score || 4.0;
-          const price = parseFloat(product.Price).toFixed(2);
+          const price = product.Price
+            ? parseFloat(product.Price).toFixed(2)
+            : "0.00";
+          const category = product.Category || "Uncategorized";
           const attributeMatches = product.Attribute_Matches || {};
 
-          // Use ABSOLUTE paths to avoid relative path issues
-          let imagePath = "/admin/uploads/product_images/no-image.png";
+          // Get user rating - check multiple possible fields
+          const userRating =
+            product.ProductRating ||
+            product.productrating ||
+            product.user_rating ||
+            product.rating ||
+            0;
 
+          let imagePath = "/admin/uploads/product_images/no-image.png";
           if (product.image && product.image !== "null") {
             let cleanImagePath = product.image;
             cleanImagePath = cleanImagePath.replace(
@@ -2677,15 +3024,53 @@
             imagePath = `/admin/uploads/product_images/${cleanImagePath}`;
           }
 
-          // In your displayRecommendations function, update the attributeHTML line:
           const attributeHTML = generateAttributeMatchesHTML(
             attributeMatches,
             product.id
           );
 
-          // And store product data globally
           if (!window.productData) window.productData = {};
           window.productData[product.id] = product;
+
+          // Build user rating HTML
+          let userRatingHTML = "";
+          if (userRating && userRating > 0) {
+            const fullStars = Math.floor(userRating);
+            const hasHalfStar = userRating % 1 >= 0.5;
+
+            userRatingHTML = `
+                <div class="user-rating">
+                    <div class="stars">
+                        ${Array.from({ length: 5 }, (_, i) => {
+                          if (i < fullStars) {
+                            return '<i class="fas fa-star active"></i>';
+                          } else if (i === fullStars && hasHalfStar) {
+                            return '<i class="fas fa-star-half-alt active"></i>';
+                          } else {
+                            return '<i class="far fa-star"></i>';
+                          }
+                        }).join("")}
+                    </div>
+                    <span class="rating-text">${parseFloat(userRating).toFixed(
+                      1
+                    )}</span>
+                </div>
+            `;
+          } else {
+            // Show "No ratings yet" if no rating available
+            userRatingHTML = `
+                <div class="user-rating no-ratings">
+                    <div class="stars">
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                    </div>
+                    <span class="rating-text">No ratings yet</span>
+                </div>
+            `;
+          }
 
           html += `
             <div class="product-card" data-product-id="${product.id}">
@@ -2698,24 +3083,15 @@
                 </div>
                 <div class="product-info">
                     <h4 class="product-name">${cleanName}</h4>
-                    <p class="product-category">${product.Category}</p>
+                    <p class="product-category">${category}</p>
                     <p class="product-price">₱${price}</p>
                     
                     <!-- Attribute Matches Section -->
                     ${attributeHTML}
                     
-                    <div class="match-info">
-                        <div class="match-score">
-                            <span class="score">${predictedScore.toFixed(
-                              1
-                            )}</span>/5.0
-                        </div>
-                        <div class="match-bar">
-                            <div class="match-fill" style="width: ${
-                              (predictedScore / 5) * 100
-                            }%"></div>
-                        </div>
-                    </div>
+                    <!-- User Ratings Section -->
+                    ${userRatingHTML}
+                    
                     <div class="product-actions">
                         <button class="btn-primary add-to-cart-btn" onclick="addRecommendedToCart('${
                           product.id
@@ -2735,6 +3111,14 @@
 
         html += "</div>";
         container.innerHTML = html;
+
+        console.log("✅ Products rendered, setting up filters...");
+
+        // Load categories and setup filters
+        loadCategoriesIntoFilter().then(() => {
+          setupFilters();
+          updateResultsCount(recommendations.length);
+        });
       }
 
       function generateAttributeMatchesHTML(attributeMatches, productId) {
@@ -2747,13 +3131,13 @@
         const matchCount = countMatches(attributeMatches);
 
         let html = `
-    <div class="attribute-summary" data-product-id="${productId}">
-        <div class="attribute-header">
-            <span class="attribute-text">${matchCount}/${totalAttributes} Matches</span>
-            <span class="attribute-toggle">ⓘ</span>
-        </div>
-    </div>
-  `;
+          <div class="attribute-summary" data-product-id="${productId}">
+              <div class="attribute-header">
+                  <span class="attribute-text">${matchCount}/${totalAttributes} Matches</span>
+                  <span class="attribute-toggle">ⓘ</span>
+              </div>
+          </div>
+        `;
 
         return html;
       }
@@ -2767,18 +3151,22 @@
 
         const addAttribute = (label, productValue, userValue, match) => {
           return `
-            <div class="attribute-detail-clean ${match ? "match" : "no-match"}">
-                <div class="attribute-line">
-                    <span class="attribute-label-clean">${label}</span>
-                    <div class="attribute-values">
-                        <span class="product-value-clean">${productValue}</span>
-                        <span class="separator">•</span>
-                        <span class="user-value-clean">${userValue}</span>
-                    </div>
-                </div>
-                <span class="detail-status-clean">${match ? "✓" : "✗"}</span>
-            </div>
-        `;
+                  <div class="attribute-detail-clean ${
+                    match ? "match" : "no-match"
+                  }">
+                      <div class="attribute-line">
+                          <span class="attribute-label-clean">${label}</span>
+                          <div class="attribute-values">
+                              <span class="product-value-clean">${productValue}</span>
+                              <span class="separator">•</span>
+                              <span class="user-value-clean">${userValue}</span>
+                          </div>
+                      </div>
+                      <span class="detail-status-clean">${
+                        match ? "✓" : "✗"
+                      }</span>
+                  </div>
+              `;
         };
 
         if (attributeMatches.skin_type) {
@@ -2860,7 +3248,327 @@
 
         return html;
       }
+      // Function to load categories dynamically
+      // Function to load categories dynamically
+      async function loadCategoriesIntoFilter() {
+        try {
+          const response = await fetch("../php/categories.php");
+          if (!response.ok)
+            throw new Error(`HTTP error! status: ${response.status}`);
 
+          const data = await response.json();
+          const categoryFilter = document.getElementById("category-filter");
+
+          if (data.success && categoryFilter) {
+            // FIXED: Clear all options and rebuild properly
+            categoryFilter.innerHTML =
+              '<option value="all">All Categories</option>';
+
+            // Add categories from database
+            data.categories.forEach((category) => {
+              // Skip if category is "All" to avoid duplicates
+              if (category.toLowerCase() !== "all") {
+                const option = document.createElement("option");
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+              }
+            });
+
+            console.log("✅ Categories loaded into filter:", data.categories);
+          }
+        } catch (error) {
+          console.error("❌ Error loading categories:", error);
+          // Keep the default categories if fetch fails
+        }
+      }
+
+      function setupFilters() {
+        console.log("🔧 Setting up filters...");
+
+        const categoryFilter = document.getElementById("category-filter");
+        const matchTypeFilter = document.getElementById("match-type-filter");
+        const sortByFilter = document.getElementById("sort-by-filter");
+
+        console.log("📊 Filters found:", {
+          categoryFilter: !!categoryFilter,
+          matchTypeFilter: !!matchTypeFilter,
+          sortByFilter: !!sortByFilter,
+        });
+
+        if (categoryFilter) {
+          categoryFilter.addEventListener("change", applyFilters);
+        }
+        if (matchTypeFilter) {
+          matchTypeFilter.addEventListener("change", applyFilters);
+        }
+        if (sortByFilter) {
+          sortByFilter.addEventListener("change", applyFilters);
+        }
+
+        // Debug: Check if products exist
+        const productCards = document.querySelectorAll(".product-card");
+        console.log(
+          "🃏 Product cards found during setup:",
+          productCards.length
+        );
+        updateFilterDescription();
+      }
+
+      const filterDescriptions = {
+        "match-type": {
+          all: " Showing all products that match your preferences",
+          "PERFECT MATCH":
+            "Products that perfectly match your skin type, tone, and preferences",
+          "CLOSE MATCH": "Products that closely match most of your preferences",
+          "NORMAL MATCH": "Good products that match some of your preferences",
+        },
+        "sort-by": {
+          relevance:
+            "Products sorted by how well they match your specific needs",
+          matches:
+            "Products with the most matching attributes to your preferences",
+          rating: "Products highly rated by users with similar preferences",
+          "price-low": "Products sorted from lowest to highest price",
+          "price-high": "Products sorted from highest to lowest price",
+        },
+        category: {
+          all: "Showing products from all categories that match your preferences",
+          default:
+            "Showing products from this category that match your preferences",
+        },
+      };
+
+      // Function to update description based on current filters
+      function updateFilterDescription() {
+        const matchType = document.getElementById("match-type-filter").value;
+        const sortBy = document.getElementById("sort-by-filter").value;
+        const category = document.getElementById("category-filter").value;
+
+        let description = "";
+
+        // Priority: Match Type > Sort By > Category
+        if (
+          matchType !== "all" &&
+          filterDescriptions["match-type"][matchType]
+        ) {
+          description = filterDescriptions["match-type"][matchType];
+        } else if (
+          sortBy !== "relevance" &&
+          filterDescriptions["sort-by"][sortBy]
+        ) {
+          description = filterDescriptions["sort-by"][sortBy];
+        } else if (category !== "all") {
+          description = filterDescriptions["category"]["default"];
+        } else {
+          description = filterDescriptions["match-type"]["all"];
+        }
+
+        document.getElementById("filter-description").innerHTML = description;
+      }
+
+      function applyFilters() {
+        console.log("🎯 Applying filters...");
+
+        const selectedCategory =
+          document.getElementById("category-filter")?.value || "all";
+        const selectedMatchType =
+          document.getElementById("match-type-filter")?.value || "all";
+        const selectedSort =
+          document.getElementById("sort-by-filter")?.value || "relevance";
+
+        console.log("🔍 Filter criteria:", {
+          selectedCategory,
+          selectedMatchType,
+          selectedSort,
+        });
+
+        const productCards = document.querySelectorAll(".product-card");
+        console.log("📦 Total product cards:", productCards.length);
+
+        let visibleProducts = [];
+        let hiddenCount = 0;
+
+        productCards.forEach((card, index) => {
+          // Get category from the product-category element
+          const categoryElement = card.querySelector(".product-category");
+          const category = categoryElement
+            ? categoryElement.textContent.trim()
+            : "";
+
+          // Get match type from the match-badge element
+          const matchTypeBadge = card.querySelector(".match-badge");
+          const matchType = matchTypeBadge
+            ? matchTypeBadge.textContent.trim()
+            : "";
+
+          console.log(`📋 Product ${index}:`, { category, matchType });
+
+          let shouldShow = true;
+
+          // FIXED: Handle "All" category properly
+          if (
+            selectedCategory !== "all" &&
+            selectedCategory !== "All" &&
+            category !== selectedCategory
+          ) {
+            shouldShow = false;
+            console.log(
+              `❌ Hiding product ${index} - category mismatch: ${category} != ${selectedCategory}`
+            );
+          }
+
+          // Match type filter
+          if (
+            selectedMatchType !== "all" &&
+            !matchType.includes(selectedMatchType)
+          ) {
+            shouldShow = false;
+            console.log(
+              `❌ Hiding product ${index} - match type mismatch: ${matchType} doesn't include ${selectedMatchType}`
+            );
+          }
+
+          // Show/hide card
+          if (shouldShow) {
+            card.style.display = "block";
+            visibleProducts.push(card);
+          } else {
+            card.style.display = "none";
+            hiddenCount++;
+          }
+        });
+
+        console.log(
+          `👁️ Visible: ${visibleProducts.length}, Hidden: ${hiddenCount}`
+        );
+
+        // Apply sorting
+        sortProducts(visibleProducts, selectedSort);
+        updateResultsCount(visibleProducts.length);
+        updateFilterDescription();
+      }
+
+      function sortProducts(products, sortBy) {
+        const container = document.querySelector(".recommendations-grid");
+        if (!container) {
+          console.error("❌ Could not find .recommendations-grid container");
+          return;
+        }
+
+        console.log("🔀 Sorting products by:", sortBy);
+
+        const productsArray = Array.from(products);
+
+        productsArray.sort((a, b) => {
+          try {
+            switch (sortBy) {
+              case "relevance":
+                return compareRelevance(a, b);
+              case "price-low":
+                return comparePrice(a, b, true);
+              case "price-high":
+                return comparePrice(a, b, false);
+              case "rating":
+                return compareRating(a, b);
+              case "matches":
+                return compareMatches(a, b);
+              default:
+                return 0;
+            }
+          } catch (error) {
+            console.error("❌ Error sorting:", error);
+            return 0;
+          }
+        });
+
+        // Re-append in sorted order
+        productsArray.forEach((product) => {
+          container.appendChild(product);
+        });
+
+        console.log("✅ Products sorted successfully");
+      }
+
+      function compareRelevance(a, b) {
+        // Sort by match badge priority
+        const matchPriority = {
+          "💎 PERFECT MATCH": 3,
+          "💖 CLOSE MATCH": 2,
+          "🌸 NORMAL MATCH": 1,
+          "⚠️ LOW RATING MATCH": 0,
+        };
+
+        const badgeA =
+          a.querySelector(".match-badge")?.textContent.trim() || "";
+        const badgeB =
+          b.querySelector(".match-badge")?.textContent.trim() || "";
+
+        return (matchPriority[badgeB] || 0) - (matchPriority[badgeA] || 0);
+      }
+
+      function comparePrice(a, b, ascending = true) {
+        const priceTextA =
+          a.querySelector(".product-price")?.textContent || "₱0";
+        const priceTextB =
+          b.querySelector(".product-price")?.textContent || "₱0";
+
+        const priceA = parseFloat(priceTextA.replace("₱", "")) || 0;
+        const priceB = parseFloat(priceTextB.replace("₱", "")) || 0;
+
+        return ascending ? priceA - priceB : priceB - priceA;
+      }
+
+      function compareRating(a, b) {
+        // Get rating from the rating-text element
+        const ratingTextA = a.querySelector(".rating-text")?.textContent || "0";
+        const ratingTextB = b.querySelector(".rating-text")?.textContent || "0";
+
+        console.log("⭐ Comparing ratings:", {
+          productA: ratingTextA,
+          productB: ratingTextB,
+        });
+
+        // Handle "No ratings yet" text
+        const ratingA =
+          ratingTextA === "No ratings yet" ? 0 : parseFloat(ratingTextA) || 0;
+        const ratingB =
+          ratingTextB === "No ratings yet" ? 0 : parseFloat(ratingTextB) || 0;
+
+        console.log("📊 Parsed ratings:", { ratingA, ratingB });
+
+        // Sort highest to lowest
+        return ratingB - ratingA;
+      }
+      function compareMatches(a, b) {
+        // Get matches from attribute-text element
+        const matchesTextA =
+          a.querySelector(".attribute-text")?.textContent || "0/5";
+        const matchesTextB =
+          b.querySelector(".attribute-text")?.textContent || "0/5";
+
+        console.log("🔢 Comparing matches:", {
+          productA: matchesTextA,
+          productB: matchesTextB,
+        });
+
+        const matchesA = parseInt(matchesTextA.split("/")[0]) || 0;
+        const matchesB = parseInt(matchesTextB.split("/")[0]) || 0;
+
+        console.log("📊 Parsed matches:", { matchesA, matchesB });
+
+        // Sort highest to lowest
+        return matchesB - matchesA;
+      }
+
+      function updateResultsCount(count) {
+        const countElement = document.getElementById("results-count");
+        if (countElement) {
+          countElement.textContent = `${count} products found`;
+        }
+      }
+
+      // Keep your existing helper functions
       function countMatches(attributeMatches) {
         let count = 0;
 
@@ -2888,6 +3596,7 @@
 
         return count;
       }
+
       // SILENT image error handler - no console logs
       function handleImageError(img) {
         // Don't log anything to avoid spam
