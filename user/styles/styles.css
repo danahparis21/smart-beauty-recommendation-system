@@ -87,7 +87,6 @@ body::-webkit-scrollbar {
   border-bottom: 1px solid rgba(255, 182, 193, 0.2);
 }
 
-
 .brand-header {
   text-align: center;
 }
@@ -161,6 +160,25 @@ body::-webkit-scrollbar {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 182, 193, 0.2);
   /* REMOVE margin-top: 70px; */
+}
+.nav-item {
+  position: relative; /* Add this */
+}
+
+.nav-cart-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--primary-pink);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 .nav-item {
   display: flex;
