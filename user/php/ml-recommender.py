@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
+import traceback
 
 def calculate_score(row, user_input):
     score = 0
@@ -103,9 +104,12 @@ def create_sample_data():
 
 def main():
     try:
+        # REMOVE ALL DEBUG PRINT STATEMENTS TO STDOUT
+        # Only output the final JSON
+        
         # Check if we have a command line argument
         if len(sys.argv) < 2:
-            print("No input file provided, using sample data for testing...", file=sys.stderr)
+            # Use sample data for testing
             data = create_sample_data()
         else:
             # Read data from temp file
@@ -114,8 +118,6 @@ def main():
         
         user_input = data['user_input']
         products = data['products']
-        
-        print(f"Processing {len(products)} products for user: {user_input}", file=sys.stderr)
         
         # Convert to DataFrame
         df = pd.DataFrame(products)
@@ -176,13 +178,12 @@ def main():
             ['id', 'Name', 'Category', 'Price', 'Predicted_Score', 'Match_Type', 'Initial_Fit_Score']
         ]
         
-        print(f"Generated {len(top_recommendations)} recommendations", file=sys.stderr)
-        print(json.dumps(top_recommendations.to_dict('records')))
+        # ONLY OUTPUT THE JSON - NO OTHER PRINT STATEMENTS
+        result = top_recommendations.to_dict('records')
+        print(json.dumps(result))
         
     except Exception as e:
-        print(f"Error in ML script: {str(e)}", file=sys.stderr)
-        import traceback
-        print(f"Traceback: {traceback.format_exc()}", file=sys.stderr)
+        # On error, output empty array as JSON
         print(json.dumps([]))
 
 if __name__ == "__main__":
