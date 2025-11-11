@@ -32,29 +32,47 @@ def calculate_score(row, user_input):
     if is_match:
         score += 0.1
 
-    # Skin concerns match
+    # FIXED: Skin concerns match - give points if ANY concern matches
     user_concerns = [c.strip().title() for c in user_input['Skin_Concerns']]
     
-    if user_concerns == ['None'] or not user_concerns:
+    if not user_concerns or 'None' in user_concerns:
+        # If no concerns, give full points
         score += 0.15
     else:
         concern_mapping = {
             'Acne': 'acne',
             'Dryness': 'dryness', 
-            'Dark Spots': 'dark_spots'
+            'Dark Spots': 'dark_spots',
+            'Aging': 'aging'
         }
+        
+        # Check if ANY concern matches the product
+        any_concern_match = False
         for concern in user_concerns:
             col_name = concern_mapping.get(concern, '')
             if col_name and row.get(col_name, 0) == 1:
-                score += 0.15
+                any_concern_match = True
+                break
+        
+        if any_concern_match:
+            score += 0.15
+        # Don't add points if no concerns match
 
-    # Preference match
-    pref_mapping = {
+    # FIXED: Preference match - check if product has user's preferred finish
+    finish_mapping = {
         'Matte': 'matte',
         'Dewy': 'dewy',
         'Long-Lasting': 'long_lasting'
     }
-    pref_col = pref_mapping.get(user_input['Preference'], '')
+    user_pref = user_input['Preference']
+    
+    # FIXED: Handle case sensitivity here too
+    user_pref_title = user_pref.title()
+    pref_col = finish_mapping.get(user_pref_title, '')
+    
+    if not pref_col:
+        pref_col = finish_mapping.get(user_pref, '')
+    
     if pref_col and row.get(pref_col, 0) == 1:
         score += 0.15
 
@@ -69,6 +87,120 @@ def score_to_match(p_predicted, p_initial_fit):
         return "🌸 NORMAL MATCH"
     else:
         return "⚠️ LOW RATING MATCH"
+
+def analyze_attribute_matches(product, user_input):
+    matches = {}
+    
+    # Skin Type match
+    product_skin_type = str(product.get('skin_type', 'Any')).title()
+    user_skin_type = user_input['Skin_Type']
+    matches['skin_type'] = {
+        'match': product_skin_type == user_skin_type or product_skin_type in ['Any', 'None'],
+        'product_value': product_skin_type,
+        'user_value': user_skin_type
+    }
+    
+    # Skin Tone match
+    product_skin_tone = str(product.get('skin_tone', 'Any')).title()
+    user_skin_tone = user_input['Skin_Tone']
+    matches['skin_tone'] = {
+        'match': product_skin_tone == user_skin_tone or product_skin_tone in ['Any', 'None'],
+        'product_value': product_skin_tone,
+        'user_value': user_skin_tone
+    }
+    
+    # Undertone match
+    product_undertone = str(product.get('undertone', 'Any')).strip().title()
+    user_undertone = user_input['Undertone'].strip().title()
+    
+    is_undertone_match = False
+    if product_undertone == user_undertone or product_undertone in ['Any', 'All', '']:
+        is_undertone_match = True
+    elif product_undertone == 'Neutral' and user_undertone in ['Cool', 'Warm']:
+        is_undertone_match = True
+    elif user_undertone == "Don't Know":
+        is_undertone_match = True
+        
+    matches['undertone'] = {
+        'match': is_undertone_match,
+        'product_value': product_undertone,
+        'user_value': user_undertone
+    }
+    
+    user_concerns = [c.strip().title() for c in user_input['Skin_Concerns']]
+    concern_mapping = {
+        'Acne': 'acne',
+        'Dryness': 'dryness', 
+        'Dark Spots': 'dark_spots',
+        'Aging': 'aging'
+    }
+    
+    concern_matches = {}
+    overall_concern_match = False
+    
+    # If user has no concerns or selected "None"
+    if not user_concerns or 'None' in user_concerns:
+        concern_matches['No Concerns'] = {
+            'match': True,
+            'product_value': 'Any',
+            'user_value': 'None'
+        }
+        overall_concern_match = True
+    else:
+        # Check each user concern
+        any_concern_matched = False
+        for concern in user_concerns:
+            col_name = concern_mapping.get(concern, '')
+            if col_name:
+                product_has_concern = product.get(col_name, 0) == 1
+                concern_matches[concern] = {
+                    'match': product_has_concern,
+                    'product_value': 'Yes' if product_has_concern else 'No',
+                    'user_value': 'Needed'
+                }
+                if product_has_concern:
+                    any_concern_matched = True
+        
+        overall_concern_match = any_concern_matched
+    
+    matches['concerns'] = concern_matches
+    matches['concerns_overall_match'] = overall_concern_match
+    
+    # FIXED: Finish preference match - Show ALL finishes the product has
+    finish_mapping = {
+        'Matte': 'matte',
+        'Dewy': 'dewy', 
+        'Long-Lasting': 'long_lasting'
+    }
+    
+    # Get all finishes that the product has
+    product_finishes = []
+    for finish_name, db_column in finish_mapping.items():
+        if product.get(db_column, 0) == 1:
+            product_finishes.append(finish_name)
+    
+    user_preferred_finish = user_input['Preference']
+    
+    # FIXED: Handle case sensitivity - convert user preference to title case for matching
+    user_pref_title = user_preferred_finish.title()
+    pref_col = finish_mapping.get(user_pref_title, '')
+    
+    # If not found with title case, try direct match
+    if not pref_col:
+        pref_col = finish_mapping.get(user_preferred_finish, '')
+    
+    has_preferred_finish = pref_col and product.get(pref_col, 0) == 1
+    
+    # FIXED: Ensure we never show "None" - use the actual product_finishes
+    product_finish_text = ', '.join(product_finishes) if product_finishes else 'None'
+    
+    matches['finish'] = {
+        'match': has_preferred_finish,  # This should now be True when product has user's preferred finish
+        'product_value': product_finish_text,  # This should now show "Matte, Long-Lasting"
+        'user_value': user_preferred_finish
+    }
+    
+    return matches
 
 def create_sample_data():
     """Create sample data for testing when no file is provided"""
@@ -173,9 +305,15 @@ def main():
             axis=1
         )
         
-        # Return top recommendations
+        # ✅ ADD ATTRIBUTE MATCHES HERE (INSIDE MAIN FUNCTION)
+        df_rf['Attribute_Matches'] = df_rf.apply(
+            lambda row: analyze_attribute_matches(row, user_input), 
+            axis=1
+        )
+        
+        # ✅ INCLUDE Attribute_Matches IN THE OUTPUT
         top_recommendations = df_rf.nlargest(12, 'Predicted_Score')[
-            ['id', 'Name', 'Category', 'Price', 'Predicted_Score', 'Match_Type', 'Initial_Fit_Score']
+            ['id', 'Name', 'Category', 'Price', 'Predicted_Score', 'Match_Type', 'Initial_Fit_Score', 'Attribute_Matches']
         ]
         
         # ONLY OUTPUT THE JSON - NO OTHER PRINT STATEMENTS
