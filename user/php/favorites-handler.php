@@ -110,55 +110,6 @@ try {
         exit;
     }
 
-<<<<<<< HEAD
-    $conn->close();
-    exit;
-}
-
-
-$sql = "
-SELECT DISTINCT 
-    p.ProductID AS id,
-    p.Name AS name,
-    p.Category AS category,
-    p.ParentProductID AS parentID,
-    p.ShadeOrVariant AS variant,
-    p.Price AS price,
-    p.HexCode AS hexCode,
-    p.Status AS status,
-    p.Stocks AS stockQuantity,
-    p.CreatedAt AS createdAt,
-    pm_v.ImagePath AS variantImage,
-    pm_p.ImagePath AS previewImage,
-    parent.Name AS parentName,
-    parent.Status AS parentStatus
-FROM Products p
-LEFT JOIN Products parent 
-    ON p.ParentProductID = parent.ProductID
-LEFT JOIN ProductMedia pm_v 
-    ON pm_v.VariantProductID = p.ProductID AND pm_v.MediaType = 'VARIANT'
-LEFT JOIN ProductMedia pm_p 
-    ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID) AND pm_p.MediaType = 'PREVIEW'
-WHERE 
-    (
-        p.ParentProductID IN (
-            SELECT COALESCE(pr.ParentProductID, pr.ProductID)
-            FROM favorites f
-            JOIN Products pr ON f.product_id = pr.ProductID
-            WHERE f.user_id = ?
-        )
-        OR p.ProductID IN (
-            SELECT COALESCE(pr.ParentProductID, pr.ProductID)
-            FROM favorites f
-            JOIN Products pr ON f.product_id = pr.ProductID
-            WHERE f.user_id = ?
-        )
-    )
-    AND p.Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
-    AND p.Stocks > 0
-ORDER BY p.CreatedAt DESC
-";
-=======
     $sql = "
     SELECT DISTINCT 
         p.ProductID AS id,
@@ -207,7 +158,6 @@ ORDER BY p.CreatedAt DESC
     $stmt->bind_param('ii', $user_id, $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
->>>>>>> 8df5e8913ef07d7e3602e32f3a038ea8172fb0bd
 
     // Group products by parent
     $groupedProducts = [];
