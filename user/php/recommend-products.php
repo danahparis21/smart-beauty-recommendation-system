@@ -35,13 +35,14 @@ try {
     }
 
     // Prepare data for Python ML
+    // Prepare data for Python ML
     $ml_data = [
         'user_input' => [
-            'Skin_Type' => $input['skinType'] ?? 'Normal',
-            'Skin_Tone' => $input['skinTone'] ?? 'Medium',
-            'Undertone' => $input['undertone'] ?? 'Neutral',
+            'Skin_Type' => $input['skinType'] ?? 'Normal',  // Keep as is or change to 'Normal'
+            'Skin_Tone' => $input['skinTone'] ?? 'Medium',  // Keep as is or change to 'Medium'
+            'Undertone' => $input['undertone'] ?? 'Neutral',  // Keep as is or change to 'Neutral'
             'Skin_Concerns' => $input['concerns'] ?? [],
-            'Preference' => $input['finish'] ?? 'Dewy'
+            'Preference' => $input['finish'] ?? 'Dewy'  // Keep as is or change to 'Dewy'
         ],
         'products' => $products
     ];
