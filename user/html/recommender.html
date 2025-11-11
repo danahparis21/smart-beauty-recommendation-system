@@ -783,7 +783,6 @@
       }
 
       /* ===== MATCH BADGES ===== */
-      /* ===== MATCH BADGES ===== */
       .recommendations-grid .match-badge {
         position: absolute;
         top: 10px;
@@ -854,7 +853,39 @@
       }
 
       /* ===== RESPONSIVE DESIGN ===== */
-      @media (max-width: 768px) {
+
+      /* Very small mobile devices - under 360px */
+      @media (max-width: 359px) {
+        .recommendations-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          padding: 0 5px;
+        }
+
+        .recommendations-grid .product-image-container {
+          height: 150px;
+        }
+
+        .recommendations-grid .product-name {
+          font-size: 0.85em;
+        }
+      }
+
+      /* Small mobile devices - 360px to 399px */
+      @media (min-width: 360px) and (max-width: 399px) {
+        .recommendations-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+          padding: 0 8px;
+        }
+
+        .recommendations-grid .product-image-container {
+          height: 140px;
+        }
+      }
+
+      
+@media (min-width: 360px) and (max-width: 768px) {
         .recommender-main {
           padding: 20px 15px;
           min-height: calc(100vh - 150px);
@@ -868,64 +899,109 @@
           padding: 30px 20px !important;
         }
 
-        /* Mobile recommendations - 2 columns */
         #step-results.quiz-step {
           padding: 30px 15px !important;
         }
 
         .recommendations-grid {
-          grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
-          gap: 15px;
-          padding: 0 10px;
+          grid-template-columns: repeat(2, 1fr); /* 2 columns */
+          gap: 12px;
+          padding: 0 5px;
           max-width: 100%;
         }
 
+        .recommendations-grid .product-card {
+          min-height: auto;
+        }
+
         .recommendations-grid .product-image-container {
-          height: 160px; /* Slightly smaller on mobile */
+          height: 140px;
         }
 
         .recommendations-grid .product-info {
-          padding: 15px 12px;
+          padding: 12px 10px;
         }
 
         .recommendations-grid .product-name {
-          font-size: 1em;
-          height: 2.4em;
+          font-size: 0.9em;
+          height: 2.6em;
+          line-height: 1.3;
+          margin-bottom: 6px;
         }
 
         .recommendations-grid .product-category {
-          font-size: 0.75em;
+          font-size: 0.7em;
+          margin-bottom: 6px;
         }
 
         .recommendations-grid .product-price {
-          font-size: 1.1em;
+          font-size: 1em;
+          margin-bottom: 8px;
         }
 
         .recommendations-grid .match-info {
-          padding: 8px;
-          margin: 10px 0;
+          padding: 6px;
+          margin: 8px 0;
+          font-size: 0.75em;
         }
 
         .recommendations-grid .match-score {
-          font-size: 0.8em;
+          font-size: 0.75em;
+        }
+
+        .recommendations-grid .match-bar {
+          height: 4px;
         }
 
         .recommendations-grid .product-actions {
           flex-direction: column;
-          gap: 6px;
+          gap: 5px;
         }
 
         .recommendations-grid .btn-primary,
         .recommendations-grid .btn-secondary {
+          padding: 7px 8px;
+          font-size: 0.75em;
+          min-height: 32px;
+        }
+
+        .recommendations-grid .match-badge {
+          padding: 2px 6px;
+          font-size: 0.6em;
+          top: 6px;
+          right: 6px;
+        }
+
+        .attribute-header {
           padding: 8px 10px;
           font-size: 0.8em;
         }
       }
+
+      @media (max-width: 380px) {
+  .recommendations-grid .product-actions {
+    flex-direction: column;
+  }
+
+  .recommendations-grid .btn-primary,
+  .recommendations-grid .btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .recommendations-grid .attribute-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+}
+
+      /* Tablet */
       @media (min-width: 769px) and (max-width: 1024px) {
         .recommendations-grid {
-          grid-template-columns: repeat(3, 1fr); /* 3 columns on tablet */
+          grid-template-columns: repeat(3, 1fr);
           gap: 20px;
-          padding: 0 30px;
+          padding: 0 20px;
         }
 
         .recommendations-grid .product-image-container {
@@ -933,39 +1009,24 @@
         }
       }
 
-      @media (min-width: 1024px) {
-        .recommendations-grid {
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 30px;
-          padding: 0 40px;
-        }
-
-        #step-results.quiz-step {
-          padding: 50px 40px !important;
-        }
-      }
       /* Desktop */
       @media (min-width: 1025px) {
         .recommendations-grid {
-          grid-template-columns: repeat(4, 1fr); /* 4 columns on desktop */
+          grid-template-columns: repeat(4, 1fr);
           gap: 25px;
-          padding: 0 40px;
+          padding: 0 30px;
           max-width: 1400px;
         }
 
         .recommendations-grid .product-image-container {
           height: 200px;
         }
-
-        #step-results.quiz-step {
-          padding: 50px 40px !important;
-        }
       }
 
       /* Large Desktop */
       @media (min-width: 1440px) {
         .recommender-main {
-          max-width: 1200px; /* Even larger on big screens */
+          max-width: 1200px;
         }
 
         .recommendations-grid {
@@ -976,19 +1037,6 @@
 
         .recommendations-grid .product-image-container {
           height: 220px;
-        }
-      }
-
-      /* Extra small mobile devices */
-      @media (max-width: 480px) {
-        .recommendations-grid {
-          grid-template-columns: 1fr; /* Single column on very small screens */
-          gap: 15px;
-          padding: 0 5px;
-        }
-
-        .recommendations-grid .product-image-container {
-          height: 180px;
         }
       }
       /* Hide new preference modals by default */
@@ -1410,6 +1458,282 @@
       .saved-preferences-indicator i {
         font-size: 0.8em;
         margin-right: 4px;
+      }
+
+      /* ===== ATTRIBUTE MATCHES STYLES - COMPACT ===== */
+      .attribute-summary {
+        margin: 10px 0;
+        position: relative;
+      }
+
+      .attribute-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85em;
+        font-weight: 600;
+        color: #1e40af;
+        text-align: left;
+        justify-content: space-between;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+
+      .attribute-header:hover {
+        background: rgba(59, 130, 246, 0.15);
+        transform: translateY(-1px);
+      }
+
+      .attribute-header:active {
+        transform: translateY(0);
+        background: rgba(59, 130, 246, 0.2);
+      }
+
+      .attribute-toggle {
+        font-weight: bold;
+        opacity: 0.7;
+        font-size: 1em;
+      }
+
+      /* EXTERNAL FLOATING CARD - SINGLE SOURCE OF TRUTH */
+      #external-attribute-card {
+        display: none;
+        position: fixed;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 14px;
+        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
+        z-index: 10000;
+        width: 300px;
+        max-height: 350px;
+        overflow-y: auto;
+        text-align: left;
+        font-size: 0.85em;
+      }
+
+      /* MOBILE: Centered with smooth animation */
+      @media (max-width: 768px) {
+        #external-attribute-card {
+          width: 280px !important; /* Force mobile width */
+          max-height: 320px !important;
+          padding: 12px !important;
+          top: 50% !important;
+          left: 50% !important;
+          transform: translate(-50%, -50%) !important; /* Force centering */
+          animation: modalSlideUp 0.3s ease-out !important; /* Force mobile animation */
+        }
+      }
+
+      /* DESKTOP: Positioned above with different animation */
+      @media (min-width: 769px) {
+        #external-attribute-card {
+          width: 320px;
+          max-height: 380px;
+          padding: 16px;
+          font-size: 0.9em;
+          transform: none;
+          animation: slideUp 0.2s ease-out;
+          /* Remove top/left positioning - let JavaScript handle it */
+        }
+
+        .attribute-header {
+          padding: 8px 12px;
+          font-size: 0.8em;
+        }
+      }
+
+      /* Mobile animation - smooth center slide */
+      @keyframes modalSlideUp {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -45%) !important;
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%) !important;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* CLEAN MINIMALIST STYLES */
+      .attribute-detail-clean {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        min-height: 36px;
+      }
+
+      .attribute-detail-clean.match {
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.12);
+      }
+
+      .attribute-detail-clean.no-match {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.12);
+      }
+
+      .attribute-line {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .attribute-label-clean {
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.8em;
+        min-width: 70px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .attribute-values {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8em;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .product-value-clean {
+        color: #1e40af;
+        font-weight: 500;
+        word-break: break-word;
+        flex-shrink: 1;
+        min-width: 0;
+      }
+
+      .user-value-clean {
+        color: #7c3aed;
+        font-weight: 500;
+        word-break: break-word;
+        flex-shrink: 1;
+        min-width: 0;
+      }
+
+      .separator {
+        color: #9ca3af;
+        font-size: 0.75em;
+        flex-shrink: 0;
+      }
+
+      .detail-status-clean {
+        font-weight: bold;
+        font-size: 0.85em;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .attribute-detail-clean.match .detail-status-clean {
+        background: rgba(34, 197, 94, 0.15);
+        color: #16a34a;
+      }
+
+      .attribute-detail-clean.no-match .detail-status-clean {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+      }
+
+      /* Mobile optimization for content */
+      @media (max-width: 768px) {
+        .attribute-detail-clean {
+          padding: 6px 8px;
+          min-height: 32px;
+          margin-bottom: 3px;
+        }
+
+        .attribute-line {
+          gap: 6px;
+        }
+
+        .attribute-label-clean {
+          min-width: 65px;
+          font-size: 0.75em;
+        }
+
+        .attribute-values {
+          gap: 4px;
+          font-size: 0.75em;
+        }
+
+        .detail-status-clean {
+          width: 16px;
+          height: 16px;
+          font-size: 0.8em;
+        }
+      }
+
+      /* Extra small mobile optimization */
+      @media (max-width: 400px) {
+        #external-attribute-card {
+          width: 260px !important;
+          max-height: 300px !important;
+          padding: 10px !important;
+        }
+
+        .attribute-detail-clean {
+          padding: 5px 6px;
+          min-height: 30px;
+        }
+
+        .attribute-label-clean {
+          min-width: 60px;
+          font-size: 0.7em;
+        }
+
+        .attribute-values {
+          font-size: 0.7em;
+        }
+      }
+
+      /* Better scrollbar */
+      #external-attribute-card::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      #external-attribute-card::-webkit-scrollbar-track {
+        background: #f8fafc;
+        border-radius: 2px;
+      }
+
+      #external-attribute-card::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 2px;
+      }
+
+      #external-attribute-card::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
       }
     </style>
   </head>
@@ -2311,17 +2635,18 @@
               </div>
           `;
       }
+
       function displayRecommendations(recommendations) {
         const container = document.getElementById("recommended-products");
 
         if (!recommendations || recommendations.length === 0) {
           container.innerHTML = `
-                  <div class="no-results">
-                      <i class="fas fa-search"></i>
-                      <h3>No Perfect Matches Found</h3>
-                      <p>We're still building our product database. Check back soon!</p>
-                  </div>
-              `;
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>No Perfect Matches Found</h3>
+                <p>We're still building our product database. Check back soon!</p>
+            </div>
+        `;
           return;
         }
 
@@ -2337,72 +2662,232 @@
           const matchType = product.Match_Type || "🌸 RECOMMENDED";
           const predictedScore = product.Predicted_Score || 4.0;
           const price = parseFloat(product.Price).toFixed(2);
+          const attributeMatches = product.Attribute_Matches || {};
 
           // Use ABSOLUTE paths to avoid relative path issues
           let imagePath = "/admin/uploads/product_images/no-image.png";
 
           if (product.image && product.image !== "null") {
             let cleanImagePath = product.image;
-
-            // Remove the "../uploads/product_images/" prefix
             cleanImagePath = cleanImagePath.replace(
               /^\.\.\\?\/uploads\\?\/product_images\\?\//,
               ""
             );
-
-            // Remove any escaping
             cleanImagePath = cleanImagePath.replace(/\\\//g, "");
-
-            // Use absolute path
             imagePath = `/admin/uploads/product_images/${cleanImagePath}`;
           }
 
+          // In your displayRecommendations function, update the attributeHTML line:
+          const attributeHTML = generateAttributeMatchesHTML(
+            attributeMatches,
+            product.id
+          );
+
+          // And store product data globally
+          if (!window.productData) window.productData = {};
+          window.productData[product.id] = product;
+
           html += `
-                  <div class="product-card" data-product-id="${product.id}">
-                      <div class="match-badge ${getMatchBadgeClass(
-                        matchType
-                      )}">${matchType}</div>
-                      <div class="product-image-container">
-                          <img src="${imagePath}" alt="${cleanName}" class="product-image"
-                               onerror="handleImageError(this)">
-                      </div>
-                      <div class="product-info">
-                          <h4 class="product-name">${cleanName}</h4>
-                          <p class="product-category">${product.Category}</p>
-                          <p class="product-price">₱${price}</p>
-                          <div class="match-info">
-                              <div class="match-score">
-                                  <span class="score">${predictedScore.toFixed(
-                                    1
-                                  )}</span>/5.0
-                              </div>
-                              <div class="match-bar">
-                                  <div class="match-fill" style="width: ${
-                                    (predictedScore / 5) * 100
-                                  }%"></div>
-                              </div>
-                          </div>
-                          <div class="product-actions">
-                              <button class="btn-primary add-to-cart-btn" onclick="addRecommendedToCart('${
-                                product.id
-                              }')">
-                                  <i class="fas fa-shopping-cart"></i> Add to Cart
-                              </button>
-                              <button class="btn-secondary view-details-btn" onclick="viewProductDetails('${
-                                product.id
-                              }')">
-                                  <i class="fas fa-eye"></i> Details
-                              </button>
-                          </div>
-                      </div>
-                  </div>
-              `;
+            <div class="product-card" data-product-id="${product.id}">
+                <div class="match-badge ${getMatchBadgeClass(
+                  matchType
+                )}">${matchType}</div>
+                <div class="product-image-container">
+                    <img src="${imagePath}" alt="${cleanName}" class="product-image"
+                         onerror="handleImageError(this)">
+                </div>
+                <div class="product-info">
+                    <h4 class="product-name">${cleanName}</h4>
+                    <p class="product-category">${product.Category}</p>
+                    <p class="product-price">₱${price}</p>
+                    
+                    <!-- Attribute Matches Section -->
+                    ${attributeHTML}
+                    
+                    <div class="match-info">
+                        <div class="match-score">
+                            <span class="score">${predictedScore.toFixed(
+                              1
+                            )}</span>/5.0
+                        </div>
+                        <div class="match-bar">
+                            <div class="match-fill" style="width: ${
+                              (predictedScore / 5) * 100
+                            }%"></div>
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn-primary add-to-cart-btn" onclick="addRecommendedToCart('${
+                          product.id
+                        }')">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <button class="btn-secondary view-details-btn" onclick="viewProductDetails('${
+                          product.id
+                        }')">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
         });
 
         html += "</div>";
         container.innerHTML = html;
       }
 
+      function generateAttributeMatchesHTML(attributeMatches, productId) {
+        if (!attributeMatches || Object.keys(attributeMatches).length === 0) {
+          return "";
+        }
+
+        // FIXED: Count total attributes correctly (Skin Concerns counts as 1)
+        const totalAttributes = 5; // skin_type, skin_tone, undertone, finish, concerns
+        const matchCount = countMatches(attributeMatches);
+
+        let html = `
+    <div class="attribute-summary" data-product-id="${productId}">
+        <div class="attribute-header">
+            <span class="attribute-text">${matchCount}/${totalAttributes} Matches</span>
+            <span class="attribute-toggle">ⓘ</span>
+        </div>
+    </div>
+  `;
+
+        return html;
+      }
+      // Clean minimalist version - NO ICONS
+      function createExternalFloatingCard(attributeMatches, productData) {
+        if (!attributeMatches || Object.keys(attributeMatches).length === 0) {
+          return "";
+        }
+
+        let html = "";
+
+        const addAttribute = (label, productValue, userValue, match) => {
+          return `
+            <div class="attribute-detail-clean ${match ? "match" : "no-match"}">
+                <div class="attribute-line">
+                    <span class="attribute-label-clean">${label}</span>
+                    <div class="attribute-values">
+                        <span class="product-value-clean">${productValue}</span>
+                        <span class="separator">•</span>
+                        <span class="user-value-clean">${userValue}</span>
+                    </div>
+                </div>
+                <span class="detail-status-clean">${match ? "✓" : "✗"}</span>
+            </div>
+        `;
+        };
+
+        if (attributeMatches.skin_type) {
+          const match = attributeMatches.skin_type;
+          html += addAttribute(
+            "Skin Type",
+            match.product_value,
+            match.user_value,
+            match.match
+          );
+        }
+
+        if (attributeMatches.skin_tone) {
+          const match = attributeMatches.skin_tone;
+          html += addAttribute(
+            "Skin Tone",
+            match.product_value,
+            match.user_value,
+            match.match
+          );
+        }
+
+        if (attributeMatches.undertone) {
+          const match = attributeMatches.undertone;
+          html += addAttribute(
+            "Undertone",
+            match.product_value,
+            match.user_value,
+            match.match
+          );
+        }
+
+        // FIXED: Use attributeMatches.finish instead of productData
+        if (attributeMatches.finish) {
+          const match = attributeMatches.finish;
+          html += addAttribute(
+            "Finish",
+            match.product_value, // This should now be "Dewy, Long-Lasting" from Python
+            match.user_value,
+            match.match
+          );
+        }
+
+        // FIXED: Skin Concerns - Single line showing all
+        if (
+          attributeMatches.concerns &&
+          Object.keys(attributeMatches.concerns).length > 0
+        ) {
+          const concerns = attributeMatches.concerns;
+
+          // If user has no concerns
+          if (concerns["No Concerns"]) {
+            html += addAttribute("Skin Concerns", "Any", "None", true);
+          } else {
+            // Get all user concerns and product addresses
+            const userConcernsList = Object.keys(concerns).join(", ");
+
+            // Get what product addresses (concerns where product_value is "Yes")
+            const productAddresses = Object.entries(concerns)
+              .filter(([_, match]) => match.product_value === "Yes")
+              .map(([concern, _]) => concern)
+              .join(", ");
+
+            const productDisplay = productAddresses || "None";
+
+            // Match if product addresses AT LEAST ONE user concern
+            const hasMatch = Object.values(concerns).some(
+              (match) => match.match
+            );
+
+            html += addAttribute(
+              "Skin Concerns",
+              productDisplay,
+              userConcernsList,
+              hasMatch
+            );
+          }
+        }
+
+        return html;
+      }
+
+      function countMatches(attributeMatches) {
+        let count = 0;
+
+        // Count main attributes
+        if (attributeMatches.skin_type?.match) count++;
+        if (attributeMatches.skin_tone?.match) count++;
+        if (attributeMatches.undertone?.match) count++;
+        if (attributeMatches.finish?.match) count++;
+
+        // FIXED: Count Skin Concerns as ONE attribute (not individual concerns)
+        if (attributeMatches.concerns) {
+          // If user has no concerns and product matches "Any"
+          if (attributeMatches.concerns["No Concerns"]?.match) {
+            count++;
+          }
+          // If user has concerns, check if product addresses AT LEAST ONE concern
+          else if (
+            Object.values(attributeMatches.concerns).some(
+              (concern) => concern.match
+            )
+          ) {
+            count++;
+          }
+        }
+
+        return count;
+      }
       // SILENT image error handler - no console logs
       function handleImageError(img) {
         // Don't log anything to avoid spam
@@ -2820,6 +3305,127 @@
         initFloatingProduct();
         updateCartCount();
       });
+
+      // Add event listeners for external floating card - NO BACKDROP
+      document.addEventListener("DOMContentLoaded", function () {
+        let externalCard = document.getElementById("external-attribute-card");
+        if (!externalCard) {
+          externalCard = document.createElement("div");
+          externalCard.id = "external-attribute-card";
+          document.body.appendChild(externalCard);
+        }
+
+        let currentProductId = null;
+        let isCardOpen = false;
+
+        // Close card when clicking outside
+        document.addEventListener("click", function (e) {
+          if (
+            !e.target.closest(".attribute-header") &&
+            !e.target.closest("#external-attribute-card")
+          ) {
+            closeCard();
+          }
+        });
+
+        // Close card on escape key
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            closeCard();
+          }
+        });
+
+        // Show card on click
+        document.addEventListener("click", function (e) {
+          const attributeHeader = e.target.closest(".attribute-header");
+          if (attributeHeader) {
+            e.stopPropagation();
+
+            const attributeSummary =
+              attributeHeader.closest(".attribute-summary");
+            const productId = attributeSummary.getAttribute("data-product-id");
+
+            if (productId === currentProductId && isCardOpen) {
+              closeCard();
+            } else {
+              openCard(productId, attributeSummary);
+            }
+          }
+        });
+
+        // HIDE CARD WHEN SCROLLING
+        window.addEventListener("scroll", function () {
+          if (isCardOpen) {
+            closeCard();
+          }
+        });
+
+        function openCard(productId, attributeSummary) {
+          currentProductId = productId;
+          const productData =
+            window.productData && window.productData[productId];
+          if (productData && productData.Attribute_Matches) {
+            externalCard.innerHTML = createExternalFloatingCard(
+              productData.Attribute_Matches,
+              productData
+            );
+            positionExternalCard(externalCard, attributeSummary);
+            externalCard.style.display = "block";
+            isCardOpen = true;
+          }
+        }
+
+        function closeCard() {
+          externalCard.style.display = "none";
+          currentProductId = null;
+          isCardOpen = false;
+        }
+      });
+
+      // Position external card ABOVE the attribute header
+      function positionExternalCard(card, attributeSummary) {
+        const rect = attributeSummary.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const cardWidth = 280;
+        const cardHeight = card.offsetHeight;
+
+        // For mobile, center the card
+        if (window.innerWidth <= 768) {
+          card.style.left = "50%";
+          card.style.top = "50%";
+          card.style.transform = "translate(-50%, -50%)";
+          return;
+        }
+
+        // For desktop: Position ABOVE the attribute header
+        let left = rect.left + (rect.width - cardWidth) / 2;
+        let top = rect.top - cardHeight - 8;
+
+        // Adjust if going off left edge
+        if (left < 10) {
+          left = 10;
+        }
+
+        // Adjust if going off right edge
+        if (left + cardWidth > viewportWidth - 10) {
+          left = viewportWidth - cardWidth - 10;
+        }
+
+        // Adjust if going off top edge - show below instead
+        if (top < 10) {
+          top = rect.bottom + 8;
+        }
+
+        // Adjust if going off bottom edge when showing below
+        if (top + cardHeight > viewportHeight - 10) {
+          top = viewportHeight - cardHeight - 10;
+        }
+
+        card.style.left = left + "px";
+        card.style.top = top + "px";
+        card.style.transform = "none";
+      }
     </script>
   </body>
 </html>
