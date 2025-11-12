@@ -1,9 +1,11 @@
 <?php
 header('Content-Type: application/json');
 
-// Database connection
-require_once __DIR__ . '/../../config/db.php';
-
+if (getenv('DOCKER_ENV') === 'true') {
+    require_once __DIR__ . '/../../config/db_docker.php';
+} else {
+    require_once __DIR__ . '/../../config/db.php';
+}
 // Get filter parameters
 $dateFrom = isset($_GET['dateFrom']) ? $_GET['dateFrom'] : '';
 $dateTo = isset($_GET['dateTo']) ? $_GET['dateTo'] : '';
@@ -11,8 +13,8 @@ $actionType = isset($_GET['actionType']) ? $_GET['actionType'] : '';
 
 try {
     // Build WHERE conditions
-    $whereConditions = ["1=1"];
-    
+    $whereConditions = ['1=1'];
+
     // Date range filter
     if (!empty($dateFrom)) {
         $whereConditions[] = "DATE(a.timestamp) >= '" . $conn->real_escape_string($dateFrom) . "'";
@@ -20,7 +22,7 @@ try {
     if (!empty($dateTo)) {
         $whereConditions[] = "DATE(a.timestamp) <= '" . $conn->real_escape_string($dateTo) . "'";
     }
-    
+
     // Action type filter
     if (!empty($actionType)) {
         switch ($actionType) {
@@ -39,7 +41,7 @@ try {
         }
     }
 
-    $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+    $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
 
     // Main query to fetch activity logs
     $query = "
@@ -62,12 +64,12 @@ try {
         LIMIT 100
     ";
 
-    error_log("Activity Log Query: " . $query); // Debug logging
+    error_log('Activity Log Query: ' . $query);  // Debug logging
 
     $result = $conn->query($query);
-    
+
     if (!$result) {
-        throw new Exception("Query failed: " . $conn->error);
+        throw new Exception('Query failed: ' . $conn->error);
     }
 
     $activities = [];
@@ -97,10 +99,9 @@ try {
             'actionType' => $actionType
         ]
     ]);
-
 } catch (Exception $e) {
-    error_log("Error in activity-log.php: " . $e->getMessage());
-    
+    error_log('Error in activity-log.php: ' . $e->getMessage());
+
     echo json_encode([
         'success' => false,
         'error' => 'Failed to load activity log: ' . $e->getMessage(),

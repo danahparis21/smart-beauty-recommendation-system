@@ -1,9 +1,11 @@
 <?php
 header('Content-Type: application/json');
 
-// Database connection - use a simpler approach first
-require_once __DIR__ . '/../../config/db.php'; // Adjust path as needed
-
+if (getenv('DOCKER_ENV') === 'true') {
+    require_once __DIR__ . '/../../config/db_docker.php';
+} else {
+    require_once __DIR__ . '/../../config/db.php';
+}
 // Get filter and search parameters
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
