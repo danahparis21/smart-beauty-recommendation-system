@@ -1004,89 +1004,256 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Mobile menu functionality
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    // Add this JavaScript to your recommendation-insights.html before the closing </body> tag
 
-    // Toggle sidebar on hamburger click
-    if (hamburgerBtn && sidebar) {
-      hamburgerBtn.addEventListener('click', function () {
-        sidebar.classList.toggle('mobile-open');
-        if (sidebarOverlay) {
-          sidebarOverlay.classList.toggle('active');
-        }
-      });
-    }
+let currentFilter = 'all';
+let currentFeedbackFilter = 'all';
 
-    // Close sidebar when overlay is clicked
-    if (sidebarOverlay) {
-      sidebarOverlay.addEventListener('click', function () {
-        sidebar.classList.remove('mobile-open');
-        sidebarOverlay.classList.remove('active');
-      });
-    }
+// Load data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecommendationData();
+    setupFilterButtons();
+});
 
-    // Close sidebar when a nav link is clicked (on mobile)
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    navLinks.forEach(link => {
-      link.addEventListener('click', function () {
-        if (window.innerWidth < 992 && sidebar) {
-          sidebar.classList.remove('mobile-open');
-          if (sidebarOverlay) {
-            sidebarOverlay.classList.remove('active');
-          }
-        }
-      });
-    });
-
-    // Adjust content padding based on mobile header
-    function adjustContentForMobileHeader() {
-      const mobileHeader = document.querySelector('.mobile-header');
-      const mainContent = document.querySelector('main');
-
-      if (window.innerWidth < 992 && mobileHeader && mainContent) {
-        const headerHeight = mobileHeader.offsetHeight;
-        mainContent.style.marginTop = `${headerHeight}px`;
-      } else if (mainContent) {
-        mainContent.style.marginTop = '';
-      }
-    }
-
-    // Run on load and resize
-    window.addEventListener('load', adjustContentForMobileHeader);
-    window.addEventListener('resize', adjustContentForMobileHeader);
-
-    // Also run after sidebar toggle to ensure proper layout
-    if (hamburgerBtn) {
-      hamburgerBtn.addEventListener('click', function () {
-        setTimeout(adjustContentForMobileHeader, 300);
-      });
-    }
-
-    // Filter button functionality
-    document.querySelectorAll('.filter-group').forEach(group => {
-      group.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-          group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
+// Setup filter buttons
+function setupFilterButtons() {
+    // Time filter buttons (for Product Recommendation Performance section)
+    const timeFilterGroups = document.querySelectorAll('.filter-group');
+    const timeFilterButtons = timeFilterGroups[0].querySelectorAll('.filter-btn');
+    
+    timeFilterButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            timeFilterButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const text = this.textContent.toLowerCase();
+            if(text.includes('week')) currentFilter = 'week';
+            else if(text.includes('month')) currentFilter = 'month';
+            else currentFilter = 'all';
+            
+            loadRecommendationData();
         });
-      });
     });
-    // Highlight active sidebar link based on current URL
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    const currentPath = window.location.pathname.split('/').pop();
 
-    navLinks.forEach(link => {
-      const linkPath = link.getAttribute('href');
-      if (linkPath === currentPath) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
+    // Feedback filter buttons (for Recent Customer Feedback section)
+    const feedbackFilterButtons = timeFilterGroups[1].querySelectorAll('.filter-btn');
+    feedbackFilterButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            feedbackFilterButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const text = this.textContent.toLowerCase();
+            if(text.includes('positive')) currentFeedbackFilter = 'positive';
+            else if(text.includes('negative')) currentFeedbackFilter = 'negative';
+            else currentFeedbackFilter = 'all';
+            
+            loadRecommendationData();
+        });
     });
-  });
+}
+
+// Load recommendation data from PHP
+function loadRecommendationData() {
+    fetch(`../php/recommendation-insights.php?filter=${currentFilter}&feedback=${currentFeedbackFilter}`)
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                updateStats(data.stats);
+                updateProducts(data.products);
+                updatePreferences(data.preferences);
+                updateRecentFeedback(data.recent_feedback);
+            } else {
+                console.error('Error loading data:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+}
+
+// Update stats cards
+function updateStats(stats) {
+    document.querySelectorAll('.stat-card-value')[0].textContent = `${stats.success_rate}%`;
+    document.querySelectorAll('.stat-card-value')[1].textContent = stats.total_recommendations;
+    document.querySelectorAll('.stat-card-value')[2].textContent = stats.total_feedback;
+    document.querySelectorAll('.stat-card-value')[3].textContent = `${stats.avg_score}/5`;
+}
+
+// Update product recommendation list
+function updateProducts(products) {
+    const listContainer = document.querySelector('.recommendation-list');
+    
+    if(products.length === 0) {
+        listContainer.innerHTML = `
+            <div class="placeholder-box">
+                <i class="fa-solid fa-box-open"></i>
+                <p>No product recommendations available for this period</p>
+            </div>
+        `;
+        return;
+    }
+
+    listContainer.innerHTML = products.map((product, index) => {
+        const categoryIcon = getCategoryIcon(product.category);
+        const hexColor = product.hex_code || '#e0e0e0';
+        
+        return `
+            <div class="recommendation-item">
+                <div class="recommendation-rank">#${index + 1}</div>
+                <div class="recommendation-image" style="background: ${hexColor};">
+                    ${!product.hex_code ? `<i class="${categoryIcon}"></i>` : ''}
+                </div>
+                <div class="recommendation-details">
+                    <div class="recommendation-name">${product.name}</div>
+                    <div class="recommendation-category">
+                        ${product.category}${product.shade ? ' • Shade: ' + product.shade : ''}
+                    </div>
+                    <div class="recommendation-stats">
+                        <span class="stat-badge thumbs-up">
+                            <i class="fa-solid fa-thumbs-up"></i> ${product.positive}
+                        </span>
+                        <span class="stat-badge thumbs-down">
+                            <i class="fa-solid fa-thumbs-down"></i> ${product.negative}
+                        </span>
+                        <span class="stat-badge">
+                            <i class="fa-solid fa-star" style="color: #ffc107;"></i> ${product.avg_rating}/5
+                        </span>
+                    </div>
+                </div>
+                <div class="recommendation-score">
+                    <div class="score-value">${product.success_rate}%</div>
+                    <div class="score-label">Success</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update customer preferences
+function updatePreferences(preferences) {
+    const counts = [
+        preferences.skin_tones.light,
+        preferences.skin_tones.medium,
+        preferences.skin_tones.tan,
+        preferences.skin_tones.deep,
+        preferences.undertones.warm,
+        preferences.undertones.cool,
+        preferences.undertones.neutral
+    ];
+
+    const preferenceElements = document.querySelectorAll('.preference-count');
+    counts.forEach((count, index) => {
+        if(preferenceElements[index]) {
+            preferenceElements[index].textContent = count;
+        }
+    });
+}
+
+// Update recent feedback
+function updateRecentFeedback(feedbackList) {
+    const feedbackParent = document.querySelector('.content-card:last-of-type');
+    const existingContent = feedbackParent.querySelector('.feedback-grid, .placeholder-box');
+    
+    if(feedbackList.length === 0) {
+        if(existingContent) {
+            existingContent.remove();
+        }
+        feedbackParent.insertAdjacentHTML('beforeend', `
+            <div class="placeholder-box">
+                <i class="fa-solid fa-inbox"></i>
+                <p>No customer feedback available for this filter</p>
+            </div>
+        `);
+        return;
+    }
+
+    const feedbackHTML = `
+        <div class="feedback-grid">
+            ${feedbackList.map(feedback => {
+                const isPositive = feedback.rating >= 4;
+                const reactionClass = isPositive ? 'reaction-positive' : 'reaction-negative';
+                const reactionIcon = isPositive ? 'fa-thumbs-up' : 'fa-thumbs-down';
+                const timeAgo = formatTimeAgo(feedback.created_at);
+                const stars = generateStars(feedback.rating);
+                
+                return `
+                    <div class="feedback-card">
+                        <div class="feedback-header">
+                            <div class="customer-info">
+                                <div class="customer-avatar">${feedback.customer_initial}</div>
+                                <div class="customer-details">
+                                    <h6>${feedback.customer_name}</h6>
+                                    <span>${timeAgo}</span>
+                                </div>
+                            </div>
+                            <div class="feedback-reaction ${reactionClass}">
+                                <i class="fa-solid ${reactionIcon}"></i>
+                            </div>
+                        </div>
+                        <div class="feedback-product">
+                            ${feedback.product_name}${feedback.shade ? ' - ' + feedback.shade : ''}
+                        </div>
+                        <div class="feedback-rating" style="margin: 10px 0; display: flex; gap: 3px;">
+                            ${stars}
+                        </div>
+                        <div class="feedback-comment">
+                            ${feedback.comment || 'No additional comments provided'}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    
+    if(existingContent) {
+        existingContent.remove();
+    }
+    feedbackParent.insertAdjacentHTML('beforeend', feedbackHTML);
+}
+
+// Generate star rating HTML
+function generateStars(rating) {
+    let stars = '';
+    for(let i = 1; i <= 5; i++) {
+        if(i <= rating) {
+            stars += '<i class="fa-solid fa-star" style="color: #ffc107; font-size: 0.9rem;"></i>';
+        } else {
+            stars += '<i class="fa-regular fa-star" style="color: #ddd; font-size: 0.9rem;"></i>';
+        }
+    }
+    return stars;
+}
+
+// Helper: Get category icon
+function getCategoryIcon(category) {
+    const icons = {
+        'Concealer': 'fa-solid fa-droplet',
+        'Foundation': 'fa-solid fa-droplet',
+        'Lipstick': 'fa-solid fa-palette',
+        'Blush On': 'fa-solid fa-brush',
+        'Eyeshadow': 'fa-solid fa-eye',
+        'Eyeliner': 'fa-solid fa-pencil',
+        'Eyebrow': 'fa-solid fa-slash',
+        'Body Care': 'fa-solid fa-spray-can',
+        'Hair': 'fa-solid fa-scissors',
+        'Nails': 'fa-solid fa-hand'
+    };
+    return icons[category] || 'fa-solid fa-box';
+}
+
+// Helper: Format time ago
+function formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    if(seconds < 60) return 'Just now';
+    if(seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+    if(seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    if(seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+    
+    return date.toLocaleDateString();
+}
   </script>
 
 </body>
