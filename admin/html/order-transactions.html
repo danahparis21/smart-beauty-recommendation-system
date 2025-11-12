@@ -260,6 +260,15 @@
       background: var(--dark-pink);
     }
 
+    .order-card {
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
     /* Responsive Design */
     @media (max-width: 991px) {
       .mobile-header {
@@ -454,58 +463,106 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Mobile menu functionality
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.querySelector('.search-box input');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const contentArea = document.querySelector('.scrollable-content');
 
-    // Toggle sidebar on hamburger click
-    hamburgerBtn.addEventListener('click', function () {
-      sidebar.classList.toggle('mobile-open');
-      sidebarOverlay.classList.toggle('active');
-    });
+  // Initial load
+  loadOrders('all', '');
 
-    // Close sidebar when overlay is clicked
-    sidebarOverlay.addEventListener('click', function () {
-      sidebar.classList.remove('mobile-open');
-      sidebarOverlay.classList.remove('active');
-    });
+  // Filter click handling
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
 
-    // Close sidebar when a nav link is clicked (on mobile)
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    navLinks.forEach(link => {
-      link.addEventListener('click', function () {
-        if (window.innerWidth < 992) {
-          sidebar.classList.remove('mobile-open');
-          sidebarOverlay.classList.remove('active');
-        }
-      });
-    });
+      let filter = button.textContent.trim().toLowerCase();
+      if (filter === 'all orders') filter = 'all';
+      if (filter === 'pending') filter = 'pending';
+      if (filter === 'completed') filter = 'completed';
+      if (filter === 'cancelled') filter = 'cancelled';
+      if (filter === 'this week') filter = 'this_week';
 
-    // Filter buttons functionality
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
-
-    // Highlight active sidebar link based on current URL
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    const currentPath = window.location.pathname.split('/').pop();
-
-    navLinks.forEach(link => {
-      const linkPath = link.getAttribute('href');
-      if (linkPath === currentPath) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
+      const searchTerm = searchInput.value.trim();
+      loadOrders(filter, searchTerm);
     });
   });
-  </script>
+
+  // Search handling (on Enter key)
+  searchInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      const activeFilter = document.querySelector('.filter-btn.active').textContent.trim().toLowerCase();
+      const filterMap = {
+        'all orders': 'all',
+        'pending': 'pending',
+        'completed': 'completed',
+        'cancelled': 'cancelled',
+        'this week': 'this_week'
+      };
+      const filter = filterMap[activeFilter] || 'all';
+      loadOrders(filter, searchInput.value.trim());
+    }
+  });
+});
+
+// Fetch and render orders
+function loadOrders(filter = 'all', search = '') {
+  fetch(`../php/order-transaction.php?filter=${filter}&search=${encodeURIComponent(search)}`)
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        console.error('Error:', data.error);
+        return;
+      }
+
+      // Update stats
+      document.querySelector('.total-orders .stat-value').textContent = data.stats.total_orders;
+      document.querySelector('.pending-orders .stat-value').textContent = data.stats.pending_orders;
+      document.querySelector('.completed-orders .stat-value').textContent = data.stats.completed_orders;
+      document.querySelector('.cancelled-orders .stat-value').textContent = data.stats.cancelled_orders;
+
+      // Render order list
+      const container = document.querySelector('.scrollable-content');
+      container.innerHTML = '';
+
+      if (data.orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-shopping-bag"></i>
+            <h4>No Orders Found</h4>
+            <p>No matching orders for this filter.</p>
+          </div>`;
+        return;
+      }
+
+      data.orders.forEach(order => {
+        const card = document.createElement('div');
+        card.classList.add('order-card', 'p-4', 'mb-3', 'rounded', 'shadow-sm');
+        card.style.background = 'white';
+        // Update the card rendering part:
+card.innerHTML = `
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 class="mb-0 text-primary">Order #${order.order_id}</h5>
+    <span class="badge bg-${
+      order.order_status.toLowerCase() === 'completed' ? 'success' :
+      order.order_status.toLowerCase() === 'pending' ? 'warning' :
+      order.order_status.toLowerCase() === 'cancelled' ? 'danger' : 'secondary'
+    }">${order.order_status}</span>
+  </div>
+  <p class="mb-1"><strong>Customer:</strong> ${order.customer_name} (${order.email})</p>
+  <p class="mb-1"><strong>Total:</strong> ₱${order.total_price}</p>
+  <p class="mb-1"><strong>Status:</strong> ${order.order_status}</p>
+  ${order.qr_code ? `<p class="mb-1"><strong>QR Code:</strong> ${order.qr_code}</p>` : ''}
+  <p class="text-muted small mb-0"><i class="fa-regular fa-clock"></i> ${order.order_date}</p>
+`;
+        container.appendChild(card);
+      });
+    })
+    .catch(err => console.error('Fetch error:', err));
+}
+</script>
+
 </body>
 
 </html>
