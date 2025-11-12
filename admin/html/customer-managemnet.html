@@ -263,6 +263,21 @@
       background: var(--dark-pink);
     }
 
+    .customer-card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.customer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+
     /* Responsive Design */
     @media (max-width: 991px) {
       .mobile-header {
@@ -456,58 +471,92 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Mobile menu functionality
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+document.addEventListener('DOMContentLoaded', () => {
+  loadCustomerData('all', '');
 
-    // Toggle sidebar on hamburger click
-    hamburgerBtn.addEventListener('click', function () {
-      sidebar.classList.toggle('mobile-open');
-      sidebarOverlay.classList.toggle('active');
-    });
+  const searchBox = document.querySelector('.search-box input');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  let currentFilter = 'all';
+  let searchTimeout;
 
-    // Close sidebar when overlay is clicked
-    sidebarOverlay.addEventListener('click', function () {
-      sidebar.classList.remove('mobile-open');
-      sidebarOverlay.classList.remove('active');
-    });
+  // Filter buttons
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function () {
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+      
+      let filter = this.textContent.trim().toLowerCase();
+      if (filter === 'all customers') filter = 'all';
+      if (filter === 'new customers') filter = 'new';
+      if (filter === 'with feedback') filter = 'feedback';
+      if (filter === 'inactive') filter = 'inactive';
 
-    // Close sidebar when a nav link is clicked (on mobile)
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    navLinks.forEach(link => {
-      link.addEventListener('click', function () {
-        if (window.innerWidth < 992) {
-          sidebar.classList.remove('mobile-open');
-          sidebarOverlay.classList.remove('active');
-        }
-      });
-    });
-
-    // Filter buttons functionality
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
-
-    // Highlight active sidebar link based on current URL
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    const currentPath = window.location.pathname.split('/').pop();
-
-    navLinks.forEach(link => {
-      const linkPath = link.getAttribute('href');
-      if (linkPath === currentPath) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
+      currentFilter = filter;
+      loadCustomerData(currentFilter, searchBox.value.trim());
     });
   });
-  </script>
+
+  // Search functionality (live search with debounce)
+  searchBox.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      const query = searchBox.value.trim();
+      loadCustomerData(currentFilter, query);
+    }, 400);
+  });
+
+  // Also allow pressing Enter to trigger search immediately
+  searchBox.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      loadCustomerData(currentFilter, searchBox.value.trim());
+    }
+  });
+});
+
+function loadCustomerData(filter = 'all', search = '') {
+  fetch(`../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(search)}`)
+    .then(response => response.json())
+    .then(data => {
+      const contentArea = document.querySelector('.scrollable-content');
+
+      if (data.success) {
+        // Update stats
+        document.querySelector('.total-customers .stat-value').textContent = data.stats.total_customers;
+        document.querySelector('.new-this-month .stat-value').textContent = data.stats.new_this_month;
+        document.querySelector('.active-customers .stat-value').textContent = data.stats.active_customers;
+        document.querySelector('.feedback-received .stat-value').textContent = data.stats.feedback_received;
+
+        // Populate list
+        if (data.customers.length > 0) {
+          contentArea.innerHTML = data.customers.map(c => `
+            <div class="customer-card mb-3">
+              <h5>${c.display_name} (${c.username})</h5>
+              <p><strong>Email:</strong> ${c.email}</p>
+              <p><strong>Joined:</strong> ${c.join_date}</p>
+              <p><strong>Status:</strong> ${c.status}</p>
+              <p><strong>Total Orders:</strong> ${c.total_orders} | <strong>Total Spent:</strong> ₱${c.total_spent}</p>
+            </div>
+          `).join('');
+        } else {
+          contentArea.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-users"></i>
+              <h4>No Customers Found</h4>
+              <p>No results match your current filter or search.</p>
+            </div>`;
+        }
+      } else {
+        console.error('Server error:', data.error);
+        contentArea.innerHTML = `<div class="empty-state"><h4>Server Error</h4></div>`;
+      }
+    })
+    .catch(err => {
+      console.error('Fetch error:', err);
+    });
+}
+</script>
+
+
 </body>
 
 </html>
