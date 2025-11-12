@@ -6,125 +6,137 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 import traceback
 
-def calculate_score(row, user_input):
-    score = 0
-    
-    # Determine product category for strategic weighting
-    product_category = str(row.get('Category', '')).lower()
-    is_tool_or_universal = (
-        'tool' in product_category or 
-        'brush' in product_category or
-        'applicator' in product_category or
-        'brow' in product_category or
-        'lash' in product_category or
-        # Check if it's truly universal (all attributes are Any/All)
-        (str(row.get('skin_type', '')).strip().title() in ['Any', 'All', 'None', 'N/A'] and
-         str(row.get('skin_tone', '')).strip().title() in ['Any', 'All', 'None', 'N/A'] and
-         str(row.get('undertone', '')).strip().title() in ['Any', 'All', 'None', 'N/A'])
+# --- HELPER FUNCTIONS FOR CALCULATE_SCORE ---
+
+def check_skin_type_match(row, user_input):
+    product_type = str(row['skin_type']).strip().title()
+    user_type = user_input['Skin_Type'].strip().title()
+    return (
+        product_type == user_type or 
+        product_type in ['Any', 'All', 'None', 'N/A'] or
+        user_type in ["Don't Care", "Any"] # FIXED: Check for "Don't Care"
     )
-    
-    # Skin Type match - REDUCE weight for universal products
-    product_skin_type = str(row['skin_type']).strip().title()
-    user_skin_type = user_input['Skin_Type'].strip().title()
-    
-    skin_type_weight = 0.15 if is_tool_or_universal else 0.25
-    
-    if (product_skin_type == user_skin_type or 
-        product_skin_type in ['Any', 'All', 'None', 'N/A'] or
-        user_skin_type in ["Don't Care", "Any"]):
-        score += skin_type_weight
 
-    # Skin Tone match - REDUCE weight for universal products
-    product_skin_tone = str(row['skin_tone']).strip().title()
-    user_skin_tone = user_input['Skin_Tone'].strip().title()
+def check_skin_tone_match(row, user_input):
+    product_tone = str(row['skin_tone']).strip().title()
+    user_tone = user_input['Skin_Tone'].strip().title()
     
-    skin_tone_weight = 0.15 if is_tool_or_universal else 0.25
+    if (product_tone in ['Any', 'All', 'None', 'N/A'] or
+        user_tone in ["Don't Care", "Any"]): # FIXED: Check for "Don't Care"
+        return True
     
-    skin_tone_match = False
-    if (product_skin_tone in ['Any', 'All', 'None', 'N/A'] or
-        user_skin_tone in ["Don't Care", "Any"]):
-        skin_tone_match = True
-    else:
-        product_tones = [tone.strip().title() for tone in product_skin_tone.split(',')]
-        skin_tone_match = user_skin_tone in product_tones
-    
-    if skin_tone_match:
-        score += skin_tone_weight
+    product_tones = [tone.strip().title() for tone in product_tone.split(',')]
+    return user_tone in product_tones
 
-    # Undertone match - FIXED
+def check_undertone_match(row, user_input):
     product_undertone = str(row['undertone']).strip().title()
     user_undertone = user_input['Undertone'].strip().title()
     
     # Normalize user undertone
     undertone_mapping = {
-        "Not-Sure": "Don't Know",
-        "Not Sure": "Don't Know", 
-        "Dont Know": "Don't Know", 
-        "Dont-Care": "Don't Care"
+        "Not-Sure": "Don't Know", "Not Sure": "Don't Know", 
+        "Dont Know": "Don't Know", "Dont-Care": "Don't Care"
     }
     normalized_user_undertone = undertone_mapping.get(user_undertone, user_undertone)
 
-    is_match = False
     if (product_undertone == normalized_user_undertone or 
         product_undertone in ['Any', 'All', ''] or
-        normalized_user_undertone in ["Don't Know", "Don't Care", "Not Sure"]):
-        is_match = True
+        normalized_user_undertone in ["Don't Know", "Don't Care", "Not Sure"]): # FIXED: Includes Don't Care
+        return True
+        
+    # Neutral is often considered compatible with Cool/Warm
     elif product_undertone == 'Neutral' and normalized_user_undertone in ['Cool', 'Warm']:
-        is_match = True
+        return True
+        
+    return False
 
-    if is_match:
-        score += 0.15
-
-    # Skin concerns - KEEP SAME weight (tools don't address concerns)
+def check_concerns_match(row, user_input):
     user_concerns = [c.strip().title() for c in user_input['Skin_Concerns']]
     
     if not user_concerns or 'None' in user_concerns:
-        score += 0.15
-    else:
-        concern_mapping = {
-            'Acne': 'acne',
-            'Dryness': 'dryness', 
-            'Dark Spots': 'dark_spots',
-            'Aging': 'aging'
-        }
-        
-        any_concern_match = False
-        for concern in user_concerns:
-            col_name = concern_mapping.get(concern, '')
-            if col_name and row.get(col_name, 0) == 1:
-                any_concern_match = True
-                break
-        
-        if any_concern_match:
-            score += 0.15
-
-    # Preference match - REDUCE weight for tools (finish matters less for tools)
-    finish_mapping = {
-        'Matte': 'matte',
-        'Dewy': 'dewy',
-        'Long-Lasting': 'long_lasting'
+        return True # Match if user has no concerns
+    
+    concern_mapping = {
+        'Acne': 'acne', 'Dryness': 'dryness', 
+        'Dark Spots': 'dark_spots', 'Aging': 'aging'
     }
-    user_pref = user_input['Preference']
     
-    finish_weight = 0.05 if is_tool_or_universal else 0.10
+    # Only need to match ONE concern
+    for concern in user_concerns:
+        col_name = concern_mapping.get(concern, '')
+        if col_name and row.get(col_name, 0) == 1:
+            return True
+            
+    return False
+
+def check_finish_match(row, user_input):
+    finish_mapping = {
+        'Matte': 'matte', 'Dewy': 'dewy', 'Long-Lasting': 'long_lasting'
+    }
+    user_pref = user_input['Preference'].strip().title() # Normalize user pref
     
-    if user_pref in ["Don't Care", "Any"]:
-        score += finish_weight
+    if user_pref in ["Don't Care", "Any"]: # FIXED: Handle "Don't Care"
+        return True
+    
+    user_pref_title = user_pref
+    pref_col = finish_mapping.get(user_pref_title, '')
+    
+    # Check if the product has the preferred finish
+    return pref_col and row.get(pref_col, 0) == 1
+
+def calculate_score(row, user_input):
+    product_category = str(row.get('Category', '')).lower()
+    
+    # Define category-specific behavior (Updated/Fixed Logic)
+    is_truly_universal = any(word in product_category for word in ['tool', 'brush', 'applicator', 'brow', 'lash', 'nails', 'hair care', 'contact lense', 'body care'])
+    is_face_care = any(word in product_category for word in ['face care', 'serum', 'moisturizer', 'treatment', 'cream', 'lotion', 'toner'])
+    is_lipstick = 'lipstick' in product_category or 'liptint' in product_category
+    is_color_cosmetic = any(word in product_category for word in ['blush', 'foundation', 'concealer', 'powder', 'highlighter', 'eyeshadow', 'eyeliner', 'mascara'])
+    
+    # 1. TRULY UNIVERSAL PRODUCTS (e.g., Tools)
+    if is_truly_universal:
+        base_score = 0.8  
+        finish_match = check_finish_match(row, user_input)
+        return base_score + (0.1 if finish_match else 0) 
+        
+    # 2. FACE CARE (Skin Type/Concerns are primary)
+    elif is_face_care:
+        score = 0
+        # Weights for face care: Skin Type (40), Concerns (40), Finish (10), Base (10)
+        score += 0.40 if check_skin_type_match(row, user_input) else 0
+        score += 0.40 if check_concerns_match(row, user_input) else 0 # FIXED: Ensure concerns are weighted
+        score += 0.10 if check_finish_match(row, user_input) else 0
+        return min(score + 0.10, 1.0) 
+        
+    # 3. LIPSTICK/LIPS (Tone/Undertone are primary)
+    elif is_lipstick:
+        score = 0
+        # Weights for lipstick: Skin Tone (40), Undertone (40), Finish (10), Base (10)
+        score += 0.40 if check_skin_tone_match(row, user_input) else 0
+        score += 0.40 if check_undertone_match(row, user_input) else 0
+        score += 0.10 if check_finish_match(row, user_input) else 0
+        return min(score + 0.10, 1.0)
+    
+    # 4. COLOR COSMETICS (Needs most attributes - Foundation, Blush, etc.)
+    elif is_color_cosmetic:
+        score = 0
+        # Weights: Skin Type(25), Skin Tone(25), Undertone(15), Concerns(15), Finish(10), Base(10)
+        score += 0.25 if check_skin_type_match(row, user_input) else 0
+        score += 0.25 if check_skin_tone_match(row, user_input) else 0
+        score += 0.15 if check_undertone_match(row, user_input) else 0
+        score += 0.15 if check_concerns_match(row, user_input) else 0 # FIXED: Ensure concerns are weighted
+        score += 0.10 if check_finish_match(row, user_input) else 0
+        return min(score + 0.10, 1.0) 
+        
+    # 5. FALLBACK / OTHER CATEGORIES
     else:
-        user_pref_title = user_pref.title()
-        pref_col = finish_mapping.get(user_pref_title, '')
-        
-        if not pref_col:
-            pref_col = finish_mapping.get(user_pref, '')
-        
-        if pref_col and row.get(pref_col, 0) == 1:
-            score += finish_weight
-
-    # PENALTY: If it's a universal product, slightly reduce final score
-    # This prevents tools from dominating perfect matches
-    final_score = score * 0.9 if is_tool_or_universal else score
-
-    return min(final_score, 1.0)
+        score = 0
+        score += 0.20 if check_skin_type_match(row, user_input) else 0
+        score += 0.20 if check_skin_tone_match(row, user_input) else 0
+        score += 0.15 if check_undertone_match(row, user_input) else 0
+        score += 0.15 if check_concerns_match(row, user_input) else 0
+        score += 0.10 if check_finish_match(row, user_input) else 0
+        return min(score + 0.20, 1.0)
 
 def get_category_priority(category):
     """Assign priority to categories for better ranking"""
@@ -144,17 +156,37 @@ def get_category_priority(category):
     # Low priority - tools and universal products
     else:
         return 1
+
+def get_match_quality_badge(initial_fit_score):
+    """NEW: Badge based purely on attribute compatibility - using original names"""
+    if initial_fit_score >= 0.95: 
+        return "PERFECT MATCH"
+    elif initial_fit_score >= 0.75: 
+        return "CLOSE MATCH" 
+    elif initial_fit_score >= 0.55: 
+        return "NORMAL MATCH"
+    elif initial_fit_score >= 0.35: # Min score for display (LOW RATING MATCH)
+        return "LOW RATING MATCH"
+    else: 
+        return "TOO LOW MATCH" # Products below this score will be filtered out
+
+def get_rating_quality_badge(final_rating, has_personal_feedback, user_rating=None, productrating=None):
+    # Check if product truly has no ratings (both user_rating and productrating are null/0)
+    is_truly_unrated = (
+        (user_rating is None or pd.isna(user_rating) or user_rating == 0) and
+        (productrating is None or pd.isna(productrating) or productrating == 0)
+    )
     
-def score_to_match(p_predicted, p_initial_fit):
-    # FIXED: More realistic thresholds
-    if p_predicted >= 4.2 and p_initial_fit >= 0.8:
-        return "💎 PERFECT MATCH"
-    elif p_predicted >= 3.8 and p_initial_fit >= 0.6:
-        return "💖 CLOSE MATCH"
-    elif p_predicted >= 3.0:
-        return "🌸 NORMAL MATCH"
+    if is_truly_unrated:
+        return "⭐ UNRATED"
+    elif final_rating >= 4.5:
+        return "🔥 TOP RATED" if has_personal_feedback else "🌟 HIGHLY RATED"
+    elif final_rating >= 4.0:
+        return "👍 WELL RATED" if has_personal_feedback else "📊 GOOD RATING"
+    elif final_rating >= 3.0:
+        return "📈 AVERAGE RATING"
     else:
-        return "⚠️ LOW RATING MATCH"
+        return "💤 LOW RATING"
 
 def analyze_attribute_matches(product, user_input):
     matches = {}
@@ -166,12 +198,13 @@ def analyze_attribute_matches(product, user_input):
     skin_type_match = (
         product_skin_type == user_skin_type or 
         product_skin_type in ['Any', 'All', 'None', 'N/A'] or
-        user_skin_type in ["Don't Care", "Any"]
+        user_skin_type in ["Don't Care", "Any"] # FIXED: Check for "Don't Care"
     )
     
     matches['skin_type'] = {
         'match': skin_type_match,
-        'product_value': product_skin_type,
+        # FIXED: Use 'All' if product_skin_type is an empty string
+        'product_value': product_skin_type if product_skin_type else 'All',
         'user_value': user_skin_type
     }
     
@@ -181,7 +214,7 @@ def analyze_attribute_matches(product, user_input):
     
     skin_tone_match = False
     if (product_skin_tone in ['Any', 'All', 'None', 'N/A'] or
-        user_skin_tone in ["Don't Care", "Any"]):
+        user_skin_tone in ["Don't Care", "Any"]): # FIXED: Check for "Don't Care"
         skin_tone_match = True
     else:
         product_tones = [tone.strip().title() for tone in product_skin_tone.split(',')]
@@ -189,11 +222,11 @@ def analyze_attribute_matches(product, user_input):
     
     matches['skin_tone'] = {
         'match': skin_tone_match,
-        'product_value': product_skin_tone,
+        'product_value': product_skin_tone if product_skin_tone else 'All',
         'user_value': user_skin_tone
     }
     
-    # Undertone match - FIXED: Handle "Not-Sure" from frontend
+    # Undertone match - FIXED: Handle "Don't Care"
     product_undertone = str(product.get('undertone', 'Any')).strip().title()
     user_undertone = user_input['Undertone'].strip().title()
     
@@ -218,11 +251,11 @@ def analyze_attribute_matches(product, user_input):
         
     matches['undertone'] = {
         'match': is_undertone_match,
-        'product_value': product_undertone,
+        'product_value': product_undertone if product_undertone else 'Any',
         'user_value': user_undertone  # Keep original for display
     }
     
-    # Skin Concerns - FIXED
+    # Skin Concerns - FIXED: Proper display logic
     user_concerns = [c.strip().title() for c in user_input['Skin_Concerns']]
     concern_mapping = {
         'Acne': 'acne',
@@ -243,18 +276,21 @@ def analyze_attribute_matches(product, user_input):
         overall_concern_match = True
     else:
         any_concern_matched = False
+        product_addresses = []
         for concern in user_concerns:
             col_name = concern_mapping.get(concern, '')
             if col_name:
                 product_has_concern = product.get(col_name, 0) == 1
-                concern_matches[concern] = {
-                    'match': product_has_concern,
-                    'product_value': 'Yes' if product_has_concern else 'No',
-                    'user_value': 'Needed'
-                }
                 if product_has_concern:
+                    product_addresses.append(concern)
                     any_concern_matched = True
         
+        # FIXED: Create a single match entry for display
+        concern_matches['Skin Concerns'] = {
+            'match': any_concern_matched,
+            'product_value': ', '.join(product_addresses) if product_addresses else 'None',
+            'user_value': ', '.join(user_concerns)
+        }
         overall_concern_match = any_concern_matched
     
     matches['concerns'] = concern_matches
@@ -272,18 +308,14 @@ def analyze_attribute_matches(product, user_input):
         if product.get(db_column, 0) == 1:
             product_finishes.append(finish_name)
     
-    user_preferred_finish = user_input['Preference']
+    user_preferred_finish = user_input['Preference'].strip().title()
     
-    # If user doesn't care, it's always a match
+    # If user doesn't care, it's always a match (match=True)
     if user_preferred_finish in ["Don't Care", "Any"]:
         has_preferred_finish = True
     else:
-        user_pref_title = user_preferred_finish.title()
+        user_pref_title = user_preferred_finish
         pref_col = finish_mapping.get(user_pref_title, '')
-        
-        if not pref_col:
-            pref_col = finish_mapping.get(user_preferred_finish, '')
-        
         has_preferred_finish = pref_col and product.get(pref_col, 0) == 1
     
     product_finish_text = ', '.join(product_finishes) if product_finishes else 'None'
@@ -300,11 +332,18 @@ def create_sample_data():
     """Create realistic sample data for testing"""
     sample_products = [
         {
-            'id': 'BLUSH001', 'Name': 'Magic Blusher - Rose', 'Category': 'Blush', 
-            'Price': 599.00, 'skin_type': 'Normal', 'skin_tone': 'Fair,Medium,Tan,Deep', 
-            'undertone': 'All', 'acne': 0, 'dryness': 0, 'dark_spots': 0,
-            'matte': 0, 'dewy': 1, 'long_lasting': 1, 'user_rating': 4.5,
-            'productrating': 4.5, 'has_personal_feedback': 0
+            'id': 'FND001', 'Name': 'Perfect Foundation', 'Category': 'Foundation', 
+            'Price': 850.00, 'skin_type': 'Oily', 'skin_tone': 'Medium', 
+            'undertone': 'Neutral', 'acne': 0, 'dryness': 0, 'dark_spots': 1, # Addresses Dark Spots
+            'matte': 1, 'dewy': 0, 'long_lasting': 1, 'user_rating': 4.8,
+            'productrating': 4.8, 'has_personal_feedback': 1
+        },
+        {
+            'id': 'CON002', 'Name': 'Mocallure Concealer', 'Category': 'Concealer',
+            'Price': 180.00, 'skin_type': 'Any', 'skin_tone': 'Fair', 
+            'undertone': 'Cool', 'acne': 0, 'dryness': 0, 'dark_spots': 0,
+            'matte': 0, 'dewy': 0, 'long_lasting': 0, 'user_rating': 0,
+            'productrating': 2.5, 'has_personal_feedback': 0
         },
         {
             'id': 'BLUSH003', 'Name': 'Velvet Blush - Berry', 'Category': 'Blush',
@@ -316,10 +355,10 @@ def create_sample_data():
     ]
     
     sample_user_input = {
-        'Skin_Type': 'sensitive',
-        'Skin_Tone': 'deep', 
-        'Undertone': 'cool',
-        'Skin_Concerns': ['aging', 'dryness'],
+        'Skin_Type': 'oily',
+        'Skin_Tone': 'medium', 
+        'Undertone': 'neutral',
+        'Skin_Concerns': ['dark-spots'],
         'Preference': 'matte'
     }
     
@@ -327,6 +366,57 @@ def create_sample_data():
         'user_input': sample_user_input,
         'products': sample_products
     }
+
+def create_ohe_features(df):
+    df_ohe = df.copy()
+    
+    # Handle skin_tone (multi-value)
+    skin_tone_dummies = df_ohe['skin_tone'].str.get_dummies(sep=',').add_prefix('skin_tone_')
+    
+    # Handle single-value columns
+    skin_type_dummies = pd.get_dummies(df_ohe['skin_type'], prefix='skin_type')
+    undertone_dummies = pd.get_dummies(df_ohe['undertone'], prefix='undertone')
+    
+    # Combine all OHE features
+    all_ohe = pd.concat([skin_tone_dummies, skin_type_dummies, undertone_dummies], axis=1)
+    
+    # Merge with original dataframe
+    df_result = pd.concat([df_ohe, all_ohe], axis=1)
+    return df_result, all_ohe.columns.tolist()
+
+def filter_recommendations(df_rf, max_recommendations=500, min_score=0.35, min_match_type_level="NORMAL MATCH"):
+    """
+    Filter to show only meaningful recommendations.
+    max_recommendations is now a soft limit, min_score is the hard filter.
+    """
+    
+    # FIXED: Hard filter out very low matches (e.g., TOO LOW MATCH)
+    
+    # Map match badges to a numerical value for comparison
+    match_level_map = {
+        "PERFECT MATCH": 4, 
+        "CLOSE MATCH": 3, 
+        "NORMAL MATCH": 2, 
+        "LOW RATING MATCH": 1, 
+        "TOO LOW MATCH": 0
+    }
+    
+    min_level = match_level_map.get(min_match_type_level, 2) # Default to NORMAL MATCH (2)
+    
+    # Filter based on the Match_Type level
+    filtered = df_rf[df_rf['Match_Type'].apply(lambda x: match_level_map.get(x, 0) >= min_level)].copy()
+    
+    # If using Initial_Fit_Score for the filter:
+    # filtered = df_rf[df_rf['Initial_Fit_Score'] >= min_score].copy()
+    
+    # If still too many (shouldn't be an issue now, but kept for safety), take top N by composite score
+    if len(filtered) > max_recommendations:
+        # Use nlargest if the list is too long, relying on Composite_Score
+        filtered = filtered.nlargest(max_recommendations, 'Composite_Score')
+    
+    # FIXED: Return ALL available results that pass the filter
+    return filtered
+
 
 def main():
     try:
@@ -355,7 +445,6 @@ def main():
             df_rf[col] = df_rf[col].fillna('Any')
         
         # FIXED: Handle ratings properly - don't default to 4.0 for unrated products
-        # Priority: user_rating (from feedback) -> productrating (from Products table) -> moderate default
         if 'user_rating' in df_rf.columns:
             # If user_rating is NULL, use productrating
             df_rf['final_rating'] = df_rf.apply(
@@ -367,60 +456,48 @@ def main():
             df_rf['final_rating'] = df_rf.get('productrating', None)
         
         # For products with no ratings at all, use a moderate 3.5 (not 4.0)
-        # This distinguishes unrated products from actually highly-rated ones
         df_rf['final_rating'] = df_rf['final_rating'].fillna(3.5)
         
         # Ensure ratings are within reasonable range
         df_rf['final_rating'] = df_rf['final_rating'].clip(1.0, 5.0)
         
-        # Label encoding with proper handling
-        label_encoders = {}
-        categorical_cols = ['skin_type', 'skin_tone', 'undertone']
-        
-        for col in categorical_cols:
-            # Get all unique values including comma-separated ones
-            all_values = set()
-            for value in df_rf[col]:
-                if ',' in str(value):
-                    all_values.update([v.strip().title() for v in str(value).split(',')])
-                else:
-                    all_values.add(str(value).strip().title())
-            
-            # Add user input values too
-            user_val = user_input[col.replace('_', ' ').title().replace(' ', '_')]
-            if user_val:
-                all_values.add(user_val.strip().title())
-            
-            le = LabelEncoder()
-            le.fit(list(all_values))
-            
-            # Encode by taking the first value for comma-separated entries
-            df_rf[col + '_enc'] = df_rf[col].apply(
-                lambda x: le.transform([str(x).split(',')[0].strip().title()])[0] if pd.notna(x) else 0
-            )
-            label_encoders[col] = le
+        # Phase 2: One-Hot Encoding (OHE) - Replaces Label Encoding
+        df_rf, ohe_features = create_ohe_features(df_rf)
         
         # Calculate Initial_Fit_Score
         df_rf['Initial_Fit_Score'] = df_rf.apply(lambda row: calculate_score(row, user_input), axis=1)
         
-        # Prepare features - use final_rating which properly handles unrated products
-        feature_columns = [
-            'skin_type_enc', 'skin_tone_enc', 'undertone_enc', 
-            'acne', 'dryness', 'dark_spots', 'matte', 'dewy', 'long_lasting',
-            'Initial_Fit_Score', 'final_rating'  # Use the properly handled rating
+        # NEW: Add Match Quality Badge (based purely on attributes)
+        df_rf['Match_Type'] = df_rf['Initial_Fit_Score'].apply(get_match_quality_badge)
+
+        # NEW: Add Rating Quality Badge (based on actual ratings)
+        df_rf['Rating_Quality'] = df_rf.apply(
+            lambda row: get_rating_quality_badge(
+                row['final_rating'], 
+                row.get('has_personal_feedback', 0),
+                row.get('user_rating'),
+                row.get('productrating')
+            ), 
+            axis=1
+        )
+        
+        ohe_features = [col for col in df_rf.columns if any(p in col for p in ['skin_tone_', 'skin_type_', 'undertone_'])]
+
+        # Define the final features for the Random Forest
+        feature_columns = ohe_features + [
+            'acne', 'dryness', 'dark_spots', 'aging', # All concerns must be included
+            'matte', 'dewy', 'long_lasting', 
+            'Initial_Fit_Score', 
+            'final_rating' 
         ]
-        
-        # Add additional features if available
-        if 'has_personal_feedback' in df_rf.columns:
-            feature_columns.append('has_personal_feedback')
-        
-        # Ensure all features exist
+
+        # Ensure all features exist (especially for the concerns)
         for feature in feature_columns:
             if feature not in df_rf.columns:
                 df_rf[feature] = 0
-        
+
         X = df_rf[feature_columns].fillna(0)
-        
+
         # Use final_rating as target
         y = df_rf['final_rating']
         
@@ -431,17 +508,15 @@ def main():
             min_samples_split=5, 
             min_samples_leaf=2
         )
-        rf.fit(X, y)
-        
-        # Predict
-        df_rf['Predicted_Score'] = rf.predict(X)
-        
-        # Apply match type
-        df_rf['Match_Type'] = df_rf.apply(
-            lambda row: score_to_match(row['Predicted_Score'], row['Initial_Fit_Score']), 
-            axis=1
-        )
-        
+        # Check if there are enough samples to train the model
+        if len(df_rf) > 2:
+             rf.fit(X, y)
+             # Predict
+             df_rf['Predicted_Score'] = rf.predict(X)
+        else:
+            # Fallback for very small datasets
+            df_rf['Predicted_Score'] = df_rf['final_rating']
+
         # Add attribute matches
         df_rf['Attribute_Matches'] = df_rf.apply(
             lambda row: analyze_attribute_matches(row, user_input), 
@@ -451,28 +526,32 @@ def main():
         # Add category priority
         df_rf['Category_Priority'] = df_rf['Category'].apply(get_category_priority)
         
-        # ENHANCED SORTING: Properly distinguish between rated and unrated products
-        # Penalize unrated products slightly so rated products appear first
-        rating_penalty = df_rf.apply(
-            lambda row: 0.8 if row['has_personal_feedback'] == 0 and pd.isna(row.get('user_rating', None)) else 1.0,
-            axis=1
+        # ENHANCED SORTING: Create Composite Score
+        df_rf['Composite_Score'] = (
+            df_rf['Initial_Fit_Score'] * 0.4 + 
+            df_rf['Predicted_Score'] * 0.3 + 
+            df_rf['final_rating'] * 0.3 
         )
         
-        df_rf['Composite_Score'] = (
-            df_rf['final_rating'] * 0.6 +  # 60% weight to ratings
-            df_rf['Predicted_Score'] * 0.3 +  # 30% to ML prediction
-            df_rf['Initial_Fit_Score'] * 0.1  # 10% to basic fit score
-        ) * rating_penalty  # Apply penalty for unrated products
-        
-        # FIXED: Remove .head(20) to show ALL products, not just top 20
+        # Sort ALL recommendations
         top_recommendations = df_rf.sort_values(
-            by=['Composite_Score', 'final_rating', 'Predicted_Score', 'Initial_Fit_Score'], 
+            by=['Composite_Score', 'final_rating', 'Initial_Fit_Score', 'Predicted_Score'], 
             ascending=[False, False, False, False]
-        )  # REMOVED: .head(20)
+        ) 
         
-        result = top_recommendations[
-            ['id', 'Name', 'Category', 'Price', 'Predicted_Score', 'Match_Type', 
-             'Initial_Fit_Score', 'Attribute_Matches', 'final_rating', 'Composite_Score']
+        # FIXED: Apply filtering to remove low-quality matches
+        # Products must be at least NORMAL MATCH or better.
+        filtered_recommendations = filter_recommendations(
+            top_recommendations, 
+            max_recommendations=500, # Max available, but limited by filter
+            min_match_type_level="NORMAL MATCH" 
+        )
+        
+        # Use the filtered results
+        result = filtered_recommendations[
+            ['id', 'Name', 'Category', 'Price', 'Predicted_Score', 
+            'Match_Type', 'Rating_Quality',
+            'Initial_Fit_Score', 'Attribute_Matches', 'final_rating', 'Composite_Score']
         ].to_dict('records')
         
         print(json.dumps(result))
