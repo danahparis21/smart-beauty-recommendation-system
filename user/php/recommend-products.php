@@ -1,10 +1,15 @@
 <?php
 header('Content-Type: application/json');
-error_reporting(0);  // Turn off error display to avoid HTML in JSON
-
-require_once 'db-connect.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 session_start();
+
+if (getenv('DOCKER_ENV') === 'true') {
+    require_once __DIR__ . '/../../config/db_docker.php';
+} else {
+    require_once __DIR__ . '/../../config/db.php';
+}
 
 // Get user preferences from POST
 $input = json_decode(file_get_contents('php://input'), true);
@@ -18,9 +23,10 @@ if (!$user_id) {
 try {
     // Get products with attributes for ML processing
     $query = 'SELECT * FROM product_attributes_view';
-    $stmt = $pdo->prepare($query);
+    $stmt = $conn->prepare($query);
     $stmt->execute();
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->get_result();
+    $products = $result->fetch_all(MYSQLI_ASSOC);
 
     // If no products found, return empty array
     if (empty($products)) {
@@ -29,13 +35,14 @@ try {
     }
 
     // Prepare data for Python ML
+    // Prepare data for Python ML
     $ml_data = [
         'user_input' => [
-            'Skin_Type' => $input['skinType'] ?? 'Normal',
-            'Skin_Tone' => $input['skinTone'] ?? 'Medium',
-            'Undertone' => $input['undertone'] ?? 'Neutral',
+            'Skin_Type' => $input['skinType'] ?? 'Normal',  // Keep as is or change to 'Normal'
+            'Skin_Tone' => $input['skinTone'] ?? 'Medium',  // Keep as is or change to 'Medium'
+            'Undertone' => $input['undertone'] ?? 'Neutral',  // Keep as is or change to 'Neutral'
             'Skin_Concerns' => $input['concerns'] ?? [],
-            'Preference' => $input['finish'] ?? 'Dewy'
+            'Preference' => $input['finish'] ?? 'Dewy'  // Keep as is or change to 'Dewy'
         ],
         'products' => $products
     ];
@@ -44,7 +51,7 @@ try {
     $temp_file = tempnam(sys_get_temp_dir(), 'ml_data_');
     file_put_contents($temp_file, json_encode($ml_data));
 
-    // Execute Python script - with full path
+    // Execute Python script
     $python_script = __DIR__ . '/ml-recommender.py';
 
     // Check if Python script exists
@@ -58,34 +65,37 @@ try {
     // Clean up
     unlink($temp_file);
 
-    if ($output) {
-        $recommendations = json_decode($output, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            // If JSON decode failed, show the raw output for debugging
-            throw new Exception('Python output is not valid JSON: ' . substr($output, 0, 200));
-        }
-
-        // Enhance recommendations with product details
-        $enhanced_recommendations = enhanceRecommendations($recommendations, $pdo);
-
-        echo json_encode([
-            'success' => true,
-            'recommendations' => $enhanced_recommendations,
-            'debug' => ['python_output' => substr($output, 0, 100)]  // For debugging
-        ]);
-    } else {
-        throw new Exception('Python script returned no output');
+    if ($output === null) {
+        throw new Exception('Python script returned NULL');
     }
+
+    if (empty(trim($output))) {
+        throw new Exception('Python script returned empty output');
+    }
+
+    $recommendations = json_decode($output, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('Python output is not valid JSON');
+    }
+
+    // Enhance recommendations with product details
+    $enhanced_recommendations = enhanceRecommendations($recommendations, $conn);
+
+    echo json_encode([
+        'success' => true,
+        'recommendations' => $enhanced_recommendations
+    ]);
 } catch (Exception $e) {
     echo json_encode([
+        'success' => false,
         'error' => $e->getMessage(),
         'fallback' => true,
-        'recommendations' => getFallbackRecommendations($pdo, $input)
+        'recommendations' => getFallbackRecommendations($conn, $input)
     ]);
 }
 
-function enhanceRecommendations($recommendations, $pdo)
+function enhanceRecommendations($recommendations, $conn)
 {
     if (empty($recommendations))
         return [];
@@ -103,19 +113,27 @@ function enhanceRecommendations($recommendations, $pdo)
             p.ProductRating,
             p.Stocks,
             p.Status,
-            pm.ImagePath as image
+            COALESCE(
+                (SELECT pm.ImagePath FROM ProductMedia pm 
+                 WHERE pm.VariantProductID = p.ProductID AND pm.MediaType = 'VARIANT' 
+                 LIMIT 1),
+                (SELECT pm.ImagePath FROM ProductMedia pm 
+                 WHERE pm.ParentProductID = p.ProductID AND pm.MediaType = 'PREVIEW' 
+                 LIMIT 1),
+                (SELECT pm.ImagePath FROM ProductMedia pm 
+                 WHERE pm.ParentProductID = COALESCE(p.ParentProductID, p.ProductID) AND pm.MediaType = 'PREVIEW' 
+                 LIMIT 1)
+            ) as image
         FROM Products p
-        LEFT JOIN ProductMedia pm ON (
-            (pm.ParentProductID = p.ProductID AND pm.MediaType = 'PREVIEW') OR
-            (pm.VariantProductID = p.ProductID AND pm.MediaType = 'VARIANT')
-        )
         WHERE p.ProductID IN ($placeholders)
-        GROUP BY p.ProductID
     ";
 
-    $stmt = $pdo->prepare($query);
-    $stmt->execute($product_ids);
-    $product_details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare($query);
+    $types = str_repeat('s', count($product_ids));
+    $stmt->bind_param($types, ...$product_ids);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $product_details = $result->fetch_all(MYSQLI_ASSOC);
 
     // Merge ML scores with product details
     $enhanced = [];
@@ -133,9 +151,8 @@ function enhanceRecommendations($recommendations, $pdo)
     return $enhanced;
 }
 
-function getFallbackRecommendations($pdo, $input)
+function getFallbackRecommendations($conn, $input)
 {
-    // Simple rule-based fallback if ML fails
     $query = "
         SELECT 
             p.ProductID as id,
@@ -144,18 +161,28 @@ function getFallbackRecommendations($pdo, $input)
             p.Price,
             p.Description,
             p.ProductRating,
-            pm.ImagePath as image
+            COALESCE(
+                (SELECT pm.ImagePath FROM ProductMedia pm 
+                 WHERE pm.VariantProductID = p.ProductID AND pm.MediaType = 'VARIANT' 
+                 LIMIT 1),
+                (SELECT pm.ImagePath FROM ProductMedia pm 
+                 WHERE pm.ParentProductID = p.ProductID AND pm.MediaType = 'PREVIEW' 
+                 LIMIT 1),
+                (SELECT pm.ImagePath FROM ProductMedia pm 
+                 WHERE pm.ParentProductID = COALESCE(p.ParentProductID, p.ProductID) AND pm.MediaType = 'PREVIEW' 
+                 LIMIT 1)
+            ) as image
         FROM Products p
         LEFT JOIN ProductAttributes pa ON p.ProductID = pa.ProductID
-        LEFT JOIN ProductMedia pm ON p.ProductID = pm.ParentProductID AND pm.MediaType = 'PREVIEW'
         WHERE pa.ProductID IS NOT NULL
         ORDER BY p.ProductRating DESC
         LIMIT 6
     ";
 
-    $stmt = $pdo->prepare($query);
+    $stmt = $conn->prepare($query);
     $stmt->execute();
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->get_result();
+    $products = $result->fetch_all(MYSQLI_ASSOC);
 
     // Add mock ML data for fallback
     foreach ($products as &$product) {
