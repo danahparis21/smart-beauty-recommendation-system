@@ -829,74 +829,259 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Mobile menu functionality
-    const hamburgerBtn = document.getElementById("hamburgerBtn");
-    const sidebar = document.getElementById("sidebar");
-    const sidebarOverlay = document.getElementById("sidebarOverlay");
+    // Mobile menu functionality (keep this part)
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
 
-    // Toggle sidebar on hamburger click
-    hamburgerBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("mobile-open");
-      sidebarOverlay.classList.toggle("active");
-    });
+// Toggle sidebar on hamburger click
+hamburgerBtn.addEventListener("click", function () {
+  sidebar.classList.toggle("mobile-open");
+  sidebarOverlay.classList.toggle("active");
+});
 
-    // Close sidebar when overlay is clicked
-    sidebarOverlay.addEventListener("click", function () {
+// Close sidebar when overlay is clicked
+sidebarOverlay.addEventListener("click", function () {
+  sidebar.classList.remove("mobile-open");
+  sidebarOverlay.classList.remove("active");
+});
+
+// Close sidebar when a nav link is clicked (on mobile)
+const navLinks = document.querySelectorAll(".sidebar .nav-link");
+navLinks.forEach((link) => {
+  link.addEventListener("click", function () {
+    if (window.innerWidth < 992) {
       sidebar.classList.remove("mobile-open");
       sidebarOverlay.classList.remove("active");
-    });
+    }
+  });
+});
 
-    // Close sidebar when a nav link is clicked (on mobile)
-    const navLinks = document.querySelectorAll(".sidebar .nav-link");
-    navLinks.forEach((link) => {
-      link.addEventListener("click", function () {
-        if (window.innerWidth < 992) {
-          sidebar.classList.remove("mobile-open");
-          sidebarOverlay.classList.remove("active");
-        }
-      });
-    });
-
+// Activity Log Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    loadActivities();
+    
     // Filter functionality
-    document
-      .querySelector(".search-btn")
-      .addEventListener("click", function () {
-        const dateFrom = document.getElementById("dateFrom").value;
-        const dateTo = document.getElementById("dateTo").value;
-        const actionType = document.getElementById("actionType").value;
-
-        alert(
-          `Filtering by:\nDate From: ${dateFrom || "All"}\nDate To: ${dateTo || "All"
-          }\nAction Type: ${actionType || "All"}`
-        );
-      });
-
-    // Add visual feedback when filter section becomes sticky
-    window.addEventListener("scroll", function () {
-      const filterSection = document.getElementById("filterSection");
-      const scrollPosition = window.scrollY;
-
-      if (scrollPosition > 100) {
-        filterSection.classList.add("sticky");
-      } else {
-        filterSection.classList.remove("sticky");
-      }
+    document.querySelector(".search-btn").addEventListener("click", function () {
+        loadActivities();
     });
 
-    // Highlight active sidebar link based on current URL
-  document.addEventListener('DOMContentLoaded', () => {
+    // Also load on Enter key in filter fields
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadActivities();
+            }
+        });
+    });
+});
+
+function loadActivities() {
+    const dateFrom = document.getElementById("dateFrom").value;
+    const dateTo = document.getElementById("dateTo").value;
+    const actionType = document.getElementById("actionType").value;
+
+    // Show loading state
+    const tableBody = document.querySelector('.activity-table tbody');
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="4" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading activities...</p>
+            </td>
+        </tr>
+    `;
+
+    // Build query string
+    const params = new URLSearchParams();
+    if (dateFrom) params.append('dateFrom', dateFrom);
+    if (dateTo) params.append('dateTo', dateTo);
+    if (actionType) params.append('actionType', actionType);
+
+    fetch(`../php/activity-log.php?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load activities');
+            }
+            renderActivities(data.activities);
+        })
+        .catch(err => {
+            console.error('Error loading activities:', err);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-danger">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                        <p>Failed to load activities: ${err.message}</p>
+                        <button class="btn btn-primary btn-sm" onclick="loadActivities()">Retry</button>
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+function renderActivities(activities) {
+    const tableBody = document.querySelector('.activity-table tbody');
+    
+    if (activities.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center py-4 text-muted">
+                    <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+                    <p>No activities found for the selected filters.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tableBody.innerHTML = activities.map(activity => {
+        const userInfo = getUserInfo(activity);
+        const actionBadge = getActionBadge(activity.action);
+        const formattedDate = formatDateTime(activity.timestamp);
+        const changeDetails = parseActivityDetails(activity);
+
+        return `
+            <tr>
+                <td>
+                    <div class="user-info">
+                        ${userInfo.avatar}
+                        <div class="user-details">
+                            <h5>${userInfo.name}</h5>
+                            <p>${userInfo.role}</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="action-badge ${actionBadge.class}">${actionBadge.text}</span>
+                </td>
+                <td>
+                    <div class="date-time">${formattedDate.date}</div>
+                    <div class="date-relative">${formattedDate.relative}</div>
+                </td>
+                <td>
+                    <div class="change-details">
+                        ${changeDetails}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function getUserInfo(activity) {
+    if (activity.actor_type === 'system' || !activity.username) {
+        return {
+            avatar: '<div class="user-avatar system-user"><i class="fas fa-robot"></i></div>',
+            name: 'System',
+            role: 'Automated Process'
+        };
+    }
+
+    const initials = (activity.first_name?.charAt(0) || '') + (activity.last_name?.charAt(0) || '') || activity.username?.substring(0, 2).toUpperCase() || 'U';
+    const fullName = activity.first_name && activity.last_name 
+        ? `${activity.first_name} ${activity.last_name}`
+        : activity.username;
+    
+    const role = activity.role === 'admin' 
+        ? activity.actor_type === 'admin' ? 'Store Admin' : 'Administrator'
+        : 'Customer';
+
+    return {
+        avatar: `<div class="user-avatar">${initials}</div>`,
+        name: fullName,
+        role: role
+    };
+}
+
+function getActionBadge(action) {
+    const actionLower = action.toLowerCase();
+    
+    if (actionLower.includes('added') || actionLower.includes('created') || actionLower.includes('placed')) {
+        return { class: 'action-create', text: 'Created' };
+    } else if (actionLower.includes('updated') || actionLower.includes('modified') || actionLower.includes('changed')) {
+        return { class: 'action-update', text: 'Updated' };
+    } else if (actionLower.includes('deleted') || actionLower.includes('removed') || actionLower.includes('cancelled')) {
+        return { class: 'action-delete', text: 'Deleted' };
+    } else {
+        return { class: 'action-system', text: 'System' };
+    }
+}
+
+function formatDateTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    let relativeTime;
+    if (diffDays > 0) {
+        relativeTime = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    } else if (diffHours > 0) {
+        relativeTime = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    } else if (diffMinutes > 0) {
+        relativeTime = `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    } else {
+        relativeTime = 'Just now';
+    }
+
+    return {
+        date: date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        }) + ' - ' + date.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+        }),
+        relative: relativeTime
+    };
+}
+
+function parseActivityDetails(activity) {
+    if (!activity.details) {
+        return `<div class="change-item">
+            <span class="change-field">Action:</span> ${activity.action}
+        </div>`;
+    }
+
+    // Simple parsing - you can enhance this based on your activity log structure
+    return `<div class="change-item">
+        <span class="change-field">Details:</span> ${activity.details}
+    </div>`;
+}
+
+// Add visual feedback when filter section becomes sticky
+window.addEventListener("scroll", function () {
+    const filterSection = document.getElementById("filterSection");
+    const scrollPosition = window.scrollY;
+
+    if (scrollPosition > 100) {
+        filterSection.classList.add("sticky");
+    } else {
+        filterSection.classList.remove("sticky");
+    }
+});
+
+// Highlight active sidebar link based on current URL
+document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.sidebar .nav-link');
     const currentPath = window.location.pathname.split('/').pop();
 
     navLinks.forEach(link => {
-      const linkPath = link.getAttribute('href');
-      if (linkPath === currentPath) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
+        const linkPath = link.getAttribute('href');
+        if (linkPath === currentPath) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
     });
-  });
+});
   </script>
 </body>
 
