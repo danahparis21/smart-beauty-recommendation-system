@@ -180,13 +180,13 @@ def get_rating_quality_badge(final_rating, has_personal_feedback, user_rating=No
     if is_truly_unrated:
         return "⭐ UNRATED"
     elif final_rating >= 4.5:
-        return "🔥 TOP RATED" if has_personal_feedback else "🌟 HIGHLY RATED"
+        return "🔥 TOP RATED" if has_personal_feedback else "HIGHLY RATED"
     elif final_rating >= 4.0:
-        return "👍 WELL RATED" if has_personal_feedback else "📊 GOOD RATING"
+        return "WELL RATED" if has_personal_feedback else "GOOD RATING"
     elif final_rating >= 3.0:
-        return "📈 AVERAGE RATING"
+        return "AVERAGE RATING"
     else:
-        return "💤 LOW RATING"
+        return "LOW RATING"
 
 def analyze_attribute_matches(product, user_input):
     matches = {}

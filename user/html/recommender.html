@@ -2360,7 +2360,11 @@
 
       .pagination-btn {
         padding: 10px 20px;
-        background: #ff6b9d;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         color: white;
         border: none;
         border-radius: 8px;
@@ -2554,6 +2558,192 @@
 
       .add-all-btn.success:hover {
         background: linear-gradient(135deg, #059669, #047857);
+      }
+      /* Feedback Section Styles */
+      .feedback-section {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #f1f5f9;
+      }
+
+      .feedback-label {
+        font-size: 0.85em;
+        color: #6b7280;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      .feedback-indicator {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        width: fit-content;
+      }
+
+      .feedback-indicator.up {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .feedback-indicator.down {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .feedback-indicator i {
+        font-size: 0.9em;
+      }
+      .feedback-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .feedback-btn {
+        padding: 6px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.8em;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .feedback-btn.thumbs-up:hover {
+        background: #dcfce7;
+        border-color: #22c55e;
+        color: #166534;
+      }
+
+      .feedback-btn.thumbs-down:hover {
+        background: #fee2e2;
+        border-color: #ef4444;
+        color: #991b1b;
+      }
+
+      .feedback-btn.submitted {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+        cursor: default;
+      }
+
+      .feedback-btn.submitted.thumbs-up {
+        background: #dcfce7;
+        border-color: #22c55e;
+        color: #166534;
+      }
+
+      .feedback-btn.submitted.thumbs-down {
+        background: #fee2e2;
+        border-color: #ef4444;
+        color: #991b1b;
+      }
+      .feedback-btn.active {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        font-weight: 600;
+      }
+
+      .feedback-btn.thumbs-up.active {
+        background: #dcfce7;
+        border-color: #22c55e;
+        color: #166534;
+      }
+
+      .feedback-btn.thumbs-down.active {
+        background: #fee2e2;
+        border-color: #ef4444;
+        color: #991b1b;
+      }
+
+      .feedback-timestamp {
+        text-align: center;
+        margin-top: 8px;
+        color: #9ca3af;
+        font-size: 0.75em;
+      }
+
+      .feedback-label small {
+        display: block;
+        font-size: 0.7em;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      .feedback-btn.active {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        font-weight: 600;
+      }
+
+      .feedback-btn.thumbs-up.active {
+        background: #dcfce7;
+        border-color: #22c55e;
+        color: #166534;
+      }
+
+      .feedback-btn.thumbs-down.active {
+        background: #fee2e2;
+        border-color: #ef4444;
+        color: #991b1b;
+      }
+
+      /* Add transition for smooth color changes */
+      .feedback-btn {
+        transition: all 0.2s ease;
+      }
+      .feedback-btn.thumbs-neutral {
+        /* Neutral styling */
+      }
+
+      .feedback-btn.thumbs-neutral.active {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+      }
+
+      .feedback-btn.thumbs-neutral:hover {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+      }
+      /* Add neutral button styles */
+      .feedback-btn.thumbs-neutral {
+        /* Base styling */
+      }
+
+      .feedback-btn.thumbs-neutral.active {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+      }
+
+      .feedback-btn.thumbs-neutral:hover {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+      }
+
+      /* Feedback indicator styles for all types */
+      .feedback-indicator.up {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .feedback-indicator.neutral {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .feedback-indicator.down {
+        background: #fee2e2;
+        color: #991b1b;
       }
     </style>
   </head>
@@ -3064,7 +3254,10 @@
                 </div>
               </div>
             </div>
-            <!-- ADD ALL TO CART BUTTON -->
+            <!-- <div id="results-count" class="results-count">
+              ... total products found
+            </div> -->
+            <!-- ADD ALL TO CART BUTTON
             <div class="add-all-container">
               <button id="add-all-to-cart" class="add-all-btn">
                 <i class="fas fa-cart-plus"></i>
@@ -3074,7 +3267,7 @@
                 You will add <span id="product-count">0</span> products to your
                 cart!
               </div>
-            </div>
+            </div> -->
 
             <div class="recommended-products" id="recommended-products">
               <!-- Products will be dynamically inserted here -->
@@ -3258,10 +3451,10 @@
 
           const container = document.getElementById("recommended-products");
           container.innerHTML = `
-      <div class="loading">
-        <i class="fas fa-spinner fa-spin"></i>
-      </div>
-    `;
+            <div class="loading">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
+          `;
 
           // Use the existing preferences to get recommendations
           const response = await fetch("../php/recommend-products.php", {
@@ -3412,48 +3605,50 @@
 
         if (currentPreferences) {
           display.innerHTML = `
-                  <div class="preference-item">
-                    <span class="preference-label">Skin Type:</span>
-                    <span class="preference-value">${
-                      currentPreferences.skin_type
-                    }</span>
-                  </div>
-                  <div class="preference-item">
-                    <span class="preference-label">Skin Tone:</span>
-                    <span class="preference-value">${
-                      currentPreferences.skin_tone
-                    }</span>
-                  </div>
-                  <div class="preference-item">
-                    <span class="preference-label">Undertone:</span>
-                    <span class="preference-value">${
-                      currentPreferences.undertone
-                    }</span>
-                  </div>
-                  <div class="preference-item">
-                    <span class="preference-label">Preferred Finish:</span>
-                    <span class="preference-value">${
-                      currentPreferences.preferred_finish
-                    }</span>
-                  </div>
-                  <div class="preference-item">
-                    <span class="preference-label">Skin Concerns:</span>
-                    <div class="concerns-list">
-                      ${JSON.parse(currentPreferences.skin_concerns || "[]")
-                        .map(
-                          (concern) =>
-                            `<span class="concern-tag">${concern}</span>`
-                        )
-                        .join("")}
-                    </div>
-                  </div>
-                  <div class="preference-item">
-                    <span class="preference-label">Last Updated:</span>
-                    <span class="preference-value">${new Date(
-                      currentPreferences.updated_at
-                    ).toLocaleDateString()}</span>
-                  </div>
-                `;
+                        <div class="preference-item">
+                          <span class="preference-label">Skin Type:</span>
+                          <span class="preference-value">${
+                            currentPreferences.skin_type
+                          }</span>
+                        </div>
+                        <div class="preference-item">
+                          <span class="preference-label">Skin Tone:</span>
+                          <span class="preference-value">${
+                            currentPreferences.skin_tone
+                          }</span>
+                        </div>
+                        <div class="preference-item">
+                          <span class="preference-label">Undertone:</span>
+                          <span class="preference-value">${
+                            currentPreferences.undertone
+                          }</span>
+                        </div>
+                        <div class="preference-item">
+                          <span class="preference-label">Preferred Finish:</span>
+                          <span class="preference-value">${
+                            currentPreferences.preferred_finish
+                          }</span>
+                        </div>
+                        <div class="preference-item">
+                          <span class="preference-label">Skin Concerns:</span>
+                          <div class="concerns-list">
+                            ${JSON.parse(
+                              currentPreferences.skin_concerns || "[]"
+                            )
+                              .map(
+                                (concern) =>
+                                  `<span class="concern-tag">${concern}</span>`
+                              )
+                              .join("")}
+                          </div>
+                        </div>
+                        <div class="preference-item">
+                          <span class="preference-label">Last Updated:</span>
+                          <span class="preference-value">${new Date(
+                            currentPreferences.updated_at
+                          ).toLocaleDateString()}</span>
+                        </div>
+                      `;
         }
 
         document.getElementById("current-prefs-modal").classList.add("active");
@@ -3481,12 +3676,12 @@
         // Show loading state
         const container = document.getElementById("recommended-products");
         container.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <h3>Finding your perfect matches...</h3>
-                    <p>Analyzing ${quizData.concerns.length} concerns across our product database</p>
-                </div>
-                `;
+                      <div class="loading">
+                          <i class="fas fa-spinner fa-spin"></i>
+                          <h3>Finding your perfect matches...</h3>
+                          <p>Analyzing ${quizData.concerns.length} concerns across our product database</p>
+                      </div>
+                      `;
 
         try {
           const saveSuccess = await saveUserPreferences();
@@ -3550,15 +3745,43 @@
       ) {
         const container = document.getElementById("recommended-products");
         container.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h3>No Perfect Matches Found</h3>
-                        <p>${message}</p>
-                        <button class="btn-primary" onclick="showResults()">
-                            <i class="fas fa-redo"></i> Try Again
-                        </button>
-                    </div>
-                `;
+                          <div class="no-results">
+                              <i class="fas fa-search"></i>
+                              <h3>No Perfect Matches Found</h3>
+                              <p>${message}</p>
+                              <button class="btn-primary" onclick="showResults()">
+                                  <i class="fas fa-redo"></i> Try Again
+                              </button>
+                          </div>
+                      `;
+      }
+      async function loadUserRatings() {
+        try {
+          const response = await fetch(
+            "../php/feedback.php?action=get_user_ratings"
+          );
+          const result = await response.json();
+
+          if (result.success && result.ratings) {
+            // Merge ratings into product data
+            result.ratings.forEach((rating) => {
+              if (window.productData && window.productData[rating.ProductID]) {
+                window.productData[rating.ProductID].user_feedback = {
+                  UserRating: rating.UserRating,
+                  RecommendationFeedback: rating.RecommendationFeedback,
+                  CreatedAt: rating.CreatedAt,
+                };
+              }
+            });
+
+            // Refresh the display to show ratings
+            if (window.currentPage) {
+              showPage(window.currentPage);
+            }
+          }
+        } catch (error) {
+          console.error("Error loading user ratings:", error);
+        }
       }
 
       // Update your existing displayRecommendations function
@@ -3573,15 +3796,15 @@
           recommendations.length === 0
         ) {
           container.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search"></i>
-                <h3>No Perfect Matches Found</h3>
-                <p>We're still building our product database. Check back soon!</p>
-            </div>
-        `;
+                  <div class="no-results">
+                      <i class="fas fa-search"></i>
+                      <h3>No Perfect Matches Found</h3>
+                      <p>We're still building our product database. Check back soon!</p>
+                  </div>
+              `;
 
-          // Update Add All count to 0
-          updateAddAllCount(0);
+          // // Update Add All count to 0
+          // updateAddAllCount(0);
           return;
         }
 
@@ -3596,8 +3819,8 @@
           window.productData[product.id] = product;
         });
 
-        // Initialize Add All to Cart
-        setupAddAllToCart();
+        // // Initialize Add All to Cart
+        // setupAddAllToCart();
 
         // Show first page
         showPage(1);
@@ -3613,6 +3836,7 @@
           setupFilters();
           updateResultsCount(recommendations.length);
         });
+        loadUserRatings();
       }
 
       function showPage(page) {
@@ -3685,19 +3909,19 @@
         // 1. SPECIFIC PRODUCTS SECTION (always expanded)
         if (specificProducts.length > 0) {
           html += `
-            <div class="recommendations-section specific-section">
-                <div class="section-divider">
-                    <div class="section-divider-content" data-tooltip="Products specifically tailored to your skin type, tone, and concerns">
-                        Specific Products
-                    </div>
-                </div>
-                <div class="results-count-subtle">Showing ${
-                  specificStart + 1
-                }-${specificStart + specificProducts.length} of ${
+                  <div class="recommendations-section specific-section">
+                      <div class="section-divider">
+                          <div class="section-divider-content" data-tooltip="Products specifically tailored to your skin type, tone, and concerns">
+                              Specific Products
+                          </div>
+                      </div>
+                      <div class="results-count-subtle">Showing ${
+                        specificStart + 1
+                      }-${specificStart + specificProducts.length} of ${
             allSpecific.length
           }</div>
-                <div class="recommendations-grid">
-        `;
+                      <div class="recommendations-grid">
+              `;
           specificProducts.forEach((product) => {
             html += generateProductCard(product);
           });
@@ -3716,20 +3940,20 @@
             : "Click to view universal products";
 
           html += `
-            <div class="recommendations-section universal-section ${expandedClass}">
-                <div class="section-divider" onclick="toggleUniversalSection()">
-                    <div class="section-divider-content" data-tooltip="Tools and products that work beautifully for everyone">
-                        Universal Products
-                        <span class="toggle-icon">▼</span>
-                    </div>
-                </div>
-                ${
-                  wasExpanded
-                    ? `<div class="results-count-subtle">${universalText}</div>`
-                    : ""
-                }
-                <div class="recommendations-grid" style="${displayStyle}">
-        `;
+                  <div class="recommendations-section universal-section ${expandedClass}">
+                      <div class="section-divider" onclick="toggleUniversalSection()">
+                          <div class="section-divider-content" data-tooltip="Tools and products that work beautifully for everyone">
+                              Universal Products
+                              <span class="toggle-icon">▼</span>
+                          </div>
+                      </div>
+                      ${
+                        wasExpanded
+                          ? `<div class="results-count-subtle">${universalText}</div>`
+                          : ""
+                      }
+                      <div class="recommendations-grid" style="${displayStyle}">
+              `;
           universalProducts.forEach((product) => {
             html += generateProductCard(product);
           });
@@ -3888,20 +4112,20 @@
         }
 
         return `
-        <div class="pagination-controls">
-            <button id="prev-page" class="pagination-btn" ${
-              currentPage === 1 ? "disabled" : ""
-            }>
-                ← Previous
-            </button>
-            <span class="page-info">Page ${currentPage} of ${totalPages}</span>
-            <button id="next-page" class="pagination-btn" ${
-              currentPage === totalPages ? "disabled" : ""
-            }>
-                Next →
-            </button>
-        </div>
-    `;
+              <div class="pagination-controls">
+                  <button id="prev-page" class="pagination-btn" ${
+                    currentPage === 1 ? "disabled" : ""
+                  }>
+                      ← Previous
+                  </button>
+                  <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+                  <button id="next-page" class="pagination-btn" ${
+                    currentPage === totalPages ? "disabled" : ""
+                  }>
+                      Next →
+                  </button>
+              </div>
+          `;
       }
 
       // Setup pagination event listeners - FIXED: Use same calculation method
@@ -3982,7 +4206,6 @@
           };
         }
       }
-      // Extract product card generation to separate function
       function generateProductCard(product) {
         const cleanName = product.Name
           ? product.Name.replace(/Parent Record:/gi, "")
@@ -4033,80 +4256,112 @@
           const hasHalfStar = userRating % 1 >= 0.5;
 
           userRatingHTML = `
-            <div class="user-rating">
-                <div class="stars">
-                    ${Array.from({ length: 5 }, (_, i) => {
-                      if (i < fullStars) {
-                        return '<i class="fas fa-star active"></i>';
-                      } else if (i === fullStars && hasHalfStar) {
-                        return '<i class="fas fa-star-half-alt active"></i>';
-                      } else {
-                        return '<i class="far fa-star"></i>';
-                      }
-                    }).join("")}
-                </div>
-                <span class="rating-text">${parseFloat(userRating).toFixed(
-                  1
-                )}</span>
-            </div>
-        `;
+      <div class="user-rating">
+          <div class="stars">
+              ${Array.from({ length: 5 }, (_, i) => {
+                if (i < fullStars) {
+                  return '<i class="fas fa-star active"></i>';
+                } else if (i === fullStars && hasHalfStar) {
+                  return '<i class="fas fa-star-half-alt active"></i>';
+                } else {
+                  return '<i class="far fa-star"></i>';
+                }
+              }).join("")}
+          </div>
+          <span class="rating-text">${parseFloat(userRating).toFixed(1)}</span>
+      </div>
+    `;
         } else {
           userRatingHTML = `
-            <div class="user-rating no-ratings">
-                <div class="stars">
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                </div>
-                <span class="rating-text">No ratings yet</span>
-            </div>
-        `;
+      <div class="user-rating no-ratings">
+          <div class="stars">
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+          </div>
+          <span class="rating-text">No ratings yet</span>
+      </div>
+    `;
+        }
+
+        // FIXED product indicator - Handle 3 ratings:
+        const existingFeedback = product.user_feedback;
+        const hasUserFeedback =
+          existingFeedback &&
+          existingFeedback.RecommendationFeedback !== undefined;
+
+        let feedbackIndicator = "";
+        if (hasUserFeedback) {
+          const rating = existingFeedback.RecommendationFeedback;
+          let icon, text, type;
+
+          if (rating === 1) {
+            icon = "thumbs-up";
+            text = "Good match";
+            type = "up";
+          } else if (rating === 0.5) {
+            icon = "meh-blank"; // FontAwesome meh icon
+            text = "Okay match";
+            type = "neutral";
+          } else {
+            icon = "thumbs-down";
+            text = "Poor match";
+            type = "down";
+          }
+
+          feedbackIndicator = `
+    <div class="feedback-indicator ${type}">
+      <i class="fas fa-${icon}"></i>
+      <small>${text}</small>
+    </div>
+  `;
         }
 
         return `
-        <div class="product-card" data-product-id="${product.id}">
-            <!-- Match Quality Badge -->
-            <div class="match-badge ${getMatchBadgeClass(
-              matchType
-            )}">${matchType}</div>
-            
-            <!-- Rating Quality Badge -->
-            <div class="rating-badge ${getRatingBadgeClass(
-              ratingQuality
-            )}">${ratingQuality}</div>
-            
-            <div class="product-image-container">
-                <img src="${imagePath}" alt="${cleanName}" class="product-image"
-                     onerror="handleImageError(this)">
-            </div>
-            <div class="product-info">
-                <h4 class="product-name">${cleanName}</h4>
-                <p class="product-category">${category}</p>
-                <p class="product-price">₱${price}</p>
-                
-                <!-- Attribute Matches Section -->
-                ${attributeHTML}
-                
-                <!-- User Ratings Section -->
-                ${userRatingHTML}
-                
-                <div class="product-actions">
-                    <button class="btn-primary add-to-cart-btn" onclick="addRecommendedToCart('${
-                      product.id
-                    }')">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
-                    <button class="btn-secondary view-details-btn" onclick="viewProductDetails('${
-                      product.id
-                    }')">
-                        <i class="fas fa-eye"></i> Details
-                    </button>
-                </div>
-            </div>
+    <div class="product-card" data-product-id="${product.id}">
+        <!-- Match Quality Badge -->
+        <div class="match-badge ${getMatchBadgeClass(
+          matchType
+        )}">${matchType}</div>
+        
+        <!-- Rating Quality Badge -->
+        <div class="rating-badge ${getRatingBadgeClass(
+          ratingQuality
+        )}">${ratingQuality}</div>
+        
+        <div class="product-image-container">
+            <img src="${imagePath}" alt="${cleanName}" class="product-image"
+                 onerror="handleImageError(this)">
         </div>
-    `;
+        <div class="product-info">
+            <h4 class="product-name">${cleanName}</h4>
+            <p class="product-category">${category}</p>
+            <p class="product-price">₱${price}</p>
+            
+            <!-- Attribute Matches Section -->
+            ${attributeHTML}
+            
+            <!-- User Ratings Section -->
+            ${userRatingHTML}
+            
+            <div class="product-actions">
+                <button class="btn-primary add-to-cart-btn" onclick="addRecommendedToCart('${
+                  product.id
+                }')">
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+                <button class="btn-secondary view-details-btn" onclick="viewProductDetails('${
+                  product.id
+                }')">
+                    <i class="fas fa-eye"></i> Details
+                </button>
+            </div>
+            ${feedbackIndicator}
+        </div>
+    </div>
+  `;
       }
 
       function generateAttributeMatchesHTML(attributeMatches, productId) {
@@ -4119,13 +4374,13 @@
         const matchCount = countMatches(attributeMatches);
 
         let html = `
-          <div class="attribute-summary" data-product-id="${productId}">
-              <div class="attribute-header">
-                  <span class="attribute-text">${matchCount}/${totalAttributes} Matches</span>
-                  <span class="attribute-toggle">ⓘ</span>
-              </div>
-          </div>
-        `;
+                <div class="attribute-summary" data-product-id="${productId}">
+                    <div class="attribute-header">
+                        <span class="attribute-text">${matchCount}/${totalAttributes} Matches</span>
+                        <span class="attribute-toggle">ⓘ</span>
+                    </div>
+                </div>
+              `;
 
         return html;
       }
@@ -4147,26 +4402,21 @@
           }
 
           return `
-                      <div class="attribute-detail-clean ${
-                        isMatch ? "match" : "no-match"
-                      }">
-                          <div class="attribute-line">
-                              <span class="attribute-label-clean">${label}</span>
-                              <div class="attribute-values">
-                                  <span class="product-value-clean">${productValue}</span>
-                                  <span class="separator">•</span>
-                                  <span class="user-value-clean">${userValue}</span>
-                              </div>
-                          </div>
-                          <span class="detail-status-clean">${
-                            isMatch ? "✓" : "✗"
-                          }</span>
-                      </div>
-                  `;
+      <div class="attribute-detail-clean ${isMatch ? "match" : "no-match"}">
+          <div class="attribute-line">
+              <span class="attribute-label-clean">${label}</span>
+              <div class="attribute-values">
+                  <span class="product-value-clean">${productValue}</span>
+                  <span class="separator">•</span>
+                  <span class="user-value-clean">${userValue}</span>
+              </div>
+          </div>
+          <span class="detail-status-clean">${isMatch ? "✓" : "✗"}</span>
+      </div>
+    `;
         };
 
         // --- Core Attributes ---
-
         if (attributeMatches.skin_type) {
           const match = attributeMatches.skin_type;
           html += addAttribute(
@@ -4207,8 +4457,7 @@
           );
         }
 
-        // --- FIXED: Skin Concerns - Now treated as a single block from Python ---
-        // Python now returns a combined 'Skin Concerns' match in the 'concerns' object.
+        // --- Skin Concerns ---
         if (
           attributeMatches.concerns &&
           attributeMatches.concerns["Skin Concerns"]
@@ -4224,18 +4473,92 @@
           attributeMatches.concerns &&
           attributeMatches.concerns["No Concerns"]
         ) {
-          // Case where user has no concerns, but we still need to display the line
           const match = attributeMatches.concerns["No Concerns"];
           html += addAttribute(
             "Skin Concerns",
-            match.product_value, // 'Any'
-            match.user_value, // 'None'
+            match.product_value,
+            match.user_value,
             match.match
           );
         }
 
+        const existingFeedback = productData.user_feedback;
+        // FIX: Check RecommendationFeedback consistently
+        const hasExistingFeedback =
+          existingFeedback &&
+          existingFeedback.RecommendationFeedback !== undefined;
+
+        // DETERMINE CURRENT RATING
+        let currentThumbsRating = null;
+        if (hasExistingFeedback) {
+          currentThumbsRating = existingFeedback.RecommendationFeedback; // This should be 0 or 1
+          console.log("Existing feedback thumbs rating:", currentThumbsRating);
+        }
+
+        // ADD FEEDBACK SECTION WITH DATA ATTRIBUTES
+        // In createExternalFloatingCard function - ADD NEUTRAL OPTION:
+        html += `
+  <div class="feedback-section">
+    <div class="feedback-label">
+      ${hasExistingFeedback ? "Your rating:" : "How was this match?"}
+      ${hasExistingFeedback ? "<small>Click to change</small>" : ""}
+    </div>
+    <div class="feedback-buttons">
+      <button class="feedback-btn thumbs-up ${
+        currentThumbsRating === 1 ? "active" : ""
+      }" 
+              data-feedback="1" data-product-id="${productData.id}">
+        👍 Good
+      </button>
+      <button class="feedback-btn thumbs-neutral ${
+        currentThumbsRating === 0.5 ? "active" : ""
+      }" 
+              data-feedback="0.5" data-product-id="${productData.id}">
+        😐 Okay
+      </button>
+      <button class="feedback-btn thumbs-down ${
+        currentThumbsRating === 0 ? "active" : ""
+      }" 
+              data-feedback="0" data-product-id="${productData.id}">
+        👎 Poor
+      </button>
+    </div>
+    ${
+      hasExistingFeedback
+        ? `
+      <div class="feedback-timestamp">
+        <small>Rated on ${new Date(
+          existingFeedback.CreatedAt
+        ).toLocaleDateString()}</small>
+      </div>
+    `
+        : ""
+    }
+  </div>
+`;
         return html;
       }
+      // Then add this function to handle the event listeners:
+      function setupFeedbackButtons() {
+        document.addEventListener("click", function (e) {
+          if (e.target.closest(".feedback-btn")) {
+            const button = e.target.closest(".feedback-btn");
+            const productId = button.getAttribute("data-product-id");
+            const rating = parseInt(button.getAttribute("data-rating"));
+            const productName =
+              window.productData && window.productData[productId]
+                ? window.productData[productId].Name
+                : "Unknown Product";
+
+            submitProductFeedback(productId, rating, productName);
+          }
+        });
+      }
+
+      // Call this when the page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        setupFeedbackButtons();
+      });
 
       // Function to load categories dynamically
       async function loadCategoriesIntoFilter() {
@@ -4294,8 +4617,8 @@
           sortByFilter.addEventListener("change", applyFilters);
         }
 
-        // Setup Add All to Cart
-        setupAddAllToCart();
+        // // Setup Add All to Cart
+        // setupAddAllToCart();
 
         // Debug: Check if products exist
         const productCards = document.querySelectorAll(".product-card");
@@ -4416,8 +4739,8 @@
         // Update the global recommendations with filtered+sorted results
         window.filteredRecommendations = sortedRecommendations;
 
-        // Update the Add All to Cart count
-        updateAddAllCount(sortedRecommendations.length);
+        // // Update the Add All to Cart count
+        // updateAddAllCount(sortedRecommendations.length);
 
         // Reset to page 1 with the new filtered results
         window.currentPage = 1;
@@ -4527,124 +4850,124 @@
         setTimeout(closeSuccessModal, 5000);
       }
 
-      // Updated function to add all filtered products to cart
-      async function addAllToCart() {
-        const currentRecommendations =
-          window.filteredRecommendations || window.allRecommendations;
-        const productCount = currentRecommendations.length;
+      // // Updated function to add all filtered products to cart
+      // async function addAllToCart() {
+      //   const currentRecommendations =
+      //     window.filteredRecommendations || window.allRecommendations;
+      //   const productCount = currentRecommendations.length;
 
-        if (productCount === 0) {
-          // Use alert if showNotification doesn't exist
-          if (typeof showNotification === "function") {
-            showNotification("No products to add to cart!", "error");
-          } else {
-            alert("No products to add to cart!");
-          }
-          return;
-        }
+      //   if (productCount === 0) {
+      //     // Use alert if showNotification doesn't exist
+      //     if (typeof showNotification === "function") {
+      //       showNotification("No products to add to cart!", "error");
+      //     } else {
+      //       alert("No products to add to cart!");
+      //     }
+      //     return;
+      //   }
 
-        // Show beautiful modal instead of confirm()
-        const confirmed = await showAddToCartModal(productCount);
+      //   // Show beautiful modal instead of confirm()
+      //   const confirmed = await showAddToCartModal(productCount);
 
-        if (!confirmed) {
-          return;
-        }
+      //   if (!confirmed) {
+      //     return;
+      //   }
 
-        // Show loading state
-        const addAllBtn = document.getElementById("add-all-to-cart");
-        const originalText = addAllBtn.innerHTML;
-        addAllBtn.innerHTML =
-          '<i class="fas fa-spinner fa-spin"></i> Adding...';
-        addAllBtn.disabled = true;
+      //   // Show loading state
+      //   const addAllBtn = document.getElementById("add-all-to-cart");
+      //   const originalText = addAllBtn.innerHTML;
+      //   addAllBtn.innerHTML =
+      //     '<i class="fas fa-spinner fa-spin"></i> Adding...';
+      //   addAllBtn.disabled = true;
 
-        try {
-          let successCount = 0;
-          let errorCount = 0;
-          const outOfStockProducts = [];
+      //   try {
+      //     let successCount = 0;
+      //     let errorCount = 0;
+      //     const outOfStockProducts = [];
 
-          // Add each product to cart
-          for (const product of currentRecommendations) {
-            try {
-              const productId = product.id;
+      //     // Add each product to cart
+      //     for (const product of currentRecommendations) {
+      //       try {
+      //         const productId = product.id;
 
-              const response = await fetch("../php/cart.php", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: `action=add&product_id=${encodeURIComponent(
-                  productId
-                )}&quantity=1`,
-              });
+      //         const response = await fetch("../php/cart.php", {
+      //           method: "POST",
+      //           headers: {
+      //             "Content-Type": "application/x-www-form-urlencoded",
+      //           },
+      //           body: `action=add&product_id=${encodeURIComponent(
+      //             productId
+      //           )}&quantity=1`,
+      //         });
 
-              const result = await response.json();
+      //         const result = await response.json();
 
-              if (result.success) {
-                successCount++;
-              } else {
-                errorCount++;
-                console.warn(
-                  `Failed to add product ${product.Name}:`,
-                  result.message
-                );
+      //         if (result.success) {
+      //           successCount++;
+      //         } else {
+      //           errorCount++;
+      //           console.warn(
+      //             `Failed to add product ${product.Name}:`,
+      //             result.message
+      //           );
 
-                // Track out of stock products
-                if (result.message && result.message.includes("stock")) {
-                  outOfStockProducts.push(product.Name);
-                }
-              }
+      //           // Track out of stock products
+      //           if (result.message && result.message.includes("stock")) {
+      //             outOfStockProducts.push(product.Name);
+      //           }
+      //         }
 
-              // Small delay to avoid overwhelming the server
-              await new Promise((resolve) => setTimeout(resolve, 100));
-            } catch (error) {
-              errorCount++;
-              console.error(`Error adding product ${product.Name}:`, error);
-            }
-          }
+      //         // Small delay to avoid overwhelming the server
+      //         await new Promise((resolve) => setTimeout(resolve, 100));
+      //       } catch (error) {
+      //         errorCount++;
+      //         console.error(`Error adding product ${product.Name}:`, error);
+      //       }
+      //     }
 
-          showSuccessModal(successCount, errorCount);
+      //     showSuccessModal(successCount, errorCount);
 
-          // Update cart count if we have the function
-          if (successCount > 0 && typeof updateCartCount === "function") {
-            try {
-              const countResponse = await fetch("../php/cart.php?action=count");
-              const countResult = await countResponse.json();
-              if (countResult.success) {
-                updateCartCount(countResult.cartCount);
-              }
-            } catch (error) {
-              console.error("Error updating cart count:", error);
-            }
-          }
-        } catch (error) {
-          console.error("Error in addAllToCart:", error);
-          // Use available notification method
-          if (typeof showNotification === "function") {
-            showNotification(
-              "Error adding products to cart. Please try again.",
-              "error"
-            );
-          } else {
-            alert("Error adding products to cart. Please try again.");
-          }
-        } finally {
-          // Restore button state
-          addAllBtn.innerHTML = originalText;
-          addAllBtn.disabled = false;
-        }
-      }
+      //     // Update cart count if we have the function
+      //     if (successCount > 0 && typeof updateCartCount === "function") {
+      //       try {
+      //         const countResponse = await fetch("../php/cart.php?action=count");
+      //         const countResult = await countResponse.json();
+      //         if (countResult.success) {
+      //           updateCartCount(countResult.cartCount);
+      //         }
+      //       } catch (error) {
+      //         console.error("Error updating cart count:", error);
+      //       }
+      //     }
+      //   } catch (error) {
+      //     console.error("Error in addAllToCart:", error);
+      //     // Use available notification method
+      //     if (typeof showNotification === "function") {
+      //       showNotification(
+      //         "Error adding products to cart. Please try again.",
+      //         "error"
+      //       );
+      //     } else {
+      //       alert("Error adding products to cart. Please try again.");
+      //     }
+      //   } finally {
+      //     // Restore button state
+      //     addAllBtn.innerHTML = originalText;
+      //     addAllBtn.disabled = false;
+      //   }
+      // }
 
-      // Make sure to attach the event listener
-      document
-        .getElementById("add-all-to-cart")
-        .addEventListener("click", addAllToCart);
+      // // Make sure to attach the event listener
+      // document
+      //   .getElementById("add-all-to-cart")
+      //   .addEventListener("click", addAllToCart);
 
-      // Add keyboard support (ESC to close modal)
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          closeAddToCartModal();
-        }
-      });
+      // // Add keyboard support (ESC to close modal)
+      // document.addEventListener("keydown", function (e) {
+      //   if (e.key === "Escape") {
+      //     closeAddToCartModal();
+      //   }
+      // });
       // Initialize the Add All to Cart functionality
       function setupAddAllToCart() {
         const addAllBtn = document.getElementById("add-all-to-cart");
@@ -5337,6 +5660,179 @@
         initFloatingProduct();
         updateCartCount();
       });
+      async function submitProductFeedback(productId, rating, productName) {
+  try {
+    // FIX 1: Convert rating to number properly - use parseFloat for 0.5
+    const numericRating = parseFloat(rating);
+    console.log("Submitting feedback:", {
+      productId,
+      rating: numericRating,
+      productName,
+    });
+
+    const buttons = document.querySelectorAll(
+      `.feedback-btn[data-product-id="${productId}"]`
+    );
+
+    // Show loading state
+    buttons.forEach((btn) => {
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      btn.disabled = true;
+    });
+
+    const response = await fetch("../php/feedback.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `action=save_product_feedback&product_id=${productId}&user_rating=${numericRating}&product_name=${encodeURIComponent(
+        productName
+      )}`,
+    });
+
+    // First check if response is ok
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Check if response is JSON
+    const text = await response.text();
+    console.log("Raw response:", text);
+
+    let result;
+    try {
+      result = JSON.parse(text);
+    } catch (e) {
+      console.error("Failed to parse JSON. Response was:", text);
+      throw new Error("Server returned invalid JSON response");
+    }
+
+    console.log("Parsed response:", result);
+
+    if (result.success) {
+      // Update button states for 3 buttons
+      buttons.forEach((btn) => {
+        btn.disabled = false;
+        const btnRating = parseFloat(btn.getAttribute("data-feedback"));
+
+        // Remove active class from all buttons first
+        btn.classList.remove("active");
+
+        // Add active class only to the clicked button
+        if (btnRating === numericRating) {
+          btn.classList.add("active");
+        }
+
+        // Set correct text for each button type - CONSISTENT "Good/Okay/Poor"
+        if (btn.classList.contains("thumbs-up")) {
+          btn.innerHTML = "👍 Good";
+        } else if (btn.classList.contains("thumbs-neutral")) {
+          btn.innerHTML = "😐 Okay";
+        } else if (btn.classList.contains("thumbs-down")) {
+          btn.innerHTML = "👎 Poor";
+        }
+      });
+
+      // FIX 2: Use data from PHP response, not undefined variable
+      if (window.productData && window.productData[productId]) {
+        window.productData[productId].user_feedback = {
+          UserRating: result.user_rating, // From PHP response
+          RecommendationFeedback: numericRating,
+          CreatedAt: new Date().toISOString(),
+        };
+      }
+    } else {
+      throw new Error(result.message || "Unknown error from server");
+    }
+  } catch (error) {
+    console.error("Feedback submission error:", error);
+
+    // Only show error notification, not success
+    if (typeof showNotification === "function") {
+      showNotification(
+        "Failed to save rating: " + error.message,
+        "error"
+      );
+    } else {
+      alert("Failed to save rating: " + error.message); // Fallback
+    }
+
+    // FIX 3: Reset buttons with CONSISTENT text "Good/Okay/Poor"
+    const buttons = document.querySelectorAll(
+      `.feedback-btn[data-product-id="${productId}"]`
+    );
+    buttons.forEach((btn) => {
+      btn.disabled = false;
+      // Use consistent text for all buttons
+      if (btn.classList.contains("thumbs-up")) {
+        btn.innerHTML = "👍 Good";
+      } else if (btn.classList.contains("thumbs-neutral")) {
+        btn.innerHTML = "😐 Okay";
+      } else if (btn.classList.contains("thumbs-down")) {
+        btn.innerHTML = "👎 Poor";
+      }
+    });
+  }
+}
+document.addEventListener("click", function (e) {
+  const feedbackBtn = e.target.closest(".feedback-btn");
+  if (feedbackBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const productId = feedbackBtn.getAttribute("data-product-id");
+    const rating = parseFloat(feedbackBtn.getAttribute("data-feedback")); // Use parseFloat for 0.5
+    const productData = window.productData && window.productData[productId];
+
+    if (productData) {
+      submitProductFeedback(productId, rating, productData.Name);
+    } else {
+      console.error("Product data not found for ID:", productId);
+    }
+  }
+});
+
+// FIX 4: Remove or update the old resetFeedbackButtons function since it uses old logic
+// This function is causing the text inconsistency - either remove it or update it:
+function resetFeedbackButtons(productId) {
+  const buttons = document.querySelectorAll(
+    `.feedback-btn[data-product-id="${productId}"]`
+  );
+  const product = window.productData && window.productData[productId];
+  const existingFeedback = product && product.user_feedback;
+
+  buttons.forEach((btn) => {
+    btn.disabled = false;
+    btn.classList.remove("active");
+
+    if (existingFeedback) {
+      const currentRating = existingFeedback.RecommendationFeedback;
+      
+      // Set active state based on actual rating
+      if (parseFloat(btn.getAttribute("data-feedback")) === currentRating) {
+        btn.classList.add("active");
+      }
+      
+      // Set consistent text
+      if (btn.classList.contains("thumbs-up")) {
+        btn.innerHTML = "👍 Good";
+      } else if (btn.classList.contains("thumbs-neutral")) {
+        btn.innerHTML = "😐 Okay";
+      } else if (btn.classList.contains("thumbs-down")) {
+        btn.innerHTML = "👎 Poor";
+      }
+    } else {
+      // Default text
+      if (btn.classList.contains("thumbs-up")) {
+        btn.innerHTML = "👍 Good";
+      } else if (btn.classList.contains("thumbs-neutral")) {
+        btn.innerHTML = "😐 Okay";
+      } else if (btn.classList.contains("thumbs-down")) {
+        btn.innerHTML = "👎 Poor";
+      }
+    }
+  });
+}
 
       // Add event listeners for external floating card - NO BACKDROP
       document.addEventListener("DOMContentLoaded", function () {
