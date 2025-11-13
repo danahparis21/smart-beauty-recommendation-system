@@ -227,7 +227,7 @@
       background: #c82333;
     }
 
-    /* Order Details - SCROLLABLE */
+    /* Order Details - IMPROVED LAYOUT */
     .order-details {
       background: white;
       border-radius: 20px;
@@ -235,7 +235,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       transition: all 0.4s ease;
       border: 1px solid rgba(228, 151, 170, 0.1);
-      height: calc(100vh - 200px);
+      height: calc(100vh - 10px);
       display: flex;
       flex-direction: column;
       position: sticky;
@@ -290,7 +290,7 @@
       background: #dc3545;
     }
 
-    /* SCROLLABLE Order Content */
+    /* IMPROVED Order Content */
     .order-content {
       flex: 1;
       overflow-y: auto;
@@ -299,6 +299,9 @@
 
     .order-info {
       margin-bottom: 25px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 20px;
     }
 
     .order-info-row {
@@ -357,7 +360,7 @@
       color: var(--dark-pink);
     }
 
-    /* FIXED Total and Button */
+    /* IMPROVED Total and Button */
     .order-total {
       display: flex;
       justify-content: space-between;
@@ -522,6 +525,122 @@
     .cancel-confirm-btn:hover {
       background: #5a6268;
       transform: translateY(-2px);
+    }
+
+    /* NEW: Order Summary Card */
+    .order-summary-card {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .order-summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .order-summary-title {
+      font-weight: 600;
+      color: var(--dark-pink);
+      font-size: 1.1rem;
+    }
+
+    .order-summary-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .order-summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .order-summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-quantity {
+      background: var(--primary-pink);
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* NEW: Customer Info Card */
+    .customer-info-card {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .customer-info-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .customer-info-title {
+      font-weight: 600;
+      color: var(--dark-pink);
+      font-size: 1.1rem;
+    }
+
+    .customer-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .customer-detail {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .customer-label {
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .customer-value {
+      color: #333;
+      font-weight: 600;
+    }
+
+    /* NEW: Scan Instructions */
+    .scan-instructions {
+      background: #e9f7fe;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scan-instructions i {
+      color: #17a2b8;
+      font-size: 1.2rem;
+    }
+
+    .scan-instructions p {
+      margin: 0;
+      color: #0c5460;
+      font-size: 0.9rem;
     }
 
     /* Responsive Design */
@@ -918,6 +1037,10 @@
             <div class="qr-scanner-container">
               <div class="scanner-header">
                 <h5><i class="fas fa-qrcode"></i> Scanner</h5>
+                <div class="scan-instructions">
+                  <i class="fas fa-info-circle"></i>
+                  <p>Point the camera at the QR code to scan automatically</p>
+                </div>
               </div>
 
               <div class="camera-container">
@@ -957,7 +1080,7 @@
                 <span class="order-status" id="orderStatus">No Order</span>
               </div>
 
-              <!-- SCROLLABLE Order Content -->
+              <!-- IMPROVED Order Content -->
               <div class="order-content" id="orderContent">
                 <div class="no-order">
                   <i class="fas fa-qrcode"></i>
@@ -966,13 +1089,13 @@
                 </div>
               </div>
 
-              <!-- FIXED Total -->
+              <!-- IMPROVED Total -->
               <div class="order-total" id="orderTotal" style="display: none;">
                 <span>Total:</span>
                 <span id="totalAmount">$0.00</span>
               </div>
 
-              <!-- FIXED Order Done Button -->
+              <!-- IMPROVED Order Done Button -->
               <div class="order-actions" id="orderActions" style="display: none;">
                 <button class="order-done-btn" id="orderDoneBtn">
                   <i class="fas fa-check-circle"></i> Order Done
@@ -989,213 +1112,413 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Mobile menu functionality
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    // QR Scanner JavaScript - Replace the entire <script> section with this
 
-    // Toggle sidebar on hamburger click
-    hamburgerBtn.addEventListener('click', function () {
-      sidebar.classList.toggle('mobile-open');
-      sidebarOverlay.classList.toggle('active');
-    });
+// Mobile menu functionality
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    // Close sidebar when overlay is clicked
-    sidebarOverlay.addEventListener('click', function () {
+// Toggle sidebar
+if (hamburgerBtn) {
+  hamburgerBtn.addEventListener('click', function () {
+    sidebar.classList.toggle('mobile-open');
+    sidebarOverlay.classList.toggle('active');
+  });
+}
+
+if (sidebarOverlay) {
+  sidebarOverlay.addEventListener('click', function () {
+    sidebar.classList.remove('mobile-open');
+    sidebarOverlay.classList.remove('active');
+  });
+}
+
+const navLinks = document.querySelectorAll('.sidebar .nav-link');
+navLinks.forEach(link => {
+  link.addEventListener('click', function () {
+    if (window.innerWidth < 992) {
       sidebar.classList.remove('mobile-open');
       sidebarOverlay.classList.remove('active');
-    });
-
-    // Close sidebar when a nav link is clicked (on mobile)
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    navLinks.forEach(link => {
-      link.addEventListener('click', function () {
-        if (window.innerWidth < 992) {
-          sidebar.classList.remove('mobile-open');
-          sidebarOverlay.classList.remove('active');
-        }
-      });
-    });
-
-    // QR Scanner Functionality
-    const video = document.getElementById('qr-video');
-    const cameraPlaceholder = document.getElementById('cameraPlaceholder');
-    const startCameraBtn = document.getElementById('startCamera');
-    const stopCameraBtn = document.getElementById('stopCamera');
-    const cancelScanBtn = document.getElementById('cancelScanBtn'); // ADDED
-    const scannerResults = document.getElementById('scannerResults');
-    const orderContent = document.getElementById('orderContent');
-    const orderStatus = document.getElementById('orderStatus');
-    const orderTotal = document.getElementById('orderTotal');
-    const totalAmount = document.getElementById('totalAmount');
-    const orderActions = document.getElementById('orderActions');
-    const orderDoneBtn = document.getElementById('orderDoneBtn');
-    const confirmationModal = document.getElementById('confirmationModal');
-    const confirmOrderBtn = document.getElementById('confirmOrderBtn');
-    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
-
-    let stream = null;
-
-    // Start camera function
-    async function startCamera() {
-      try {
-        // Request camera access
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: 'environment',
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          }
-        });
-
-        video.srcObject = stream;
-        video.style.display = 'block';
-        cameraPlaceholder.style.display = 'none';
-
-        // Enable/disable buttons
-        startCameraBtn.disabled = true;
-        stopCameraBtn.disabled = false;
-        cancelScanBtn.style.display = 'flex'; // Show cancel button
-
-        // Show success message
-        scannerResults.textContent = 'Camera started successfully. Point at a QR code to scan.';
-        scannerResults.className = 'scanner-results success';
-
-      } catch (err) {
-        console.error('Error accessing camera:', err);
-        scannerResults.textContent = 'Error accessing camera: ' + err.message;
-        scannerResults.className = 'scanner-results error';
-      }
     }
-
-    // Stop camera function
-    function stopCamera() {
-      if (stream) {
-        const tracks = stream.getTracks();
-        tracks.forEach(track => track.stop());
-        video.srcObject = null;
-        video.style.display = 'none';
-        cameraPlaceholder.style.display = 'flex';
-        stream = null;
-      }
-
-      // Enable/disable buttons
-      startCameraBtn.disabled = false;
-      stopCameraBtn.disabled = true;
-      cancelScanBtn.style.display = 'none'; // Hide cancel button
-
-      // Clear scanner results
-      scannerResults.textContent = 'Camera stopped.';
-      scannerResults.className = 'scanner-results';
-    }
-
-    // ADDED: Cancel scan process function
-    function cancelScanProcess() {
-      // Stop camera first
-      stopCamera();
-
-      // Show cancellation message
-      scannerResults.textContent = 'Scanning process cancelled.';
-      scannerResults.className = 'scanner-results info';
-
-      // Note: This only cancels the scanning process, not any existing order
-      // The order remains unchanged if there was one
-    }
-
-    // ADDED: Show confirmation modal
-    function showConfirmationModal() {
-      confirmationModal.style.display = 'flex';
-    }
-
-    // ADDED: Hide confirmation modal
-    function hideConfirmationModal() {
-      confirmationModal.style.display = 'none';
-    }
-
-    // ADDED: Complete order function
-    function completeOrder() {
-      // Reset order details
-      orderContent.innerHTML = `
-      <div class="no-order">
-        <i class="fas fa-qrcode"></i>
-        <h5>No Order Scanned</h5>
-        <p>Scan a QR code to view order details</p>
-      </div>
-    `;
-      orderStatus.textContent = 'No Order';
-      orderStatus.className = 'order-status';
-      orderTotal.style.display = 'none';
-      orderActions.style.display = 'none';
-
-      // Show completion message
-      scannerResults.textContent = 'Order completed successfully! Returning to dashboard...';
-      scannerResults.className = 'scanner-results success';
-
-      // Hide confirmation modal
-      hideConfirmationModal();
-
-      // Simulate auto exit after 2 seconds
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 2000);
-    }
-
-    // Order Done button functionality - shows confirmation
-    orderDoneBtn.addEventListener('click', showConfirmationModal);
-
-    // Cancel scan button functionality
-    cancelScanBtn.addEventListener('click', cancelScanProcess);
-
-    // Confirmation modal buttons
-    confirmOrderBtn.addEventListener('click', completeOrder);
-    cancelConfirmBtn.addEventListener('click', hideConfirmationModal);
-
-    // Close modal when clicking outside
-    confirmationModal.addEventListener('click', function (e) {
-      if (e.target === confirmationModal) {
-        hideConfirmationModal();
-      }
-    });
-
-    // Event listeners for camera buttons
-    startCameraBtn.addEventListener('click', startCamera);
-    stopCameraBtn.addEventListener('click', stopCamera);
-
-    // Adjust content padding based on mobile header
-    function adjustContentForMobileHeader() {
-      const mobileHeader = document.querySelector('.mobile-header');
-      const mainContent = document.querySelector('main');
-
-      if (window.innerWidth < 992 && mobileHeader && mainContent) {
-        const headerHeight = mobileHeader.offsetHeight;
-        mainContent.style.marginTop = `${headerHeight}px`;
-      } else if (mainContent) {
-        mainContent.style.marginTop = '';
-      }
-    }
-
-    // Run on load and resize
-    window.addEventListener('load', adjustContentForMobileHeader);
-    window.addEventListener('resize', adjustContentForMobileHeader);
-
-    // Also run after sidebar toggle to ensure proper layout
-    document.getElementById('hamburgerBtn').addEventListener('click', function () {
-      setTimeout(adjustContentForMobileHeader, 300);
-    });
-    // Highlight active sidebar link based on current URL
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    const currentPath = window.location.pathname.split('/').pop();
-
-    navLinks.forEach(link => {
-      const linkPath = link.getAttribute('href');
-      if (linkPath === currentPath) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
-    });
   });
+});
+
+// QR Scanner Elements
+const video = document.getElementById('qr-video');
+const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+const startCameraBtn = document.getElementById('startCamera');
+const stopCameraBtn = document.getElementById('stopCamera');
+const cancelScanBtn = document.getElementById('cancelScanBtn');
+const scannerResults = document.getElementById('scannerResults');
+const orderContent = document.getElementById('orderContent');
+const orderStatus = document.getElementById('orderStatus');
+const orderTotal = document.getElementById('orderTotal');
+const totalAmount = document.getElementById('totalAmount');
+const orderActions = document.getElementById('orderActions');
+const orderDoneBtn = document.getElementById('orderDoneBtn');
+const confirmationModal = document.getElementById('confirmationModal');
+const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+
+let stream = null;
+let scanning = false;
+let currentOrderId = null;
+let scanInterval = null;
+let lastScannedQR = null;
+let lastScanTime = 0;
+const SCAN_COOLDOWN = 3000; // 3 seconds cooldown between scans
+
+// Load jsQR library from CDN
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+script.onload = function() {
+  console.log('jsQR library loaded successfully');
+};
+script.onerror = function() {
+  console.error('Failed to load jsQR library');
+  scannerResults.textContent = 'Error: Failed to load QR scanner library';
+  scannerResults.className = 'scanner-results error';
+};
+document.head.appendChild(script);
+
+// Start camera function
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'environment',
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    });
+
+    video.srcObject = stream;
+    video.style.display = 'block';
+    cameraPlaceholder.style.display = 'none';
+
+    startCameraBtn.disabled = true;
+    stopCameraBtn.disabled = false;
+    cancelScanBtn.style.display = 'flex';
+
+    scannerResults.textContent = 'Camera started. Point at a QR code to scan. Camera will stay on.';
+    scannerResults.className = 'scanner-results success';
+
+    scanning = true;
+    lastScannedQR = null; // Reset last scanned QR
+    lastScanTime = 0; // Reset scan time
+    startScanning();
+
+  } catch (err) {
+    console.error('Error accessing camera:', err);
+    scannerResults.textContent = 'Error: ' + err.message + '. Please allow camera access.';
+    scannerResults.className = 'scanner-results error';
+  }
+}
+
+// Stop camera function
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    video.srcObject = null;
+    video.style.display = 'none';
+    cameraPlaceholder.style.display = 'flex';
+    stream = null;
+  }
+
+  scanning = false;
+  if (scanInterval) {
+    clearInterval(scanInterval);
+    scanInterval = null;
+  }
+
+  startCameraBtn.disabled = false;
+  stopCameraBtn.disabled = true;
+  cancelScanBtn.style.display = 'none';
+
+  scannerResults.textContent = 'Camera stopped.';
+  scannerResults.className = 'scanner-results';
+}
+
+// Cancel scan process (only stops camera, doesn't clear order)
+function cancelScanProcess() {
+  stopCamera();
+  scannerResults.textContent = 'Camera stopped. Order details remain on screen.';
+  scannerResults.className = 'scanner-results info';
+}
+
+// Start scanning for QR codes
+function startScanning() {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  scanInterval = setInterval(() => {
+    if (!scanning || !video.videoWidth) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    
+    if (typeof jsQR !== 'undefined') {
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      
+      if (code && code.data) {
+        const currentTime = Date.now();
+        
+        // Prevent scanning the same QR code within cooldown period
+        if (code.data !== lastScannedQR || (currentTime - lastScanTime) > SCAN_COOLDOWN) {
+          lastScannedQR = code.data;
+          lastScanTime = currentTime;
+          handleQRCode(code.data);
+        }
+      }
+    }
+  }, 300); // Scan every 300ms
+}
+
+// Handle detected QR code (camera stays on)
+function handleQRCode(qrData) {
+  if (!scanning) return;
+  
+  console.log('QR Code detected:', qrData);
+  
+  // DON'T stop scanning - keep camera running
+  scannerResults.textContent = 'QR Code detected! Loading order... (Camera stays on)';
+  scannerResults.className = 'scanner-results info';
+  
+  // Fetch order details
+  fetchOrderDetails(qrData);
+}
+
+// Fetch order details from server
+async function fetchOrderDetails(qrCode) {
+  try {
+    console.log('Fetching order for QR:', qrCode);
+    
+    const response = await fetch(`../php/qr-scanner.php?action=get_order&qr_code=${encodeURIComponent(qrCode)}`);
+    
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Response data:', data);
+    
+    if (data.success) {
+      displayOrderDetails(data.order);
+      scannerResults.textContent = 'Order loaded successfully! ✅';
+      scannerResults.className = 'scanner-results success';
+    } else {
+      scannerResults.textContent = data.message || 'Order not found';
+      scannerResults.className = 'scanner-results error';
+      
+      // Don't clear order display - keep previous order if exists
+    }
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    scannerResults.textContent = 'Error loading order: ' + error.message;
+    scannerResults.className = 'scanner-results error';
+  }
+}
+
+// IMPROVED: Display order details with better organization
+function displayOrderDetails(order) {
+  currentOrderId = order.order_id;
+  
+  console.log('Displaying order:', order);
+  
+  // Update order status
+  orderStatus.textContent = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+  orderStatus.className = `order-status ${order.status}`;
+  
+  // Build order content HTML with improved layout
+  const orderHTML = `
+    <!-- Customer Information Card -->
+    <div class="customer-info-card">
+      <div class="customer-info-header">
+        <i class="fas fa-user"></i>
+        <div class="customer-info-title">Customer Information</div>
+      </div>
+      <div class="customer-details">
+        <div class="customer-detail">
+          <span class="customer-label">Name:</span>
+          <span class="customer-value">${order.customer_name}</span>
+        </div>
+        <div class="customer-detail">
+          <span class="customer-label">Order Date:</span>
+          <span class="customer-value">${order.order_date}</span>
+        </div>
+        <div class="customer-detail">
+          <span class="customer-label">QR Code:</span>
+          <span class="customer-value">${order.qr_code}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Order Summary Card -->
+    <div class="order-summary-card">
+      <div class="order-summary-header">
+        <div class="order-summary-title">Order Items (${order.items_count})</div>
+        <div class="order-id">#${order.order_id}</div>
+      </div>
+      <div class="order-summary-items">
+        ${order.items.map(item => `
+          <div class="order-summary-item">
+            <div class="item-details">
+              <div class="item-name">${item.product_name}</div>
+              <div class="item-meta">
+                <span><i class="fas fa-palette"></i> ${item.shade}</span>
+                <span><i class="fas fa-tag"></i> ${item.category}</span>
+              </div>
+            </div>
+            <div class="item-price">
+              <div class="item-quantity">${item.quantity}</div>
+              ₱${item.subtotal}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  
+  orderContent.innerHTML = orderHTML;
+  
+  // Show total and actions
+  totalAmount.textContent = `₱${order.total_price}`;
+  orderTotal.style.display = 'flex';
+  orderActions.style.display = 'block';
+}
+
+// Reset order display
+function resetOrderDisplay() {
+  currentOrderId = null;
+  orderContent.innerHTML = `
+    <div class="no-order">
+      <i class="fas fa-qrcode"></i>
+      <h5>No Order Scanned</h5>
+      <p>Scan a QR code to view order details</p>
+    </div>
+  `;
+  orderStatus.textContent = 'No Order';
+  orderStatus.className = 'order-status';
+  orderTotal.style.display = 'none';
+  orderActions.style.display = 'none';
+}
+
+// Show confirmation modal
+function showConfirmationModal() {
+  confirmationModal.style.display = 'flex';
+}
+
+// Hide confirmation modal
+function hideConfirmationModal() {
+  confirmationModal.style.display = 'none';
+}
+
+// Complete order (stays on page, resets order display, keeps camera on)
+async function completeOrder() {
+  if (!currentOrderId) {
+    alert('No order to complete');
+    return;
+  }
+  
+  console.log('Completing order:', currentOrderId);
+  
+  try {
+    const response = await fetch('../php/qr-scanner.php?action=complete_order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        order_id: currentOrderId
+      })
+    });
+    
+    console.log('Complete order response status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Complete order response:', data);
+    
+    if (data.success) {
+      scannerResults.textContent = data.message + ' Ready to scan next order!';
+      scannerResults.className = 'scanner-results success';
+      
+      hideConfirmationModal();
+      resetOrderDisplay();
+      
+      // Reset last scanned QR so we can scan a new one immediately
+      lastScannedQR = null;
+      lastScanTime = 0;
+      
+      // NO REDIRECT - stays on page, camera keeps running if it was on
+      
+    } else {
+      scannerResults.textContent = data.message || 'Error completing order';
+      scannerResults.className = 'scanner-results error';
+      hideConfirmationModal();
+    }
+  } catch (error) {
+    console.error('Error completing order:', error);
+    scannerResults.textContent = 'Error completing order: ' + error.message;
+    scannerResults.className = 'scanner-results error';
+    hideConfirmationModal();
+  }
+}
+
+// Event Listeners
+startCameraBtn.addEventListener('click', startCamera);
+stopCameraBtn.addEventListener('click', stopCamera);
+cancelScanBtn.addEventListener('click', cancelScanProcess);
+orderDoneBtn.addEventListener('click', showConfirmationModal);
+confirmOrderBtn.addEventListener('click', completeOrder);
+cancelConfirmBtn.addEventListener('click', hideConfirmationModal);
+
+// Close modal when clicking outside
+confirmationModal.addEventListener('click', function (e) {
+  if (e.target === confirmationModal) {
+    hideConfirmationModal();
+  }
+});
+
+// Mobile header adjustment
+function adjustContentForMobileHeader() {
+  const mobileHeader = document.querySelector('.mobile-header');
+  const mainContent = document.querySelector('main');
+
+  if (window.innerWidth < 992 && mobileHeader && mainContent) {
+    const headerHeight = mobileHeader.offsetHeight;
+    mainContent.style.marginTop = `${headerHeight}px`;
+  } else if (mainContent) {
+    mainContent.style.marginTop = '';
+  }
+}
+
+window.addEventListener('load', adjustContentForMobileHeader);
+window.addEventListener('resize', adjustContentForMobileHeader);
+
+// Highlight active sidebar link
+document.addEventListener('DOMContentLoaded', () => {
+  const navLinks = document.querySelectorAll('.sidebar .nav-link');
+  const currentPath = window.location.pathname.split('/').pop();
+
+  navLinks.forEach(link => {
+    const linkPath = link.getAttribute('href');
+    if (linkPath === currentPath) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+});
   </script>
 </body>
 
