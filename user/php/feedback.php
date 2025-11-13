@@ -62,18 +62,20 @@ if ($_POST['action'] == 'save_product_feedback') {
     error_log("📝 Feedback received - User: $user_id, Product: $product_id, Rating: $user_rating_thumbs");
 
     try {
-        // FIXED: Convert to float first, then compare
-        $user_rating_float = floatval($user_rating_thumbs);
-        
-        if ($user_rating_float == 1.0) {
+        // Convert to string values instead of numbers
+        if ($user_rating_thumbs == "1") {
             $rating_scale = 5.0;  // Good - Perfect match
-        } elseif ($user_rating_float == 0.5) {
-            $rating_scale = 3.0;  // Okay - Neutral
+            $recommendation_feedback = "Good";
+        } elseif ($user_rating_thumbs == "0.5") {
+            $rating_scale = 3.0;  // Okay - Neutral  
+            $recommendation_feedback = "Okay";
         } else {
             $rating_scale = 1.0;  // Poor - Bad recommendation
+            $recommendation_feedback = "Poor";
         }
 
-        $recommendation_feedback = $user_rating_float;  // This will be 1.0, 0.5, or 0.0
+        // REMOVE THIS LINE - it's overwriting your string with a float!
+        // $recommendation_feedback = $user_rating_float;  // DELETE THIS LINE
 
         // Check if feedback already exists
         $check_stmt = $conn->prepare('SELECT FeedbackID FROM productfeedback WHERE UserID = ? AND ProductID = ?');
@@ -105,10 +107,10 @@ if ($_POST['action'] == 'save_product_feedback') {
                 throw new Exception('Prepare failed: ' . $conn->error);
             }
 
-            // FIXED: Use the float value for RecommendationFeedback
-            $stmt->bind_param('ddsss',
+            // FIXED: Use string for RecommendationFeedback
+            $stmt->bind_param('dssss',  // CHANGED: 's' for string RecommendationFeedback
                 $rating_scale,  // d = double (UserRating is float)
-                $recommendation_feedback,  // d = double (RecommendationFeedback is float)
+                $recommendation_feedback,  // s = string (RecommendationFeedback is now string)
                 $product_name,  // s = string (Comment is text)
                 $user_id,  // s = string (UserID is int but bind as string to be safe)
                 $product_id  // s = string (ProductID is varchar)
@@ -132,12 +134,12 @@ if ($_POST['action'] == 'save_product_feedback') {
                 throw new Exception('Prepare failed: ' . $conn->error);
             }
 
-            // FIXED: Correct parameter types
-            $stmt->bind_param('sidds',
+            // FIXED: Use string for RecommendationFeedback
+            $stmt->bind_param('sidss',  // CHANGED: 's' for string RecommendationFeedback
                 $product_id,  // s = string
                 $user_id,  // i = integer
                 $rating_scale,  // d = double (UserRating: 5.0, 3.0, or 1.0)
-                $recommendation_feedback,  // d = double (RecommendationFeedback: 1.0, 0.5, or 0.0)
+                $recommendation_feedback,  // s = string (RecommendationFeedback: "Good", "Okay", "Poor")
                 $product_name  // s = string
             );
 
@@ -155,10 +157,10 @@ if ($_POST['action'] == 'save_product_feedback') {
                 'success' => true,
                 'message' => 'Feedback saved successfully',
                 'user_rating' => $rating_scale,
-                'thumbs_rating' => $user_rating_thumbs,
-                'recommendation_feedback' => $recommendation_feedback
+                'thumbs_rating' => $user_rating_thumbs, // This is "1", "0.5", or "0"
+                'recommendation_feedback' => $recommendation_feedback // This is "Good", "Okay", "Poor"
             ]);
-        } else {
+        }else {
             echo json_encode(['success' => false, 'message' => 'Failed to save feedback: ' . $conn->error]);
         }
     } catch (Exception $e) {

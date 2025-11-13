@@ -170,20 +170,19 @@ def get_match_quality_badge(initial_fit_score):
     else: 
         return "TOO LOW MATCH" # Products below this score will be filtered out
 
-def get_rating_quality_badge(final_rating, has_personal_feedback, user_rating=None, productrating=None):
-    # Check if product truly has no ratings (both user_rating and productrating are null/0)
-    is_truly_unrated = (
-        (user_rating is None or pd.isna(user_rating) or user_rating == 0) and
-        (productrating is None or pd.isna(productrating) or productrating == 0)
-    )
-    
-    if is_truly_unrated:
+def get_rating_quality_badge(product_rating, has_personal_feedback):
+    """
+    NEW: Badge based purely on product's actual rating only
+    Uses productrating column directly, ignoring user_rating and calculated scores
+    """
+    # Check if product truly has no ratings (productrating is null/0)
+    if product_rating is None or pd.isna(product_rating) or product_rating == 0:
         return "⭐ UNRATED"
-    elif final_rating >= 4.5:
-        return "🔥 TOP RATED" if has_personal_feedback else "HIGHLY RATED"
-    elif final_rating >= 4.0:
+    elif product_rating >= 4.5:
+        return "TOP RATED" if has_personal_feedback else "HIGHLY RATED"  # REMOVED EMOJI
+    elif product_rating >= 4.0:
         return "WELL RATED" if has_personal_feedback else "GOOD RATING"
-    elif final_rating >= 3.0:
+    elif product_rating >= 3.0:
         return "AVERAGE RATING"
     else:
         return "LOW RATING"
@@ -328,6 +327,47 @@ def analyze_attribute_matches(product, user_input):
     
     return matches
 
+def get_collaborative_rating(product_id, collaborative_data):
+    try:
+        # Handle different data types
+        if isinstance(collaborative_data, dict):
+            product_data = collaborative_data.get(str(product_id), {})
+        elif isinstance(collaborative_data, list):
+            # Convert list to dictionary for lookup
+            collab_dict = {item.get('ProductID', ''): item for item in collaborative_data if 'ProductID' in item}
+            product_data = collab_dict.get(str(product_id), {})
+        else:
+            product_data = {}
+        
+        # Get similar users rating first, fallback to global popularity
+        if 'similar_users_liked' in product_data:
+            return product_data['similar_users_liked'] / 100.0
+        elif 'global_popularity' in product_data:
+            return product_data['global_popularity'] / 100.0
+        else:
+            return 0.5  # Default neutral rating
+        
+    except Exception as e:
+        return 0.5  # Fallback to neutral rating
+
+
+
+# NEW: Add collaborative data for frontend display
+def get_collaborative_data_dict(product_id, collaborative_data):
+    try:
+        if isinstance(collaborative_data, dict):
+            return collaborative_data.get(str(product_id), {})
+        elif isinstance(collaborative_data, list):
+            # Convert list to dictionary for lookup
+            collab_dict = {item.get('ProductID', ''): item for item in collaborative_data if 'ProductID' in item}
+            return collab_dict.get(str(product_id), {})
+        else:
+            return {}
+    except:
+        return {}
+
+
+
 def create_sample_data():
     """Create realistic sample data for testing"""
     sample_products = [
@@ -427,8 +467,16 @@ def main():
             with open(sys.argv[1], 'r') as f:
                 data = json.load(f)
         
+        print("DEBUG: Data loaded successfully", file=sys.stderr)
+        
         user_input = data['user_input']
         products = data['products']
+        
+        # NEW: Get collaborative data passed from PHP
+        collaborative_data = data.get('collaborative_data', {})
+        current_user_id = data.get('current_user_id')
+        
+        print(f"DEBUG: Collaborative data for {len(collaborative_data)} products", file=sys.stderr)
         
         # Convert to DataFrame
         df = pd.DataFrame(products)
@@ -436,6 +484,8 @@ def main():
         if df.empty:
             print(json.dumps([]))
             return
+        
+        print("DEBUG: DataFrame created", file=sys.stderr)
         
         # Prepare data
         df_rf = df.copy()
@@ -461,6 +511,19 @@ def main():
         # Ensure ratings are within reasonable range
         df_rf['final_rating'] = df_rf['final_rating'].clip(1.0, 5.0)
         
+        # NEW: Add collaborative features to DataFrame (simple addition)
+        df_rf['similar_users_rating'] = df_rf['id'].apply(
+            lambda product_id: get_collaborative_rating(product_id, collaborative_data)
+        )
+        
+        # NEW: Add collaborative data for frontend display
+        
+        df_rf['collaborative_data'] = df_rf['id'].apply(
+            lambda product_id: get_collaborative_data_dict(product_id, collaborative_data)
+        )
+        
+        print("DEBUG: Collaborative features added", file=sys.stderr)
+        
         # Phase 2: One-Hot Encoding (OHE) - Replaces Label Encoding
         df_rf, ohe_features = create_ohe_features(df_rf)
         
@@ -473,22 +536,21 @@ def main():
         # NEW: Add Rating Quality Badge (based on actual ratings)
         df_rf['Rating_Quality'] = df_rf.apply(
             lambda row: get_rating_quality_badge(
-                row['final_rating'], 
-                row.get('has_personal_feedback', 0),
-                row.get('user_rating'),
-                row.get('productrating')
+                row.get('productrating'),  # Use ONLY the product's actual rating
+                row.get('has_personal_feedback', 0)
             ), 
             axis=1
         )
         
         ohe_features = [col for col in df_rf.columns if any(p in col for p in ['skin_tone_', 'skin_type_', 'undertone_'])]
 
-        # Define the final features for the Random Forest
+        # ENHANCED: Define the final features for Random Forest (now includes collaborative)
         feature_columns = ohe_features + [
             'acne', 'dryness', 'dark_spots', 'aging', # All concerns must be included
             'matte', 'dewy', 'long_lasting', 
             'Initial_Fit_Score', 
-            'final_rating' 
+            'final_rating',
+            'similar_users_rating'  # NEW: Collaborative feature
         ]
 
         # Ensure all features exist (especially for the concerns)
@@ -501,6 +563,8 @@ def main():
         # Use final_rating as target
         y = df_rf['final_rating']
         
+        print("DEBUG: Features prepared, training model", file=sys.stderr)
+        
         # Train model
         rf = RandomForestRegressor(
             n_estimators=100, 
@@ -508,6 +572,7 @@ def main():
             min_samples_split=5, 
             min_samples_leaf=2
         )
+        
         # Check if there are enough samples to train the model
         if len(df_rf) > 2:
              rf.fit(X, y)
@@ -526,11 +591,12 @@ def main():
         # Add category priority
         df_rf['Category_Priority'] = df_rf['Category'].apply(get_category_priority)
         
-        # ENHANCED SORTING: Create Composite Score
+        # ENHANCED SORTING: Create Composite Score (now includes collaborative influence)
         df_rf['Composite_Score'] = (
-            df_rf['Initial_Fit_Score'] * 0.4 + 
-            df_rf['Predicted_Score'] * 0.3 + 
-            df_rf['final_rating'] * 0.3 
+            df_rf['Initial_Fit_Score'] * 0.35 +      # 35% attribute matching
+            df_rf['Predicted_Score'] * 0.35 +        # 35% ML prediction (now includes collaborative features)
+            df_rf['final_rating'] * 0.20 +           # 20% product ratings
+            df_rf['similar_users_rating'] * 0.10     # 10% collaborative signal
         )
         
         # Sort ALL recommendations
@@ -540,25 +606,40 @@ def main():
         ) 
         
         # FIXED: Apply filtering to remove low-quality matches
-        # Products must be at least NORMAL MATCH or better.
         filtered_recommendations = filter_recommendations(
             top_recommendations, 
-            max_recommendations=500, # Max available, but limited by filter
+            max_recommendations=500,
             min_match_type_level="NORMAL MATCH" 
         )
         
-        # Use the filtered results
+        # ENHANCED: Include collaborative data in final output
         result = filtered_recommendations[
             ['id', 'Name', 'Category', 'Price', 'Predicted_Score', 
             'Match_Type', 'Rating_Quality',
-            'Initial_Fit_Score', 'Attribute_Matches', 'final_rating', 'Composite_Score']
-        ].to_dict('records')
+            'Initial_Fit_Score', 'Attribute_Matches', 'final_rating', 'Composite_Score',
+            'collaborative_data'  # NEW: Include for frontend display
+        ]].to_dict('records')
         
-        print(json.dumps(result))
+        print("DEBUG: Successfully generated recommendations", file=sys.stderr)
+        
+        # ENSURE clean JSON output
+        result_json = json.dumps(result)
+        
+        # Validate it's proper JSON
+        try:
+            json.loads(result_json)  # Test if it's valid JSON
+            print("DEBUG: JSON validation passed", file=sys.stderr)
+        except json.JSONDecodeError as e:
+            print(f"DEBUG: JSON validation failed: {e}", file=sys.stderr)
+            result_json = json.dumps([])  # Fallback to empty array
+        
+        # Print the clean JSON without any extra whitespace
+        print(result_json)
         
     except Exception as e:
-        print(f"DEBUG: Error: {str(e)}", file=sys.stderr)
+        print(f"DEBUG: Error in Python: {str(e)}", file=sys.stderr)
         print(f"DEBUG: Traceback: {traceback.format_exc()}", file=sys.stderr)
+        # Return empty array as valid JSON
         print(json.dumps([]))
 
 if __name__ == "__main__":
