@@ -53,6 +53,15 @@ def check_undertone_match(row, user_input):
 def check_concerns_match(row, user_input):
     user_concerns = [c.strip().title() for c in user_input['Skin_Concerns']]
     
+    # Get product category
+    product_category = str(row.get('Category', '')).lower()
+    is_lip_product = 'lipstick' in product_category
+    
+    # If it's a lip product, automatically match for concerns
+    # (lip products are universal and don't target skin concerns)
+    if is_lip_product:
+        return True
+    
     if not user_concerns or 'None' in user_concerns:
         return True # Match if user has no concerns
     
@@ -262,11 +271,23 @@ def analyze_attribute_matches(product, user_input):
         'Dark Spots': 'dark_spots',
         'Aging': 'aging'
     }
-    
+
     concern_matches = {}
     overall_concern_match = False
-    
-    if not user_concerns or 'None' in user_concerns:
+
+    # NEW: Check if it's a lip product
+    product_category = str(product.get('Category', '')).lower()
+    is_lip_product = 'lipstick' in product_category or 'lip' in product_category
+
+    # If it's a lip product, show as universal match
+    if is_lip_product:
+        concern_matches['Skin Concerns'] = {
+            'match': True,  # This will show ✓ instead of ✗
+            'product_value': 'Universal',  # This will show instead of "None"
+            'user_value': ', '.join(user_concerns) if user_concerns else 'None'
+        }
+        overall_concern_match = True
+    elif not user_concerns or 'None' in user_concerns:
         concern_matches['No Concerns'] = {
             'match': True,
             'product_value': 'Any',
@@ -291,7 +312,7 @@ def analyze_attribute_matches(product, user_input):
             'user_value': ', '.join(user_concerns)
         }
         overall_concern_match = any_concern_matched
-    
+        
     matches['concerns'] = concern_matches
     matches['concerns_overall_match'] = overall_concern_match
     
@@ -494,21 +515,21 @@ def main():
         for col in ['skin_type', 'skin_tone', 'undertone']:
             df_rf[col] = df_rf[col].fillna('Any')
         
-        # FIXED: Handle ratings properly - don't default to 4.0 for unrated products
+        df_rf['product_rating'] = df_rf['productrating'].fillna(0)  # Product's actual rating
+        df_rf['product_rating'] = df_rf['product_rating'].clip(1.0, 5.0)
+
+        # For ML training, use a combination but prioritize product rating
         if 'user_rating' in df_rf.columns:
-            # If user_rating is NULL, use productrating
+            # If user has personal rating, use it (but still keep product_rating separate)
             df_rf['final_rating'] = df_rf.apply(
-                lambda row: row['productrating'] if pd.isna(row['user_rating']) else row['user_rating'],
+                lambda row: row['user_rating'] if pd.notna(row['user_rating']) else row['product_rating'],
                 axis=1
             )
         else:
-            # If no user_rating column at all, use productrating
-            df_rf['final_rating'] = df_rf.get('productrating', None)
-        
-        # For products with no ratings at all, use a moderate 3.5 (not 4.0)
+            df_rf['final_rating'] = df_rf['product_rating']
+
+        # Ensure final_rating has no missing values
         df_rf['final_rating'] = df_rf['final_rating'].fillna(3.5)
-        
-        # Ensure ratings are within reasonable range
         df_rf['final_rating'] = df_rf['final_rating'].clip(1.0, 5.0)
         
         # NEW: Add collaborative features to DataFrame (simple addition)
@@ -599,10 +620,26 @@ def main():
             df_rf['similar_users_rating'] * 0.10     # 10% collaborative signal
         )
         
-        # Sort ALL recommendations
+        # NEW: Apply user feedback penalty BEFORE sorting
+        # NEW: Apply user feedback penalty BEFORE sorting
+        def apply_feedback_penalty(row):
+            feedback = row.get('user_feedback', {})
+            if isinstance(feedback, dict) and feedback.get('RecommendationFeedback') == 'Poor':
+                return 0.01  # Near-zero score - will be at the very bottom
+            elif isinstance(feedback, dict) and feedback.get('RecommendationFeedback') == 'Okay':
+                return 0.7   # Moderate penalty
+            elif isinstance(feedback, dict) and feedback.get('RecommendationFeedback') == 'Good':
+                return 1.3   # Good boost
+            return 1.0
+                
+        # Apply feedback multiplier to Composite Score
+        df_rf['Feedback_Multiplier'] = df_rf.apply(apply_feedback_penalty, axis=1)
+        df_rf['Adjusted_Composite_Score'] = df_rf['Composite_Score'] * df_rf['Feedback_Multiplier']
+        
+        # Sort ALL recommendations with feedback consideration
         top_recommendations = df_rf.sort_values(
-            by=['Composite_Score', 'final_rating', 'Initial_Fit_Score', 'Predicted_Score'], 
-            ascending=[False, False, False, False]
+            by=['Adjusted_Composite_Score', 'Composite_Score', 'final_rating', 'Initial_Fit_Score', 'Predicted_Score'], 
+            ascending=[False, False, False, False, False]
         ) 
         
         # FIXED: Apply filtering to remove low-quality matches
@@ -617,7 +654,7 @@ def main():
             ['id', 'Name', 'Category', 'Price', 'Predicted_Score', 
             'Match_Type', 'Rating_Quality',
             'Initial_Fit_Score', 'Attribute_Matches', 'final_rating', 'Composite_Score',
-            'collaborative_data'  # NEW: Include for frontend display
+            'collaborative_data', 'product_rating', 'Adjusted_Composite_Score'  # ADD new field
         ]].to_dict('records')
         
         print("DEBUG: Successfully generated recommendations", file=sys.stderr)
