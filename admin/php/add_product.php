@@ -157,7 +157,7 @@ function insertAttributes($conn, $productID, $skinType, $skinTone, $undertone, $
 
 // --- LOGIC FOR NEW PRODUCT LINE (type = "new") ---
 if ($type === 'new') {
-    //  Generate SEQUENTIAL Variant ID (from Category CONC001)
+    // Generate SEQUENTIAL Variant ID (from Category CONC001)
     $variantID = getNextProductID($conn, $category);
 
     // Generate UNIQUE Parent ID (from Name ANOTHER01)
@@ -187,13 +187,14 @@ if ($type === 'new') {
     $stmt->bind_param('sssssi', $parentProductID, $parentName, $category, $desc, $ingredients, $productRating);
     $stmt->execute();
 
-    // / Insert FIRST VARIANT record (12 Columns)
+    // 🆕 FIX: Use $expirationDate instead of $expiration
+    // Insert FIRST VARIANT record (12 Columns)
     $stmt = $conn->prepare('INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
-    // Bind parameters: sssss (strings), d (price), s (desc), i (stocks), s (exp), s (ingr), s (hex), i (rating)
+    // 🆕 FIX: Use $expirationDate in bind_param
     $stmt->bind_param('sssssdsisssi',
-        $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expiration,
+        $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expirationDate,
         $ingredients, $hexCode, $productRating);
     $stmt->execute();
 
@@ -262,12 +263,14 @@ if ($type === 'variant') {
 
     $variantID = getNextProductID($conn, $category);  // EYLN006
 
+    // 🆕 FIX: Use $expirationDate instead of $expiration
     // Insert NEW VARIANT record (12 Columns)
     $stmt = $conn->prepare('INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
+    // 🆕 FIX: Use $expirationDate in bind_param
     $stmt->bind_param('sssssdsisssi',
-        $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expiration,
+        $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expirationDate,
         $ingredients, $hexCode, $productRating);
 
     if (!$stmt->execute()) {
