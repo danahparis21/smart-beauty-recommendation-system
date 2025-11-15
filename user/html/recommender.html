@@ -4173,58 +4173,52 @@
       }
       // Update your existing displayRecommendations function
       function displayRecommendations(recommendations) {
-        const container = document.getElementById("recommended-products");
+    const container = document.getElementById("recommended-products");
 
-        console.log("🎯 Displaying recommendations:", recommendations?.length);
+    console.log("🎯 Displaying recommendations:", recommendations?.length);
 
-        if (
-          !recommendations ||
-          !Array.isArray(recommendations) ||
-          recommendations.length === 0
-        ) {
-          container.innerHTML = `
-                  <div class="no-results">
-                      <i class="fas fa-search"></i>
-                      <h3>No Perfect Matches Found</h3>
-                      <p>We're still building our product database. Check back soon!</p>
-                  </div>
-              `;
+    if (!recommendations || !Array.isArray(recommendations) || recommendations.length === 0) {
+        container.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>No Perfect Matches Found</h3>
+                <p>We're still building our product database. Check back soon!</p>
+            </div>
+        `;
+        return;
+    }
 
-          // // Update Add All count to 0
-          // updateAddAllCount(0);
-          return;
-        }
+    // Store all recommendations globally for pagination
+    window.allRecommendations = recommendations;
+    
+    // ✅ STORE ORIGINAL PYTHON-SORTED RECOMMENDATIONS
+    window.originalPythonSorted = [...recommendations]; // Keep the original order from Python
+    
+    window.currentPage = 1;
+    window.productsPerPage = 20;
 
-        // Store all recommendations globally for pagination
-        window.allRecommendations = recommendations;
-        window.currentPage = 1;
-        window.productsPerPage = 20;
+    // Store product data for sorting
+    if (!window.productData) window.productData = {};
+    recommendations.forEach((product) => {
+        window.productData[product.id] = product;
+    });
 
-        // Store product data for sorting
-        if (!window.productData) window.productData = {};
-        recommendations.forEach((product) => {
-          window.productData[product.id] = product;
-        });
+    // Show first page
+    showPage(1);
 
-        // // Initialize Add All to Cart
-        // setupAddAllToCart();
+    // Set default sort to "relevance"
+    const sortSelect = document.getElementById("sort-by-filter");
+    if (sortSelect) {
+        sortSelect.value = "relevance";
+    }
 
-        // Show first page
-        showPage(1);
-
-        // Set default sort to "relevance"
-        const sortSelect = document.getElementById("sort-by-filter");
-        if (sortSelect) {
-          sortSelect.value = "relevance";
-        }
-
-        // Load categories and setup filters
-        loadCategoriesIntoFilter().then(() => {
-          setupFilters();
-          updateResultsCount(recommendations.length);
-        });
-        loadUserRatings();
-      }
+    // Load categories and setup filters
+    loadCategoriesIntoFilter().then(() => {
+        setupFilters();
+        updateResultsCount(recommendations.length);
+    });
+    loadUserRatings();
+}
 
       function showPage(page) {
         const container = document.getElementById("recommended-products");
@@ -5107,81 +5101,83 @@
         document.getElementById("filter-description").innerHTML = description;
       }
 
-      // Update the applyFilters function to refresh the add-all count
       function applyFilters() {
-        console.log("Applying filters to ALL products...");
+    console.log("Applying filters to ALL products...");
 
-        const selectedCategory =
-          document.getElementById("category-filter")?.value || "all";
-        const selectedMatchType =
-          document.getElementById("match-type-filter")?.value || "all";
-        const selectedSort =
-          document.getElementById("sort-by-filter")?.value || "relevance";
+    const selectedCategory = document.getElementById("category-filter")?.value || "all";
+    const selectedMatchType = document.getElementById("match-type-filter")?.value || "all";
+    const selectedSort = document.getElementById("sort-by-filter")?.value || "relevance";
 
-        console.log("Filter criteria:", {
-          selectedCategory,
-          selectedMatchType,
-          selectedSort,
+    console.log("Filter criteria:", { selectedCategory, selectedMatchType, selectedSort });
+
+    // Store filter state globally so pagination respects it
+    window.currentFilters = {
+        category: selectedCategory,
+        matchType: selectedMatchType,
+        sort: selectedSort,
+    };
+
+    // Apply filters to ALL recommendations
+    const filteredRecommendations = window.allRecommendations.filter((product) => {
+        let shouldInclude = true;
+
+        // Category filter
+        if (selectedCategory !== "all" && selectedCategory !== "All") {
+            const productCategory = product.Category || "";
+            if (productCategory !== selectedCategory) {
+                shouldInclude = false;
+            }
+        }
+
+        // Match type filter
+        if (selectedMatchType !== "all") {
+            const productMatchType = product.Match_Type || "";
+            if (!productMatchType.includes(selectedMatchType)) {
+                shouldInclude = false;
+            }
+        }
+
+        return shouldInclude;
+    });
+
+    console.log(`Filtered from ${window.allRecommendations.length} to ${filteredRecommendations.length} products`);
+
+    // Apply sorting to the filtered results
+    let sortedRecommendations;
+    
+    if (selectedSort === "relevance") {
+        // ✅ RESTORE ORIGINAL PYTHON SORTING for "Relevance"
+        // First, filter the original Python-sorted array to maintain order
+        const originalProductIds = window.originalPythonSorted.map(p => p.id);
+        const idToProductMap = {};
+        filteredRecommendations.forEach(product => {
+            idToProductMap[product.id] = product;
         });
-
-        // Store filter state globally so pagination respects it
-        window.currentFilters = {
-          category: selectedCategory,
-          matchType: selectedMatchType,
-          sort: selectedSort,
-        };
-
-        // Apply filters to ALL recommendations and re-paginate
-        const filteredRecommendations = window.allRecommendations.filter(
-          (product) => {
-            let shouldInclude = true;
-
-            // Category filter
-            if (selectedCategory !== "all" && selectedCategory !== "All") {
-              const productCategory = product.Category || "";
-              if (productCategory !== selectedCategory) {
-                shouldInclude = false;
-              }
+        
+        // Recreate the original order with filtered products
+        sortedRecommendations = [];
+        originalProductIds.forEach(id => {
+            if (idToProductMap[id]) {
+                sortedRecommendations.push(idToProductMap[id]);
             }
+        });
+    } else {
+        // Use JavaScript sorting for other options
+        sortedRecommendations = sortAllProducts(filteredRecommendations, selectedSort);
+    }
 
-            // Match type filter
-            if (selectedMatchType !== "all") {
-              const productMatchType = product.Match_Type || "";
-              if (!productMatchType.includes(selectedMatchType)) {
-                shouldInclude = false;
-              }
-            }
+    // Update the global recommendations with filtered+sorted results
+    window.filteredRecommendations = sortedRecommendations;
 
-            return shouldInclude;
-          }
-        );
+    // Reset to page 1 with the new filtered results
+    window.currentPage = 1;
 
-        console.log(
-          `Filtered from ${window.allRecommendations.length} to ${filteredRecommendations.length} products`
-        );
+    // Show the first page of filtered results
+    showPage(1);
 
-        // Apply sorting to the filtered results
-        const sortedRecommendations = sortAllProducts(
-          filteredRecommendations,
-          selectedSort
-        );
-
-        // Update the global recommendations with filtered+sorted results
-        window.filteredRecommendations = sortedRecommendations;
-
-        // // Update the Add All to Cart count
-        // updateAddAllCount(sortedRecommendations.length);
-
-        // Reset to page 1 with the new filtered results
-        window.currentPage = 1;
-
-        // Show the first page of filtered results
-        showPage(1);
-
-        // Update results count
-        updateResultsCount(sortedRecommendations.length);
-      }
-
+    // Update results count
+    updateResultsCount(sortedRecommendations.length);
+}
       // Function to update the Add All to Cart count
       function updateAddAllCount(count) {
         const addAllCount = document.getElementById("add-all-count");
@@ -5412,37 +5408,172 @@
         updateAddAllCount(initialCount);
       }
 
-      // New function to sort ALL products (not just visible ones)
-      function sortAllProducts(products, sortBy) {
-        console.log(`Sorting ${products.length} products by:`, sortBy);
+    // New function to sort ALL products (not just visible ones)
+function sortAllProducts(products, sortBy) {
+  console.log(`Sorting ${products.length} products by:`, sortBy);
 
-        return products.sort((a, b) => {
-          try {
-            switch (sortBy) {
-              case "relevance":
-                return (b.Composite_Score || 0) - (a.Composite_Score || 0);
+  return products.sort((a, b) => {
+    try {
+      switch (sortBy) {
+        case "relevance":
+          return sortByRelevance(a, b);
 
-              case "price-low":
-                return (a.Price || 0) - (b.Price || 0);
+        case "price-low":
+          return (a.Price || 0) - (b.Price || 0);
 
-              case "price-high":
-                return (b.Price || 0) - (a.Price || 0);
+        case "price-high":
+          return (b.Price || 0) - (a.Price || 0);
 
-              case "rating":
-                return (b.final_rating || 0) - (a.final_rating || 0);
+        case "rating":
+          return sortByRating(a, b);
 
-              case "matches":
-                return (b.Initial_Fit_Score || 0) - (a.Initial_Fit_Score || 0);
+        case "matches":
+          return (b.Initial_Fit_Score || 0) - (a.Initial_Fit_Score || 0);
 
-              default:
-                return 0;
-            }
-          } catch (error) {
-            console.error("❌ Error sorting:", error);
-            return 0;
-          }
-        });
+        default:
+          return 0;
       }
+    } catch (error) {
+      console.error("❌ Error sorting:", error);
+      return 0;
+    }
+  });
+}
+
+// FIXED: Smart relevance sorting that properly demotes Poor ratings
+function sortByRelevance(a, b) {
+  // 0. PRIORITY: HEAVY PENALTY for Poor ratings (they should go to bottom)
+  const feedbackPriority = {
+    'Good': 100,    // Highest priority - user liked it
+    'None': 50,     // No feedback yet - neutral  
+    'Okay': 25,     // User was meh about it
+    'Poor': 0       // User disliked it - HEAVY PENALTY
+  };
+
+  const feedbackA = a.user_feedback?.RecommendationFeedback || 'None';
+  const feedbackB = b.user_feedback?.RecommendationFeedback || 'None';
+  
+  const feedbackScoreA = feedbackPriority[feedbackA] || 50;
+  const feedbackScoreB = feedbackPriority[feedbackB] || 50;
+
+  // If one is Poor and the other isn't, Poor always loses
+  if (feedbackA === 'Poor' && feedbackB !== 'Poor') return 1;
+  if (feedbackB === 'Poor' && feedbackA !== 'Poor') return -1;
+  
+  // If both are Poor, use other factors
+  if (feedbackA === 'Poor' && feedbackB === 'Poor') {
+    // Among Poor products, still sort by quality
+    const compositeA = a.Composite_Score || 0;
+    const compositeB = b.Composite_Score || 0;
+    return compositeB - compositeA;
+  }
+
+  // For non-Poor products, use the normal scoring
+  if (feedbackScoreB !== feedbackScoreA) {
+    return feedbackScoreB - feedbackScoreA;
+  }
+
+  // 2. Match quality (Perfect > Close > Normal > Low)
+  const matchPriority = {
+    'PERFECT MATCH': 4,
+    'CLOSE MATCH': 3, 
+    'NORMAL MATCH': 2,
+    'LOW RATING MATCH': 1
+  };
+
+  const matchScoreA = matchPriority[a.Match_Type] || 0;
+  const matchScoreB = matchPriority[b.Match_Type] || 0;
+
+  if (matchScoreB !== matchScoreA) {
+    return matchScoreB - matchScoreA;
+  }
+
+  // 3. Composite score from ML (main relevance metric)
+  const compositeA = a.Composite_Score || 0;
+  const compositeB = b.Composite_Score || 0;
+
+  if (compositeB !== compositeA) {
+    return compositeB - compositeA;
+  }
+
+  // 4. Actual product ratings (rated products over unrated)
+  const ratingA = a.product_rating || 0;
+  const ratingB = b.product_rating || 0;
+
+  // Bonus for products with actual ratings vs unrated
+  const hasRatingA = ratingA > 0 ? 1 : 0;
+  const hasRatingB = ratingB > 0 ? 1 : 0;
+
+  if (hasRatingB !== hasRatingA) {
+    return hasRatingB - hasRatingA;
+  }
+
+  return ratingB - ratingA;
+}
+
+function handleRecommendations(recommendations) {
+    // Store ALL recommendations
+    window.allRecommendations = recommendations;
+    
+    // Store ORIGINAL relevance-sorted recommendations (for "back to relevance")
+    window.originalRelevanceSorted = [...recommendations].sort(sortByRelevance);
+    
+    // Apply initial sorting (relevance by default)
+    window.filteredRecommendations = [...window.originalRelevanceSorted];
+    
+    showPage(1);
+}
+
+// FIXED: Use ONLY product_rating for rating sorting
+function sortByRating(a, b) {
+  // 1. ACTUAL PRODUCT RATINGS (Most Important - use product_rating ONLY)
+  const ratingA = a.product_rating || 0;  // Use the new product_rating field
+  const ratingB = b.product_rating || 0;
+
+  // Prioritize products with ANY rating over completely unrated products
+  const hasRatingA = (ratingA > 0) ? 1 : 0;
+  const hasRatingB = (ratingB > 0) ? 1 : 0;
+
+  if (hasRatingB !== hasRatingA) {
+    return hasRatingB - hasRatingA; // Rated products first
+  }
+
+  // If both have ratings, sort by rating value
+  if (ratingB !== ratingA) {
+    return ratingB - ratingA; // Higher ratings first
+  }
+
+  // 2. User feedback as secondary (Good > None > Okay > Poor)
+  const feedbackPriority = {
+    'Good': 4,
+    'None': 3, 
+    'Okay': 2,
+    'Poor': 1
+  };
+
+  const feedbackA = a.user_feedback?.RecommendationFeedback || 'None';
+  const feedbackB = b.user_feedback?.RecommendationFeedback || 'None';
+  
+  const feedbackScoreA = feedbackPriority[feedbackA] || 3;
+  const feedbackScoreB = feedbackPriority[feedbackB] || 3;
+
+  if (feedbackScoreB !== feedbackScoreA) {
+    return feedbackScoreB - feedbackScoreA;
+  }
+
+  // 3. Match quality as final tiebreaker
+  const matchPriority = {
+    'PERFECT MATCH': 4,
+    'CLOSE MATCH': 3,
+    'NORMAL MATCH': 2, 
+    'LOW RATING MATCH': 1
+  };
+
+  const matchScoreA = matchPriority[a.Match_Type] || 0;
+  const matchScoreB = matchPriority[b.Match_Type] || 0;
+
+  return matchScoreB - matchScoreA;
+}
 
       function resetFilters() {
         const categoryFilter = document.getElementById("category-filter");

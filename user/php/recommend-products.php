@@ -63,7 +63,7 @@ try {
         throw new Exception('Python script not found at: ' . $python_script);
     }
 
-    $command = 'python3 ' . escapeshellarg($python_script) . ' ' . escapeshellarg($temp_file) . ' 2>nul';
+    $command = 'python3 ' . escapeshellarg($python_script) . ' ' . escapeshellarg($temp_file) . ' 2>/dev/null';
      $output = shell_exec($command);
 
     // Clean up
