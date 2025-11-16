@@ -1042,38 +1042,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Show Thank You modal and complete the order
     async function showThankYouModal() {
-        console.log('🎉 Completing order:', orderDetails.order_id);
-        
-        try {
-            // Call backend to mark order as completed and remove cart items
-            const formData = new FormData();
-            formData.append('order_id', orderDetails.order_id);
-            
-            const response = await fetch('../php/complete_order.php', {
-                method: 'POST',
-                credentials: 'same-origin',
-                body: formData
-            });
-            
-            const result = await response.json();
-            console.log('✅ Order completion result:', result);
-            
-            if (!result.success) {
-                console.warn('⚠️ Failed to complete order:', result.message);
-            }
-            
-        } catch (err) {
-            console.error('❌ Error completing order:', err);
-        }
-        
-        // Show thank you modal regardless
-        thankYouModal.classList.add('active');
-        
-        // Clear checkout order after showing confirmation
-        localStorage.removeItem('checkoutOrder');
-    }
+    console.log('🎉 Order placed successfully, keeping as pending:', orderDetails.order_id);
+    
+    // DON'T call complete_order.php here - order stays as 'pending'
+    // The order will only be completed when the shop scans the QR code
+    
+    // Show thank you modal
+    thankYouModal.classList.add('active');
+    
+    // Clear checkout order after showing confirmation
+    localStorage.removeItem('checkoutOrder');
+    
+    console.log('✅ Order remains as "pending" until picked up');
+}
+
 
     function closeQRModal() { qrModal.classList.remove('active'); }
     function closeThankYouModalFunc() { 
@@ -1088,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveModalBtn.addEventListener('click', saveQRCode);
     closeModal.addEventListener('click', closeQRModal);
     doneBtn.addEventListener('click', () => {
-        closeQRModal();
+        // closeQRModal();
         showThankYouModal();
     });
 

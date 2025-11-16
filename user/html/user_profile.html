@@ -618,7 +618,7 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <a href="../../user/html/home.html" class="back-btn">
+        <a href="home.html" class="back-btn">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="brand-header">
@@ -635,19 +635,17 @@
             <div class="profile-avatar" id="profile-avatar-display">
                 M
             </div>
-            <div class="profile-info">
-                <h1 class="profile-name" id="profile-name-display">Maria Santos</h1>
-                <p class="profile-username" id="profile-username-display">@marias</p>
-                <p class="profile-location">
-                    <i class="fas fa-map-marker-alt"></i> Manila, Philippines
-                </p>
-                <p class="profile-member">
-                    <i class="far fa-calendar-alt"></i> Member since 2022
-                </p>
-                <button class="edit-btn" id="edit-profile-btn">
-                    <i class="fas fa-edit"></i> Edit Profile
-                </button>
-            </div>
+           <!-- In your profile-info section, remove location and simplify -->
+<div class="profile-info">
+    <h1 class="profile-name" id="profile-name-display">Maria Santos</h1>
+    <p class="profile-username" id="profile-username-display">@marias</p>
+    <p class="profile-member">
+        <i class="far fa-calendar-alt"></i> Member since 2022
+    </p>
+    <button class="edit-btn" id="edit-profile-btn">
+        <i class="fas fa-edit"></i> Edit Profile
+    </button>
+</div>
         </div>
 
         <!-- Stats Section -->
@@ -683,24 +681,6 @@
                         <div class="menu-desc">View your past orders</div>
                     </div>
                 </div>
-                <div class="menu-item" onclick="navigateTo('review-orders')">
-                    <div class="menu-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="menu-text">
-                        <div class="menu-title">Review Orders</div>
-                        <div class="menu-desc">Rate your purchases</div>
-                    </div>
-                </div>
-                <div class="menu-item" onclick="navigateTo('all-reviews')">
-                    <div class="menu-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="menu-text">
-                        <div class="menu-title">List of All Reviews</div>
-                        <div class="menu-desc">See all your reviews</div>
-                    </div>
-                </div>
                 <div class="menu-item" onclick="navigateTo('preferences')">
                     <div class="menu-icon">
                         <i class="fas fa-heart"></i>
@@ -733,46 +713,44 @@
     </div>
 
     <!-- Edit Profile Modal -->
-    <div class="modal-overlay" id="edit-profile-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Edit Profile</h2>
-                <button class="close-modal" id="close-edit-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="photo-options">
-                    <div class="photo-preview" id="photo-preview">
-                        M
-                    </div>
-                    <div class="photo-actions">
-                        <button class="photo-btn" id="take-photo-btn">
-                            <i class="fas fa-camera"></i> Take Photo
-                        </button>
-                        <button class="photo-btn" id="upload-photo-btn">
-                            <i class="fas fa-upload"></i> Upload
-                        </button>
-                        <button class="photo-btn" id="remove-photo-btn">
-                            <i class="fas fa-trash"></i> Remove
-                        </button>
-                    </div>
+<div class="modal-overlay" id="edit-profile-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Edit Profile</h2>
+            <button class="close-modal" id="close-edit-modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="photo-options">
+                <div class="photo-preview" id="photo-preview">
+                    M
                 </div>
-                <div class="form-group">
-                    <label for="edit-name" class="form-label">Full Name</label>
-                    <input type="text" id="edit-name" class="form-input" value="Maria Santos">
-                </div>
-                <div class="form-group">
-                    <label for="edit-username" class="form-label">Username</label>
-                    <input type="text" id="edit-username" class="form-input" value="marias">
+                <div class="photo-actions">
+                    <!-- REMOVED Take Photo button -->
+                    <button class="photo-btn" id="upload-photo-btn">
+                        <i class="fas fa-upload"></i> Upload Photo
+                    </button>
+                    <button class="photo-btn" id="remove-photo-btn">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button class="cancel-btn" id="cancel-edit">Cancel</button>
-                <button class="save-btn" id="save-profile">Save Changes</button>
+            <div class="form-group">
+                <label for="edit-name" class="form-label">Full Name</label>
+                <input type="text" id="edit-name" class="form-input" value="Maria Santos">
+            </div>
+            <div class="form-group">
+                <label for="edit-username" class="form-label">Username</label>
+                <input type="text" id="edit-username" class="form-input" value="marias">
             </div>
         </div>
+        <div class="modal-actions">
+            <button class="cancel-btn" id="cancel-edit">Cancel</button>
+            <button class="save-btn" id="save-profile">Save Changes</button>
+        </div>
     </div>
+</div>
 
     <!-- Change Password Modal -->
     <div class="modal-overlay" id="change-password-modal">
@@ -821,19 +799,18 @@
     </div>
 
     <script>
-        // Profile data
+        // Profile data - will be populated from API
         let profileData = {
-            name: "Maria Santos",
-            username: "marias",
-            profilePhoto: null,
-            stats: {
-                orders: 12,
-                favorites: 5,
-                cartItems: 3,
-                unclaimedOrders: 2
-            }
-        };
-
+        name: "",
+        username: "",
+        profilePhoto: null,
+        stats: {
+            orders: 0,
+            favorites: 0,
+            cartItems: 0,
+            unclaimedOrders: 0
+        }
+    };
         // DOM Elements
         const editProfileBtn = document.getElementById('edit-profile-btn');
         const editProfileModal = document.getElementById('edit-profile-modal');
@@ -857,7 +834,326 @@
         const uploadPhotoBtn = document.getElementById('upload-photo-btn');
         const removePhotoBtn = document.getElementById('remove-photo-btn');
         const passwordError = document.getElementById('password-error');
+    
+        // Stats elements (ADD THESE - they were missing)
+        const ordersCount = document.getElementById('orders-count');
+        const favoritesCount = document.getElementById('favorites-count');
+        const cartCount = document.getElementById('cart-count');
+        const unclaimedCount = document.getElementById('unclaimed-count');
+    
+        // Current user from session (from user-session.js)
+        let currentUser = null;
+    
+        // Get user session (same as home page)
+async function getUserSession() {
+    try {
+        const res = await fetch("../php/get-user-session.php");
+        const data = await res.json();
+        if (data.success && data.isLoggedIn) {
+            return data.user;
+        }
+    } catch (err) {
+        console.error("Error fetching session:", err);
+    }
+    return null;
+}
 
+async function fetchCustomerProfile() {
+    try {
+        console.log("Fetching customer profile...");
+        
+        if (!currentUser || !currentUser.id) {
+            console.error("No user logged in - showing default profile");
+            showDefaultProfile();
+            return;
+        }
+
+        const response = await fetch('../php/get_profile.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: currentUser.id
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log("Profile data received:", data);
+            updateProfileDisplay(data.profile);
+        } else {
+            console.error("Failed to fetch profile:", data.message);
+            showDefaultProfile();
+        }
+
+    } catch (error) {
+        console.error("Error fetching customer profile:", error);
+        showDefaultProfile();
+    }
+}
+
+    function updateProfileDisplay(profile) {
+        // Update basic profile info
+        profileData.name = profile.full_name || "Customer";
+        profileData.username = profile.username || "user";
+        
+        // Update display elements
+        profileNameDisplay.textContent = profileData.name;
+        profileUsernameDisplay.textContent = `@${profileData.username}`;
+        
+        // Update avatar with first letter of name
+        const firstLetter = profileData.name.charAt(0).toUpperCase();
+        profileAvatarDisplay.textContent = firstLetter;
+        photoPreview.textContent = firstLetter;
+        
+        // Update edit form inputs
+        editNameInput.value = profileData.name;
+        editUsernameInput.value = profileData.username;
+        
+        // Update stats
+        if (profile.stats) {
+            profileData.stats.orders = profile.stats.orders || 0;
+            profileData.stats.favorites = profile.stats.favorites || 0;
+            profileData.stats.cartItems = profile.stats.cart_items || 0;
+            profileData.stats.unclaimedOrders = profile.stats.unclaimed_orders || 0;
+            
+            // Update the DOM elements
+            if (ordersCount) ordersCount.textContent = profileData.stats.orders;
+            if (favoritesCount) favoritesCount.textContent = profileData.stats.favorites;
+            if (cartCount) cartCount.textContent = profileData.stats.cartItems;
+            if (unclaimedCount) unclaimedCount.textContent = profileData.stats.unclaimedOrders;
+        }
+        
+        // Update member since
+        if (profile.member_since) {
+            const memberElement = document.querySelector('.profile-member');
+            if (memberElement) {
+                const year = new Date(profile.member_since).getFullYear();
+                memberElement.innerHTML = `<i class="far fa-calendar-alt"></i> Member since ${year}`;
+            }
+        }
+        
+        // Handle profile photo if available
+        if (profile.profile_photo) {
+            profileData.profilePhoto = profile.profile_photo;
+            updateProfilePhoto(profile.profile_photo);
+        }
+    }
+
+    // Update profile photo display function with debugging
+function updateProfilePhoto(photoUrl) {
+    if (photoUrl) {
+        console.log("Updating profile photo with:", photoUrl);
+        
+        // If it's a base64 image
+        if (photoUrl.startsWith('data:')) {
+            profileAvatarDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            photoPreview.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            // If it's a filename from database - TRY DIFFERENT PATHS
+            const possiblePaths = [
+                `../uploads/profiles/${photoUrl}`,
+                `../../uploads/profiles/${photoUrl}`,
+                `/uploads/profiles/${photoUrl}`,
+                `uploads/profiles/${photoUrl}`,
+                `http://localhost:8080/uploads/profiles/${photoUrl}`
+            ];
+            
+            console.log("Trying paths:", possiblePaths);
+            
+            // Try each path until one works
+            let img = new Image();
+            let foundWorkingPath = false;
+            
+            const tryPath = (index) => {
+                if (index >= possiblePaths.length) {
+                    // No paths worked, show initial
+                    const firstLetter = profileData.name.charAt(0).toUpperCase();
+                    profileAvatarDisplay.textContent = firstLetter;
+                    photoPreview.textContent = firstLetter;
+                    return;
+                }
+                
+                const testPath = possiblePaths[index];
+                console.log(`Testing path: ${testPath}`);
+                
+                img.onload = function() {
+                    console.log(`Path works: ${testPath}`);
+                    profileAvatarDisplay.innerHTML = `<img src="${testPath}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    photoPreview.innerHTML = `<img src="${testPath}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    foundWorkingPath = true;
+                };
+                
+                img.onerror = function() {
+                    console.log(`Path failed: ${testPath}`);
+                    tryPath(index + 1);
+                };
+                
+                img.src = testPath;
+            };
+            
+            tryPath(0);
+        }
+    }
+}
+
+    async function saveProfileChanges() {
+    try {
+        const updatedData = {
+            user_id: currentUser.id,
+            name: editNameInput.value,
+            username: editUsernameInput.value,
+            profile_photo: profileData.profilePhoto
+        };
+        
+        console.log("Saving profile with photo:", !!profileData.profilePhoto);
+        
+        const response = await fetch('../php/update_profile.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData)
+        });
+        
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
+        if (!responseText.trim().startsWith('{') && !responseText.trim().startsWith('[')) {
+            throw new Error('Server returned HTML instead of JSON. Check PHP file for errors.');
+        }
+        
+        const data = JSON.parse(responseText);
+        
+        if (data.success) {
+            // Update local data and display
+            profileData.name = updatedData.name;
+            profileData.username = updatedData.username;
+            
+            // If a photo was uploaded and saved, update the filename
+            if (data.photo_filename) {
+                profileData.profilePhoto = data.photo_filename;
+            }
+            
+            profileNameDisplay.textContent = updatedData.name;
+            profileUsernameDisplay.textContent = `@${updatedData.username}`;
+            
+            // Update avatar - if we have a photo, use it, otherwise use first letter
+            if (profileData.profilePhoto) {
+                if (profileData.profilePhoto.startsWith('data:')) {
+                    // It's still a base64 image (upload might have failed)
+                    profileAvatarDisplay.innerHTML = `<img src="${profileData.profilePhoto}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                } else {
+                    // It's a filename - construct the full URL
+                    const fullPhotoUrl = `../uploads/profiles/${profileData.profilePhoto}`;
+                    profileAvatarDisplay.innerHTML = `<img src="${fullPhotoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                }
+            } else {
+                const firstLetter = updatedData.name.charAt(0).toUpperCase();
+                profileAvatarDisplay.textContent = firstLetter;
+            }
+            
+            closeEditModal();
+            alert('Profile updated successfully!');
+        } else {
+            alert('Error updating profile: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        alert('Error: ' + error.message);
+    }
+}
+     // Update profile photo display function - USING PHP ENDPOINT
+function updateProfilePhoto(photoUrl) {
+    if (photoUrl) {
+        console.log("Updating profile photo with:", photoUrl);
+        
+        // If it's a base64 image
+        if (photoUrl.startsWith('data:')) {
+            profileAvatarDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            photoPreview.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            // Use PHP endpoint to serve the image
+            const imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(photoUrl)}&user_id=${currentUser.id}`;
+            console.log("Using PHP endpoint:", imageUrl);
+            
+            profileAvatarDisplay.innerHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            photoPreview.innerHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        }
+    }
+}
+    
+        // Show default profile data (fallback)
+function showDefaultProfile() {
+    if (currentUser) {
+        profileNameDisplay.textContent = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
+        profileUsernameDisplay.textContent = `@${currentUser.username}`;
+        
+        const firstLetter = currentUser.firstName.charAt(0).toUpperCase();
+        profileAvatarDisplay.textContent = firstLetter;
+        photoPreview.textContent = firstLetter;
+        
+        editNameInput.value = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
+        editUsernameInput.value = currentUser.username;
+    } else {
+        // Show generic profile for non-logged in users
+        profileNameDisplay.textContent = "Guest User";
+        profileUsernameDisplay.textContent = "@guest";
+        profileAvatarDisplay.textContent = "G";
+        photoPreview.textContent = "G";
+        editNameInput.value = "Guest User";
+        editUsernameInput.value = "guest";
+        
+        // Hide edit button for guests
+        const editBtn = document.getElementById('edit-profile-btn');
+        if (editBtn) {
+            editBtn.style.display = 'none';
+        }
+        
+        // Set default stats to 0
+        if (ordersCount) ordersCount.textContent = "0";
+        if (favoritesCount) favoritesCount.textContent = "0";
+        if (cartCount) cartCount.textContent = "0";
+        if (unclaimedCount) unclaimedCount.textContent = "0";
+    }
+}
+        // // Redirect to login if not authenticated
+        // function redirectToLogin() {
+        //     window.location.href = '../../auth/login.html';
+        // }
+    
+        function initializeEventListeners() {
+    // Edit Profile Modal
+    editProfileBtn.addEventListener('click', openEditProfileModal);
+    closeEditModalBtn.addEventListener('click', closeEditModal);
+    cancelEditBtn.addEventListener('click', closeEditModal);
+    
+    // Change Password Modal
+    closePasswordModalBtn.addEventListener('click', closePasswordModal);
+    cancelPasswordBtn.addEventListener('click', closePasswordModal);
+    
+    // Save buttons
+    saveProfileBtn.addEventListener('click', saveProfileChanges);
+    savePasswordBtn.addEventListener('click', savePasswordChanges);
+    
+    // Photo actions - REMOVED takePhotoBtn
+    uploadPhotoBtn.addEventListener('click', uploadPhoto);
+    removePhotoBtn.addEventListener('click', removePhoto);
+    
+    // Password validation
+    oldPasswordInput.addEventListener('input', validatePassword);
+    newPasswordInput.addEventListener('input', validatePassword);
+    confirmPasswordInput.addEventListener('input', validatePassword);
+    
+    // Initialize password toggles
+    initializePasswordToggles();
+}
         // Initialize password toggle functionality
         function initializePasswordToggles() {
             const toggleButtons = document.querySelectorAll('.toggle-password');
@@ -879,23 +1175,25 @@
                 });
             });
         }
-
-        // Open edit profile modal
-        editProfileBtn.addEventListener('click', () => {
-            editNameInput.value = profileData.name;
-            editUsernameInput.value = profileData.username;
-            
-            // Update photo preview in modal
-            if (profileData.profilePhoto) {
-                photoPreview.innerHTML = `<img src="${profileData.profilePhoto}" alt="Profile Photo">`;
-            } else {
-                photoPreview.innerHTML = 'M';
-            }
-            
-            editProfileModal.classList.add('active');
-        });
-
-        // Open change password modal
+    
+    // Open edit profile modal - UPDATED
+function openEditProfileModal() {
+    // Set current values in the form
+    editNameInput.value = profileData.name;
+    editUsernameInput.value = profileData.username;
+    
+    // Update photo preview in modal
+    if (profileData.profilePhoto) {
+        photoPreview.innerHTML = `<img src="${profileData.profilePhoto}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+    } else {
+        const firstLetter = profileData.name.charAt(0).toUpperCase();
+        photoPreview.textContent = firstLetter;
+    }
+    
+    editProfileModal.classList.add('active');
+}
+    
+        // Open change password modal - UPDATED
         function openChangePasswordModal() {
             // Clear previous inputs
             oldPasswordInput.value = '';
@@ -921,42 +1219,65 @@
             
             changePasswordModal.classList.add('active');
         }
-
+    
         // Close modal functions
         function closeEditModal() {
             editProfileModal.classList.remove('active');
         }
-
+    
         function closePasswordModal() {
             changePasswordModal.classList.remove('active');
         }
-
-        closeEditModalBtn.addEventListener('click', closeEditModal);
-        closePasswordModalBtn.addEventListener('click', closePasswordModal);
-        cancelEditBtn.addEventListener('click', closeEditModal);
-        cancelPasswordBtn.addEventListener('click', closePasswordModal);
-
-        // Save profile changes
-        saveProfileBtn.addEventListener('click', () => {
-            profileData.name = editNameInput.value;
-            profileData.username = editUsernameInput.value;
+    
+        async function saveProfileChanges() {
+    try {
+        const updatedData = {
+            user_id: currentUser.id,
+            name: editNameInput.value,
+            username: editUsernameInput.value,
+            profile_photo: profileData.profilePhoto
+        };
+        
+        console.log("Sending data:", updatedData);
+        
+        const response = await fetch('../php/update_profile.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData)
+        });
+        
+        // First, get the raw response text to see what's being returned
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
+        // Then try to parse it as JSON
+        const data = JSON.parse(responseText);
+        
+        if (data.success) {
+            // Update local data and display
+            profileData.name = updatedData.name;
+            profileData.username = updatedData.username;
+            profileNameDisplay.textContent = updatedData.name;
+            profileUsernameDisplay.textContent = `@${updatedData.username}`;
             
-            // Update display
-            profileNameDisplay.textContent = profileData.name;
-            profileUsernameDisplay.textContent = `@${profileData.username}`;
-            
-            // Update profile photo if changed
-            const previewImg = photoPreview.querySelector('img');
-            if (previewImg) {
-                profileData.profilePhoto = previewImg.src;
-                profileAvatarDisplay.innerHTML = `<img src="${profileData.profilePhoto}" alt="Profile Photo">`;
-            } else {
-                profileAvatarDisplay.innerHTML = 'M';
-            }
+            // Update avatar with first letter of new name
+            const firstLetter = updatedData.name.charAt(0).toUpperCase();
+            profileAvatarDisplay.textContent = firstLetter;
             
             closeEditModal();
-        });
-
+            alert('Profile updated successfully!');
+        } else {
+            alert('Error updating profile: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        console.log('This usually means the PHP file has an error and is returning HTML instead of JSON');
+        alert('Error updating profile. Please check the console for details.');
+    }
+}
+    
         // Password validation
         function validatePassword() {
             const oldPassword = oldPasswordInput.value;
@@ -998,76 +1319,196 @@
             passwordError.style.display = 'none';
             savePasswordBtn.disabled = false;
         }
-
-        // Add event listeners for password validation
-        oldPasswordInput.addEventListener('input', validatePassword);
-        newPasswordInput.addEventListener('input', validatePassword);
-        confirmPasswordInput.addEventListener('input', validatePassword);
-
-        // Save password changes
-        savePasswordBtn.addEventListener('click', () => {
-            // In a real application, this would send the data to the server
-            alert('Password changed successfully!');
-            closePasswordModal();
-        });
-
-        // Photo management functions
-        takePhotoBtn.addEventListener('click', () => {
-            alert("Camera functionality would be implemented here!");
-        });
-
-        uploadPhotoBtn.addEventListener('click', () => {
-            // Create file input element
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        photoPreview.innerHTML = `<img src="${e.target.result}" alt="Profile Photo">`;
-                    };
-                    reader.readAsDataURL(file);
+    
+        // Save password changes - UPDATED to use API
+        async function savePasswordChanges() {
+            try {
+                const passwordData = {
+                    user_id: currentUser.id,
+                    old_password: oldPasswordInput.value,
+                    new_password: newPasswordInput.value
+                };
+                
+                const response = await fetch('../php/change_password.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(passwordData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    closePasswordModal();
+                    alert('Password changed successfully!');
+                } else {
+                    alert('Error changing password: ' + data.message);
                 }
-            });
-            
-            fileInput.click();
-        });
-
-        removePhotoBtn.addEventListener('click', () => {
-            photoPreview.innerHTML = 'M';
-        });
-
-        // Update stats display
-        function updateStatsDisplay() {
-            document.getElementById('orders-count').textContent = profileData.stats.orders;
-            document.getElementById('favorites-count').textContent = profileData.stats.favorites;
-            document.getElementById('cart-count').textContent = profileData.stats.cartItems;
-            document.getElementById('unclaimed-count').textContent = profileData.stats.unclaimedOrders;
-        }
-
-        // Navigate to different sections
-        function navigateTo(section) {
-            alert(`Navigating to ${section.replace('-', ' ')} section`);
-            // In a real application, this would redirect to the appropriate page
-        }
-
-        // Sign out function
-        function signOut() {
-            if (confirm("Are you sure you want to sign out?")) {
-                // Clear user data and redirect to login
-                localStorage.removeItem('username');
-                window.location.href = '../../user/html/login.html';
+            } catch (error) {
+                console.error('Error changing password:', error);
+                alert('Error changing password. Please try again.');
             }
         }
+    
+        // Photo management functions
+        function takePhoto() {
+            alert("Camera functionality would be implemented here!");
+        }
+        function uploadPhoto() {
+    // Create file input element
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Please select an image smaller than 2MB');
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Store the base64 image data
+                profileData.profilePhoto = e.target.result;
+                
+                // Update preview immediately
+                photoPreview.innerHTML = `<img src="${e.target.result}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    fileInput.click();
+}
 
-        // Initialize profile page
-        document.addEventListener('DOMContentLoaded', function() {
+
+    // Remove photo function - UPDATED
+function removePhoto() {
+    profileData.profilePhoto = null;
+    const firstLetter = (editNameInput.value || profileData.name).charAt(0).toUpperCase();
+    photoPreview.textContent = firstLetter;
+    
+    // Also update the main avatar display if modal is open
+    if (profileData.profilePhoto) {
+        profileAvatarDisplay.textContent = firstLetter;
+    }
+}
+
+
+    
+        // Update stats display
+        function updateStatsDisplay() {
+            if (ordersCount) ordersCount.textContent = profileData.stats.orders;
+            if (favoritesCount) favoritesCount.textContent = profileData.stats.favorites;
+            if (cartCount) cartCount.textContent = profileData.stats.cartItems;
+            if (unclaimedCount) unclaimedCount.textContent = profileData.stats.unclaimedOrders;
+        }
+    
+        // Navigate to different sections
+        function navigateTo(section) {
+            switch(section) {
+                case 'order-history':
+                    window.location.href = 'order-history.html';
+                    break;
+                case 'review-orders':
+                    window.location.href = '../reviews/review_orders.html';
+                    break;
+                case 'all-reviews':
+                    window.location.href = '../reviews/all_reviews.html';
+                    break;
+                case 'preferences':
+                    window.location.href = '../preferences/customer_preferences.html';
+                    break;
+                default:
+                    console.log('Navigation to', section);
+            }
+        }
+    
+   // Sign out function
+function signOut() {
+    if (!currentUser) {
+        // If not logged in, just go to login page
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    if (confirm("Are you sure you want to sign out?")) {
+        // Clear session via PHP
+        fetch('../../php/logout.php')
+            .then(() => {
+                window.location.href = 'login.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                window.location.href = '.login.html';
+            });
+    }
+}
+    
+
+
+// Get user session
+async function getUserSession() {
+    try {
+        const res = await fetch("../php/get-user-session.php");
+        const data = await res.json();
+        if (data.success && data.isLoggedIn) {
+            return data.user;
+        }
+    } catch (err) {
+        console.error("Error fetching session:", err);
+    }
+    return null;
+}
+
+// Initialize profile page - SIMPLIFIED - NO REDIRECT
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log("Profile page loaded");
+    
+    try {
+        // Get user session
+        currentUser = await getUserSession();
+        
+        if (currentUser) {
+            console.log("User is logged in:", currentUser);
+            
+            // Update greeting if the element exists
+            const greetingElement = document.getElementById('user-greeting');
+            if (greetingElement) {
+                greetingElement.textContent = `Hi, ${currentUser.firstName}!`;
+            }
+            
+            // Fetch and display customer profile data
+            await fetchCustomerProfile();
+            
+            // Initialize event listeners for modals and buttons
+            initializeEventListeners();
+            
             updateStatsDisplay();
-            initializePasswordToggles();
-        });
+        } else {
+            console.log("No user session found, but not redirecting");
+            // Just show default profile without redirecting
+            showDefaultProfile();
+            initializeEventListeners();
+        }
+        
+    } catch (error) {
+        console.error("Error initializing profile page:", error);
+        // Even if there's an error, don't redirect - just show default
+        showDefaultProfile();
+        initializeEventListeners();
+    }
+});
     </script>
 </body>
 </html>
