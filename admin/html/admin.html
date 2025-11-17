@@ -17,6 +17,11 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
+    html,
+    body {
+      overflow-x: hidden;
+    }
+
     /* Stats Cards */
     .stats-buttons {
       display: grid;
@@ -443,6 +448,11 @@
 
     /* Tablets (768px - 991px) */
     @media (min-width: 768px) and (max-width: 991px) {
+      main {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
       .mobile-header {
         display: block;
       }
@@ -466,13 +476,8 @@
       }
 
       main {
-        margin-top: 70px;
-      }
-
-      main {
-        margin-left: 0 !important;
         width: 100% !important;
-        margin-top: 70px;
+        margin-top: 80px;
       }
 
       .mobile-header {
@@ -499,6 +504,17 @@
       .chart-container,
       .right-panel {
         padding: 20px;
+      }
+
+      chart-container {
+        height: 350px;
+        /* Shorter height for mobile */
+        padding: 20px 15px 15px 15px;
+      }
+
+      .chart-container canvas {
+        height: 85% !important;
+        /* More space for the chart area */
       }
 
       .chart-header {
@@ -569,7 +585,6 @@
         padding: 20px 15px;
       }
 
-
       .stats-buttons {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
@@ -593,6 +608,16 @@
       }
 
       .chart-container,
+      .chart-container {
+        height: 320px;
+        /* Slightly smaller for very small screens */
+        padding: 12px 10px;
+      }
+
+      .chart-container canvas {
+        min-height: 220px;
+      }
+
       .right-panel {
         padding: 18px;
       }
@@ -647,6 +672,35 @@
     @media (max-width: 575px) {
       .mobile-header {
         display: block;
+      }
+
+      .chart-container {
+        height: 575px !important;
+        /* Increased height for mobile */
+        padding: 15px 12px !important;
+        /* Reduced padding */
+        margin-bottom: 20px;
+        min-height: 420px;
+      }
+
+      .chart-container canvas {
+        height: 400px !important;
+        /* Fixed height for canvas */
+        min-height: 360px !important;
+        max-height: 360px !important;
+        flex: none !important;
+        /* Remove flex growing */
+      }
+
+      .chart-header {
+        margin-bottom: 10px !important;
+        padding: 0 !important;
+        height: auto !important;
+      }
+
+      .btn-group {
+        margin-bottom: 5px;
+        height: auto !important;
       }
 
       @media (max-width: 991px) {
@@ -712,37 +766,37 @@
 
 
       .stats-buttons {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        /* Changed from 1fr to 2x2 */
         gap: 12px;
       }
 
       .stat-btn {
-        padding: 20px 18px;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+        padding: 16px 14px;
+        /* Slightly reduced padding for better fit */
+        min-height: 110px;
+        /* Ensure consistent height */
+        flex-direction: column;
+        /* Keep vertical layout */
+        align-items: flex-start;
+        /* Keep left alignment */
+        justify-content: center;
+        /* Center content vertically */
       }
 
       .stat-btn i {
-        font-size: 2rem;
-        margin-bottom: 0;
-        margin-right: 15px;
-      }
-
-      .stat-content {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        margin-right: 0;
+        /* Remove right margin since we're vertical */
       }
 
       .stat-value {
-        font-size: 1.8rem;
-        margin: 0;
+        font-size: 1.6rem;
       }
 
       .stat-label {
-        font-size: 0.85rem;
-        margin-top: 4px;
+        font-size: 0.8rem;
       }
 
       .chart-container,
@@ -1272,7 +1326,6 @@
           async function fetchChartData(period = 'All Time') {
             try {
               isAnimating = true;
-              showChartLoadingAnimation();
 
               console.log('Fetching chart data for period:', period);
               const response = await fetch(`../php/admin.php?period=${encodeURIComponent(period)}&chartOnly=true`);
