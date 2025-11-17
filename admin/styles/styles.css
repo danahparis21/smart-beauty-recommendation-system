@@ -12,7 +12,7 @@
       #ffd1dc 100%);
 }
 
-/* Reset */
+/* Reset with better margin/padding control */
 * {
   margin: 0;
   padding: 0;
@@ -21,10 +21,31 @@
 
 html, body {
   height: 100%;
-  overflow: hidden; /* no scrollbars */
+  overflow-x: hidden;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: var(--gradient-bg);
-  overflow-x: hidden;
+}
+
+/* Remove Bootstrap container margins */
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100%;
+}
+
+/* Fix row margins */
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100%;
+}
+
+/* Fix column padding */
+.col-md-8, .col-md-4, .col-md-6, .col-md-10, .col-md-2 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 /* Mobile Header */
@@ -43,12 +64,14 @@ html, body {
   padding: 15px 20px;
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  margin: 0;
 }
 
 .mobile-header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 0;
 }
 
 .hamburger-btn {
@@ -60,6 +83,7 @@ html, body {
   padding: 5px 10px;
   border-radius: 5px;
   transition: background-color 0.3s;
+  margin: 0;
 }
 
 .hamburger-btn:hover {
@@ -70,6 +94,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin: 0;
 }
 
 .mobile-logo img {
@@ -94,22 +119,24 @@ html, body {
   box-shadow: 3px 0 20px rgba(0,0,0,0.15);
   z-index: 100;
   transition: transform 0.3s ease;
-  overflow: hidden; /* no scroll */
+  overflow: hidden;
+  margin: 0;
 }
 
 /* Logo Container */
 .logo-container {
-  padding: 20px 15px; /* tighter spacing */
+  padding: 20px 15px;
   border-bottom: 1px solid rgba(255,255,255,0.15);
   margin-bottom: 10px;
   text-align: center;
   font-family: "Cormorant Garamond", serif;
   color: var(--primary-pink);
-      letter-spacing: 1.5px;
+  letter-spacing: 1.5px;
+  margin: 0;
 }
 
 .logo {
-  max-width: 100px; /* smaller logo */
+  max-width: 100px;
   display: block;
   margin: 0 auto;
   filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,0.1));
@@ -117,20 +144,20 @@ html, body {
 
 .store-name {
   margin-top: 8px;
-  font-size: 1rem; /* smaller text */
+  font-size: 1rem;
   font-weight: 600;
   color: white;
 }
 
-/* Nav Links (compact layout) */
+/* Nav Links */
 .sidebar .nav-link {
   color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
-  margin: 5px 12px; /* reduced spacing */
+  margin: 5px 12px;
   border-radius: 10px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 10px 14px; /* tighter padding */
-  font-size: 0.85rem; /* smaller text */
+  padding: 10px 14px;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   position: relative;
@@ -169,38 +196,39 @@ html, body {
   text-align: center;
 }
 
-/* Main Content */
+/* Main Content - FIXED MARGIN ISSUE */
 main {
   margin-left: 16.666667%;
   height: 100vh;
   overflow-y: auto;
-  padding: 20px;
+  padding: 20px !important;
+  width: calc(100% - 16.666667%) !important;
+  margin-top: 0 !important;
 }
 
-/* Hide scrollbars visually but allow scrolling in main */
-main::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar {
-  display: none;
-}
-
-.sidebar,
-main {
-  scrollbar-width: none;
-}
-
-/* Overlay for mobile menu */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
+/* Fix container and row spacing */
+.container-fluid {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 99;
 }
 
-/* Responsive Sidebar (Mobile) */
+/* Fix row margins but keep some gap */
+.row {
+  margin-left: -8px !important;
+  margin-right: -8px !important;
+  width: calc(100% + 16px);
+}
+
+/* Fix column padding with side gaps */
+.col-md-8, .col-md-4, .col-md-6, .col-md-10, .col-md-2 {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* CRITICAL: Fix main content area for mobile */
 @media (max-width: 992px) {
   .mobile-header {
     display: block;
@@ -221,8 +249,44 @@ main {
     display: block;
   }
 
+  /* FIX: Remove all margins and set full width with side gaps */
   main {
-    margin-left: 0;
-    padding-top: 80px; /* adjust for mobile header */
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 70px !important;
+    padding: 15px 12px !important; /* Added side gaps */
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Fix container fluid on mobile with side gaps */
+  .container-fluid {
+    padding: 0 8px !important; /* Side gaps */
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Better spacing for mobile rows */
+  .row {
+    margin-left: -6px !important;
+    margin-right: -6px !important;
+    width: calc(100% + 12px);
+  }
+
+  .col-md-8, .col-md-4, .col-md-6 {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+}
+
+/* Additional fixes for very small screens */
+@media (max-width: 576px) {
+  main {
+    padding: 12px !important;
+    margin-top: 60px !important;
+  }
+  
+  .mobile-header {
+    padding: 12px 15px;
   }
 }
