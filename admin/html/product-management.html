@@ -1497,20 +1497,18 @@
                 <div class="form-group">
                   <label class="form-label">Product Type <span class="text-danger">*</span></label>
                   <div class="d-flex gap-3">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="productType" id="typeNewProduct" value="new"
-                        checked />
-                      <label class="form-check-label" for="typeNewProduct">
-                        New Product Line
-                      </label>
+                    <div style="display: inline-flex; align-items: center; margin-right: 20px;">
+                      <input type="radio" name="productType" id="typeNewProduct" value="line"
+                        style="accent-color: rgb(228, 151, 170); margin-right: 5px; cursor: pointer;">
+                      <label for="typeNewProduct">New Product Line</label>
                     </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="productType" id="typeNewVariant"
-                        value="variant" />
-                      <label class="form-check-label" for="typeNewVariant">
-                        New Variant (Shade/Size)
-                      </label>
+
+                    <div style="display: inline-flex; align-items: center; margin-right: 20px;">
+                      <input type="radio" name="productType" id="typeNewVariant" value="variant"
+                        style="accent-color: rgb(228, 151, 170); margin-right: 5px; cursor: pointer;">
+                      <label for="typeNewVariant">New Variant (Shade/Size)</label>
                     </div>
+
                   </div>
                 </div>
 
