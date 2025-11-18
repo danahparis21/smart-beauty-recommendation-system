@@ -512,7 +512,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+// --- Mobile Sidebar Toggle Logic ---
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
+    if (hamburgerBtn && sidebar && sidebarOverlay) {
+        hamburgerBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('mobile-open');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('mobile-open');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Optional: Close sidebar if a nav link is clicked (prevents it staying open)
+        const navLinks = sidebar.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (sidebar.classList.contains('mobile-open')) {
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+    }
 function loadCustomerData(filter = 'all', search = '') {
   fetch(`../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(search)}`)
     .then(response => response.json())
