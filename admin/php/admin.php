@@ -308,7 +308,7 @@ class AdminDashboard
         AND p.Status = 'Available'
         AND p.ParentProductID IS NULL
         ORDER BY p.Stocks ASC
-        LIMIT 5
+        LIMIT 1
     ";
         $criticalStockResult = $this->conn->query($criticalStockQuery);
         $criticalProducts = [];
@@ -316,7 +316,7 @@ class AdminDashboard
             while ($row = $criticalStockResult->fetch_assoc()) {
                 $criticalProducts[] = $row['Name'] . " (" . $row['Stocks'] . " left)";
             }
-            $addInsight($insights, "🚨 CRITICAL: Low Stock Alert! " . count($criticalProducts) . " product(s) near depletion: " . implode(", ", $criticalProducts));
+            $addInsight($insights, "🚨 CRITICAL: Low Stock Alert! " . count($criticalProducts). implode(", ", $criticalProducts));
         } else {
             $addInsight($insights, "🚨 CRITICAL: No products are critically low in stock.");
         }
