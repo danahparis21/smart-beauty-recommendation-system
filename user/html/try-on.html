@@ -20,7 +20,6 @@
     <!-- Add this BEFORE your page-specific scripts -->
     <script src="../js/user-session.js"></script>
     <style>
-      
       :root {
         --primary-pink: #ff7eb9;
         --dark-pink: #ff5c8d;
@@ -793,7 +792,6 @@
         line-height: 1.3;
       }
 
-
       /* Product Cards in Try-On Section */
       .product-card {
         background: white;
@@ -1102,6 +1100,263 @@
           padding: 15px;
         }
       }
+      /* Compatibility Results - Elegant Pink & Gold Theme */
+      #compatibility-result {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #fff9fd, #fff5f8);
+        padding: 14px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(255, 105, 180, 0.15),
+          0 2px 8px rgba(0, 0, 0, 0.08);
+        z-index: 1000;
+        max-width: 240px;
+        animation: slideInRight 0.3s ease-out;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        border: 1px solid rgba(255, 182, 193, 0.3);
+        backdrop-filter: blur(10px);
+      }
+
+      /* Elegant match levels with soft backgrounds */
+      #compatibility-result.excellent-match {
+        background: linear-gradient(135deg, #fff9fd, #fff0f5);
+        box-shadow: 0 4px 20px rgba(255, 105, 180, 0.2),
+          0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      #compatibility-result.good-match {
+        background: linear-gradient(135deg, #fff9fd, #fff5f0);
+        box-shadow: 0 4px 20px rgba(255, 182, 193, 0.2),
+          0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      #compatibility-result.decent-match {
+        background: linear-gradient(135deg, #fff9fd, #fff8f0);
+        box-shadow: 0 4px 20px rgba(255, 193, 182, 0.2),
+          0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      #compatibility-result.poor-match {
+        background: linear-gradient(135deg, #fff9fd, #fff0f0);
+        box-shadow: 0 4px 20px rgba(255, 182, 193, 0.15),
+          0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Pretty match bar with yellow & pink gradient */
+      .match-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 240, 245, 0.6);
+        border-radius: 10px;
+        margin: 8px 0;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .match-bar::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 240, 245, 0.8) 0%,
+          rgba(255, 255, 240, 0.8) 50%,
+          rgba(255, 240, 245, 0.8) 100%
+        );
+        border-radius: 10px;
+      }
+
+      .match-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          #ffb6c1 0%,
+          #ffd700 25%,
+          #ffecb3 50%,
+          #ffb6c1 75%,
+          #ff69b4 100%
+        );
+        transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-radius: 10px;
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+      }
+
+      /* Elegant skin info section */
+      .skin-info {
+        margin: 10px 0;
+        padding: 10px;
+        background: rgba(255, 248, 252, 0.8);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        position: relative;
+      }
+
+      .skin-info::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 182, 193, 0.4),
+          transparent
+        );
+      }
+
+      .skin-info p {
+        margin: 6px 0;
+        font-size: 12px;
+        color: #666;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .skin-info strong {
+        color: #d42f6e;
+        font-weight: 600;
+      }
+
+      .skin-info span {
+        color: #e75480;
+        font-weight: 500;
+      }
+
+      /* Pretty recommendation box */
+      .recommendation {
+        font-style: italic;
+        color: #777;
+        font-size: 11px;
+        line-height: 1.4;
+        padding: 8px;
+        background: rgba(255, 252, 248, 0.6);
+        border-radius: 6px;
+        border-left: 2px solid #ffd700;
+        margin-top: 8px;
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(100%) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+
+      /* Elegant close button */
+      .close-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 182, 193, 0.1);
+        border: 1px solid rgba(255, 182, 193, 0.3);
+        font-size: 12px;
+        cursor: pointer;
+        color: #e75480;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        z-index: 1001;
+        transition: all 0.2s ease;
+      }
+
+      .close-btn:hover {
+        background: rgba(255, 105, 180, 0.2);
+        color: #d42f6e;
+        transform: scale(1.1);
+      }
+
+      /* Header styling */
+      .compatibility-header h4 {
+        margin: 0 0 6px 0;
+        font-size: 15px;
+        color: #d42f6e;
+        font-weight: 600;
+        text-align: center;
+        background: linear-gradient(135deg, #d42f6e, #e75480);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .source-badge {
+        font-size: 0.7em;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+
+      /* Mobile Responsiveness */
+      @media (max-width: 768px) {
+        #compatibility-result {
+          top: 10px;
+          right: 10px;
+          max-width: 200px;
+          padding: 12px;
+          border-radius: 10px;
+        }
+
+        .match-bar {
+          height: 5px;
+          margin: 6px 0;
+        }
+
+        .skin-info {
+          padding: 8px;
+          margin: 8px 0;
+        }
+
+        .skin-info p {
+          font-size: 11px;
+        }
+
+        .recommendation {
+          font-size: 10px;
+        }
+
+        .close-btn {
+          top: 6px;
+          right: 6px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #compatibility-result {
+          top: 8px;
+          right: 8px;
+          max-width: 180px;
+          padding: 10px;
+        }
+
+        .skin-info p {
+          font-size: 10px;
+        }
+
+        .recommendation {
+          font-size: 9px;
+          padding: 6px;
+        }
+
+        .compatibility-header h4 {
+          font-size: 14px;
+        }
+      }
     </style>
   </head>
 
@@ -1163,6 +1418,24 @@
 
         <div class="photobooth-container">
           <div class="camera-section">
+            <!-- Add this temporary test button -->
+            <button
+              id="test-api"
+              style="
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                z-index: 1000;
+                background: #28a745;
+                color: white;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+              "
+            >
+              Test API Call
+            </button>
             <div class="camera-container">
               <div class="camera-view">
                 <div class="camera-placeholder">
@@ -1496,6 +1769,156 @@
         window.location.href = `productdetail.html?productId=${productId}`;
       }
 
+      async function analyzeLipstickCompatibility(
+        imageData,
+        lipstickColor,
+        productId = null
+      ) {
+        try {
+          console.log("🎨 Starting lipstick compatibility analysis...");
+          console.log("Lipstick color:", lipstickColor);
+          console.log("Product ID:", productId);
+          console.log(
+            "Image data length:",
+            imageData ? imageData.length : "No image data"
+          );
+
+          // Prepare payload
+          const payload = {
+            image: imageData,
+            lipstick_color: lipstickColor,
+          };
+
+          // Add product_id if available
+          if (productId) {
+            payload.product_id = productId;
+            console.log("📦 Product ID added to payload:", productId);
+          } else {
+            console.log(
+              "⚠️ No product ID provided - using algorithmic approach"
+            );
+          }
+
+          const response = await fetch(
+            "http://localhost:5000/analyze-lipstick",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            }
+          );
+
+          console.log("📡 Response status:", response.status);
+          console.log("📡 Response ok:", response.ok);
+
+          if (!response.ok) {
+            console.error(
+              "❌ HTTP error:",
+              response.status,
+              response.statusText
+            );
+            const errorText = await response.text();
+            console.error("❌ Error response:", errorText);
+            return null;
+          }
+
+          const result = await response.json();
+          console.log("✅ Analysis result:", result);
+
+          if (result.success) {
+            console.log(
+              "🎯 Compatibility score:",
+              result.color_compatibility.compatibility_score + "%"
+            );
+            console.log("🔍 Match source:", result.match_source);
+            return result;
+          } else {
+            console.error("❌ Analysis failed:", result.message);
+            return null;
+          }
+        } catch (error) {
+          console.error("💥 Analysis error:", error);
+          console.error("Error details:", {
+            name: error.name,
+            message: error.message,
+          });
+          return null;
+        }
+      }
+
+      function displayCompatibilityResult(analysis) {
+        // Create or update compatibility display
+        let compatibilityDiv = document.getElementById("compatibility-result");
+        if (!compatibilityDiv) {
+          compatibilityDiv = document.createElement("div");
+          compatibilityDiv.id = "compatibility-result";
+          document.querySelector(".camera-view").appendChild(compatibilityDiv);
+        }
+
+        const compatibility = analysis.color_compatibility;
+        const skinAnalysis = analysis.skin_analysis;
+        const matchSource = analysis.match_source || "algorithm";
+
+        let matchClass = "";
+        switch (compatibility.match_level) {
+          case "excellent":
+            matchClass = "excellent-match";
+            break;
+          case "good":
+            matchClass = "good-match";
+            break;
+          case "decent":
+            matchClass = "decent-match";
+            break;
+          default:
+            matchClass = "poor-match";
+        }
+
+        compatibilityDiv.className = matchClass;
+
+        // Elegant source badge
+        let sourceBadge = "";
+        if (matchSource === "database") {
+          sourceBadge =
+            '<div class="source-badge" style="color: #d42f6e; font-weight: 600;">Verified Match</div>';
+        } else {
+          sourceBadge =
+            '<div class="source-badge" style="color: #e75480;">Color Analysis</div>';
+        }
+
+        compatibilityDiv.innerHTML = `
+        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+        <div class="compatibility-header">
+            <h4>${compatibility.compatibility_score}% Match</h4>
+            ${sourceBadge}
+        </div>
+        <div class="match-bar">
+            <div class="match-fill" style="width: ${compatibility.compatibility_score}%"></div>
+        </div>
+        <div class="skin-info">
+            <p><strong>Tone:</strong> <span>${skinAnalysis.tone}</span></p>
+            <p><strong>Undertone:</strong> <span>${skinAnalysis.undertone}</span></p>
+        </div>
+        <div class="recommendation">
+            <p>${compatibility.recommendation}</p>
+        </div>
+    `;
+
+        // Auto-hide after 8 seconds
+        setTimeout(() => {
+          if (compatibilityDiv.parentNode) {
+            compatibilityDiv.style.opacity = "0";
+            setTimeout(() => {
+              if (compatibilityDiv.parentNode) {
+                compatibilityDiv.remove();
+              }
+            }, 500);
+          }
+        }, 8000);
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
         const fileInput = document.getElementById("file-input");
         const uploadBtn = document.getElementById("upload-btn");
@@ -1505,6 +1928,12 @@
         const canvas = document.getElementById("lipstick-canvas");
         const ctx = canvas.getContext("2d");
         const shadeOptions = document.querySelectorAll(".shade-option");
+        console.log("🎨 Found shade options:", shadeOptions.length);
+
+        // Test if shade buttons are clickable
+        shadeOptions.forEach((shade, index) => {
+          console.log(`Shade ${index}:`, shade.getAttribute("data-color"));
+        });
         const loading = document.getElementById("loading");
         const productsList = document.getElementById("tryon-products");
 
@@ -1573,47 +2002,70 @@
         uploadBtn.addEventListener("click", function () {
           fileInput.click();
         });
-
         fileInput.addEventListener("change", function (e) {
           if (e.target.files && e.target.files[0]) {
             const reader = new FileReader();
 
             reader.onload = function (event) {
-              // Store the image in localStorage before reloading
+              // Store the image in localStorage
               localStorage.setItem("lastUploadedImage", event.target.result);
 
-              // Reload the page immediately
-              window.location.reload();
+              // Process the image immediately without page reload
+              uploadedImage.onload = function () {
+                const container = uploadedImage.parentElement;
+                const containerWidth = container.clientWidth;
+                const containerHeight = container.clientHeight;
+
+                const imgAspectRatio =
+                  uploadedImage.naturalWidth / uploadedImage.naturalHeight;
+                const containerAspectRatio = containerWidth / containerHeight;
+
+                let displayedWidth, displayedHeight, offsetX, offsetY;
+
+                if (imgAspectRatio > containerAspectRatio) {
+                  displayedWidth = containerWidth;
+                  displayedHeight = displayedWidth / imgAspectRatio;
+                  offsetX = 0;
+                  offsetY = (containerHeight - displayedHeight) / 2;
+                } else {
+                  displayedHeight = containerHeight;
+                  displayedWidth = displayedHeight * imgAspectRatio;
+                  offsetX = (containerWidth - displayedWidth) / 2;
+                  offsetY = 0;
+                }
+
+                canvas.width = containerWidth;
+                canvas.height = containerHeight;
+
+                canvas._displayInfo = {
+                  displayedWidth,
+                  displayedHeight,
+                  offsetX,
+                  offsetY,
+                  imgAspectRatio,
+                  containerWidth,
+                  containerHeight,
+                };
+
+                uploadedImage.style.display = "none";
+                placeholder.style.display = "none";
+
+                processImageWithFaceMesh(uploadedImage);
+              };
+
+              uploadedImage.src = event.target.result;
             };
 
             reader.readAsDataURL(e.target.files[0]);
           }
         });
 
-        // Fix the shade selection event listener
-        shadeOptions.forEach((shade) => {
-          shade.addEventListener("click", function () {
-            // Remove active class from all shades
-            shadeOptions.forEach((s) => s.classList.remove("active"));
+        // // Fix the shade selection event listener - add this inside your DOMContentLoaded function
+        // shadeOptions.forEach((shade) => {
+        //   shade.addEventListener("click", async function () {
 
-            // Add active class to clicked shade
-            this.classList.add("active");
-
-            // Update current shade
-            currentShade = this.getAttribute("data-color");
-
-            // Update active product
-            updateActiveProduct(currentShade);
-
-            // Re-apply lipstick if an image is uploaded
-            // Check if we have displayInfo (meaning an image was uploaded and processed)
-            if (canvas._displayInfo && !isProcessing) {
-              // Just re-apply the lipstick without reprocessing FaceMesh
-              applyLipstickToCurrentImage();
-            }
-          });
-        });
-
+        //   });
+        // });
         // Replace the camera button event listener with this:
         cameraBtn.addEventListener("click", function () {
           if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -1922,6 +2374,8 @@
             errorDiv.remove();
           }
         }
+        
+
 
         function applyLipstickToLandmarks(landmarks) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2220,7 +2674,7 @@
                 currentShade = firstShade.hexCode;
 
                 // Re-apply lipstick if image exists
-                if (canvas._displayInfo && !isProcessing) {
+                if (!isProcessing) {
                   applyLipstickToCurrentImage();
                 }
               }
@@ -2252,7 +2706,7 @@
               index === 0 ? "active" : ""
             }`;
             shadeOption.setAttribute("data-color", shade.hexCode);
-            shadeOption.setAttribute("data-product-id", shade.productId); // This should be the VARIANT ID
+            shadeOption.setAttribute("data-product-id", shade.productId); // This is the actual product ID
             shadeOption.setAttribute("data-shade-name", shade.shadeName);
             shadeOption.style.backgroundColor = shade.hexCode;
             shadeOption.title = shade.shadeName;
@@ -2262,26 +2716,63 @@
             tooltip.textContent = shade.shadeName;
             shadeOption.appendChild(tooltip);
 
-            shadeOption.addEventListener("click", function () {
-              document
-                .querySelectorAll(".shade-option")
-                .forEach((s) => s.classList.remove("active"));
-              this.classList.add("active");
-              currentShade = this.getAttribute("data-color");
+            shadeOption.addEventListener("click", async function () {
+    console.log("🖱️ Shade clicked:", this.getAttribute("data-color"));
 
-              // Set current selected shade with VARIANT product ID
-              currentSelectedShade = {
-                productId: this.getAttribute("data-product-id"), // This is the variant ID
-                shadeName: this.getAttribute("data-shade-name"),
-                hexCode: this.getAttribute("data-color"),
-              };
+    // Remove active class from all shades
+    document.querySelectorAll(".shade-option").forEach((s) => s.classList.remove("active"));
+    this.classList.add("active");
 
-              updateActionButtons();
+    const clickedShade = this.getAttribute("data-color"); // Renamed to avoid confusion
+    const productId = this.getAttribute("data-product-id");
 
-              if (canvas._displayInfo && !isProcessing) {
-                applyLipstickToCurrentImage();
-              }
-            });
+    console.log("🎨 Current shade set to:", clickedShade);
+    console.log("📦 Product ID:", productId);
+
+    // ✅ FIX: Update the global currentShade variable
+    currentShade = clickedShade; // THIS IS THE KEY LINE!
+
+    // Set current selected shade
+    currentSelectedShade = {
+        productId: productId,
+        shadeName: this.getAttribute("data-shade-name"),
+        hexCode: clickedShade,
+    };
+
+    updateActionButtons();
+
+    // Analyze compatibility if image exists
+    const canvas = document.getElementById("lipstick-canvas");
+    if (canvas._displayInfo) {
+        console.log("📸 Image is loaded, starting analysis...");
+        const imageData = localStorage.getItem("lastUploadedImage");
+        if (imageData) {
+            console.log("🖼️ Image data found in localStorage");
+
+            // PASS THE PRODUCT ID HERE
+            const analysis = await analyzeLipstickCompatibility(
+                imageData,
+                clickedShade, // Use the clicked shade
+                productId
+            );
+
+            if (analysis) {
+                console.log("📊 Displaying compatibility result...");
+                displayCompatibilityResult(analysis);
+            } else {
+                console.log("❌ No analysis result returned");
+            }
+        } else {
+            console.log("❌ No image data in localStorage");
+        }
+
+        // ✅ Now this will use the updated currentShade
+        applyLipstickToCurrentImage();
+    } else {
+        console.log("❌ Canvas not ready - no image uploaded yet");
+    }
+});
+            // ======== END OF COMPATIBILITY ANALYSIS ========
 
             shadesContainer.appendChild(shadeOption);
           });
@@ -2289,12 +2780,18 @@
           // Set first shade as current selected shade
           if (shades.length > 0) {
             currentSelectedShade = {
-              productId: shades[0].productId, // Variant ID
+              productId: shades[0].productId,
               shadeName: shades[0].shadeName,
               hexCode: shades[0].hexCode,
             };
             updateActionButtons();
           }
+
+          console.log(
+            "✅ Shade event listeners attached to",
+            shades.length,
+            "buttons"
+          );
         }
         function updateActionButtons() {
           const productNameElem = document.getElementById(
