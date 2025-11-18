@@ -4,15 +4,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Activity Log - Beauty & Blessed</title>
+  <title>Activity Log - Blessence</title>
+  <link rel="icon" href="../images/mainlogo.png" type="image/png">
 
   <link rel="stylesheet" href="../styles/styles.css">
+  <script src="../../admin/styles/logout.js"></script>
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- SweetAlert2 CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  
+
 
   <style>
     /* Page header */
@@ -42,6 +49,8 @@
       margin-left: 16.666667%;
       width: calc(100% - 16.666667%);
       transition: margin-left 0.3s ease;
+      background-color: var(--light-gray);
+      min-height: 100vh;
     }
 
     /* Filter Section */
@@ -52,8 +61,6 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       border: 1px solid rgba(228, 151, 170, 0.1);
       margin-bottom: 25px;
-      position: sticky;
-      top: 20px;
       z-index: 10;
       transition: all 0.3s ease;
     }
@@ -116,6 +123,12 @@
       transform: translateY(-2px);
     }
 
+    .search-btn:disabled {
+      background: #adb5bd;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     /* Activity Table */
     .activity-table-container {
       background: white;
@@ -124,6 +137,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       border: 1px solid rgba(228, 151, 170, 0.1);
       overflow: hidden;
+      margin-bottom: 25px;
     }
 
     .activity-table {
@@ -299,6 +313,72 @@
       margin: 0 8px;
     }
 
+    /* Pagination */
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 25px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
+    }
+
+    .pagination-info {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    .pagination {
+      margin: 0;
+      gap: 5px;
+    }
+
+    .page-link {
+      padding: 8px 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      color: #6c757d;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+      background-color: var(--light-pink);
+      border-color: var(--primary-pink);
+      color: var(--dark-pink);
+    }
+
+    .page-item.active .page-link {
+      background-color: var(--primary-pink);
+      border-color: var(--primary-pink);
+      color: white;
+    }
+
+    .page-item.disabled .page-link {
+      color: #adb5bd;
+      background-color: #f8f9fa;
+      border-color: #e0e0e0;
+    }
+
+    /* Loading States */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     /* Responsive Design */
     @media (max-width: 991px) {
       .mobile-header {
@@ -313,6 +393,7 @@
         width: 280px;
         transform: translateX(-100%);
         z-index: 100;
+        padding-top: 60px;
       }
 
       .sidebar.mobile-open {
@@ -346,11 +427,15 @@
         overflow-x: auto;
       }
 
-      /* FIX: Remove the position:relative that was disabling sticky on mobile */
-      /* .filter-section {
-        position: relative;
-        top: 0;
-      } */
+      .pagination-container {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+
+      .pagination {
+        justify-content: center;
+      }
 
       /* Adjust top position for mobile to account for fixed header */
       .filter-section {
@@ -385,6 +470,11 @@
         font-size: 0.8rem;
       }
 
+      .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
       /* Adjust for smaller screens */
       .filter-section {
         top: 70px;
@@ -405,8 +495,7 @@
         <i class="fas fa-bars"></i>
       </button>
       <div class="mobile-logo">
-        <img src="images/mainlogo.png" alt="Store Logo" />
-        <span>Beauty & Blessed</span>
+        <img src="../images/mainlogo.png" alt="Store Logo" />
       </div>
     </div>
   </div>
@@ -422,7 +511,7 @@
           <a href="admin.html">
             <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
           </a>
-          <div class="store-name">Beauty & Blessed</div>
+          <div class="store-name">Blessence</div>
 
         </div>
         <div class="nav flex-column">
@@ -446,26 +535,20 @@
             <i class="fa-solid fa-credit-card"></i>
             <span>Order Transaction</span>
           </a>
-          <a href="store-settings.html" class="nav-link">
-            <i class="fa-solid fa-gear"></i>
-            <span>Store Setting</span>
-          </a>
-          <a href="activity-log.html" class="nav-link">
+          <a href="activity-log.html" class="nav-link active">
             <i class="fa-solid fa-clock-rotate-left"></i>
             <span>Activity Log</span>
           </a>
+          <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Log Out</span>
+          </a>
+
         </div>
       </nav>
 
       <!-- Main content -->
       <main class="col-md-10">
-        <!-- Page Header -->
-        <div class="page-header">
-          <h2 class="page-title">Activity Log</h2>
-          <p class="text-muted">
-            Track all user activities and system changes in your store.
-          </p>
-        </div>
 
         <!-- Filter Section -->
         <div class="filter-section" id="filterSection">
@@ -481,9 +564,10 @@
                 <option value="delete">Deleted</option>
                 <option value="system">System</option>
               </select>
-              <button class="search-btn">
+              <button class="search-btn" id="searchBtn">
                 <i class="fas fa-search"></i>
-                Search
+                <span id="searchText">Search</span>
+                <span id="searchLoading" class="loading-spinner" style="display: none;"></span>
               </button>
             </div>
           </div>
@@ -500,326 +584,22 @@
                 <th>Changes</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- Activity 1 - User Update -->
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar">SJ</div>
-                    <div class="user-details">
-                      <h5>Sarah Johnson</h5>
-                      <p>Store Admin</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-update">Updated</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 20, 2023 - 2:30 PM</div>
-                  <div class="date-relative">2 hours ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Product Price:</span>
-                      <span class="change-before">$45.99</span>
-                      <span class="change-arrow">→</span>
-                      <span class="change-after">$42.99</span>
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Product:</span> Rose Quartz
-                      Facial Serum
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Activity 2 - System Activity -->
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar system-user">
-                      <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="user-details">
-                      <h5>System</h5>
-                      <p>Automated Process</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-system">System</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 20, 2023 - 1:15 PM</div>
-                  <div class="date-relative">3 hours ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Low Stock Alert:</span>
-                      Hyaluronic Acid Moisturizer
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Current Stock:</span> 8 units
-                      remaining
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Activity 3 - User Create -->
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar">MC</div>
-                    <div class="user-details">
-                      <h5>Michael Chen</h5>
-                      <p>Store Manager</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-create">Created</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 20, 2023 - 11:45 AM</div>
-                  <div class="date-relative">5 hours ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">New Product Added:</span>
-                      Vitamin C Brightening Cream
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Price:</span> $38.75
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Category:</span> Skincare
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Activity 4 - User Delete -->
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar">ER</div>
-                    <div class="user-details">
-                      <h5>Emma Rodriguez</h5>
-                      <p>Content Manager</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-delete">Deleted</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 19, 2023 - 4:20 PM</div>
-                  <div class="date-relative">1 day ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Product Removed:</span> Old
-                      Formula Night Cream
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Reason:</span> Discontinued
-                      product line
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Activity 5 - System Activity -->
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar system-user">
-                      <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="user-details">
-                      <h5>System</h5>
-                      <p>Automated Process</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-system">System</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 19, 2023 - 9:00 AM</div>
-                  <div class="date-relative">1 day ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Daily Backup:</span> Database
-                      backup completed successfully
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Size:</span> 45.2 MB
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Activity 6 - User Update -->
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar">SJ</div>
-                    <div class="user-details">
-                      <h5>Sarah Johnson</h5>
-                      <p>Store Admin</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-update">Updated</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 18, 2023 - 3:10 PM</div>
-                  <div class="date-relative">2 days ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Store Settings:</span>
-                      <span class="change-before">Light Theme</span>
-                      <span class="change-arrow">→</span>
-                      <span class="change-after">Dark Theme</span>
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Primary Color:</span>
-                      <span class="change-before">#4a6fa5</span>
-                      <span class="change-arrow">→</span>
-                      <span class="change-after">#e497aa</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Additional rows to demonstrate scrolling -->
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar">SJ</div>
-                    <div class="user-details">
-                      <h5>Sarah Johnson</h5>
-                      <p>Store Admin</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-update">Updated</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 17, 2023 - 10:30 AM</div>
-                  <div class="date-relative">3 days ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Product Description:</span>
-                      Updated product description for better SEO
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar">MC</div>
-                    <div class="user-details">
-                      <h5>Michael Chen</h5>
-                      <p>Store Manager</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-create">Created</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 16, 2023 - 4:45 PM</div>
-                  <div class="date-relative">4 days ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">New Category:</span> Organic
-                      Skincare
-                    </div>
-                    <div class="change-item">
-                      <span class="change-field">Products Moved:</span> 12
-                      products moved to new category
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar system-user">
-                      <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="user-details">
-                      <h5>System</h5>
-                      <p>Automated Process</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-system">System</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 15, 2023 - 2:00 AM</div>
-                  <div class="date-relative">5 days ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Weekly Report:</span> Sales
-                      report generated and sent to admin
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-info">
-                    <div class="user-avatar">ER</div>
-                    <div class="user-details">
-                      <h5>Emma Rodriguez</h5>
-                      <p>Content Manager</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span class="action-badge action-update">Updated</span>
-                </td>
-                <td>
-                  <div class="date-time">Oct 14, 2023 - 11:20 AM</div>
-                  <div class="date-relative">6 days ago</div>
-                </td>
-                <td>
-                  <div class="change-details">
-                    <div class="change-item">
-                      <span class="change-field">Product Images:</span>
-                      Updated product gallery for 5 products
-                    </div>
-                  </div>
-                </td>
-              </tr>
+            <tbody id="activityTableBody">
+              <!-- Activities will be loaded here -->
             </tbody>
           </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+          <div class="pagination-info" id="paginationInfo">
+            Loading activities...
+          </div>
+          <nav aria-label="Activity log pagination">
+            <ul class="pagination" id="pagination">
+              <!-- Pagination will be generated here -->
+            </ul>
+          </nav>
         </div>
       </main>
     </div>
@@ -829,259 +609,416 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Mobile menu functionality (keep this part)
-const hamburgerBtn = document.getElementById("hamburgerBtn");
-const sidebar = document.getElementById("sidebar");
-const sidebarOverlay = document.getElementById("sidebarOverlay");
+    // Mobile menu functionality
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
 
-// Toggle sidebar on hamburger click
-hamburgerBtn.addEventListener("click", function () {
-  sidebar.classList.toggle("mobile-open");
-  sidebarOverlay.classList.toggle("active");
-});
+    // Toggle sidebar on hamburger click
+    hamburgerBtn.addEventListener("click", function () {
+      sidebar.classList.toggle("mobile-open");
+      sidebarOverlay.classList.toggle("active");
+    });
 
-// Close sidebar when overlay is clicked
-sidebarOverlay.addEventListener("click", function () {
-  sidebar.classList.remove("mobile-open");
-  sidebarOverlay.classList.remove("active");
-});
-
-// Close sidebar when a nav link is clicked (on mobile)
-const navLinks = document.querySelectorAll(".sidebar .nav-link");
-navLinks.forEach((link) => {
-  link.addEventListener("click", function () {
-    if (window.innerWidth < 992) {
+    // Close sidebar when overlay is clicked
+    sidebarOverlay.addEventListener("click", function () {
       sidebar.classList.remove("mobile-open");
       sidebarOverlay.classList.remove("active");
-    }
-  });
-});
+    });
 
-// Activity Log Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    loadActivities();
-    
-    // Filter functionality
-    document.querySelector(".search-btn").addEventListener("click", function () {
+    // Close sidebar when a nav link is clicked (on mobile)
+    const navLinks = document.querySelectorAll(".sidebar .nav-link");
+    navLinks.forEach((link) => {
+      link.addEventListener("click", function () {
+        if (window.innerWidth < 992) {
+          sidebar.classList.remove("mobile-open");
+          sidebarOverlay.classList.remove("active");
+        }
+      });
+    });
+
+    // Pagination state
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let totalActivities = 0;
+    let allActivities = [];
+
+    // Initialize the activity log
+    document.addEventListener('DOMContentLoaded', function () {
+      loadActivities();
+      setupEventListeners();
+    });
+
+    function setupEventListeners() {
+      const searchBtn = document.getElementById("searchBtn");
+
+      // Filter functionality
+      searchBtn.addEventListener("click", function () {
+        currentPage = 1;
         loadActivities();
-    });
+      });
 
-    // Also load on Enter key in filter fields
-    document.querySelectorAll('.form-control').forEach(input => {
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                loadActivities();
-            }
+      // Also load on Enter key in filter fields
+      document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            currentPage = 1;
+            loadActivities();
+          }
         });
-    });
-});
+      });
 
-function loadActivities() {
-    const dateFrom = document.getElementById("dateFrom").value;
-    const dateTo = document.getElementById("dateTo").value;
-    const actionType = document.getElementById("actionType").value;
+      // Add visual feedback when filter section becomes sticky
+      window.addEventListener("scroll", function () {
+        const filterSection = document.getElementById("filterSection");
+        const scrollPosition = window.scrollY;
 
-    // Show loading state
-    const tableBody = document.querySelector('.activity-table tbody');
-    tableBody.innerHTML = `
+        if (scrollPosition > 100) {
+          filterSection.classList.add("sticky");
+        } else {
+          filterSection.classList.remove("sticky");
+        }
+      });
+    }
+
+    function loadActivities() {
+      const dateFrom = document.getElementById("dateFrom").value;
+      const dateTo = document.getElementById("dateTo").value;
+      const actionType = document.getElementById("actionType").value;
+      const searchBtn = document.getElementById("searchBtn");
+      const searchText = document.getElementById("searchText");
+      const searchLoading = document.getElementById("searchLoading");
+
+      // Show loading state
+      searchBtn.disabled = true;
+      searchText.style.display = 'none';
+      searchLoading.style.display = 'inline-block';
+
+      const tableBody = document.getElementById('activityTableBody');
+      tableBody.innerHTML = `
         <tr>
-            <td colspan="4" class="text-center py-4">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2 text-muted">Loading activities...</p>
-            </td>
+          <td colspan="4" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading activities...</p>
+          </td>
         </tr>
-    `;
+      `;
 
-    // Build query string
-    const params = new URLSearchParams();
-    if (dateFrom) params.append('dateFrom', dateFrom);
-    if (dateTo) params.append('dateTo', dateTo);
-    if (actionType) params.append('actionType', actionType);
+      // Build query string
+      const params = new URLSearchParams();
+      if (dateFrom) params.append('dateFrom', dateFrom);
+      if (dateTo) params.append('dateTo', dateTo);
+      if (actionType) params.append('actionType', actionType);
 
-    fetch(`../php/activity-log.php?${params.toString()}`)
+      fetch(`../php/activity-log.php?${params.toString()}`)
         .then(res => res.json())
         .then(data => {
-            if (!data.success) {
-                throw new Error(data.error || 'Failed to load activities');
-            }
-            renderActivities(data.activities);
+          if (!data.success) {
+            throw new Error(data.error || 'Failed to load activities');
+          }
+
+          allActivities = data.activities;
+          totalActivities = allActivities.length;
+
+          renderActivities();
+          renderPagination();
         })
         .catch(err => {
-            console.error('Error loading activities:', err);
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-center py-4 text-danger">
-                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-                        <p>Failed to load activities: ${err.message}</p>
-                        <button class="btn btn-primary btn-sm" onclick="loadActivities()">Retry</button>
-                    </td>
-                </tr>
-            `;
-        });
-}
-
-function renderActivities(activities) {
-    const tableBody = document.querySelector('.activity-table tbody');
-    
-    if (activities.length === 0) {
-        tableBody.innerHTML = `
+          console.error('Error loading activities:', err);
+          tableBody.innerHTML = `
             <tr>
-                <td colspan="4" class="text-center py-4 text-muted">
-                    <i class="fas fa-clipboard-list fa-2x mb-3"></i>
-                    <p>No activities found for the selected filters.</p>
-                </td>
+              <td colspan="4" class="text-center py-4 text-danger">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <p>Failed to load activities: ${err.message}</p>
+                <button class="btn btn-primary btn-sm" onclick="loadActivities()">Retry</button>
+              </td>
             </tr>
-        `;
-        return;
+          `;
+          renderPagination();
+        })
+        .finally(() => {
+          // Reset loading state
+          searchBtn.disabled = false;
+          searchText.style.display = 'inline';
+          searchLoading.style.display = 'none';
+        });
     }
 
-    tableBody.innerHTML = activities.map(activity => {
+    function renderActivities() {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const activitiesToShow = allActivities.slice(startIndex, endIndex);
+      const tableBody = document.getElementById('activityTableBody');
+
+      if (activitiesToShow.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="text-center py-4 text-muted">
+              <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+              <p>No activities found for the selected filters.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tableBody.innerHTML = activitiesToShow.map(activity => {
         const userInfo = getUserInfo(activity);
         const actionBadge = getActionBadge(activity.action);
         const formattedDate = formatDateTime(activity.timestamp);
         const changeDetails = parseActivityDetails(activity);
 
         return `
-            <tr>
-                <td>
-                    <div class="user-info">
-                        ${userInfo.avatar}
-                        <div class="user-details">
-                            <h5>${userInfo.name}</h5>
-                            <p>${userInfo.role}</p>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <span class="action-badge ${actionBadge.class}">${actionBadge.text}</span>
-                </td>
-                <td>
-                    <div class="date-time">${formattedDate.date}</div>
-                    <div class="date-relative">${formattedDate.relative}</div>
-                </td>
-                <td>
-                    <div class="change-details">
-                        ${changeDetails}
-                    </div>
-                </td>
-            </tr>
+          <tr>
+            <td>
+              <div class="user-info">
+                ${userInfo.avatar}
+                <div class="user-details">
+                  <h5>${userInfo.name}</h5>
+                  <p>${userInfo.role}</p>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="action-badge ${actionBadge.class}">${actionBadge.text}</span>
+            </td>
+            <td>
+              <div class="date-time">${formattedDate.date}</div>
+              <div class="date-relative">${formattedDate.relative}</div>
+            </td>
+            <td>
+              <div class="change-details">
+                ${changeDetails}
+              </div>
+            </td>
+          </tr>
         `;
-    }).join('');
-}
-
-function getUserInfo(activity) {
-    if (activity.actor_type === 'system' || !activity.username) {
-        return {
-            avatar: '<div class="user-avatar system-user"><i class="fas fa-robot"></i></div>',
-            name: 'System',
-            role: 'Automated Process'
-        };
+      }).join('');
     }
 
-    const initials = (activity.first_name?.charAt(0) || '') + (activity.last_name?.charAt(0) || '') || activity.username?.substring(0, 2).toUpperCase() || 'U';
-    const fullName = activity.first_name && activity.last_name 
+    function getUserInfo(activity) {
+      if (activity.actor_type === 'system' || !activity.username) {
+        return {
+          avatar: '<div class="user-avatar system-user"><i class="fas fa-robot"></i></div>',
+          name: 'System',
+          role: 'Automated Process'
+        };
+      }
+
+      const initials = (activity.first_name?.charAt(0) || '') + (activity.last_name?.charAt(0) || '') || activity.username?.substring(0, 2).toUpperCase() || 'U';
+      const fullName = activity.first_name && activity.last_name
         ? `${activity.first_name} ${activity.last_name}`
-        : activity.username;
-    
-    const role = activity.role === 'admin' 
+        : activity.username || 'Unknown User';
+
+      const role = activity.role === 'admin'
         ? activity.actor_type === 'admin' ? 'Store Admin' : 'Administrator'
         : 'Customer';
 
-    return {
+      return {
         avatar: `<div class="user-avatar">${initials}</div>`,
         name: fullName,
         role: role
-    };
-}
+      };
+    }
 
-function getActionBadge(action) {
-    const actionLower = action.toLowerCase();
-    
-    if (actionLower.includes('added') || actionLower.includes('created') || actionLower.includes('placed')) {
+    function getActionBadge(action) {
+      const actionLower = action.toLowerCase();
+
+      if (actionLower.includes('added') || actionLower.includes('created') || actionLower.includes('placed')) {
         return { class: 'action-create', text: 'Created' };
-    } else if (actionLower.includes('updated') || actionLower.includes('modified') || actionLower.includes('changed')) {
+      } else if (actionLower.includes('updated') || actionLower.includes('modified') || actionLower.includes('changed')) {
         return { class: 'action-update', text: 'Updated' };
-    } else if (actionLower.includes('deleted') || actionLower.includes('removed') || actionLower.includes('cancelled')) {
+      } else if (actionLower.includes('deleted') || actionLower.includes('removed') || actionLower.includes('cancelled')) {
         return { class: 'action-delete', text: 'Deleted' };
-    } else {
+      } else {
         return { class: 'action-system', text: 'System' };
+      }
     }
-}
 
-function formatDateTime(timestamp) {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    function formatDateTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    let relativeTime;
-    if (diffDays > 0) {
+      let relativeTime;
+      if (diffDays > 0) {
         relativeTime = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    } else if (diffHours > 0) {
+      } else if (diffHours > 0) {
         relativeTime = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    } else if (diffMinutes > 0) {
+      } else if (diffMinutes > 0) {
         relativeTime = `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
-    } else {
+      } else {
         relativeTime = 'Just now';
-    }
+      }
 
-    return {
-        date: date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        }) + ' - ' + date.toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true 
+      return {
+        date: date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        }) + ' - ' + date.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
         }),
         relative: relativeTime
-    };
-}
+      };
+    }
 
-function parseActivityDetails(activity) {
-    if (!activity.details) {
+    function parseActivityDetails(activity) {
+      if (!activity.details) {
         return `<div class="change-item">
-            <span class="change-field">Action:</span> ${activity.action}
+          <span class="change-field">Action:</span> ${activity.action}
         </div>`;
-    }
+      }
 
-    // Simple parsing - you can enhance this based on your activity log structure
-    return `<div class="change-item">
-        <span class="change-field">Details:</span> ${activity.details}
-    </div>`;
-}
-
-// Add visual feedback when filter section becomes sticky
-window.addEventListener("scroll", function () {
-    const filterSection = document.getElementById("filterSection");
-    const scrollPosition = window.scrollY;
-
-    if (scrollPosition > 100) {
-        filterSection.classList.add("sticky");
-    } else {
-        filterSection.classList.remove("sticky");
-    }
-});
-
-// Highlight active sidebar link based on current URL
-document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.sidebar .nav-link');
-    const currentPath = window.location.pathname.split('/').pop();
-
-    navLinks.forEach(link => {
-        const linkPath = link.getAttribute('href');
-        if (linkPath === currentPath) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
+      try {
+        // Try to parse JSON details
+        const details = JSON.parse(activity.details);
+        if (typeof details === 'object') {
+          return Object.entries(details).map(([key, value]) => {
+            if (typeof value === 'object' && value.before !== undefined && value.after !== undefined) {
+              return `
+                <div class="change-item">
+                  <span class="change-field">${key}:</span>
+                  <span class="change-before">${value.before}</span>
+                  <span class="change-arrow">→</span>
+                  <span class="change-after">${value.after}</span>
+                </div>
+              `;
+            } else {
+              return `
+                <div class="change-item">
+                  <span class="change-field">${key}:</span> ${value}
+                </div>
+              `;
+            }
+          }).join('');
         }
-    });
-});
+      } catch (e) {
+        // If not JSON, display as plain text
+        return `<div class="change-item">
+          <span class="change-field">Details:</span> ${activity.details}
+        </div>`;
+      }
+
+      return `<div class="change-item">
+        <span class="change-field">Action:</span> ${activity.action}
+      </div>`;
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(totalActivities / itemsPerPage);
+      const pagination = document.getElementById('pagination');
+      const paginationInfo = document.getElementById('paginationInfo');
+
+      // Update pagination info
+      const startItem = totalActivities > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+      const endItem = Math.min(currentPage * itemsPerPage, totalActivities);
+      paginationInfo.textContent = totalActivities > 0
+        ? `Showing ${startItem}-${endItem} of ${totalActivities} activities`
+        : 'No activities found';
+
+      // Don't show pagination if no activities
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      // Generate pagination buttons
+      let paginationHTML = '';
+
+      // Previous button
+      paginationHTML += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+          <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+        </li>
+      `;
+
+      // Page numbers
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      // Adjust start page if we're near the end
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      // First page and ellipsis if needed
+      if (startPage > 1) {
+        paginationHTML += `
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="1">1</a>
+          </li>
+        `;
+        if (startPage > 2) {
+          paginationHTML += `
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+          `;
+        }
+      }
+
+      // Page numbers
+      for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+          <li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+          </li>
+        `;
+      }
+
+      // Last page and ellipsis if needed
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          paginationHTML += `
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+          `;
+        }
+        paginationHTML += `
+          <li class="page-item">
+            <a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a>
+          </li>
+        `;
+      }
+
+      // Next button
+      paginationHTML += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+          <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+        </li>
+      `;
+
+      pagination.innerHTML = paginationHTML;
+
+      // Add event listeners to pagination buttons
+      pagination.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (!this.parentElement.classList.contains('disabled') &&
+            !this.parentElement.classList.contains('active')) {
+            currentPage = parseInt(this.getAttribute('data-page'));
+            renderActivities();
+            renderPagination();
+
+            // Scroll to top of table
+            document.querySelector('.activity-table-container').scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    }
+
   </script>
 </body>
 

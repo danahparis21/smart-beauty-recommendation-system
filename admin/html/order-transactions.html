@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Order Transactions - Beauty & Blessed</title>
+  <title>Order Transactions - Blessence</title>
+  <link rel="icon" href="../images/mainlogo.png" type="image/png">
 
   <link rel="stylesheet" href="../styles/styles.css">
 
@@ -14,7 +15,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+  <script src="../../admin/styles/logout.js"></script>
+  
+  <!-- SweetAlert2 CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
   <style>
+    :root {
+      --primary-pink: #e497aa;
+      --secondary-pink: #db8299;
+      --dark-pink: #c36c82;
+      --light-pink: #f9f0f2;
+      --accent-pink: #f8e2e7;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     /* Page header */
     .page-header {
       margin-bottom: 30px;
@@ -46,10 +66,8 @@
 
     /* Fixed Header Section */
     .fixed-header {
-      position: sticky;
-      top: 0;
       z-index: 10;
-      background: linear-gradient(135deg, #fef5f8 0%, #f8f9fa 100%);
+      background: transparent;
       padding: 20px 0;
       margin-bottom: 20px;
       border-bottom: 1px solid rgba(228, 151, 170, 0.1);
@@ -155,7 +173,6 @@
       padding: 25px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       border: 1px solid rgba(228, 151, 170, 0.1);
-      margin-bottom: 25px;
     }
 
     .search-box {
@@ -217,11 +234,168 @@
       color: white;
     }
 
+    /* Order Cards Grid */
+    .orders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .order-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(228, 151, 170, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .order-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-pink), var(--secondary-pink));
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .order-id {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .customer-name {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    .order-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: #ffc107;
+    }
+
+    .status-completed {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+
+    .status-cancelled {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    .status-processing {
+      background-color: rgba(0, 123, 255, 0.1);
+      color: #007bff;
+    }
+
+    .order-details {
+      margin-bottom: 20px;
+    }
+
+    .order-detail {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .order-detail i {
+      width: 20px;
+      margin-right: 10px;
+      color: var(--primary-pink);
+    }
+
+    .order-stats {
+      display: flex;
+      justify-content: space-between;
+      background: var(--primary-pink);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dark-pink);
+    }
+
+    .order-stats .stat-number {
+      color: #ffffff;
+      font-size: 1.3rem;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .order-actions {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 20px;
+    }
+
+    .action-btn {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .action-btn:hover {
+      background-color: var(--accent-pink);
+      border-color: var(--primary-pink);
+      color: var(--dark-pink);
+    }
+
+    .action-btn i {
+      font-size: 0.9rem;
+    }
+
     /* Empty State */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
       color: #6c757d;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .empty-state i {
@@ -235,9 +409,98 @@
       margin-bottom: 10px;
     }
 
+    /* Modal Styles */
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
+      color: white;
+      border-radius: 16px 16px 0 0;
+      border: none;
+      padding: 20px 25px;
+    }
+
+    .modal-title {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .modal-body {
+      padding: 25px;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+
+    .item-details {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .item-category {
+      color: #6c757d;
+      font-size: 0.85rem;
+    }
+
+    .item-quantity {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: var(--dark-pink);
+    }
+
+    .order-summary {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .summary-total {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--dark-pink);
+      border-top: 1px solid #dee2e6;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
     /* Scrollable Content Area */
     .scrollable-content {
-      max-height: calc(100vh - 400px);
+      max-height: calc(100vh - 100px);
       overflow-y: auto;
       padding-right: 10px;
     }
@@ -260,15 +523,6 @@
       background: var(--dark-pink);
     }
 
-    .order-card {
-  border: 1px solid rgba(0,0,0,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.order-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-}
-
     /* Responsive Design */
     @media (max-width: 991px) {
       .mobile-header {
@@ -283,6 +537,7 @@
         width: 280px;
         transform: translateX(-100%);
         z-index: 100;
+        padding-top: 60px;
       }
 
       .sidebar.mobile-open {
@@ -306,6 +561,10 @@
       .fixed-header {
         position: relative;
       }
+
+      .orders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
     }
 
     @media (max-width: 575px) {
@@ -320,6 +579,19 @@
       .filter-btn {
         text-align: center;
       }
+
+      .orders-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .order-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .action-btn {
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -333,14 +605,30 @@
         <i class="fas fa-bars"></i>
       </button>
       <div class="mobile-logo">
-        <img src="images/mainlogo.png" alt="Store Logo">
-        <span>Beauty & Blessed</span>
+        <img src="../images/mainlogo.png" alt="Store Logo">
       </div>
     </div>
   </div>
 
   <!-- Sidebar Overlay -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Order Details Modal -->
+  <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Order Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="orderDetailsContent">
+            <!-- Order details will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="container-fluid">
     <div class="row">
@@ -350,8 +638,7 @@
           <a href="admin.html">
             <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
           </a>
-          <div class="store-name">Beauty & Blessed</div>
-
+          <div class="store-name">Blessence</div>
         </div>
         <div class="nav flex-column">
           <a href="admin.html" class="nav-link">
@@ -370,28 +657,24 @@
             <i class="fa-solid fa-users"></i>
             <span>Customer Management</span>
           </a>
-          <a href="order-transactions.html" class="nav-link">
+          <a href="order-transactions.html" class="nav-link active">
             <i class="fa-solid fa-credit-card"></i>
             <span>Order Transaction</span>
-          </a>
-          <a href="store-settings.html" class="nav-link">
-            <i class="fa-solid fa-gear"></i>
-            <span>Store Setting</span>
           </a>
           <a href="activity-log.html" class="nav-link">
             <i class="fa-solid fa-clock-rotate-left"></i>
             <span>Activity Log</span>
+          </a>
+          
+          <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Log Out</span>
           </a>
         </div>
       </nav>
 
       <!-- Main content -->
       <main class="col-md-10">
-        <!-- Page Header -->
-        <div class="page-header">
-          <h2 class="page-title">Order Transactions</h2>
-          <p class="text-muted">Manage all orders, track status, and view transaction details.</p>
-        </div>
 
         <!-- Fixed Header Section -->
         <div class="fixed-header">
@@ -448,12 +731,7 @@
 
         <!-- Scrollable Content Area -->
         <div class="scrollable-content">
-          <!-- Empty State -->
-          <div class="empty-state">
-            <i class="fas fa-shopping-bag"></i>
-            <h4>No Orders Yet</h4>
-            <p>Order data will appear here once customers start placing orders.</p>
-          </div>
+          <!-- Order cards will be loaded here dynamically -->
         </div>
       </main>
     </div>
@@ -463,106 +741,297 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.querySelector('.search-box input');
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const contentArea = document.querySelector('.scrollable-content');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load order data
+        loadOrderData('all', '', 1);
 
-  // Initial load
-  loadOrders('all', '');
+        const searchBox = document.querySelector('.search-box input');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        let currentFilter = 'all';
+        let searchTimeout;
+        let currentPage = 1;
 
-  // Filter click handling
-  filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      filterButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
+        // Filter buttons
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
 
-      let filter = button.textContent.trim().toLowerCase();
-      if (filter === 'all orders') filter = 'all';
-      if (filter === 'pending') filter = 'pending';
-      if (filter === 'completed') filter = 'completed';
-      if (filter === 'cancelled') filter = 'cancelled';
-      if (filter === 'this week') filter = 'this_week';
+                let filter = this.textContent.trim().toLowerCase();
+                if (filter === 'all orders') filter = 'all';
+                if (filter === 'pending') filter = 'pending';
+                if (filter === 'completed') filter = 'completed';
+                if (filter === 'cancelled') filter = 'cancelled';
+                if (filter === 'this week') filter = 'this_week';
 
-      const searchTerm = searchInput.value.trim();
-      loadOrders(filter, searchTerm);
+                currentFilter = filter;
+                currentPage = 1;
+                loadOrderData(currentFilter, searchBox.value.trim(), currentPage);
+            });
+        });
+
+        // Search functionality (live search with debounce)
+        searchBox.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = searchBox.value.trim();
+                currentPage = 1;
+                loadOrderData(currentFilter, query, currentPage);
+            }, 400);
+        });
+
+        // Also allow pressing Enter to trigger search immediately
+        searchBox.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                currentPage = 1;
+                loadOrderData(currentFilter, searchBox.value.trim(), currentPage);
+            }
+        });
     });
-  });
 
-  // Search handling (on Enter key)
-  searchInput.addEventListener('keypress', e => {
-    if (e.key === 'Enter') {
-      const activeFilter = document.querySelector('.filter-btn.active').textContent.trim().toLowerCase();
-      const filterMap = {
-        'all orders': 'all',
-        'pending': 'pending',
-        'completed': 'completed',
-        'cancelled': 'cancelled',
-        'this week': 'this_week'
-      };
-      const filter = filterMap[activeFilter] || 'all';
-      loadOrders(filter, searchInput.value.trim());
+    // --- Mobile Sidebar Toggle Logic ---
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (hamburgerBtn && sidebar && sidebarOverlay) {
+        hamburgerBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('mobile-open');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function () {
+            sidebar.classList.remove('mobile-open');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Optional: Close sidebar if a nav link is clicked (prevents it staying open)
+        const navLinks = sidebar.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                if (sidebar.classList.contains('mobile-open')) {
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
     }
-  });
-});
 
-// Fetch and render orders
-function loadOrders(filter = 'all', search = '') {
-  fetch(`../php/order-transaction.php?filter=${filter}&search=${encodeURIComponent(search)}`)
-    .then(res => res.json())
-    .then(data => {
-      if (!data.success) {
-        console.error('Error:', data.error);
-        return;
-      }
+    function loadOrderData(filter = 'all', search = '', page = 1) {
+        console.log('Loading order data with filter:', filter, 'search:', search);
+        
+        fetch(`../php/order-transaction.php?filter=${filter}&search=${encodeURIComponent(search)}&page=${page}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                const contentArea = document.querySelector('.scrollable-content');
 
-      // Update stats
-      document.querySelector('.total-orders .stat-value').textContent = data.stats.total_orders;
-      document.querySelector('.pending-orders .stat-value').textContent = data.stats.pending_orders;
-      document.querySelector('.completed-orders .stat-value').textContent = data.stats.completed_orders;
-      document.querySelector('.cancelled-orders .stat-value').textContent = data.stats.cancelled_orders;
+                if (data.success) {
+                    // Update stats
+                    document.querySelector('.total-orders .stat-value').textContent = data.stats.total_orders;
+                    document.querySelector('.pending-orders .stat-value').textContent = data.stats.pending_orders;
+                    document.querySelector('.completed-orders .stat-value').textContent = data.stats.completed_orders;
+                    document.querySelector('.cancelled-orders .stat-value').textContent = data.stats.cancelled_orders;
 
-      // Render order list
-      const container = document.querySelector('.scrollable-content');
-      container.innerHTML = '';
+                    // Populate all orders
+                    if (data.orders && data.orders.length > 0) {
+                        let ordersHTML = '<div class="orders-grid">';
 
-      if (data.orders.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-shopping-bag"></i>
-            <h4>No Orders Found</h4>
-            <p>No matching orders for this filter.</p>
-          </div>`;
-        return;
-      }
+                        data.orders.forEach(order => {
+                            // Determine status class
+                            let statusClass = 'status-pending';
+                            if (order.status.toLowerCase().includes('completed')) {
+                                statusClass = 'status-completed';
+                            } else if (order.status.toLowerCase().includes('cancelled')) {
+                                statusClass = 'status-cancelled';
+                            } else if (order.status.toLowerCase().includes('processing')) {
+                                statusClass = 'status-processing';
+                            }
 
-      data.orders.forEach(order => {
-        const card = document.createElement('div');
-        card.classList.add('order-card', 'p-4', 'mb-3', 'rounded', 'shadow-sm');
-        card.style.background = 'white';
-        // Update the card rendering part:
-card.innerHTML = `
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="mb-0 text-primary">Order #${order.order_id}</h5>
-    <span class="badge bg-${
-      order.order_status.toLowerCase() === 'completed' ? 'success' :
-      order.order_status.toLowerCase() === 'pending' ? 'warning' :
-      order.order_status.toLowerCase() === 'cancelled' ? 'danger' : 'secondary'
-    }">${order.order_status}</span>
-  </div>
-  <p class="mb-1"><strong>Customer:</strong> ${order.customer_name} (${order.email})</p>
-  <p class="mb-1"><strong>Total:</strong> ₱${order.total_price}</p>
-  <p class="mb-1"><strong>Status:</strong> ${order.order_status}</p>
-  ${order.qr_code ? `<p class="mb-1"><strong>QR Code:</strong> ${order.qr_code}</p>` : ''}
-  <p class="text-muted small mb-0"><i class="fa-regular fa-clock"></i> ${order.order_date}</p>
-`;
-        container.appendChild(card);
-      });
-    })
-    .catch(err => console.error('Fetch error:', err));
-}
-</script>
+                            ordersHTML += `
+                                <div class="order-card">
+                                    <div class="order-header">
+                                        <div>
+                                            <div class="order-id">#${order.order_id}</div>
+                                            <div class="customer-name">${order.customer_name}</div>
+                                        </div>
+                                        <div class="order-status ${statusClass}">${order.status}</div>
+                                    </div>
+                                    <div class="order-details">
+                                        <div class="order-detail">
+                                            <i class="fas fa-envelope"></i>
+                                            <span>${order.email}</span>
+                                        </div>
+                                        <div class="order-detail">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span>Order Date: ${order.order_date}</span>
+                                        </div>
+                                        <div class="order-detail">
+                                            <i class="fas fa-box"></i>
+                                            <span>${order.item_count} items</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-number">${order.item_count}</div>
+                                            <div class="stat-label">Items</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-number">₱${order.total_amount}</div>
+                                            <div class="stat-label">Total</div>
+                                        </div>
+                                    </div>
+                                    <div class="order-actions">
+                                        <button class="action-btn" onclick="viewOrderDetails(${order.order_id})">
+                                            <i class="fas fa-eye"></i>
+                                            <span>View Details</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
 
+                        ordersHTML += '</div>';
+                        contentArea.innerHTML = ordersHTML;
+                    } else {
+                        contentArea.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <h4>No Orders Found</h4>
+                                <p>No results match your current filter or search.</p>
+                            </div>`;
+                    }
+                } else {
+                    console.error('Server error:', data.error);
+                    contentArea.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h4>Server Error</h4>
+                            <p>${data.error || 'Failed to load orders'}</p>
+                        </div>`;
+                }
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                document.querySelector('.scrollable-content').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h4>Connection Error</h4>
+                        <p>Failed to load orders. Please check your connection and try again.</p>
+                        <p class="small text-muted">Error: ${err.message}</p>
+                    </div>`;
+            });
+    }
+
+    function viewOrderDetails(orderId) {
+        fetch(`../php/order-transaction.php?action=get_order_details&order_id=${orderId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const order = data.order;
+                    const items = data.items;
+                    
+                    let itemsHTML = '';
+                    let subtotal = 0;
+                    
+                    items.forEach(item => {
+                        const itemTotal = parseFloat(item.quantity) * parseFloat(item.price.replace(',', ''));
+                        subtotal += itemTotal;
+                        
+                        itemsHTML += `
+                            <div class="order-item">
+                                <img src="${item.image_path}" alt="${item.product_name}" class="item-image" onerror="this.src='../images/default-product.jpg'">
+                                <div class="item-details">
+                                    <div class="item-name">${item.product_name}</div>
+                                    <div class="item-category">${item.category}</div>
+                                    <div class="item-quantity">Quantity: ${item.quantity}</div>
+                                </div>
+                                <div class="item-price">₱${item.price}</div>
+                            </div>
+                        `;
+                    });
+
+                    const modalContent = `
+                        <div class="order-info mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Order ID:</strong> #${order.order_id}<br>
+                                    <strong>Customer:</strong> ${order.customer_name}<br>
+                                    <strong>Email:</strong> ${order.email}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Order Date:</strong> ${order.order_date}<br>
+                                    <strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(order.order_status)}">${order.order_status}</span><br>
+                                    ${order.qr_code ? `<strong>QR Code:</strong> ${order.qr_code}` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h6 class="mb-3">Order Items</h6>
+                        <div class="order-items">
+                            ${itemsHTML}
+                        </div>
+                        
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>₱${subtotal.toFixed(2)}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>₱0.00</span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <span>Total:</span>
+                                <span>₱${order.total_price}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('orderDetailsContent').innerHTML = modalContent;
+                    const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+                    modal.show();
+                } else {
+                    alert('Failed to load order details: ' + data.error);
+                }
+            })
+            .catch(err => {
+                console.error('Error loading order details:', err);
+                alert('Failed to load order details. Please try again.');
+            });
+    }
+
+    function getStatusBadgeClass(status) {
+        switch (status.toLowerCase()) {
+            case 'pending': return 'warning';
+            case 'processing': return 'info';
+            case 'completed': return 'success';
+            case 'cancelled': return 'danger';
+            default: return 'secondary';
+        }
+    }
+
+    // Highlight active sidebar link based on current URL
+    const highlightActiveNavLink = () => {
+        const navLinks = document.querySelectorAll('.sidebar .nav-link');
+        const currentPath = window.location.pathname.split('/').pop();
+
+        navLinks.forEach(link => {
+            const linkPath = link.getAttribute('href');
+            if (linkPath === currentPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    };
+
+    highlightActiveNavLink();
+  </script>
 </body>
-
 </html>
