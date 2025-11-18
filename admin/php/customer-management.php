@@ -34,7 +34,9 @@ try {
             u.UserID, u.username, u.first_name, u.last_name, u.Email, u.CreatedAt,
             COUNT(DISTINCT o.order_id) as total_orders,
             COALESCE(SUM(o.total_price),0) as total_spent,
-            MAX(o.order_date) as last_order_date
+            MAX(o.order_date) as last_order_date,
+            COALESCE(AVG(sr.rating), 0) as avg_rating,
+            COUNT(sr.store_rating_id) as rating_count
         FROM users u
         LEFT JOIN orders o ON u.UserID = o.user_id
         LEFT JOIN store_ratings sr ON u.UserID = sr.user_id
@@ -65,7 +67,10 @@ try {
             'join_date' => (new DateTime($row['CreatedAt']))->format('M d, Y'),
             'status' => $status,
             'total_orders' => $row['total_orders'],
-            'total_spent' => number_format($row['total_spent'], 2)
+            'total_spent' => number_format($row['total_spent'], 2),
+            'avg_rating' => floatval($row['avg_rating']),
+            'has_feedback' => $row['rating_count'] > 0,
+            'rating_count' => $row['rating_count']
         ];
     }
 
