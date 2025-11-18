@@ -32,6 +32,24 @@ function returnJsonResponse($success, $message, $data = [], $conn = null) {
     exit();
 }
 
+function redirectBasedOnRole($role) {
+    if ($role === 'admin') {
+        // For AJAX responses, return redirect information
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            return [
+                'redirect' => true,
+                'redirectUrl' => '/admin/html/admin.html'
+            ];
+        } else {
+            // Direct browser redirect
+            header('Location: /admin/html/admin.html');
+            exit();
+        }
+    }
+    // Add other role-based redirects here if needed
+    return null;
+}
+
 // Check database connection
 if ($conn->connect_error) {
     returnJsonResponse(false, "Database Connection failed: " . $conn->connect_error);
@@ -86,12 +104,22 @@ if ($result->num_rows === 1) {
         
         $stmt->close();
         
+        // Check if user is admin and handle redirect
+        $redirectInfo = redirectBasedOnRole($user['Role']);
+        
         // Success response
-        returnJsonResponse(true, 'Login successful!', [
+        $responseData = [
             'firstName' => $user['first_name'],
             'role' => $user['Role'],
             'email' => $user['Email']
-        ], $conn);
+        ];
+        
+        // Add redirect info if applicable
+        if ($redirectInfo) {
+            $responseData = array_merge($responseData, $redirectInfo);
+        }
+        
+        returnJsonResponse(true, 'Login successful!', $responseData, $conn);
         
     } else {
         // Incorrect password
