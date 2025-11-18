@@ -19,33 +19,42 @@
   box-sizing: border-box;
 }
 
+/* Remove scrollbar from html and body */
 html, body {
   height: 100%;
   overflow-x: hidden;
+  overflow-y: hidden;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: var(--gradient-bg);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 /* Remove Bootstrap container margins */
 .container-fluid {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
   width: 100%;
 }
 
-/* Fix row margins */
+/* Fix row margins but keep some gap */
 .row {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  width: 100%;
+  margin-left: -8px !important;
+  margin-right: -8px !important;
+  width: calc(100% + 16px);
 }
 
-/* Fix column padding */
+/* Fix column padding with side gaps */
 .col-md-8, .col-md-4, .col-md-6, .col-md-10, .col-md-2 {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
 /* Mobile Header */
@@ -55,11 +64,7 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  background: linear-gradient(
-    180deg,
-    var(--primary-pink) 0%,
-    var(--darker-pink) 100%
-  );
+  background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
   color: white;
   padding: 15px 20px;
   z-index: 1000;
@@ -113,14 +118,22 @@ html, body {
   top: 0;
   left: 0;
   width: 16.666667%;
-  height: 100%;
+  height: 100vh;
   background: linear-gradient(180deg, var(--primary-pink) 0%, var(--darker-pink) 100%);
   color: white;
   box-shadow: 3px 0 20px rgba(0,0,0,0.15);
   z-index: 100;
   transition: transform 0.3s ease;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   margin: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Hide sidebar scrollbar */
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Logo Container */
@@ -196,40 +209,32 @@ html, body {
   text-align: center;
 }
 
-/* Main Content - FIXED MARGIN ISSUE */
+/* Main Content - proper scrolling */
 main {
   margin-left: 16.666667%;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px !important;
   width: calc(100% - 16.666667%) !important;
   margin-top: 0 !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* Fix container and row spacing */
-.container-fluid {
-  padding-left: 15px !important;
-  padding-right: 15px !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  width: 100%;
+/* Hide main scrollbar */
+main::-webkit-scrollbar {
+  display: none;
 }
 
-/* Fix row margins but keep some gap */
-.row {
-  margin-left: -8px !important;
-  margin-right: -8px !important;
-  width: calc(100% + 16px);
-}
-
-/* Fix column padding with side gaps */
-.col-md-8, .col-md-4, .col-md-6, .col-md-10, .col-md-2 {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-/* CRITICAL: Fix main content area for mobile */
+/* Mobile fixes */
 @media (max-width: 992px) {
+  html, body {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
   .mobile-header {
     display: block;
   }
@@ -237,7 +242,7 @@ main {
   .sidebar {
     transform: translateX(-100%);
     width: 240px;
-    height: 100%;
+    height: 100vh;
     overflow-y: auto;
   }
 
@@ -249,24 +254,23 @@ main {
     display: block;
   }
 
-  /* FIX: Remove all margins and set full width with side gaps */
   main {
     margin-left: 0 !important;
     margin-right: 0 !important;
     margin-top: 70px !important;
-    padding: 15px 12px !important; /* Added side gaps */
+    padding: 15px 12px !important;
     width: 100% !important;
     max-width: 100% !important;
+    height: auto;
+    min-height: calc(100vh - 70px);
   }
 
-  /* Fix container fluid on mobile with side gaps */
   .container-fluid {
-    padding: 0 8px !important; /* Side gaps */
+    padding: 0 8px !important;
     margin: 0 !important;
     max-width: 100% !important;
   }
 
-  /* Better spacing for mobile rows */
   .row {
     margin-left: -6px !important;
     margin-right: -6px !important;
