@@ -16,6 +16,12 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <script src="../../admin/styles/logout.js"></script>
+
+  <!-- SweetAlert2 CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
   <style>
     /* Base Styles for Cards & Buttons */
     .stats-buttons {
@@ -905,8 +911,8 @@
             <span>Activity Log</span>
           </a>
 
-          <a href="../../index.php" class="nav-link">
-            <i class="fa-solid fa-gear"></i>
+          <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
+            <i class="fa-solid fa-right-from-bracket"></i>
             <span>Log Out</span>
           </a>
         </div>

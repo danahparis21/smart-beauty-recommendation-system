@@ -227,6 +227,22 @@ main::-webkit-scrollbar {
   display: none;
 }
 
+/* Soft SweetAlert popup */
+.soft-popup {
+  border-radius: 20px !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+  padding: 25px !important;
+  border: 1px solid rgba(228, 151, 170, 0.15) !important;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #fff5f9 30%,
+    #ffe6f2 70%,
+    #ffd1dc 100%
+  ) !important;
+}
+
+
 /* Mobile fixes */
 @media (max-width: 992px) {
   html, body {
