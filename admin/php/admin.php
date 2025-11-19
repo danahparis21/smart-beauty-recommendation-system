@@ -60,12 +60,11 @@ class AdminDashboard
         return number_format($total, 2, '.', '');
     }
 
-    // Get QR codes count
-    public function getQRCodeCount()
+    public function getTotalFavorites()
     {
-        $query = "SELECT COUNT(*) as count FROM orders WHERE qr_code IS NOT NULL AND qr_code != ''";
+        $query = "SELECT COUNT(*) as total_favorites FROM favorites";
         $result = $this->conn->query($query);
-        return $result->fetch_assoc()['count'];
+        return $result->fetch_assoc()['total_favorites'];
     }
 
     // Updated getSalesChartData with proper filtering
@@ -465,7 +464,7 @@ class AdminDashboard
                 'orders_today' => $this->getOrdersToday(),
                 'orders_week' => $this->getOrdersThisWeek(),
                 'total_sales' => $this->getTotalSales(),
-                'qr_codes' => $this->getQRCodeCount()
+                'total_favorites' => $this->getTotalFavorites() 
             ];
             $data['best_sellers'] = $this->getBestSellingProducts();
             $data['ratings'] = $this->getStoreRatings();
