@@ -1,0 +1,95 @@
+=== STARTING REVIEWS QUERY ===
+Parent Product ID: SWEETBLUSH01
+Requested Product ID: SWEETBLUSH01
+Product IDs SQL: SELECT ProductID FROM products WHERE ParentProductID = ? OR ProductID = ?
+All product IDs found: ["BLUSH007","BLUSH008","BLUSH009","BLUSH010","SWEETBLUSH01"]
+Reviews SQL: 
+            SELECT
+                r.product_id,
+                r.user_id,
+                r.stars as Rating,
+                r.review as ReviewText,
+                r.created_at as CreatedDate,
+                r.media_url,
+                u.username as UserName,
+                p.Name as variant_name,
+                p.ShadeOrVariant,
+                p.HexCode
+            FROM ratings r
+            LEFT JOIN users u ON r.user_id = u.user_id
+            LEFT JOIN products p ON r.product_id = p.ProductID
+            WHERE r.product_id IN (?,?,?,?,?)
+            ORDER BY r.created_at DESC
+            LIMIT 50
+        
+Product IDs for IN clause: ["BLUSH007","BLUSH008","BLUSH009","BLUSH010","SWEETBLUSH01"]
+EXCEPTION: Reviews processing exception: Unknown column 'u.user_id' in 'on clause'
+Final reviews count: 0
+=== END REVIEWS QUERY ===
+
+=== STARTING REVIEWS QUERY ===
+Parent Product ID: SWEETBLUSH01
+Requested Product ID: SWEETBLUSH01
+Product IDs SQL: SELECT ProductID FROM products WHERE ParentProductID = ? OR ProductID = ?
+All product IDs found: ["BLUSH007","BLUSH008","BLUSH009","BLUSH010","SWEETBLUSH01"]
+Reviews SQL: 
+            SELECT
+                r.product_id,
+                r.user_id,
+                r.stars as Rating,
+                r.review as ReviewText,
+                r.created_at as CreatedDate,
+                r.media_url,
+                u.username as UserName,
+                p.Name as variant_name,
+                p.ShadeOrVariant,
+                p.HexCode
+            FROM ratings r
+            LEFT JOIN users u ON r.user_id = u.UserID
+            LEFT JOIN products p ON r.product_id = p.ProductID
+            WHERE r.product_id IN (?,?,?,?,?)
+            ORDER BY r.created_at DESC
+            LIMIT 50
+        
+Product IDs for IN clause: ["BLUSH007","BLUSH008","BLUSH009","BLUSH010","SWEETBLUSH01"]
+Reviews query found 2 reviews
+Review found - Product: BLUSH009, User: beautyandblessed.business_6752
+Full review data: {"product_id":"BLUSH009","user_id":62,"Rating":5,"ReviewText":"5 star ka sa akin","CreatedDate":"2025-11-19 16:11:22","media_url":null,"UserName":"beautyandblessed.business_6752","variant_name":"Kiss Beauty Sweet Blush Stick","ShadeOrVariant":"3","HexCode":"#fe6b7d"}
+Review found - Product: BLUSH009, User: beautyandblessed.business_6752
+Full review data: {"product_id":"BLUSH009","user_id":62,"Rating":5,"ReviewText":"nice","CreatedDate":"2025-11-16 20:18:46","media_url":null,"UserName":"beautyandblessed.business_6752","variant_name":"Kiss Beauty Sweet Blush Stick","ShadeOrVariant":"3","HexCode":"#fe6b7d"}
+Final reviews count: 2
+=== END REVIEWS QUERY ===
+
+=== STARTING REVIEWS QUERY ===
+Parent Product ID: SWEETBLUSH01
+Requested Product ID: SWEETBLUSH01
+Product IDs SQL: SELECT ProductID FROM products WHERE ParentProductID = ? OR ProductID = ?
+All product IDs found: ["BLUSH007","BLUSH008","BLUSH009","BLUSH010","SWEETBLUSH01"]
+Reviews SQL: 
+            SELECT
+                r.product_id,
+                r.user_id,
+                r.stars as Rating,
+                r.review as ReviewText,
+                r.created_at as CreatedDate,
+                r.media_url,
+                u.username as UserName,
+                p.Name as variant_name,
+                p.ShadeOrVariant,
+                p.HexCode
+            FROM ratings r
+            LEFT JOIN users u ON r.user_id = u.UserID
+            LEFT JOIN products p ON r.product_id = p.ProductID
+            WHERE r.product_id IN (?,?,?,?,?)
+            ORDER BY r.created_at DESC
+            LIMIT 50
+        
+Product IDs for IN clause: ["BLUSH007","BLUSH008","BLUSH009","BLUSH010","SWEETBLUSH01"]
+Reviews query found 2 reviews
+Review found - Product: BLUSH009, User: beautyandblessed.business_6752
+Full review data: {"product_id":"BLUSH009","user_id":62,"Rating":5,"ReviewText":"5 star ka sa akin","CreatedDate":"2025-11-19 16:11:22","media_url":null,"UserName":"beautyandblessed.business_6752","variant_name":"Kiss Beauty Sweet Blush Stick","ShadeOrVariant":"3","HexCode":"#fe6b7d"}
+Review found - Product: BLUSH009, User: beautyandblessed.business_6752
+Full review data: {"product_id":"BLUSH009","user_id":62,"Rating":5,"ReviewText":"nice","CreatedDate":"2025-11-16 20:18:46","media_url":null,"UserName":"beautyandblessed.business_6752","variant_name":"Kiss Beauty Sweet Blush Stick","ShadeOrVariant":"3","HexCode":"#fe6b7d"}
+Final reviews count: 2
+=== END REVIEWS QUERY ===
+

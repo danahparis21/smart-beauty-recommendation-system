@@ -11,9 +11,10 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Beauty & Blessed - Premium Makeup & Beauty Products</title>
+    <title>Blessence - Premium Makeup & Beauty Products</title>
+    <link rel="icon" href="admin/images/mainlogo.png" type="image/png">
     <meta name="description" content="Invest in yourself with Beauty & Blessed. Discover premium Malaysian cosmetics, virtual try-on technology, and personalized beauty recommendations in Nasugbu, Batangas.">
-    <meta name="author" content="Beauty & Blessed">
+    <meta name="author" content="Blessence">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +25,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Beauty & Blessed - Premium Makeup & Beauty Products">
+    <meta property="og:title" content="Blessence - Premium Makeup & Beauty Products">
     <meta property="og:description" content="Invest in yourself — reveal the beauty that's already within. Shop premium Malaysian cosmetics and beauty products.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png">
@@ -2446,8 +2447,8 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     <header class="header" id="mainHeader">
         <div class="container">
             <div class="brand-header">
-                <h1 class="brand-name">Beauty & Blessed</h1>
-                <p class="brand-tagline">Elevate Your Everyday Glam</p>
+                <h1 class="brand-name">Blessence</h1>
+                <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
             </div>
             <button class="profile-btn" onclick="window.location.href='user/html/login.html'">
                 <i class="fas fa-user"></i>
@@ -2811,8 +2812,8 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <h3>Beauty & Blessed</h3>
-                    <p>Your one-stop shop for everything that makes you look, feel, and smell divine</p>
+                <h3>Blessence</h1>
+                <p>Beauty & Blessed Online Makeup Store</p>
                 </div>
 
 

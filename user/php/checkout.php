@@ -93,10 +93,13 @@ try {
         $updateStock = $conn->prepare("UPDATE products SET Stocks = Stocks - ? WHERE ProductID = ?");
         $updateStock->bind_param("is", $item['quantity'], $item['product_id']);
         $updateStock->execute();
+        
+        // ✅ MARK CART ITEMS AS CHECKED_OUT
+        $updateCart = $conn->prepare("UPDATE cart SET status = 'checked_out' WHERE user_id = ? AND product_id = ? AND status = 'active'");
+        $updateCart->bind_param("is", $userId, $item['product_id']);
+        $updateCart->execute();
+        $updateCart->close();
     }
-    
-    // DON'T remove cart items yet - they stay until order is completed
-    // Cart items will be removed when order status changes to 'completed'
     
     // Commit transaction
     $conn->commit();
@@ -108,7 +111,7 @@ try {
         'order' => [
             'order_id' => $orderId,
             'qr_code' => $qrCode,
-            'total_amount' => $totalAmount, // Return as number, not formatted
+            'total_amount' => $totalAmount,
             'status' => 'pending',
             'order_date' => date('Y-m-d H:i:s'),
             'items_count' => count($orderItems)

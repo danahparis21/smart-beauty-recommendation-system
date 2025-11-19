@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans
 import mediapipe as mp
 import json
 import requests
+import time
 
 
 app = Flask(__name__)
@@ -68,26 +69,19 @@ face_mesh = mp_face_mesh.FaceMesh(
 def analyze_skin_tone_undertone(image):
     """Analyze skin tone and undertone from facial image - RELIABLE VERSION (with AWB)"""
     
-    # --- DYNAMIC LIGHTING CORRECTION (Automatic White Balance - White Patch) ---
-    # The image is BGR at this point.
-    
-    # Find the maximum B, G, R values in the image (assumes the brightest point should be white)
+    # --- DYNAMIC LIGHTING CORRECTION ---
     max_b = np.max(image[:, :, 0])
     max_g = np.max(image[:, :, 1])
     max_r = np.max(image[:, :, 2])
     
-    # Calculate gain factors to push the max values towards 255
     gain_b = 255.0 / max_b
     gain_g = 255.0 / max_g
     gain_r = 255.0 / max_r
     
-    # Apply the gains to the entire image, correcting color cast and contrast
     image_corrected = image.astype(np.float32)
     image_corrected[:, :, 0] = np.clip(image_corrected[:, :, 0] * gain_b, 0, 255)
     image_corrected[:, :, 1] = np.clip(image_corrected[:, :, 1] * gain_g, 0, 255)
     image_corrected[:, :, 2] = np.clip(image_corrected[:, :, 2] * gain_r, 0, 255)
-    
-    # Convert back to 8-bit integer type
     image_corrected = image_corrected.astype(np.uint8)
     
     # --- START OF ORIGINAL ANALYSIS LOGIC ---
@@ -95,11 +89,27 @@ def analyze_skin_tone_undertone(image):
         # Convert corrected image to RGB for MediaPipe
         rgb_image = cv2.cvtColor(image_corrected, cv2.COLOR_BGR2RGB)
         
-        # Process with MediaPipe
-        results = face_mesh.process(rgb_image)
+        # ADD RETRY LOGIC FOR MEDIAPIPE ERROR - PUT IT HERE
+        max_retries = 2
+        results = None
         
-        if not results.multi_face_landmarks:
-            print("❌ No face detected by MediaPipe")
+        for attempt in range(max_retries):
+            try:
+                # Process with MediaPipe
+                results = face_mesh.process(rgb_image)
+                break  # Success, break out of retry loop
+            except Exception as mp_error:
+                if "timestamp mismatch" in str(mp_error) and attempt < max_retries - 1:
+                    print(f"🔄 MediaPipe timestamp error, retrying... (attempt {attempt + 1})")
+                    time.sleep(0.1)  # Add this import at top: import time
+                    continue  # Try again
+                else:
+                    print(f"❌ MediaPipe error, using fallback: {mp_error}")
+                    return simple_fallback_analysis(image)  # ← USE FALLBACK
+        
+        # Check if we got results after retries
+        if results is None or not results.multi_face_landmarks:
+            print("❌ No face detected by MediaPipe after retries")
             return None
         
         # Get face landmarks
@@ -190,9 +200,49 @@ def analyze_skin_tone_undertone(image):
         
     except Exception as e:
         print(f"💥 Skin analysis error: {e}")
-        import traceback
-        print(f"Skin analysis traceback: {traceback.format_exc()}")
+        # Don't print traceback for timestamp errors
+        if "timestamp mismatch" not in str(e):
+            import traceback
+            print(f"Skin analysis traceback: {traceback.format_exc()}")
         return None
+    
+def simple_fallback_analysis(image):
+    """Simple fallback when MediaPipe fails completely"""
+    print("🔄 Using fallback skin analysis")
+    
+    # Calculate average color of the image
+    avg_color = np.mean(image, axis=(0, 1))
+    b, g, r = avg_color[0], avg_color[1], avg_color[2]
+    
+    # Simple brightness detection
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    brightness = np.mean(hsv[:, :, 2])
+    
+    # Simple tone classification
+    if brightness < 100:
+        tone = "Deep"
+    elif brightness < 160:
+        tone = "Medium"
+    else:
+        tone = "Fair"
+    
+    # Simple undertone estimation
+    if r > max(g, b) + 15:
+        undertone = "Warm"
+    elif b > max(r, g) + 10:
+        undertone = "Cool"
+    else:
+        undertone = "Neutral"
+    
+    return {
+        'tone': tone,
+        'undertone': undertone,
+        'brightness': float(brightness),
+        'skin_color_rgb': [int(r), int(g), int(b)],
+        'skin_color_hex': '#{:02x}{:02x}{:02x}'.format(int(r), int(g), int(b)),
+        'confidence': 0.4,  # Lower confidence for fallback
+        'fallback_used': True
+    }
 
 def hex_to_rgb(hex_color):
     """Convert hex color to RGB"""

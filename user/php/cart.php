@@ -53,6 +53,11 @@ try {
             getCartCount($conn, $userId, $response);
             break;
         
+        // ✅ ADD THIS NEW CASE
+        case 'update_status':
+            updateCartStatus($conn, $userId, $response);
+            break;
+        
         default:
             $response['message'] = 'Invalid action';
             break;
@@ -229,6 +234,7 @@ function getCart($conn, $userId, &$response) {
             c.cart_id,
             c.product_id,
             c.quantity,
+            c.status, 
             p.Name AS name,
             p.Price AS price,
             p.Category AS category,
@@ -243,7 +249,7 @@ function getCart($conn, $userId, &$response) {
         LEFT JOIN productmedia pm_preview 
             ON p.ParentProductID = pm_preview.ParentProductID 
             AND pm_preview.MediaType = 'PREVIEW'
-        WHERE c.user_id = ?
+        WHERE c.user_id = ? AND c.status = 'active'  
         ORDER BY c.added_at DESC
     ";
 
@@ -270,6 +276,37 @@ function getCart($conn, $userId, &$response) {
     $response['cartCount'] = count($cartItems);
     $response['totalAmount'] = $totalAmount;
     $response['message'] = $response['message'] ?: 'Cart retrieved successfully';
+}
+
+/**
+ * ✅ ADD THIS NEW FUNCTION - Update cart status
+ */
+function updateCartStatus($conn, $userId, &$response) {
+    $productId = $_POST['product_id'] ?? '';
+    $status = $_POST['status'] ?? 'active';
+    
+    if (empty($productId)) {
+        $response['message'] = 'Product ID is required';
+        return;
+    }
+
+    // Validate status
+    if (!in_array($status, ['active', 'checked_out'])) {
+        $response['message'] = 'Invalid status';
+        return;
+    }
+
+    $updateQuery = "UPDATE cart SET status = ? WHERE user_id = ? AND product_id = ?";
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param("sis", $status, $userId, $productId);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $response['success'] = true;
+        $response['message'] = 'Cart item status updated';
+    } else {
+        $response['message'] = 'Item not found in cart';
+    }
 }
 
 /**

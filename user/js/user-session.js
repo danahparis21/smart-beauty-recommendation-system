@@ -81,22 +81,80 @@ function isAdmin() {
   return currentUser && currentUser.role === 'admin';
 }
 
-// Logout function
-function logout() {
-  // Clear session on server
-  fetch('../php/logout.php')
-    .then(() => {
-      // Clear localStorage
-      localStorage.clear();
-      // Redirect to login
+// Enhanced logout function
+async function logout() {
+  if (confirm("Are you sure you want to sign out?")) {
+      try {
+          // Clear server session
+          await fetch('../php/logout.php', {
+              method: 'POST',
+              headers: {
+                  'Cache-Control': 'no-cache'
+              }
+          });
+      } catch (error) {
+          console.error('Logout request failed:', error);
+      } finally {
+          // Always clear client data and redirect
+          localStorage.clear();
+          sessionStorage.clear();
+          
+          // Force reload to clear any cached state
+          window.location.href = '/user/html/login.html?logout=true&t=' + Date.now();
+      }
+  }
+}
+function setupPageProtection() {
+  // Check auth when page becomes visible (including back/forward navigation)
+  document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+          // Page became visible - verify user is still logged in
+          verifySession();
+      }
+  });
+
+  // Also check on pageshow event (for back/forward cache)
+  window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+          // Page loaded from bfcache
+          verifySession();
+      }
+  });
+}
+
+// Number formatting function - ADD THIS
+function formatNumberWithCommas(number) {
+  // Handle both numbers and strings
+  const num = typeof number === 'string' ? parseFloat(number) : number;
+  
+  // Split into whole and decimal parts
+  const parts = num.toFixed(2).split('.');
+  const wholePart = parts[0];
+  const decimalPart = parts[1] || '00';
+  
+  // Add commas to whole number part
+  const formattedWhole = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  
+  return `${formattedWhole}.${decimalPart}`;
+}
+
+
+// Add this function to verify session
+async function verifySession() {
+  try {
+      const response = await fetch('../php/get-user-session.php?t=' + Date.now());
+      const data = await response.json();
+      
+      if (!data.success || !data.isLoggedIn) {
+          // Session is no longer valid
+          console.log('Session expired, redirecting to login');
+          window.location.href = '/user/html/login.html';
+      }
+  } catch (error) {
+      console.error('Session verification failed:', error);
+      // On error, redirect to login to be safe
       window.location.href = '/user/html/login.html';
-    })
-    .catch(error => {
-      console.error('Logout error:', error);
-      // Still redirect even if request fails
-      localStorage.clear();
-      window.location.href = '/user/html/login.html';
-    });
+  }
 }
 
 // Export for use in other scripts
@@ -109,3 +167,4 @@ if (typeof module !== 'undefined' && module.exports) {
     getCurrentUser: () => currentUser
   };
 }
+

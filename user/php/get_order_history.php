@@ -61,6 +61,15 @@ try {
     $currentOrder = null;
     
     while ($row = $result->fetch_assoc()) {
+        // FIX IMAGE PATH - MOVE THIS INSIDE THE LOOP
+        $imagePath = $row['product_image'];
+        if ($imagePath && !str_contains($imagePath, '/admin/')) {
+            // Extract just the filename and rebuild the correct path
+            $filename = basename($imagePath);
+            $imagePath = '/admin/uploads/product_images/' . $filename;
+        }
+        $row['product_image'] = $imagePath;
+
         // If this is a new order
         if ($currentOrderId !== $row['order_id']) {
             if ($currentOrder !== null) {
