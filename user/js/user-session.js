@@ -13,9 +13,8 @@ async function fetchUserSession() {
       saveUserToLocalStorage(currentUser);
       return currentUser;
     } else {
-      // Not logged in - redirect to login
-      console.warn('User not logged in, redirecting...');
-      window.location.href = '/user/html/login.html';
+      // Not logged in - but DON'T redirect automatically
+      console.log('User not logged in (session check)');
       return null;
     }
   } catch (error) {
@@ -25,12 +24,10 @@ async function fetchUserSession() {
     if (fallbackUser && fallbackUser.id) {
       return fallbackUser;
     }
-    // If no valid user data, redirect to login
-    window.location.href = '/user/html/login.html';
+    // If no valid user data, return null but don't redirect
     return null;
   }
 }
-
 // Save user data to localStorage
 function saveUserToLocalStorage(user) {
   localStorage.setItem('userId', user.id);
@@ -81,7 +78,7 @@ function isAdmin() {
   return currentUser && currentUser.role === 'admin';
 }
 
-// Enhanced logout function
+// Enhanced logout function - Redirect to home page (index.php)
 async function logout() {
   if (confirm("Are you sure you want to sign out?")) {
       try {
@@ -95,12 +92,12 @@ async function logout() {
       } catch (error) {
           console.error('Logout request failed:', error);
       } finally {
-          // Always clear client data and redirect
+          // Always clear client data and redirect to HOME
           localStorage.clear();
           sessionStorage.clear();
           
-          // Force reload to clear any cached state
-          window.location.href = '/user/html/login.html?logout=true&t=' + Date.now();
+          // IMMEDIATE redirect - don't wait for anything
+          window.location.replace('../../index.php?logout=true&t=' + Date.now());
       }
   }
 }
