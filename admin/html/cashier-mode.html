@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Mode - Beauty & Blessed</title>
+    <link rel="icon" href="../images/mainlogo.png" type="image/png">
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        .cashier-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+        }
+
+        .page-title {
+            color: var(--dark-pink);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            color: var(--dark-pink);
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .product-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image {
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+            width: 100%;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-category {
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--dark-pink);
+            font-size: 1.1rem;
+        }
+
+        .product-stock {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .stock-available {
+            color: #28a745;
+        }
+
+        .stock-low {
+            color: #ffc107;
+        }
+
+        .stock-out {
+            color: #dc3545;
+        }
+
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-pink);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            margin: 0 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        .remove-item {
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .search-input {
+            padding-left: 40px;
+        }
+
+        .category-filter {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-pink);
+            border-color: var(--primary-pink);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-pink);
+            border-color: var(--secondary-pink);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .total-amount {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark-pink);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-cart i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary-pink);
+        }
+
+        .product-grid {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .cart-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* QR Icon inside Current Sale header */
+        .qr-btn-inline {
+            background: var(--primary-pink);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .qr-btn-inline i {
+            font-size: 1.4rem;
+        }
+
+        .qr-btn-inline:hover {
+            background: var(--darker-pink);
+            transform: scale(1.05);
+        }
+
+        /* Adjust header spacing */
+        .card-header .header-actions {
+            gap: 8px;
+        }
+
+        /* QR Scanner Modal Styles */
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .qr-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+        }
+
+        .qr-modal-header h5 {
+            color: var(--dark-pink);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-qr-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-qr-modal:hover {
+            color: var(--dark-pink);
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 20px;
+        }
+
+        #qr-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .camera-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: var(--primary-pink);
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scanner-frame {
+            width: 250px;
+            height: 250px;
+            border: 2px solid var(--primary-pink);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.4);
+        }
+
+        .scanner-frame::before,
+        .scanner-frame::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--primary-pink);
+        }
+
+        .scanner-frame::before {
+            top: -3px;
+            left: -3px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .scanner-frame::after {
+            bottom: -3px;
+            right: -3px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .cancel-scan-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .cancel-scan-btn:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .camera-btn {
+            background: var(--primary-pink);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(228, 151, 170, 0.3);
+        }
+
+        .camera-btn:hover {
+            background: var(--secondary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(228, 151, 170, 0.4);
+        }
+
+        .camera-btn:active {
+            transform: translateY(0);
+        }
+
+        .camera-btn.off {
+            background: #dc3545;
+        }
+
+        .camera-btn.off:hover {
+            background: #c82333;
+        }
+
+        .scanner-results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .scanner-results.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .scanner-results.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .scanner-results.info {
+            display: block;
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d7ff;
+        }
+
+        .scan-instructions {
+            background: #e9f7fe;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scan-instructions i {
+            color: #17a2b8;
+            font-size: 1.2rem;
+        }
+
+        .scan-instructions p {
+            margin: 0;
+            color: #0c5460;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .product-image {
+                height: 120px;
+            }
+
+            .camera-container {
+                height: 300px;
+            }
+
+            .scanner-frame {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cashier-container">
+
+        <div class="row">
+            <!-- Products Section -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Products</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Search Box -->
+                            <div class="search-box me-2">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="form-control search-input" id="productSearch"
+                                    placeholder="Search products...">
+                            </div>
+
+                            <!-- Category Dropdown -->
+                            <div class="dropdown me-2">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                    id="categoryFilter" data-bs-toggle="dropdown">
+                                    <i class="fas fa-filter me-1"></i>Category
+                                </button>
+                                <ul class="dropdown-menu category-filter" id="categoryList">
+                                    <li><a class="dropdown-item category-option active" href="#" data-category="all">All
+                                            Categories</a></li>
+                                    <!-- Categories will be populated by JavaScript -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row product-grid" id="productGrid">
+                            <!-- Products will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Section -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Current Sale</span>
+                        <div class="header-actions d-flex align-items-center">
+                            <div class="qr-btn-inline me-2" id="openQrScanner">
+                                <i class="bi bi-qr-code-scan"></i>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger" id="clearCart">
+                                <i class="fas fa-trash me-1"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="cart-container p-3" id="cartItems">
+                            <div class="empty-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <h5>Cart is Empty</h5>
+                                <p>Add products to begin a sale</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 border-top">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Total:</span>
+                                <span class="total-amount" id="totalAmount">₱0.00</span>
+                            </div>
+                            <button class="btn btn-success w-100" id="completeSale" disabled>
+                                <i class="fas fa-check-circle me-2"></i>Complete Sale
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div class="qr-modal" id="qrScannerModal">
+
+        <div class="qr-modal-content">
+            <div class="qr-modal-header">
+                <h5>
+                    <i class="fas fa-qrcode"></i>
+                    QR Code Scanner
+                </h5>
+                <button class="close-qr-modal" id="closeQrScanner">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="scan-instructions">
+                <i class="fas fa-info-circle"></i>
+                <p>Point the camera at the QR code to scan automatically</p>
+            </div>
+
+            <div class="camera-container">
+
+                <div class="camera-placeholder" id="cameraPlaceholder">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <video id="qr-video" autoplay muted playsinline style="display: none;"></video>
+                <div class="camera-overlay">
+                    <div class="scanner-frame"></div>
+                </div>
+            </div>
+
+            <div class="scanner-results" id="scannerResults"></div>
+
+            <div class="camera-controls">
+                <button class="camera-btn" id="startCamera">
+                    <i class="fas fa-camera"></i> Start Camera
+                </button>
+                <button class="camera-btn off" id="stopCamera" disabled>
+                    <i class="fas fa-stop"></i> Stop Camera
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // DOM Elements
+            const productGrid = document.getElementById('productGrid');
+            const cartItems = document.getElementById('cartItems');
+            const totalAmount = document.getElementById('totalAmount');
+            const productSearch = document.getElementById('productSearch');
+            const categoryList = document.getElementById('categoryList');
+            const clearCartBtn = document.getElementById('clearCart');
+            const completeSaleBtn = document.getElementById('completeSale');
+            const openQrScannerBtn = document.getElementById('openQrScanner');
+            const qrScannerModal = document.getElementById('qrScannerModal');
+            const video = document.getElementById('qr-video');
+            const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+            const startCameraBtn = document.getElementById('startCamera');
+            const stopCameraBtn = document.getElementById('stopCamera');
+            const scannerResults = document.getElementById('scannerResults');
+            const closeQrScannerBtn = document.getElementById('closeQrScanner'); 
+
+            // State
+            let products = [];
+            let cart = [];
+            let categories = [];
+            let currentCategory = 'all';
+            let currentSearch = '';
+            let stream = null;
+            let scanning = false;
+            let scanInterval = null;
+            let lastScannedQR = null;
+            let lastScanTime = 0;
+            const SCAN_COOLDOWN = 3000; // 3 seconds cooldown between scans
+
+            // Initialize
+            loadProducts();
+            setupEventListeners();
+
+            // Load products from server
+            function loadProducts() {
+                console.log('Loading products...');
+
+                fetch('../php/cashier-mode.php?action=get_products')
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Received data:', data);
+
+                        if (data.success) {
+                            products = data.products;
+                            categories = data.categories;
+
+                            console.log('Products loaded:', products.length);
+                            console.log('Categories:', categories);
+
+                            renderProducts();
+                            renderCategories();
+                        } else {
+                            console.error('Error in response:', data.error);
+                            showError('Failed to load products: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        showError('Failed to load products: ' + error.message);
+                    });
+            }
+
+            // Render products to the grid
+            function renderProducts() {
+                if (products.length === 0) {
+                    productGrid.innerHTML = '<div class="col-12 text-center py-5"><i class="fas fa-box-open fa-3x text-muted mb-3"></i><p>No products available</p></div>';
+                    return;
+                }
+
+                let filteredProducts = products;
+
+                // Apply category filter
+                if (currentCategory !== 'all') {
+                    filteredProducts = filteredProducts.filter(product =>
+                        product.Category === currentCategory
+                    );
+                }
+
+                // Apply search filter
+                if (currentSearch) {
+                    const searchLower = currentSearch.toLowerCase();
+                    filteredProducts = filteredProducts.filter(product =>
+                        product.Name.toLowerCase().includes(searchLower) ||
+                        product.Category.toLowerCase().includes(searchLower) ||
+                        (product.ShadeOrVariant && product.ShadeOrVariant.toLowerCase().includes(searchLower))
+                    );
+                }
+
+                if (filteredProducts.length === 0) {
+                    productGrid.innerHTML = '<div class="col-12 text-center py-5"><i class="fas fa-search fa-3x text-muted mb-3"></i><p>No products match your search</p></div>';
+                    return;
+                }
+
+                productGrid.innerHTML = filteredProducts.map(product => `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card product-card" data-product-id="${product.ProductID}">
+                            <img src="${product.ImagePath || '../images/placeholder-product.jpg'}" 
+                                 class="product-image" 
+                                 alt="${product.Name}"
+                                 onerror="this.src='../images/placeholder-product.jpg'">
+                            <div class="card-body">
+                                <div class="product-name">${product.Name}</div>
+                                <div class="product-category">${product.Category}</div>
+                                ${product.ShadeOrVariant && product.ShadeOrVariant !== 'PARENT_GROUP' ?
+                        `<div class="product-category">Shade: ${product.ShadeOrVariant}</div>` : ''}
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <div class="product-price">₱${parseFloat(product.Price).toFixed(2)}</div>
+                                    <div class="product-stock ${getStockClass(product.Stocks, product.Status)}">
+                                        ${getStockText(product.Stocks, product.Status)}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm w-100 mt-2 add-to-cart-btn" 
+                                        ${product.Stocks <= 0 || product.Status === 'No Stock' || product.Status === 'Expired' ? 'disabled' : ''}>
+                                    <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add event listeners to product cards
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.addEventListener('click', function (e) {
+                        if (!e.target.classList.contains('add-to-cart-btn')) {
+                            const productId = this.getAttribute('data-product-id');
+                            const product = products.find(p => p.ProductID === productId);
+                            if (product && product.Stocks > 0 && product.Status !== 'No Stock' && product.Status !== 'Expired') {
+                                addToCart(product);
+                            }
+                        }
+                    });
+                });
+
+                // Add event listeners to add to cart buttons
+                document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const productCard = this.closest('.product-card');
+                        const productId = productCard.getAttribute('data-product-id');
+                        const product = products.find(p => p.ProductID === productId);
+                        if (product) {
+                            addToCart(product);
+                        }
+                    });
+                });
+            }
+
+            // Render category filter
+            function renderCategories() {
+                const categoryOptions = categories.map(category =>
+                    `<li><a class="dropdown-item category-option" href="#" data-category="${category}">${category}</a></li>`
+                ).join('');
+
+                categoryList.innerHTML =
+                    '<li><a class="dropdown-item category-option active" href="#" data-category="all">All Categories</a></li>' +
+                    categoryOptions;
+
+                // Add event listeners to category options
+                document.querySelectorAll('.category-option').forEach(option => {
+                    option.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        document.querySelectorAll('.category-option').forEach(opt => opt.classList.remove('active'));
+                        this.classList.add('active');
+                        currentCategory = this.getAttribute('data-category');
+                        renderProducts();
+                    });
+                });
+            }
+
+            // Add product to cart
+            function addToCart(product) {
+                // Check if product is already in cart
+                const existingItem = cart.find(item => item.ProductID === product.ProductID);
+
+                if (existingItem) {
+                    // Check stock availability
+                    if (existingItem.quantity >= product.Stocks) {
+                        showWarning(`Only ${product.Stocks} units available in stock`);
+                        return;
+                    }
+                    existingItem.quantity += 1;
+                } else {
+                    // Check if product has stock
+                    if (product.Stocks < 1) {
+                        showWarning('Product is out of stock');
+                        return;
+                    }
+                    cart.push({
+                        ProductID: product.ProductID,
+                        Name: product.Name,
+                        Category: product.Category,
+                        ShadeOrVariant: product.ShadeOrVariant,
+                        Price: parseFloat(product.Price),
+                        quantity: 1,
+                        ImagePath: product.ImagePath
+                    });
+                }
+
+                renderCart();
+                updateCartButtonState();
+                showSuccess(`${product.Name} added to cart`);
+            }
+
+            // Render cart items
+            function renderCart() {
+                if (cart.length === 0) {
+                    cartItems.innerHTML = `
+                        <div class="empty-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <h5>Cart is Empty</h5>
+                            <p>Add products to begin a sale</p>
+                        </div>
+                    `;
+                    totalAmount.textContent = '₱0.00';
+                    return;
+                }
+
+                let total = 0;
+
+                cartItems.innerHTML = cart.map(item => {
+                    const itemTotal = item.Price * item.quantity;
+                    total += itemTotal;
+
+                    return `
+                        <div class="cart-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">${item.Name}</div>
+                                    <div class="small text-muted">${item.Category}</div>
+                                    ${item.ShadeOrVariant && item.ShadeOrVariant !== 'PARENT_GROUP' ?
+                            `<div class="small text-muted">Shade: ${item.ShadeOrVariant}</div>` : ''}
+                                    <div class="fw-bold text-primary mt-1">₱${item.Price.toFixed(2)}</div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="quantity-controls me-3">
+                                        <button class="quantity-btn decrease-quantity" data-product-id="${item.ProductID}">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" class="quantity-input" value="${item.quantity}" min="1" 
+                                               data-product-id="${item.ProductID}">
+                                        <button class="quantity-btn increase-quantity" data-product-id="${item.ProductID}">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="remove-item" data-product-id="${item.ProductID}">
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <span class="text-muted">Qty: ${item.quantity}</span>
+                                <span class="fw-bold">₱${itemTotal.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                totalAmount.textContent = `₱${total.toFixed(2)}`;
+
+                // Add event listeners to cart controls
+                document.querySelectorAll('.decrease-quantity').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const productId = this.getAttribute('data-product-id');
+                        updateQuantity(productId, -1);
+                    });
+                });
+
+                document.querySelectorAll('.increase-quantity').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const productId = this.getAttribute('data-product-id');
+                        updateQuantity(productId, 1);
+                    });
+                });
+
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    input.addEventListener('change', function () {
+                        const productId = this.getAttribute('data-product-id');
+                        const newQuantity = parseInt(this.value);
+                        if (newQuantity > 0) {
+                            setQuantity(productId, newQuantity);
+                        } else {
+                            this.value = 1;
+                            setQuantity(productId, 1);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.remove-item').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const productId = this.getAttribute('data-product-id');
+                        removeFromCart(productId);
+                    });
+                });
+            }
+
+            // Update product quantity in cart
+            function updateQuantity(productId, change) {
+                const item = cart.find(item => item.ProductID === productId);
+                if (item) {
+                    const newQuantity = item.quantity + change;
+                    if (newQuantity < 1) {
+                        removeFromCart(productId);
+                    } else {
+                        // Check stock availability
+                        const product = products.find(p => p.ProductID === productId);
+                        if (product && newQuantity > product.Stocks) {
+                            showWarning(`Only ${product.Stocks} units available in stock`);
+                            return;
+                        }
+                        item.quantity = newQuantity;
+                        renderCart();
+                        updateCartButtonState();
+                    }
+                }
+            }
+
+            // Set specific quantity for product in cart
+            function setQuantity(productId, quantity) {
+                const item = cart.find(item => item.ProductID === productId);
+                if (item) {
+                    // Check stock availability
+                    const product = products.find(p => p.ProductID === productId);
+                    if (product && quantity > product.Stocks) {
+                        showWarning(`Only ${product.Stocks} units available in stock`);
+                        item.quantity = product.Stocks;
+                    } else {
+                        item.quantity = quantity;
+                    }
+                    renderCart();
+                    updateCartButtonState();
+                }
+            }
+
+            // Remove product from cart
+            function removeFromCart(productId) {
+                cart = cart.filter(item => item.ProductID !== productId);
+                renderCart();
+                updateCartButtonState();
+                showInfo('Product removed from cart');
+            }
+
+            // Clear entire cart
+            function clearCart() {
+                if (cart.length === 0) return;
+
+                Swal.fire({
+                    title: 'Clear Cart?',
+                    text: 'This will remove all items from your cart.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, clear it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        cart = [];
+                        renderCart();
+                        updateCartButtonState();
+                        showInfo('Cart cleared');
+                    }
+                });
+            }
+
+            // Complete sale
+            function completeSale() {
+                if (cart.length === 0) return;
+
+                // Calculate total
+                const total = cart.reduce((sum, item) => sum + (item.Price * item.quantity), 0);
+
+                Swal.fire({
+                    title: 'Complete Sale?',
+                    html: `
+                        <div class="text-start">
+                            <p>You are about to complete a sale with <strong>${cart.length}</strong> item(s).</p>
+                            <p class="fw-bold">Total Amount: ₱${total.toFixed(2)}</p>
+                            <p>This action cannot be undone.</p>
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, complete sale!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        processSale();
+                    }
+                });
+            }
+
+            // Process sale on server
+            function processSale() {
+                const saleData = {
+                    items: cart.map(item => ({
+                        product_id: item.ProductID,
+                        quantity: item.quantity,
+                        price: item.Price
+                    }))
+                };
+
+                fetch('../php/cashier-mode.php?action=process_sale', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(saleData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showSuccess('Sale completed successfully!');
+                            cart = [];
+                            renderCart();
+                            updateCartButtonState();
+                            loadProducts(); // Refresh product stock
+                        } else {
+                            showError('Failed to complete sale: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showError('Failed to complete sale');
+                    });
+            }
+
+            // Update complete sale button state
+            function updateCartButtonState() {
+                completeSaleBtn.disabled = cart.length === 0;
+            }
+
+            // QR Scanner Functions
+            // Load jsQR library from CDN
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+            script.onload = function () {
+                console.log('jsQR library loaded successfully');
+            };
+            script.onerror = function () {
+                console.error('Failed to load jsQR library');
+                scannerResults.textContent = 'Error: Failed to load QR scanner library';
+                scannerResults.className = 'scanner-results error';
+            };
+            document.head.appendChild(script);
+
+            // Start camera function
+            async function startCamera() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        }
+                    });
+
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    cameraPlaceholder.style.display = 'none';
+
+                    startCameraBtn.disabled = true;
+                    stopCameraBtn.disabled = false;
+
+                    scanning = true;
+                    lastScannedQR = null; // Reset last scanned QR
+                    lastScanTime = 0; // Reset scan time
+                    startScanning();
+
+                } catch (err) {
+                    console.error('Error accessing camera:', err);
+                    scannerResults.textContent = 'Error: ' + err.message + '. Please allow camera access.';
+                    scannerResults.className = 'scanner-results error';
+                }
+            }
+
+            // Stop camera function
+            function stopCamera() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    video.srcObject = null;
+                    video.style.display = 'none';
+                    cameraPlaceholder.style.display = 'flex';
+                    stream = null;
+                }
+
+                scanning = false;
+                if (scanInterval) {
+                    clearInterval(scanInterval);
+                    scanInterval = null;
+                }
+
+                startCameraBtn.disabled = false;
+                stopCameraBtn.disabled = true;
+
+                scannerResults.className = 'scanner-results';
+            }
+
+            // Start scanning for QR codes
+            function startScanning() {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                scanInterval = setInterval(() => {
+                    if (!scanning || !video.videoWidth) return;
+
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+                    if (typeof jsQR !== 'undefined') {
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                        if (code && code.data) {
+                            const currentTime = Date.now();
+
+                            // Prevent scanning the same QR code within cooldown period
+                            if (code.data !== lastScannedQR || (currentTime - lastScanTime) > SCAN_COOLDOWN) {
+                                lastScannedQR = code.data;
+                                lastScanTime = currentTime;
+                                handleQRCode(code.data);
+                            }
+                        }
+                    }
+                }, 300); // Scan every 300ms
+            }
+
+            // Handle detected QR code
+            function handleQRCode(qrData) {
+                if (!scanning) return;
+
+                console.log('QR Code detected:', qrData);
+
+                // Fetch order details
+                fetchOrderDetails(qrData);
+            }
+
+            // Fetch order details from server
+            async function fetchOrderDetails(qrCode) {
+                try {
+                    console.log('Fetching order for QR:', qrCode);
+
+                    const response = await fetch(`../php/qr-scanner.php?action=get_order&qr_code=${encodeURIComponent(qrCode)}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Add scanned items to cart
+                        addScannedItemsToCart(data.order.items);
+                        
+                        // Close modal immediately without showing success message
+                        closeQrScannerModal();
+                    } else {
+                        scannerResults.textContent = data.message || 'Order not found';
+                        scannerResults.className = 'scanner-results error';
+                    }
+                } catch (error) {
+                    console.error('Error fetching order:', error);
+                    scannerResults.textContent = 'Error loading order: ' + error.message;
+                    scannerResults.className = 'scanner-results error';
+                }
+            }
+
+            // Add scanned items to cart
+            function addScannedItemsToCart(items) {
+                items.forEach(item => {
+                    // Find the product in our products list
+                    const product = products.find(p => p.ProductID === item.product_id);
+
+                    if (product) {
+                        // Check if product is already in cart
+                        const existingItem = cart.find(cartItem => cartItem.ProductID === product.ProductID);
+
+                        if (existingItem) {
+                            // Update quantity if already in cart
+                            const newQuantity = existingItem.quantity + parseInt(item.quantity);
+                            if (newQuantity <= product.Stocks) {
+                                existingItem.quantity = newQuantity;
+                            } else {
+                                showWarning(`Cannot add more ${product.Name}. Only ${product.Stocks} available.`);
+                            }
+                        } else {
+                            // Add to cart if not already there
+                            if (parseInt(item.quantity) <= product.Stocks) {
+                                cart.push({
+                                    ProductID: product.ProductID,
+                                    Name: product.Name,
+                                    Category: product.Category,
+                                    ShadeOrVariant: product.ShadeOrVariant,
+                                    Price: parseFloat(product.Price),
+                                    quantity: parseInt(item.quantity),
+                                    ImagePath: product.ImagePath
+                                });
+                            } else {
+                                showWarning(`Cannot add ${product.Name}. Only ${product.Stocks} available.`);
+                            }
+                        }
+                    }
+                });
+
+                renderCart();
+                updateCartButtonState();
+                showSuccess('Scanned items added to cart');
+            }
+
+            // Open QR Scanner Modal
+            function openQrScannerModal() {
+                qrScannerModal.style.display = 'flex';
+                scannerResults.textContent = '';
+                scannerResults.className = 'scanner-results';
+            }
+
+            // Close QR Scanner Modal
+            function closeQrScannerModal() {
+                qrScannerModal.style.display = 'none';
+                stopCamera();
+            }
+
+            // Helper functions
+            function getStockClass(stocks, status) {
+                if (status === 'No Stock' || status === 'Expired' || stocks <= 0) {
+                    return 'stock-out';
+                } else if (status === 'Low Stock' || stocks <= 5) {
+                    return 'stock-low';
+                } else {
+                    return 'stock-available';
+                }
+            }
+
+            function getStockText(stocks, status) {
+                if (status === 'No Stock' || stocks <= 0) {
+                    return 'Out of Stock';
+                } else if (status === 'Expired') {
+                    return 'Expired';
+                } else if (status === 'Low Stock' || stocks <= 5) {
+                    return `${stocks} left`;
+                } else {
+                    return 'In Stock';
+                }
+            }
+
+            // Alert functions
+            function showSuccess(message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: message,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            }
+
+            function showError(message) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: message,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            }
+
+            function showWarning(message) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: message,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            }
+
+            function showInfo(message) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    text: message,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            }
+
+            // Event listeners setup
+            function setupEventListeners() {
+                // Search functionality
+                productSearch.addEventListener('input', function () {
+                    currentSearch = this.value;
+                    renderProducts();
+                });
+
+                // Clear cart
+                clearCartBtn.addEventListener('click', clearCart);
+
+                // Complete sale
+                completeSaleBtn.addEventListener('click', completeSale);
+
+                // QR Scanner
+                openQrScannerBtn.addEventListener('click', openQrScannerModal);
+                closeQrScannerBtn.addEventListener('click', closeQrScannerModal);
+                startCameraBtn.addEventListener('click', startCamera);
+                stopCameraBtn.addEventListener('click', stopCamera);
+
+                // Close modal when clicking outside
+                qrScannerModal.addEventListener('click', function (e) {
+                    if (e.target === qrScannerModal) {
+                        closeQrScannerModal();
+                    }
+                });
+            }
+        });
+    // ================== Disable Back/Forward ==================
+    (function() {
+        // Push initial state
+        history.pushState(null, null, location.href);
+
+        // Re-push the state every time user tries to go back/forward
+        window.addEventListener('popstate', function(e) {
+            history.pushState(null, null, location.href);
+        });
+
+        // Optional: block keyboard shortcuts like Alt+Left/Right
+        window.addEventListener('keydown', function(e) {
+            // Back (Alt + Left), Forward (Alt + Right)
+            if ((e.altKey && e.key === 'ArrowLeft') || (e.altKey && e.key === 'ArrowRight')) {
+                e.preventDefault();
+            }
+
+            // Ctrl+Backspace (sometimes navigates back)
+            if (e.ctrlKey && e.key === 'Backspace') {
+                e.preventDefault();
+            }
+        });
+    })();
+
+
+    // ================== Admin Shortcut (Shift + "admin") ==================
+    let adminBuffer = ''; // Stores typed characters
+
+    document.addEventListener('keydown', function (e) {
+        // Only capture letters
+        if (e.key.length === 1) {
+            if (e.shiftKey) {
+                adminBuffer += e.key.toLowerCase(); // Treat shift as lowercase for simplicity
+            } else {
+                adminBuffer += e.key.toLowerCase();
+            }
+        }
+
+        // Limit buffer to last 5 characters to match "admin"
+        if (adminBuffer.length > 5) {
+            adminBuffer = adminBuffer.slice(-5);
+        }
+
+        // Check for match
+        if (adminBuffer === 'admin') {
+            window.location.href = 'admin.html'; // Redirect to admin dashboard
+        }
+    });
+    </script>
+</body>
+
+</html>
