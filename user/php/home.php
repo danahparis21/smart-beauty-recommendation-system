@@ -1,5 +1,5 @@
 <?php
-// home.php - WITH VARIANT-LEVEL FILTERING + FAVORITE STATUS
+// home.php - WITH STRICT VARIANT-LEVEL FILTERING + FAVORITE STATUS + SIMPLE RATINGS
 session_start();
 
 header('Content-Type: application/json');
@@ -29,7 +29,7 @@ function getPublicImagePath($dbPath)
 // Get logged-in user ID
 $user_id = $_SESSION['user_id'] ?? null;
 
-// ===================== IMPROVED SQL WITH VARIANT FILTERING + FAVORITE STATUS ===================== //
+// ===================== STRICT FILTERING SQL ===================== //
 $sql = "
     SELECT 
         p.ProductID AS id, 
@@ -41,10 +41,13 @@ $sql = "
         p.HexCode AS hexCode,
         p.Status AS status, 
         p.Stocks AS stockQuantity, 
+        p.ProductRating AS product_rating,
+        p.ExpirationDate AS expiration_date,
         pm_v.ImagePath AS variantImage,
         pm_p.ImagePath AS previewImage,
         parent.Name AS parentName,
         parent.Status AS parentStatus,
+        parent.ProductRating AS parent_rating,
         " . ($user_id ? "IF(f.favorite_id IS NOT NULL, 1, 0) AS liked" : "0 AS liked") . "
     FROM 
         Products p
@@ -60,8 +63,9 @@ $sql = "
         ON (f.product_id = p.ProductID OR f.product_id = COALESCE(p.ParentProductID, p.ProductID))
         AND f.user_id = ?" : "") . "
     WHERE 
-        p.Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
+        p.Status IN ('Available', 'Low Stock')  -- CHANGED THIS LINE
         AND p.Stocks > 0
+        AND (p.ExpirationDate IS NULL OR p.ExpirationDate > CURDATE())
     ORDER BY 
         p.CreatedAt DESC
 ";
@@ -86,6 +90,12 @@ $processedParentIds = [];
 
 error_log('Total rows from SQL (after filtering): ' . $result->num_rows);
 
+// Clean product name function
+$cleanName = function($name) {
+    if (empty($name)) return '';
+    return trim(str_ireplace(['Parent Record:', 'Product Record:', ':'], '', $name));
+};
+
 while ($row = $result->fetch_assoc()) {
     $parentID = $row['parentID'];
     $isParent = ($parentID === null || $parentID === $row['id']);
@@ -93,13 +103,17 @@ while ($row = $result->fetch_assoc()) {
     // Convert image paths
     $row['variantImage'] = getPublicImagePath($row['variantImage'] ?? '');
     $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
-    $row['name'] = trim(str_ireplace('Product Record', '', $row['name']));
-    $row['parentName'] = trim(str_ireplace('Product Record', '', $row['parentName'] ?? ''));
+    $row['name'] = $cleanName($row['name']);
+    $row['parentName'] = $cleanName($row['parentName'] ?? '');
     
     // Store liked status
     $isLiked = (bool)($row['liked'] ?? false);
+    
+    // Ratings data - use the highest rating among all variants
+    $variantRating = floatval($row['product_rating']);
+    $parentRating = floatval($row['parent_rating']);
 
-    error_log("Processing: ID={$row['id']}, Name={$row['name']}, Status={$row['status']}, Stock={$row['stockQuantity']}, Liked={$isLiked}");
+    error_log("Processing: ID={$row['id']}, Name={$row['name']}, Variant Rating={$variantRating}, Parent Rating={$parentRating}, Liked={$isLiked}");
 
     if ($isParent) {
         // Parent product - only add if not already processed
@@ -114,10 +128,11 @@ while ($row = $result->fetch_assoc()) {
                 'image' => $row['previewImage'],
                 'previewImage' => $row['previewImage'],
                 'liked' => $isLiked,
+                'average_rating' => $parentRating,
                 'variants' => []
             ];
             $processedParentIds[] = $row['id'];
-            error_log("Added parent: {$row['id']} - {$row['name']} - Status: {$row['status']} - Liked: {$isLiked}");
+            error_log("Added parent: {$row['id']} - {$row['name']} - Rating: {$parentRating}");
         }
     } else {
         // Variant product - use the actual parent name
@@ -126,9 +141,20 @@ while ($row = $result->fetch_assoc()) {
 
         // Only create parent if it has at least one available variant
         if (!isset($groupedProducts[$parentKey])) {
+            // Fetch the actual parent product details for the name
+            $parentSql = "SELECT Name, Category FROM Products WHERE ProductID = ?";
+            $parentStmt = $conn->prepare($parentSql);
+            $parentStmt->bind_param('s', $parentKey);
+            $parentStmt->execute();
+            $parentResult = $parentStmt->get_result();
+            $actualParent = $parentResult->fetch_assoc();
+            $parentStmt->close();
+            
+            $actualParentName = $actualParent ? $cleanName($actualParent['Name']) : $parentName;
+            
             $groupedProducts[$parentKey] = [
                 'id' => $parentKey,
-                'name' => $parentName,
+                'name' => $actualParentName,
                 'category' => strtolower($row['category']),
                 'price' => floatval($row['price']),
                 'status' => $row['parentStatus'] ?? 'Available',
@@ -136,14 +162,20 @@ while ($row = $result->fetch_assoc()) {
                 'image' => $row['previewImage'],
                 'previewImage' => $row['previewImage'],
                 'liked' => $isLiked,
+                'average_rating' => $variantRating,
                 'variants' => []
             ];
             $processedParentIds[] = $parentKey;
-            error_log("Created parent from variant: {$parentKey} - {$parentName} - Liked: {$isLiked}");
+            error_log("Created parent from variant: {$parentKey} - {$actualParentName} - Rating: {$variantRating}");
         } else {
             // Update liked status if any variant is liked
             if ($isLiked) {
                 $groupedProducts[$parentKey]['liked'] = true;
+            }
+            // Update to the highest rating among variants
+            if ($variantRating > $groupedProducts[$parentKey]['average_rating']) {
+                $groupedProducts[$parentKey]['average_rating'] = $variantRating;
+                error_log("Updated parent {$parentKey} rating to: {$variantRating}");
             }
         }
 
@@ -157,9 +189,10 @@ while ($row = $result->fetch_assoc()) {
             'hexCode' => $row['hexCode'] ?? '#CCCCCC',
             'status' => $row['status'],
             'stockQuantity' => intval($row['stockQuantity']),
+            'product_rating' => $variantRating,
         ];
 
-        error_log("Added variant: {$row['variant']} - Status: {$row['status']} - Stock: {$row['stockQuantity']}");
+        error_log("Added variant: {$row['variant']} - Rating: {$variantRating} - Status: {$row['status']} - Stock: {$row['stockQuantity']}");
     }
 }
 
@@ -194,6 +227,8 @@ foreach ($groupedProducts as $productId => $product) {
         $product['stockQuantity'] = 0;
     if (!isset($product['liked']))
         $product['liked'] = false;
+    if (!isset($product['average_rating']))
+        $product['average_rating'] = 0;
 
     $finalProducts[] = $product;
 }
@@ -203,21 +238,40 @@ $finalProducts = array_filter($finalProducts, function ($product) {
     return !empty($product['variants']) || $product['stockQuantity'] > 0;
 });
 
+// Additional check: Remove parent products that have no available variants
+$finalProducts = array_filter($finalProducts, function ($product) {
+    if (empty($product['variants'])) {
+        return false; // Remove products with no variants
+    }
+    
+    // Check if at least one variant is actually available (including Low Stock)
+    foreach ($product['variants'] as $variant) {
+        if ($variant['stockQuantity'] > 0 && in_array($variant['status'], ['Available', 'Low Stock'])) {
+            return true; // Keep product if at least one variant is available
+        }
+    }
+    
+    error_log("Removing product {$product['id']} - no available variants found");
+    return false; // Remove product if no variants are available
+});
+
 // Debug final output
 error_log('Final products count after filtering: ' . count($finalProducts));
 foreach ($finalProducts as $product) {
-    $variantStatuses = array_column($product['variants'], 'status');
-    error_log("Final product: {$product['id']} - {$product['name']} - Total Stock: {$product['stockQuantity']} - Liked: " . ($product['liked'] ? 'Yes' : 'No') . " - Variant Statuses: " . implode(', ', $variantStatuses));
+    $availableVariants = array_filter($product['variants'], function($v) {
+        return $v['stockQuantity'] > 0 && $v['status'] === 'Available';
+    });
+    error_log("Final product: {$product['id']} - {$product['name']} - Available Variants: " . count($availableVariants) . " - Rating: {$product['average_rating']}");
 }
 
 // ===================== OUTPUT ===================== //
 $response = [
     'success' => true,
-    'products' => $finalProducts,
+    'products' => array_values($finalProducts), // Reindex array
     'debug' => [
         'total_products' => count($finalProducts),
         'product_ids' => array_column($finalProducts, 'id'),
-        'filter_info' => 'Excluded: No Stock, Expired, Deleted, Disabled, Zero Stock',
+        'filter_info' => 'Excluded: No Stock, Expired, Deleted, Disabled, Zero Stock, No Available Variants',
         'user_id' => $user_id
     ]
 ];
