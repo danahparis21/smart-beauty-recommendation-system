@@ -369,7 +369,8 @@
     }
 
     .product-item:hover,
-    .customer-item:hover, .insight-item:hover {
+    .customer-item:hover,
+    .insight-item:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(228, 151, 170, 0.15);
       border-color: var(--primary-pink);
@@ -393,7 +394,7 @@
       transform: scale(1.1);
       background: var(--secondary-pink) !important;
     }
-  
+
     /* Animation for page load */
     @keyframes fadeInUp {
       from {
@@ -947,11 +948,11 @@
             </div>
           </button>
 
-          <button class="stat-btn qr-code" onclick="window.location.href='qrscanner.html'">
-            <i class="fa-solid fa-qrcode"></i>
+          <button class="stat-btn favorites-count">
+            <i class="fa-solid fa-heart"></i>
             <div class="stat-content">
-              <span class="stat-value">Scan QR</span>
-              <span class="stat-label">Product Lookup</span>
+              <span class="stat-value" id="totalFavorites">0</span>
+              <span class="stat-label">Total Favorites</span>
             </div>
           </button>
         </div>
@@ -1038,6 +1039,33 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    // Track typed keys for Shift + "cashier"
+    let typedKeys = '';
+    const triggerWord = 'CASHIER'; // Uppercase because Shift is pressed
+
+    document.addEventListener('keydown', (e) => {
+      // Only count keys if Shift is held down
+      if (e.shiftKey && e.key.length === 1) {
+        typedKeys += e.key.toUpperCase();
+
+        // Keep buffer length reasonable
+        if (typedKeys.length > triggerWord.length) {
+          typedKeys = typedKeys.slice(-triggerWord.length);
+        }
+
+        // Check if typedKeys match the trigger word
+        if (typedKeys === triggerWord) {
+          // Redirect to cashier mode
+          window.location.href = 'cashier-mode.html'; // Replace with your cashier page URL
+          typedKeys = ''; // Reset buffer
+        }
+      } else if (!e.shiftKey && e.key === 'Shift') {
+        // Do nothing if just Shift is pressed
+      } else {
+        // Reset buffer if any other key pressed without Shift
+        typedKeys = '';
+      }
+    });
     // --- Mobile Sidebar Toggle Logic ---
     document.addEventListener('DOMContentLoaded', () => {
       const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -1382,6 +1410,7 @@
           'orders_today': document.querySelector('.orders-today .stat-value'),
           'orders_week': document.querySelector('.this-week .stat-value'),
           'total_sales': document.querySelector('.total-sales .stat-value'),
+          'total_favorites': document.querySelector('.favorites-count .stat-value'), 
           // 'qr_codes': document.querySelector('.qr-code .stat-value') // QR code button has static text, not dynamic
         };
 
@@ -1595,13 +1624,15 @@
       };
 
       // --- Initializations ---
-      new ChartFilterSystem(); 
-      fetchDashboardData(); 
+      new ChartFilterSystem();
+      fetchDashboardData();
 
-      setInterval(fetchDashboardData, 300000); 
+      setInterval(fetchDashboardData, 300000);
 
       highlightActiveNavLink();
     });
+
+
   </script>
 </body>
 
