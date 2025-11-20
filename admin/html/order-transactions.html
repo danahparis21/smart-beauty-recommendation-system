@@ -16,7 +16,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <script src="../../admin/styles/logout.js"></script>
-  
+
   <!-- SweetAlert2 CSS & JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
@@ -657,7 +657,7 @@
             <i class="fa-solid fa-users"></i>
             <span>Customer Management</span>
           </a>
-          <a href="order-transactions.html" class="nav-link active">
+          <a href="order-transactions.html" class="nav-link">
             <i class="fa-solid fa-credit-card"></i>
             <span>Order Transaction</span>
           </a>
@@ -665,7 +665,12 @@
             <i class="fa-solid fa-clock-rotate-left"></i>
             <span>Activity Log</span>
           </a>
-          
+          <!-- New Cashier Mode Link -->
+          <a href="javascript:void(0)" class="nav-link cashier-mode-link" id="cashierModeLink">
+            <i class="fa-solid fa-cash-register"></i>
+            <span>Cashier Mode</span>
+          </a>
+
           <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>Log Out</span>
@@ -737,56 +742,82 @@
     </div>
   </div>
 
+  <!-- Before closing </body> tag -->
+  <div class="reveal-overlay" id="revealOverlay"></div>
+  <div class="fullscreen-reveal" id="fullscreenReveal">
+    <div class="reveal-progress" id="revealProgress"></div>
+    <div class="fullscreen-reveal-content">
+      <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
+    </div>
+  </div>
+
+  <div class="cashier-mode-entry" id="cashierModeEntry">
+    <div class="cashier-logo-container">
+      <div class="cashier-logo">
+        <img src="../images/mainlogo.png" alt="Store Logo">
+      </div>
+      <div class="cashier-title">Entering Cashier Mode</div>
+      <div class="cashier-subtitle">Blessence Point of Sale</div>
+    </div>
+    <div class="cashier-loading">
+      <div class="cashier-loading-dot"></div>
+      <div class="cashier-loading-dot"></div>
+      <div class="cashier-loading-dot"></div>
+    </div>
+  </div>
+
+  <div class="cashier-tap-counter" id="cashierTapCounter"></div>
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Load order data
-        loadOrderData('all', '', 1);
+      // Load order data
+      loadOrderData('all', '', 1);
 
-        const searchBox = document.querySelector('.search-box input');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        let currentFilter = 'all';
-        let searchTimeout;
-        let currentPage = 1;
+      const searchBox = document.querySelector('.search-box input');
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      let currentFilter = 'all';
+      let searchTimeout;
+      let currentPage = 1;
 
-        // Filter buttons
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
+      // Filter buttons
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
 
-                let filter = this.textContent.trim().toLowerCase();
-                if (filter === 'all orders') filter = 'all';
-                if (filter === 'pending') filter = 'pending';
-                if (filter === 'completed') filter = 'completed';
-                if (filter === 'cancelled') filter = 'cancelled';
-                if (filter === 'this week') filter = 'this_week';
+          let filter = this.textContent.trim().toLowerCase();
+          if (filter === 'all orders') filter = 'all';
+          if (filter === 'pending') filter = 'pending';
+          if (filter === 'completed') filter = 'completed';
+          if (filter === 'cancelled') filter = 'cancelled';
+          if (filter === 'this week') filter = 'this_week';
 
-                currentFilter = filter;
-                currentPage = 1;
-                loadOrderData(currentFilter, searchBox.value.trim(), currentPage);
-            });
+          currentFilter = filter;
+          currentPage = 1;
+          loadOrderData(currentFilter, searchBox.value.trim(), currentPage);
         });
+      });
 
-        // Search functionality (live search with debounce)
-        searchBox.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const query = searchBox.value.trim();
-                currentPage = 1;
-                loadOrderData(currentFilter, query, currentPage);
-            }, 400);
-        });
+      // Search functionality (live search with debounce)
+      searchBox.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const query = searchBox.value.trim();
+          currentPage = 1;
+          loadOrderData(currentFilter, query, currentPage);
+        }, 400);
+      });
 
-        // Also allow pressing Enter to trigger search immediately
-        searchBox.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                currentPage = 1;
-                loadOrderData(currentFilter, searchBox.value.trim(), currentPage);
-            }
-        });
+      // Also allow pressing Enter to trigger search immediately
+      searchBox.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          currentPage = 1;
+          loadOrderData(currentFilter, searchBox.value.trim(), currentPage);
+        }
+      });
     });
 
     // --- Mobile Sidebar Toggle Logic ---
@@ -795,65 +826,65 @@
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
     if (hamburgerBtn && sidebar && sidebarOverlay) {
-        hamburgerBtn.addEventListener('click', function () {
-            sidebar.classList.toggle('mobile-open');
-            sidebarOverlay.classList.toggle('active');
-        });
+      hamburgerBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('mobile-open');
+        sidebarOverlay.classList.toggle('active');
+      });
 
-        sidebarOverlay.addEventListener('click', function () {
+      sidebarOverlay.addEventListener('click', function () {
+        sidebar.classList.remove('mobile-open');
+        sidebarOverlay.classList.remove('active');
+      });
+
+      // Optional: Close sidebar if a nav link is clicked (prevents it staying open)
+      const navLinks = sidebar.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function () {
+          if (sidebar.classList.contains('mobile-open')) {
             sidebar.classList.remove('mobile-open');
             sidebarOverlay.classList.remove('active');
+          }
         });
-
-        // Optional: Close sidebar if a nav link is clicked (prevents it staying open)
-        const navLinks = sidebar.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function () {
-                if (sidebar.classList.contains('mobile-open')) {
-                    sidebar.classList.remove('mobile-open');
-                    sidebarOverlay.classList.remove('active');
-                }
-            });
-        });
+      });
     }
 
     function loadOrderData(filter = 'all', search = '', page = 1) {
-        console.log('Loading order data with filter:', filter, 'search:', search);
-        
-        fetch(`../php/order-transaction.php?filter=${filter}&search=${encodeURIComponent(search)}&page=${page}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+      console.log('Loading order data with filter:', filter, 'search:', search);
+
+      fetch(`../php/order-transaction.php?filter=${filter}&search=${encodeURIComponent(search)}&page=${page}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Received data:', data);
+          const contentArea = document.querySelector('.scrollable-content');
+
+          if (data.success) {
+            // Update stats
+            document.querySelector('.total-orders .stat-value').textContent = data.stats.total_orders;
+            document.querySelector('.pending-orders .stat-value').textContent = data.stats.pending_orders;
+            document.querySelector('.completed-orders .stat-value').textContent = data.stats.completed_orders;
+            document.querySelector('.cancelled-orders .stat-value').textContent = data.stats.cancelled_orders;
+
+            // Populate all orders
+            if (data.orders && data.orders.length > 0) {
+              let ordersHTML = '<div class="orders-grid">';
+
+              data.orders.forEach(order => {
+                // Determine status class
+                let statusClass = 'status-pending';
+                if (order.status.toLowerCase().includes('completed')) {
+                  statusClass = 'status-completed';
+                } else if (order.status.toLowerCase().includes('cancelled')) {
+                  statusClass = 'status-cancelled';
+                } else if (order.status.toLowerCase().includes('processing')) {
+                  statusClass = 'status-processing';
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Received data:', data);
-                const contentArea = document.querySelector('.scrollable-content');
 
-                if (data.success) {
-                    // Update stats
-                    document.querySelector('.total-orders .stat-value').textContent = data.stats.total_orders;
-                    document.querySelector('.pending-orders .stat-value').textContent = data.stats.pending_orders;
-                    document.querySelector('.completed-orders .stat-value').textContent = data.stats.completed_orders;
-                    document.querySelector('.cancelled-orders .stat-value').textContent = data.stats.cancelled_orders;
-
-                    // Populate all orders
-                    if (data.orders && data.orders.length > 0) {
-                        let ordersHTML = '<div class="orders-grid">';
-
-                        data.orders.forEach(order => {
-                            // Determine status class
-                            let statusClass = 'status-pending';
-                            if (order.status.toLowerCase().includes('completed')) {
-                                statusClass = 'status-completed';
-                            } else if (order.status.toLowerCase().includes('cancelled')) {
-                                statusClass = 'status-cancelled';
-                            } else if (order.status.toLowerCase().includes('processing')) {
-                                statusClass = 'status-processing';
-                            }
-
-                            ordersHTML += `
+                ordersHTML += `
                                 <div class="order-card">
                                     <div class="order-header">
                                         <div>
@@ -894,56 +925,56 @@
                                     </div>
                                 </div>
                             `;
-                        });
+              });
 
-                        ordersHTML += '</div>';
-                        contentArea.innerHTML = ordersHTML;
-                    } else {
-                        contentArea.innerHTML = `
+              ordersHTML += '</div>';
+              contentArea.innerHTML = ordersHTML;
+            } else {
+              contentArea.innerHTML = `
                             <div class="empty-state">
                                 <i class="fas fa-shopping-bag"></i>
                                 <h4>No Orders Found</h4>
                                 <p>No results match your current filter or search.</p>
                             </div>`;
-                    }
-                } else {
-                    console.error('Server error:', data.error);
-                    contentArea.innerHTML = `
+            }
+          } else {
+            console.error('Server error:', data.error);
+            contentArea.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-exclamation-triangle"></i>
                             <h4>Server Error</h4>
                             <p>${data.error || 'Failed to load orders'}</p>
                         </div>`;
-                }
-            })
-            .catch(err => {
-                console.error('Fetch error:', err);
-                document.querySelector('.scrollable-content').innerHTML = `
+          }
+        })
+        .catch(err => {
+          console.error('Fetch error:', err);
+          document.querySelector('.scrollable-content').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
                         <h4>Connection Error</h4>
                         <p>Failed to load orders. Please check your connection and try again.</p>
                         <p class="small text-muted">Error: ${err.message}</p>
                     </div>`;
-            });
+        });
     }
 
     function viewOrderDetails(orderId) {
-        fetch(`../php/order-transaction.php?action=get_order_details&order_id=${orderId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const order = data.order;
-                    const items = data.items;
-                    
-                    let itemsHTML = '';
-                    let subtotal = 0;
-                    
-                    items.forEach(item => {
-                        const itemTotal = parseFloat(item.quantity) * parseFloat(item.price.replace(',', ''));
-                        subtotal += itemTotal;
-                        
-                        itemsHTML += `
+      fetch(`../php/order-transaction.php?action=get_order_details&order_id=${orderId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const order = data.order;
+            const items = data.items;
+
+            let itemsHTML = '';
+            let subtotal = 0;
+
+            items.forEach(item => {
+              const itemTotal = parseFloat(item.quantity) * parseFloat(item.price.replace(',', ''));
+              subtotal += itemTotal;
+
+              itemsHTML += `
                             <div class="order-item">
                                 <img src="${item.image_path}" alt="${item.product_name}" class="item-image" onerror="this.src='../images/default-product.jpg'">
                                 <div class="item-details">
@@ -954,9 +985,9 @@
                                 <div class="item-price">₱${item.price}</div>
                             </div>
                         `;
-                    });
+            });
 
-                    const modalContent = `
+            const modalContent = `
                         <div class="order-info mb-4">
                             <div class="row">
                                 <div class="col-md-6">
@@ -993,45 +1024,46 @@
                         </div>
                     `;
 
-                    document.getElementById('orderDetailsContent').innerHTML = modalContent;
-                    const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
-                    modal.show();
-                } else {
-                    alert('Failed to load order details: ' + data.error);
-                }
-            })
-            .catch(err => {
-                console.error('Error loading order details:', err);
-                alert('Failed to load order details. Please try again.');
-            });
+            document.getElementById('orderDetailsContent').innerHTML = modalContent;
+            const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+            modal.show();
+          } else {
+            alert('Failed to load order details: ' + data.error);
+          }
+        })
+        .catch(err => {
+          console.error('Error loading order details:', err);
+          alert('Failed to load order details. Please try again.');
+        });
     }
 
     function getStatusBadgeClass(status) {
-        switch (status.toLowerCase()) {
-            case 'pending': return 'warning';
-            case 'processing': return 'info';
-            case 'completed': return 'success';
-            case 'cancelled': return 'danger';
-            default: return 'secondary';
-        }
+      switch (status.toLowerCase()) {
+        case 'pending': return 'warning';
+        case 'processing': return 'info';
+        case 'completed': return 'success';
+        case 'cancelled': return 'danger';
+        default: return 'secondary';
+      }
     }
 
     // Highlight active sidebar link based on current URL
     const highlightActiveNavLink = () => {
-        const navLinks = document.querySelectorAll('.sidebar .nav-link');
-        const currentPath = window.location.pathname.split('/').pop();
+      const navLinks = document.querySelectorAll('.sidebar .nav-link');
+      const currentPath = window.location.pathname.split('/').pop();
 
-        navLinks.forEach(link => {
-            const linkPath = link.getAttribute('href');
-            if (linkPath === currentPath) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
+      navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href');
+        if (linkPath === currentPath) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
     };
 
     highlightActiveNavLink();
   </script>
 </body>
+
 </html>
