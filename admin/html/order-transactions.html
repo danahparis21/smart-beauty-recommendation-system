@@ -973,10 +973,13 @@
             items.forEach(item => {
               const itemTotal = parseFloat(item.quantity) * parseFloat(item.price.replace(',', ''));
               subtotal += itemTotal;
-
               itemsHTML += `
                             <div class="order-item">
-                                <img src="${item.image_path}" alt="${item.product_name}" class="item-image" onerror="this.src='../images/default-product.jpg'">
+                                <img 
+                                src="${item.image_path}" 
+                                alt="${item.product_name}" 
+                                class="item-image" 
+                                onerror="this.src='../uploads/product_images/no-image.png'">
                                 <div class="item-details">
                                     <div class="item-name">${item.product_name}</div>
                                     <div class="item-category">${item.category}</div>
