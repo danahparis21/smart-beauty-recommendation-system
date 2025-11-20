@@ -8,8 +8,17 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// Use the same function as your other file
+function getPublicImagePath($dbPath) {
+    if (empty($dbPath)) {
+        return '';
+    }
+    $filename = basename($dbPath);
+    return '/admin/uploads/product_images/' . $filename;
+}
+
 try {
-    // Fetch parent lipstick products and their variants
+    // Fetch parent lipstick products and their variants WITH VARIANT IMAGES
     $query = "
     SELECT 
         p.ProductID,
@@ -18,9 +27,11 @@ try {
         p.Price,
         p.HexCode,
         p.ParentProductID,
-        parent.Name as ParentName
+        parent.Name as ParentName,
+        pm_variant.ImagePath as variant_image
     FROM Products p
     LEFT JOIN Products parent ON p.ParentProductID = parent.ProductID
+    LEFT JOIN ProductMedia pm_variant ON p.ProductID = pm_variant.VariantProductID AND pm_variant.MediaType = 'VARIANT'
     WHERE p.Category = 'Lipstick' 
     AND p.ShadeOrVariant IS NOT NULL
     AND p.ShadeOrVariant != 'PARENT_GROUP'
@@ -36,12 +47,20 @@ try {
     $parentProducts = [];
 
     while ($row = $result->fetch_assoc()) {
+        // Clean the product name
+        $cleanName = preg_replace('/^Parent Record:\s*/i', '', $row['Name']);
+        $cleanParentName = preg_replace('/^Parent Record:\s*/i', '', $row['ParentName']);
+
+        // Convert image path to public path
+        $publicImagePath = getPublicImagePath($row['variant_image']);
+
         if (empty($row['ParentProductID'])) {
             // This is a parent product
             $parentProducts[$row['ProductID']] = [
                 'id' => $row['ProductID'],
-                'name' => $row['Name'],
-                'parentName' => $row['ParentName'],
+                'name' => $cleanName,
+                'parentName' => $cleanParentName,
+                'variantImage' => $publicImagePath, // Use variant image
                 'shades' => []
             ];
         } else {
@@ -51,8 +70,9 @@ try {
                 // Create parent entry if it doesn't exist
                 $parentProducts[$parentId] = [
                     'id' => $parentId,
-                    'name' => $row['ParentName'],
-                    'parentName' => $row['ParentName'],
+                    'name' => $cleanParentName,
+                    'parentName' => $cleanParentName,
+                    'variantImage' => $publicImagePath, // Use variant image
                     'shades' => []
                 ];
             }
@@ -61,7 +81,8 @@ try {
                 'productId' => $row['ProductID'],
                 'shadeName' => $row['ShadeOrVariant'],
                 'price' => $row['Price'],
-                'hexCode' => $row['HexCode'] ?: '#D42F6E'  // Default color if none
+                'hexCode' => $row['HexCode'] ?: '#D42F6E',
+                'variantImage' => $publicImagePath // Also store variant image for each shade
             ];
         }
     }
