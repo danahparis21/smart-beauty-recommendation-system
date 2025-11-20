@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Recommender | Beauty & Blessed</title>
+    <title>Smart Recommender | Blessence</title>
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
     <link rel="stylesheet" href="../styles/styles.css" />
     <link
       rel="stylesheet"
@@ -3096,8 +3097,8 @@
     <!-- Header -->
     <header class="header">
       <div class="brand-header">
-        <h1 class="brand-name">Beauty & Blessed</h1>
-        <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+        <h1 class="brand-name">Blessence</h1>
+        <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, Maria!</span>
@@ -3764,14 +3765,19 @@
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", async function () {
-        // Initialize user session
-        await updateUserGreeting();
+     document.addEventListener("DOMContentLoaded", async function () {
+    // Add page protection FIRST
+    if (typeof setupPageProtection === 'function') {
+        setupPageProtection();
+    }
+    
+    // Initialize user session
+    await updateUserGreeting();
 
-        if (!currentUser) return;
+    if (!currentUser) return;
 
-        console.log("User ID:", currentUser.id);
-        console.log("Username:", currentUser.username);
+    console.log("User ID:", currentUser.id);
+    console.log("Username:", currentUser.username);
 
         // Check if user already has preferences
         await checkExistingPreferences();
@@ -5930,9 +5936,7 @@ function sortByRating(a, b) {
           desktopPopup.className = "cart-total-popup";
           desktopPopup.innerHTML = `
             <div class="cart-total-label">Cart Total</div>
-            <div class="cart-total-amount">₱${parseFloat(totalAmount).toFixed(
-              2
-            )}</div>
+            <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(totalAmount).toFixed(2))}</div>
             <small>Click cart to view items</small>
         `;
 
@@ -5950,9 +5954,7 @@ function sortByRating(a, b) {
           mobilePopup.className = "cart-total-popup";
           mobilePopup.innerHTML = `
             <div class="cart-total-label">Cart Total</div>
-            <div class="cart-total-amount">₱${parseFloat(totalAmount).toFixed(
-              2
-            )}</div>
+            <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(totalAmount).toFixed(2))}</div>
             <small>Tap cart to view items</small>
         `;
 
@@ -6400,9 +6402,7 @@ function sortByRating(a, b) {
               desktopPopup.className = "cart-total-popup";
               desktopPopup.innerHTML = `
                     <div class="cart-total-label">Cart Total</div>
-                    <div class="cart-total-amount">₱${parseFloat(
-                      result.totalAmount
-                    ).toFixed(2)}</div>
+                    <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(result.totalAmount).toFixed(2))}</div>
                     
                 `;
 
@@ -6428,9 +6428,7 @@ function sortByRating(a, b) {
               mobilePopup.className = "cart-total-popup";
               mobilePopup.innerHTML = `
                     <div class="cart-total-label">Cart Total</div>
-                    <div class="cart-total-amount">₱${parseFloat(
-                      result.totalAmount
-                    ).toFixed(2)}</div>
+                    <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(result.totalAmount).toFixed(2))}</div>
                     
                 `;
 

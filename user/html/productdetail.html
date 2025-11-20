@@ -1,2063 +1,2476 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Product Details - Beauty & Blessed</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
-    rel="stylesheet" />
-  <style>
-    /* Base Styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary-pink: #ff69b4;
-      --light-pink: #ffb6c1;
-      --dark-pink: #ff1493;
-      --gold: #d4af37;
-      --light-gold: #f7e8c4;
-      --soft-white: #fefefe;
-      --light-gray: #f5f5f5;
-      --medium-gray: #e0e0e0;
-      --text-gray: #888;
-      --dark-gray: #555;
-      --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    body {
-      background: linear-gradient(135deg, #ffe6f2 0%, #ffffff 100%);
-      min-height: 100vh;
-      font-family: "Montserrat", sans-serif;
-      overflow-x: hidden;
-    }
-
-    /* Header Styles */
-    .header {
-      background-color: var(--soft-white);
-      box-shadow: 0 2px 10px rgba(255, 105, 180, 0.1);
-      padding: 15px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .back-button {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 10px rgba(255, 105, 180, 0.3);
-      font-size: 18px;
-    }
-
-    .back-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
-    }
-
-    .brand-header {
-      text-align: center;
-      flex-grow: 1;
-      padding: 0 20px;
-    }
-
-    .brand-name {
-      color: var(--primary-pink);
-      font-size: 24px;
-      font-weight: 500;
-      letter-spacing: 1.5px;
-      font-family: "Cormorant Garamond", serif;
-      margin-bottom: 2px;
-      opacity: 0;
-      transform: translateY(-10px);
-      animation: fadeInDown 0.8s ease 0.2s forwards;
-    }
-
-    .brand-tagline {
-      color: var(--text-gray);
-      font-size: 12px;
-      letter-spacing: 1px;
-      font-weight: 300;
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeInUp 0.8s ease 0.4s forwards;
-    }
-
-    @keyframes fadeInDown {
-      to {
-        opacity: 1;
-        transform: translateY(0);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details - Blessence</title>
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    }
 
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
+      :root {
+        --primary-pink: #ff69b4;
+        --light-pink: #ffb6c1;
+        --dark-pink: #ff1493;
+        --gold: #d4af37;
+        --light-gold: #f7e8c4;
+        --soft-white: #fefefe;
+        --light-gray: #f5f5f5;
+        --medium-gray: #e0e0e0;
+        --text-gray: #888;
+        --dark-gray: #555;
+        --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
       }
-    }
 
-    /* Product Detail Container */
-    .product-detail-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .product-detail {
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
-
-    @media (min-width: 768px) {
-      .product-detail {
-        flex-direction: row;
+      body {
+        background: linear-gradient(135deg, #ffe6f2 0%, #ffffff 100%);
+        min-height: 100vh;
+        font-family: "Montserrat", sans-serif;
+        overflow-x: hidden;
       }
-    }
 
-    /* Product Image Section */
-    .product-image-section {
-      flex: 1;
-      position: relative;
-    }
-
-    .product-image-container {
-      position: relative;
-      border-radius: 15px;
-      overflow: hidden;
-      background-color: var(--soft-white);
-      box-shadow: var(--card-shadow);
-    }
-
-    .product-image {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .image-placeholder {
-      width: 100%;
-      height: 400px;
-      background: linear-gradient(135deg,
-          var(--light-pink),
-          var(--light-gold));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--soft-white);
-      font-size: 60px;
-    }
-
-    .nav-button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.8);
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      color: var(--dark-gray);
-      cursor: pointer;
-      transition: all 0.3s;
-      z-index: 10;
-    }
-
-    .nav-button:hover {
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--primary-pink);
-    }
-
-    .prev-button {
-      left: 15px;
-    }
-
-    .next-button {
-      right: 15px;
-    }
-
-    /* Notification Box Styles */
-    .notification-box {
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-      color: white;
-      padding: 15px 25px;
-      border-radius: 10px;
-      box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
-      z-index: 9999;
-      font-weight: 500;
-      transform: translateX(400px);
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      max-width: 300px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .notification-box.show {
-      transform: translateX(0);
-      opacity: 1;
-    }
-
-    @media (max-width: 480px) {
-      .notification-box {
-        right: 10px;
-        left: 10px;
-        max-width: none;
-        top: 70px;
-      }
-    }
-
-    /* Product Info Section */
-    .product-info-section {
-      flex: 1;
-      background-color: var(--soft-white);
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: var(--card-shadow);
-    }
-
-    .brand-name-small {
-      font-size: 14px;
-      color: var(--text-gray);
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .product-title {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: var(--dark-gray);
-      font-family: "Cormorant Garamond", serif;
-    }
-
-    .price {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--primary-pink);
-      margin-bottom: 20px;
-    }
-
-    .variations {
-      margin-bottom: 25px;
-    }
-
-    .variation-title {
-      font-size: 16px;
-      margin-bottom: 15px;
-      color: var(--dark-gray);
-      font-weight: 500;
-    }
-
-    .variations-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .variation-option {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      padding: 5px;
-      pointer-events: auto !important;
-      position: relative !important;
-    }
-
-    .variation-option.active {
-      transform: scale(1.05);
-    }
-
-    .variation-option:hover {
-      transform: scale(1.02);
-    }
-
-    .color-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #e0e0e0;
-      transition: all 0.3s ease;
-      margin-bottom: 8px;
-      pointer-events: auto !important;
-    }
-
-    .variation-option.active .color-circle {
-      border-color: #007bff;
-      border-width: 3px;
-      transform: scale(1.1);
-    }
-
-    .variation-option:hover .color-circle {
-      border-color: #007bff;
-    }
-
-    .variation-option span {
-      font-size: 11px;
-      text-align: center;
-      font-weight: 500;
-      color: #333;
-      max-width: 60px;
-      line-height: 1.2;
-    }
-
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 30px;
-    }
-
-    .like-button,
-    .order-button,
-    .cart-button {
-      flex: 1;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-family: "Montserrat", sans-serif;
-    }
-
-    .like-button {
-      background: var(--light-gray);
-      border: 1px solid var(--medium-gray);
-      color: var(--text-gray);
-    }
-
-    .like-button.active {
-      background: #fff5f5;
-      border-color: var(--primary-pink);
-      color: var(--primary-pink);
-    }
-
-    .order-button {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-    }
-
-    .cart-button {
-      background: linear-gradient(135deg, var(--gold), #e6c260);
-      color: white;
-    }
-
-    .like-button:hover,
-    .order-button:hover,
-    .cart-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Specifications */
-    .specs-section {
-      margin-bottom: 25px;
-    }
-
-    .section-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: var(--dark-gray);
-      font-family: "Cormorant Garamond", serif;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--light-gray);
-    }
-
-    .subsection-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-top: 20px;
-      margin-bottom: 10px;
-      color: var(--dark-gray);
-      font-family: "Cormorant Garamond", serif;
-    }
-
-
-    .specs-list {
-      list-style: none;
-    }
-
-    .spec-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--light-gray);
-    }
-
-    .spec-name {
-      color: var(--text-gray);
-    }
-
-    .spec-value {
-      font-weight: 500;
-      color: var(--dark-gray);
-    }
-
-    .product-description,
-    .product-ingredient {
-      color: var(--dark-gray);
-      line-height: 1.6;
-      margin-top: 10px;
-    }
-
-    /* Ratings Section */
-    .ratings-section {
-      background-color: var(--soft-white);
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: var(--card-shadow);
-      margin-top: 30px;
-      /* Added margin for spacing on desktop */
-    }
-
-    .rating-summary {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      background-color: var(--light-gray);
-      padding: 15px;
-      border-radius: 10px;
-    }
-
-    .average-rating {
-      font-size: 36px;
-      font-weight: 700;
-      color: var(--dark-gray);
-      margin-right: 15px;
-    }
-
-    .stars {
-      color: var(--gold);
-      font-size: 18px;
-      margin-bottom: 5px;
-    }
-
-    .rating-count {
-      color: var(--text-gray);
-      font-size: 14px;
-    }
-
-    .featured-reviews {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    @media (min-width: 768px) {
-      .featured-reviews {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .rating-item {
-      padding: 15px;
-      border: 1px solid var(--light-gray);
-      border-radius: 10px;
-      background-color: var(--soft-white);
-    }
-
-    .rating-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .user-name {
-      font-weight: 600;
-      color: var(--dark-gray);
-    }
-
-    .rating-date {
-      color: var(--text-gray);
-      font-size: 14px;
-    }
-
-    .rating-images {
-      display: flex;
-      gap: 10px;
-      margin: 10px 0;
-    }
-
-    .rating-image {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      object-fit: cover;
-      background-color: var(--light-gray);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-gray);
-    }
-
-    .rating-image i {
-      font-size: 24px;
-    }
-
-    .rating-text {
-      color: var(--dark-gray);
-      line-height: 1.5;
-    }
-
-    .view-all-reviews {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .view-all-btn {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 500;
-      font-family: "Montserrat", sans-serif;
-    }
-
-    .view-all-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
-    }
-
-    /* Modal Styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .modal {
-      background: white;
-      border-radius: 15px;
-      width: 100%;
-      max-width: 800px;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-      transform: translateY(20px);
-      transition: all 0.3s;
-    }
-
-    .modal-overlay.active .modal {
-      transform: translateY(0);
-    }
-
-    .modal-header {
-      padding: 20px 25px;
-      border-bottom: 1px solid var(--medium-gray);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      background: white;
-      border-radius: 15px 15px 0 0;
-      z-index: 10;
-    }
-
-    .modal-title {
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--dark-gray);
-      font-family: "Cormorant Garamond", serif;
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 24px;
-      color: var(--text-gray);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .close-modal:hover {
-      color: var(--dark-gray);
-    }
-
-    .modal-body {
-      padding: 25px;
-    }
-
-    .all-reviews {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Floating Cart */
-    .floating-cart {
-      position: fixed;
-      bottom: 30px;
-      right: 20px;
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--dark-pink));
-      color: white;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
-      cursor: pointer;
-      z-index: 90;
-      transition: transform 0.3s ease;
-    }
-
-    .floating-cart:hover {
-      transform: scale(1.1);
-    }
-
-    .cart-count {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background-color: var(--gold);
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    /* Mobile-specific layout changes */
-    @media (max-width: 767px) {
+      /* Header Styles */
       .header {
-        padding: 12px 15px;
-      }
-
-      .brand-name {
-        font-size: 20px;
-      }
-
-      .brand-tagline {
-        font-size: 11px;
+        background-color: var(--soft-white);
+        box-shadow: 0 2px 10px rgba(255, 105, 180, 0.1);
+        padding: 15px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .back-button {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(255, 105, 180, 0.3);
+        font-size: 18px;
+      }
+
+      .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+      }
+
+      .brand-header {
+        text-align: center;
+        flex-grow: 1;
+        padding: 0 20px;
+      }
+
+      .brand-name {
+        color: var(--primary-pink);
+        font-size: 24px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        font-family: "Cormorant Garamond", serif;
+        margin-bottom: 2px;
+        opacity: 0;
+        transform: translateY(-10px);
+        animation: fadeInDown 0.8s ease 0.2s forwards;
+      }
+
+      .brand-tagline {
+        color: var(--text-gray);
+        font-size: 12px;
+        letter-spacing: 1px;
+        font-weight: 300;
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 0.8s ease 0.4s forwards;
+      }
+
+      @keyframes fadeInDown {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Product Detail Container */
+      .product-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .product-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      @media (min-width: 768px) {
+        .product-detail {
+          flex-direction: row;
+        }
+      }
+
+      /* Product Image Section */
+      .product-image-section {
+        flex: 1;
+        position: relative;
+      }
+
+      .product-image-container {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        background-color: var(--soft-white);
+        box-shadow: var(--card-shadow);
+      }
+
+      .product-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .image-placeholder {
+        width: 100%;
+        height: 400px;
+        background: linear-gradient(
+          135deg,
+          var(--light-pink),
+          var(--light-gold)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--soft-white);
+        font-size: 60px;
+      }
+
+      .nav-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
         width: 40px;
         height: 40px;
-        font-size: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--dark-gray);
+        cursor: pointer;
+        transition: all 0.3s;
+        z-index: 10;
       }
 
-      .product-detail-container {
-        padding: 15px;
+      .nav-button:hover {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--primary-pink);
       }
 
-      .product-info-section {
-        padding: 20px;
+      .prev-button {
+        left: 15px;
       }
 
-      .ratings-section {
-        padding: 20px;
-        margin-top: 20px;
-        /* Adjust margin for mobile */
-      }
-
-      /* Action buttons stay horizontal on mobile */
-      .action-buttons {
-        flex-direction: row;
-        gap: 8px;
-      }
-
-      .like-button,
-      .order-button,
-      .cart-button {
-        padding: 12px 8px;
-        font-size: 14px;
-      }
-
-      /* Hide text on very small screens, show icon only */
-      .like-button span,
-      .order-button span,
-      .cart-button span {
-        display: none;
-      }
-
-      .like-button i,
-      .order-button i,
-      .cart-button i {
-        margin-right: 0;
-      }
-
-      .floating-cart {
-        bottom: 20px;
+      .next-button {
         right: 15px;
-        width: 55px;
-        height: 55px;
       }
 
-      /* Ratings section display toggle */
-      .product-image-section>.ratings-section {
-        display: none;
-        /* Hide desktop ratings section on mobile */
+      /* Notification Box Styles */
+      .notification-box {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+        z-index: 9999;
+        font-weight: 500;
+        transform: translateX(400px);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
-      .ratings-section.mobile-placement {
-        display: block;
-        /* Show mobile-specific ratings section */
+      .notification-box.show {
+        transform: translateX(0);
+        opacity: 1;
       }
-    }
 
-    /* Hide mobile reviews section on desktop */
-    @media (min-width: 768px) {
-      .ratings-section.mobile-placement {
-        display: none;
+      @media (max-width: 480px) {
+        .notification-box {
+          right: 10px;
+          left: 10px;
+          max-width: none;
+          top: 70px;
+        }
       }
-    }
 
-    /* For very small screens, show icon-only buttons */
-    @media (max-width: 360px) {
+      /* Product Info Section */
+      .product-info-section {
+        flex: 1;
+        background-color: var(--soft-white);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+      }
+
+      .brand-name-small {
+        font-size: 14px;
+        color: var(--text-gray);
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .product-title {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark-gray);
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .price {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--primary-pink);
+        margin-bottom: 20px;
+      }
+
+      .variations {
+        margin-bottom: 25px;
+      }
+
+      .variation-title {
+        font-size: 16px;
+        margin-bottom: 15px;
+        color: var(--dark-gray);
+        font-weight: 500;
+      }
+
+      .variations-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .variation-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 5px;
+        pointer-events: auto !important;
+        position: relative !important;
+      }
+
+      .variation-option.active {
+        transform: scale(1.05);
+      }
+
+      .variation-option:hover {
+        transform: scale(1.02);
+      }
+
+      .color-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+        margin-bottom: 8px;
+        pointer-events: auto !important;
+      }
+
+      .variation-option.active .color-circle {
+        border-color: #007bff;
+        border-width: 3px;
+        transform: scale(1.1);
+      }
+
+      .variation-option:hover .color-circle {
+        border-color: #007bff;
+      }
+
+      .variation-option span {
+        font-size: 11px;
+        text-align: center;
+        font-weight: 500;
+        color: #333;
+        max-width: 60px;
+        line-height: 1.2;
+      }
+
+      /* Action Buttons */
       .action-buttons {
-        gap: 5px;
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
       }
 
       .like-button,
       .order-button,
       .cart-button {
-        padding: 10px 5px;
-        font-size: 12px;
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: "Montserrat", sans-serif;
       }
-    }
 
-    /* For slightly larger mobile screens, show text */
-    @media (min-width: 400px) and (max-width: 767px) {
-
-      .like-button span,
-      .order-button span,
-      .cart-button span {
-        display: inline;
-        /* Show text on slightly larger mobile screens */
+      .like-button {
+        background: var(--light-gray);
+        border: 1px solid var(--medium-gray);
+        color: var(--text-gray);
       }
 
-      .like-button,
-      .order-button,
+      .like-button.active {
+        background: #fff5f5;
+        border-color: var(--primary-pink);
+        color: var(--primary-pink);
+      }
+
+      .order-button {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+      }
+
       .cart-button {
-        padding: 12px 10px;
+        background: linear-gradient(135deg, var(--gold), #e6c260);
+        color: white;
+      }
+
+      .like-button:hover,
+      .order-button:hover,
+      .cart-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Specifications */
+      .specs-section {
+        margin-bottom: 25px;
+      }
+
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark-gray);
+        font-family: "Cormorant Garamond", serif;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .subsection-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: var(--dark-gray);
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .specs-list {
+        list-style: none;
+      }
+
+      .spec-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .spec-name {
+        color: var(--text-gray);
+      }
+
+      .spec-value {
+        font-weight: 500;
+        color: var(--dark-gray);
+      }
+
+      .product-description,
+      .product-ingredient {
+        color: var(--dark-gray);
+        line-height: 1.6;
+        margin-top: 10px;
+      }
+
+      /* Ratings Section */
+      .ratings-section {
+        background-color: var(--soft-white);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+        margin-top: 30px;
+      }
+
+      .rating-summary {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        background-color: var(--light-gray);
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .average-rating {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--dark-gray);
+        margin-right: 15px;
+      }
+
+      .stars {
+        color: var(--gold);
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+
+      .rating-count {
+        color: var(--text-gray);
         font-size: 14px;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <!-- Header -->
-  <header class="header">
-    <button class="back-button" onclick="goBack()">
-      <i class="fas fa-arrow-left"></i>
-    </button>
-    <div class="brand-header">
-      <h1 class="brand-name">Beauty & Blessed</h1>
-      <p class="brand-tagline">Elevate Your Everyday Glam.</p>
-    </div>
-    <!-- Empty div to maintain layout balance -->
-    <div style="width: 44px"></div>
-  </header>
+      /* SINGLE COLUMN LAYOUT - Always vertical */
+      .featured-reviews {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
 
-  <!-- Product Detail -->
-  <div class="product-detail-container">
-    <div class="product-detail">
-      <!-- Product Image Section -->
-      <div class="product-image-section">
-        <div class="product-image-container">
-          <!-- Actual product image (hidden by default) -->
-          <img class="product-image" src="" alt="Product Image" style="display: none;">
+      .rating-item {
+        padding: 15px;
+        border: 1px solid var(--light-gray);
+        border-radius: 10px;
+        background-color: var(--soft-white);
+      }
+      .rating-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+        gap: 10px;
+      }
 
-          <!-- Your existing placeholder -->
-          <div class="image-placeholder">
-            <i class="fas fa-palette"></i>
-          </div>
+      .user-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        flex: 1;
+        min-width: 0; /* Important for text truncation */
+      }
 
-          <!-- Navigation buttons -->
-          <button class="nav-button prev-button" style="display: none;">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <button class="nav-button next-button" style="display: none;">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
+      .user-avatar {
+        flex-shrink: 0;
+      }
 
-        <!-- Ratings Section - Desktop Placement -->
-        <!-- This section will be hidden on mobile by CSS -->
-        <div class="ratings-section desktop-placement">
-          <h2 class="section-title">Customer Reviews</h2>
+      .profile-photo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #f0f0f0;
+      }
 
-          <div class="rating-summary">
-            <div class="average-rating">4.8</div>
-            <div>
-              <div class="stars">★★★★★</div>
-              <div class="rating-count">Based on 124 reviews</div>
+      .user-details {
+        flex: 1;
+        min-width: 0; /* Important for text truncation */
+        overflow: hidden; /* Prevent overflow */
+      }
+
+      .user-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      .rating-date {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+
+      /* Mobile-specific adjustments */
+      @media (max-width: 768px) {
+        .rating-header {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .user-info {
+          flex: 1 1 100%;
+          order: 1;
+        }
+
+        .rating-date {
+          order: 2;
+          margin-left: 0;
+          align-self: flex-start;
+        }
+
+        .user-name {
+          font-size: 0.9rem;
+          max-width: 200px; /* Adjust based on your design */
+        }
+
+        /* For very small screens */
+        @media (max-width: 480px) {
+          .user-info {
+            gap: 8px;
+          }
+
+          .profile-photo {
+            width: 32px;
+            height: 32px;
+          }
+
+          .user-name {
+            max-width: 150px;
+            font-size: 0.85rem;
+          }
+
+          .rating-date {
+            font-size: 0.8rem;
+          }
+        }
+      }
+
+      .review-variant {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-top: 2px;
+      }
+
+      .variant-indicator {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1px #e0e0e0;
+        display: inline-block;
+      }
+
+      .rating-text {
+        color: var(--dark-gray);
+        line-height: 1.5;
+        margin-top: 10px;
+      }
+
+      .view-all-reviews {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .view-all-btn {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .view-all-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+      }
+
+      /* Mobile and Desktop Placement */
+      .ratings-section.desktop-placement {
+        display: none; /* Hide desktop placement by default */
+      }
+
+      .ratings-section.mobile-placement {
+        display: block; /* Show mobile placement by default */
+      }
+
+      /* Desktop: Show desktop placement, hide mobile placement */
+      @media (min-width: 1024px) {
+        .ratings-section.desktop-placement {
+          display: block;
+        }
+        .ratings-section.mobile-placement {
+          display: none;
+        }
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        transition: all 0.3s;
+      }
+
+      .modal-overlay.active .modal {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--medium-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background: white;
+        border-radius: 15px 15px 0 0;
+        z-index: 10;
+      }
+
+      .modal-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .close-modal {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .close-modal:hover {
+        color: var(--dark-gray);
+      }
+
+      .modal-body {
+        padding: 25px;
+      }
+
+      .all-reviews {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* For slightly larger mobile screens, show text */
+      @media (min-width: 400px) and (max-width: 767px) {
+        .like-button span,
+        .order-button span,
+        .cart-button span {
+          display: inline;
+        }
+
+        .like-button,
+        .order-button,
+        .cart-button {
+          padding: 12px 10px;
+          font-size: 14px;
+        }
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        transition: all 0.3s;
+      }
+
+      .modal-overlay.active .modal {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--medium-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background: white;
+        border-radius: 15px 15px 0 0;
+        z-index: 10;
+      }
+
+      .modal-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .close-modal {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .close-modal:hover {
+        color: var(--dark-gray);
+      }
+
+      .modal-body {
+        padding: 25px;
+      }
+
+      .all-reviews {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* Floating Cart */
+      .floating-cart {
+        position: fixed;
+        bottom: 30px;
+        right: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        cursor: pointer;
+        z-index: 90;
+        transition: transform 0.3s ease;
+      }
+
+      .floating-cart:hover {
+        transform: scale(1.1);
+      }
+
+      .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: var(--gold);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* Mobile-specific layout changes */
+      @media (max-width: 767px) {
+        .header {
+          padding: 12px 15px;
+        }
+
+        .brand-name {
+          font-size: 20px;
+        }
+
+        .brand-tagline {
+          font-size: 11px;
+        }
+
+        .back-button {
+          width: 40px;
+          height: 40px;
+          font-size: 16px;
+        }
+
+        .product-detail-container {
+          padding: 15px;
+        }
+
+        .product-info-section {
+          padding: 20px;
+        }
+
+        .ratings-section {
+          padding: 20px;
+          margin-top: 20px;
+          /* Adjust margin for mobile */
+        }
+
+        /* Action buttons stay horizontal on mobile */
+        .action-buttons {
+          flex-direction: row;
+          gap: 8px;
+        }
+
+        .like-button,
+        .order-button,
+        .cart-button {
+          padding: 12px 8px;
+          font-size: 14px;
+        }
+
+        /* Hide text on very small screens, show icon only */
+        .like-button span,
+        .order-button span,
+        .cart-button span {
+          display: none;
+        }
+
+        .like-button i,
+        .order-button i,
+        .cart-button i {
+          margin-right: 0;
+        }
+
+        .floating-cart {
+          bottom: 20px;
+          right: 15px;
+          width: 55px;
+          height: 55px;
+        }
+
+        /* Ratings section display toggle */
+        .product-image-section > .ratings-section {
+          display: none;
+          /* Hide desktop ratings section on mobile */
+        }
+
+        .ratings-section.mobile-placement {
+          display: block;
+          /* Show mobile-specific ratings section */
+        }
+      }
+
+      /* Hide mobile reviews section on desktop */
+      @media (min-width: 768px) {
+        .ratings-section.mobile-placement {
+          display: none;
+        }
+      }
+
+      /* For very small screens, show icon-only buttons */
+      @media (max-width: 360px) {
+        .action-buttons {
+          gap: 5px;
+        }
+
+        .like-button,
+        .order-button,
+        .cart-button {
+          padding: 10px 5px;
+          font-size: 12px;
+        }
+      }
+
+      /* For slightly larger mobile screens, show text */
+      @media (min-width: 400px) and (max-width: 767px) {
+        .like-button span,
+        .order-button span,
+        .cart-button span {
+          display: inline;
+          /* Show text on slightly larger mobile screens */
+        }
+
+        .like-button,
+        .order-button,
+        .cart-button {
+          padding: 12px 10px;
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <button class="back-button" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="brand-header">
+        <h1 class="brand-name">Blessence</h1>
+        <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
+      </div>
+      <!-- Empty div to maintain layout balance -->
+      <div style="width: 44px"></div>
+    </header>
+
+    <!-- Product Detail -->
+    <div class="product-detail-container">
+      <div class="product-detail">
+        <!-- Product Image Section -->
+        <div class="product-image-section">
+          <div class="product-image-container">
+            <!-- Actual product image (hidden by default) -->
+            <img
+              class="product-image"
+              src=""
+              alt="Product Image"
+              style="display: none"
+            />
+
+            <!-- Your existing placeholder -->
+            <div class="image-placeholder">
+              <i class="fas fa-palette"></i>
             </div>
-          </div>
 
-          <div class="featured-reviews">
-            <!-- Highest Rating -->
-            <div class="rating-item">
-              <div class="rating-header">
-                <div class="user-name">Sophia R.</div>
-                <div class="rating-date">2023-10-15</div>
-              </div>
-              <div class="stars">★★★★★</div>
-              <div class="rating-images">
-                <div class="rating-image">
-                  <i class="fas fa-image"></i>
-                </div>
-              </div>
-              <p class="rating-text">
-                The color is absolutely stunning and it lasts all day without
-                drying my lips. Will definitely repurchase!
-              </p>
-            </div>
-
-            <!-- Lowest Rating -->
-            <div class="rating-item">
-              <div class="rating-header">
-                <div class="user-name">Emma L.</div>
-                <div class="rating-date">2023-09-22</div>
-              </div>
-              <div class="stars">★★★☆☆</div>
-              <p class="rating-text">
-                The color was nice but it felt quite drying on my lips. I
-                expected more hydration from a product with avocado oil.
-              </p>
-            </div>
-          </div>
-
-          <div class="view-all-reviews">
-            <button class="view-all-btn" id="viewAllReviewsBtnDesktop">
-              <i class="fas fa-list"></i> View All Reviews
+            <!-- Navigation buttons -->
+            <button class="nav-button prev-button" style="display: none">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-button next-button" style="display: none">
+              <i class="fas fa-chevron-right"></i>
             </button>
           </div>
-        </div>
-      </div>
 
-      <!-- Product Info Section -->
-      <div class="product-info-section">
-        <div class="brand-name-small">BEAUTY & BLESSED</div>
-        <h1 class="product-title">Loading...</h1>
-        <div class="price">₱0.00</div>
+          <!-- Ratings Section - Desktop Placement -->
+          <div class="ratings-section desktop-placement">
+            <h2 class="section-title">Customer Reviews</h2>
 
-        <!-- Variations - ONLY ONE SECTION -->
-        <div class="variations">
-          <div class="variation-title">SHADE</div>
-          <div class="variations-container">
-            <!-- Variants will be loaded here dynamically -->
+            <div class="rating-summary">
+              <div class="average-rating">0.0</div>
+              <div>
+                <div class="stars">☆☆☆☆☆</div>
+                <div class="rating-count">No reviews yet</div>
+              </div>
+            </div>
+
+            <div class="featured-reviews">
+              <!-- Reviews will be loaded here dynamically -->
+            </div>
+
+            <div class="view-all-reviews">
+              <button class="view-all-btn" id="viewAllReviewsBtnDesktop">
+                <i class="fas fa-list"></i> View All Reviews
+              </button>
+            </div>
           </div>
         </div>
-        <!-- Stock Status -->
-        <div class="stock-status">Checking availability...</div>
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <button class="like-button">
-            <i class="far fa-heart"></i> <span>Like</span>
-          </button>
-          <button class="order-button" onclick="orderNow()">
+        <!-- Product Info Section -->
+        <div class="product-info-section">
+          <div class="brand-name-small">BEAUTY & BLESSED</div>
+          <h1 class="product-title">Loading...</h1>
+          <div class="price">₱0.00</div>
+
+          <!-- Variations - ONLY ONE SECTION -->
+          <div class="variations">
+            <div class="variation-title">SHADE</div>
+            <div class="variations-container">
+              <!-- Variants will be loaded here dynamically -->
+            </div>
+          </div>
+          <!-- Stock Status -->
+          <div class="stock-status">Checking availability...</div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="like-button">
+              <i class="far fa-heart"></i> <span>Like</span>
+            </button>
+            <!-- <button class="order-button" onclick="orderNow()">
             <i class="fas fa-bolt"></i> <span>Order Now</span>
-          </button>
-          <button class="cart-button">
-            <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
-          </button>
-        </div>
-
-        <!-- Specifications -->
-        <div class="specs-section">
-          <h2 class="section-title">Product Details</h2>
-          <ul class="specs-list">
-            <li class="spec-item">
-              <span class="spec-name">Category</span>
-              <span class="spec-value" id="spec-category">-</span>
-            </li>
-            <li class="spec-item">
-              <span class="spec-name">Finish</span>
-              <span class="spec-value" id="spec-finish">-</span>
-            </li>
-            <li class="spec-item">
-              <span class="spec-name">Skin Type</span>
-              <span class="spec-value" id="spec-skin-type">-</span>
-            </li>
-            <li class="spec-item">
-              <span class="spec-name">Skin Tone</span>
-              <span class="spec-value" id="spec-skin-tone">-</span>
-            </li>
-            <li class="spec-item">
-              <span class="spec-name">Undertone</span>
-              <span class="spec-value" id="spec-undertone">-</span>
-            </li>
-            <li class="spec-item">
-              <span class="spec-name">Skin Concerns</span>
-              <span class="spec-value" id="spec-concerns">-</span>
-            </li>
-          </ul>
-
-          <h3 class="subsection-title">Description</h3>
-          <p class="product-description">Loading description...</p>
-
-          <h3 class="subsection-title">Ingredients</h3>
-          <p class="product-ingredient">No ingredients listed</p>
-        </div>
-
-
-        <!-- Ratings Section for Mobile Placement -->
-        <!-- This section will be hidden on desktop by CSS -->
-        <div class="ratings-section mobile-placement">
-          <h2 class="section-title">Customer Reviews</h2>
-
-          <div class="rating-summary">
-            <div class="average-rating">4.8</div>
-            <div>
-              <div class="stars">★★★★★</div>
-              <div class="rating-count">Based on 124 reviews</div>
-            </div>
-          </div>
-
-          <div class="featured-reviews">
-            <!-- Highest Rating -->
-            <div class="rating-item">
-              <div class="rating-header">
-                <div class="user-name">Sophia R.</div>
-                <div class="rating-date">2023-10-15</div>
-              </div>
-              <div class="stars">★★★★★</div>
-              <div class="rating-images">
-                <div class="rating-image">
-                  <i class="fas fa-image"></i>
-                </div>
-              </div>
-              <p class="rating-text">
-                The color is absolutely stunning and it lasts all day without
-                drying my lips. Will definitely repurchase!
-              </p>
-            </div>
-
-            <!-- Lowest Rating -->
-            <div class="rating-item">
-              <div class="rating-header">
-                <div class="user-name">Emma L.</div>
-                <div class="rating-date">2023-09-22</div>
-              </div>
-              <div class="stars">★★★☆☆</div>
-              <p class="rating-text">
-                The color was nice but it felt quite drying on my lips. I expected
-                more hydration from a product with avocado oil.
-              </p>
-            </div>
-          </div>
-
-          <div class="view-all-reviews">
-            <button class="view-all-btn" id="viewAllReviewsBtnMobile">
-              <i class="fas fa-list"></i> View All Reviews
+          </button> -->
+            <button class="cart-button">
+              <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
             </button>
           </div>
+
+          <!-- Specifications -->
+          <div class="specs-section">
+            <h2 class="section-title">Product Details</h2>
+            <ul class="specs-list">
+              <li class="spec-item">
+                <span class="spec-name">Category</span>
+                <span class="spec-value" id="spec-category">-</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Finish</span>
+                <span class="spec-value" id="spec-finish">-</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Skin Type</span>
+                <span class="spec-value" id="spec-skin-type">-</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Skin Tone</span>
+                <span class="spec-value" id="spec-skin-tone">-</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Undertone</span>
+                <span class="spec-value" id="spec-undertone">-</span>
+              </li>
+              <li class="spec-item">
+                <span class="spec-name">Skin Concerns</span>
+                <span class="spec-value" id="spec-concerns">-</span>
+              </li>
+            </ul>
+
+            <h3 class="subsection-title">Description</h3>
+            <p class="product-description">Loading description...</p>
+
+            <h3 class="subsection-title">Ingredients</h3>
+            <p class="product-ingredient">No ingredients listed</p>
+          </div>
+
+          <!-- Ratings Section for Mobile Placement -->
+          <div class="ratings-section mobile-placement">
+            <h2 class="section-title">Customer Reviews</h2>
+
+            <div class="rating-summary">
+              <div class="average-rating">0.0</div>
+              <div>
+                <div class="stars">☆☆☆☆☆</div>
+                <div class="rating-count">No reviews yet</div>
+              </div>
+            </div>
+
+            <div class="featured-reviews">
+              <!-- Reviews will be loaded here dynamically -->
+            </div>
+
+            <div class="view-all-reviews">
+              <button class="view-all-btn" id="viewAllReviewsBtnMobile">
+                <i class="fas fa-list"></i> View All Reviews
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- All Reviews Modal -->
-  <div class="modal-overlay" id="reviewsModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">All Customer Reviews</h3>
-        <button class="close-modal" id="closeModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="all-reviews" id="allReviews">
-          <!-- All reviews will be dynamically added here -->
+    <!-- All Reviews Modal -->
+    <div class="modal-overlay" id="reviewsModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">All Customer Reviews</h3>
+          <button class="close-modal" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="all-reviews" id="allReviews">
+            <!-- All reviews will be dynamically added here -->
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Notification Box -->
-  <div id="notification-box" class="notification-box"></div>
+    <!-- Notification Box -->
+    <div id="notification-box" class="notification-box"></div>
 
-  <!-- Floating Cart -->
-  <div class="floating-cart" onclick="window.location.href='cart.html'">
-    <i class="fas fa-shopping-cart"></i>
-    <div class="cart-count">0</div>
-    <!-- Initial count set to 0, will be updated by JS -->
-  </div>
+    <!-- Floating Cart -->
+    <div class="floating-cart" onclick="window.location.href='cart.html'">
+      <i class="fas fa-shopping-cart"></i>
+      <div class="cart-count">0</div>
+      <!-- Initial count set to 0, will be updated by JS -->
+    </div>
 
-  <script>
-    // Remove the sample product data and replace with dynamic data
-    let product = null; // This variable seems unused, `productData` is the main one now.
-    let reviews = []; // This needs to be populated from the fetched data
-    let isProductLiked = false;
+    <script>
+      // Remove the sample product data and replace with dynamic data
+      let product = null; // This variable seems unused, `productData` is the main one now.
+      let reviews = []; // This needs to be populated from the fetched data
+      let isProductLiked = false;
 
-    let productData = null;
-    // Global variables for image gallery
-    let currentImageIndex = 0;
-    let currentImageGallery = [];
+      let productData = null;
+      // Global variables for image gallery
+      let currentImageIndex = 0;
+      let currentImageGallery = [];
 
-    // DOM Content Loaded - Add more detailed logging
-    document.addEventListener("DOMContentLoaded", function () {
-      console.log("=== DOM CONTENT LOADED ===");
-      console.log("Window location:", window.location.href);
+      // DOM Content Loaded - Add more detailed logging
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("=== DOM CONTENT LOADED ===");
+        console.log("Window location:", window.location.href);
 
-      const productId = getProductIdFromURL();
-      console.log("Product ID from URL:", productId);
+        const productId = getProductIdFromURL();
+        console.log("Product ID from URL:", productId);
 
+        if (productId) {
+          console.log("Starting fetch for product details...");
+          fetchProductDetails(productId);
+        } else {
+          console.error("❌ No product ID found in URL");
+          console.log("Full URL search:", window.location.search);
+          showErrorState(
+            "Product not found. Please select a product from the home page."
+          );
+        }
 
-      if (productId) {
-        console.log("Starting fetch for product details...");
-        fetchProductDetails(productId);
-      } else {
-        console.error("❌ No product ID found in URL");
-        console.log("Full URL search:", window.location.search);
-        showErrorState("Product not found. Please select a product from the home page.");
+        // Initialize event listeners for modal and cart count
+        setupModal();
+        updateCartCount(); // Get initial cart count
+      });
+
+      // Function to extract product ID from URL parameters
+      function getProductIdFromURL() {
+        console.log("=== EXTRACTING PRODUCT ID FROM URL ===");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get("productId");
+
+        console.log("URL Search:", window.location.search);
+        console.log("Extracted productId:", productId);
+
+        return productId;
       }
 
-      // Initialize event listeners for modal and cart count
-      setupModal();
-      updateCartCount(); // Get initial cart count
-    });
+      const productImage = document.querySelector(".product-image");
+      if (productImage) {
+        productImage.addEventListener("error", function () {
+          console.error("Failed to load image:", this.src);
+          // Fall back to placeholder
+          this.style.display = "none";
+          const placeholder = document.querySelector(".image-placeholder");
+          if (placeholder) {
+            placeholder.style.display = "flex";
+          }
+        });
 
-    // Function to extract product ID from URL parameters
-    function getProductIdFromURL() {
-      console.log("=== EXTRACTING PRODUCT ID FROM URL ===");
+        productImage.addEventListener("load", function () {
+          console.log("Image loaded successfully:", this.src);
+        });
+      }
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const productId = urlParams.get("productId");
+      async function fetchProductDetails(productId) {
+        console.log("=== FETCHING PRODUCT DETAILS ===");
+        console.log("Product ID:", productId);
 
-      console.log("URL Search:", window.location.search);
-      console.log("Extracted productId:", productId);
+        const phpUrl = `../php/get_product_details.php?productId=${productId}`;
+        console.log("PHP URL:", phpUrl);
 
-      return productId;
-    }
-
-    const productImage = document.querySelector('.product-image');
-    if (productImage) {
-      productImage.addEventListener('error', function () {
-        console.error('Failed to load image:', this.src);
-        // Fall back to placeholder
-        this.style.display = 'none';
-        const placeholder = document.querySelector('.image-placeholder');
-        if (placeholder) {
-          placeholder.style.display = 'flex';
-        }
-      });
-
-      productImage.addEventListener('load', function () {
-        console.log('Image loaded successfully:', this.src);
-      });
-    }
-
-    // Fetch real product details from PHP
-    async function fetchProductDetails(productId) {
-      console.log("=== FETCHING PRODUCT DETAILS ===");
-      console.log("Product ID:", productId);
-
-      const phpUrl = `../php/get_product_details.php?productId=${productId}`;
-      console.log("PHP URL:", phpUrl);
-
-      try {
-        console.log("🔄 Making fetch request...");
-        const response = await fetch(phpUrl);
-
-        console.log("✅ Fetch completed");
-        console.log("Response status:", response.status);
-        console.log("Response OK:", response.ok);
-
-        if (!response.ok) {
-          console.error("❌ Fetch failed with status:", response.status);
-          showErrorState(`Failed to load product details: Server responded with status ${response.status}`);
-          return;
-        }
-
-        const text = await response.text();
-        console.log("Raw response text:", text);
-
-        // Try to parse JSON
-        let data;
         try {
-          data = JSON.parse(text);
-          console.log("✅ JSON parsed successfully");
-        } catch (parseError) {
-          console.error("❌ JSON parse error:", parseError);
-          console.log("Response text that failed to parse:", text);
-          showErrorState("Invalid product data received from server.");
+          console.log("🔄 Making fetch request...");
+          const response = await fetch(phpUrl);
+
+          console.log("✅ Fetch completed");
+          console.log("Response status:", response.status);
+          console.log("Response OK:", response.ok);
+
+          if (!response.ok) {
+            console.error("❌ Fetch failed with status:", response.status);
+            showErrorState(
+              `Failed to load product details: Server responded with status ${response.status}`
+            );
+            return;
+          }
+
+          const text = await response.text();
+          console.log("Raw response text:", text);
+
+          // Try to parse JSON
+          let data;
+          try {
+            data = JSON.parse(text);
+            console.log("✅ JSON parsed successfully");
+
+            // DEBUG: Check reviews in response
+            console.log("=== REVIEWS DEBUG ===");
+            console.log("Reviews key exists:", "reviews" in data);
+            console.log("Reviews array:", data.reviews);
+            console.log(
+              "Number of reviews:",
+              data.reviews ? data.reviews.length : 0
+            );
+            if (data.reviews && data.reviews.length > 0) {
+              console.log("First review:", data.reviews[0]);
+            }
+          } catch (parseError) {
+            console.error("❌ JSON parse error:", parseError);
+            console.log("Response text that failed to parse:", text);
+            showErrorState("Invalid product data received from server.");
+            return;
+          }
+
+          if (data.success) {
+            productData = data;
+            console.log("✅ Product data stored successfully");
+
+            // DEBUG: Check why variants are empty
+            console.log("=== DEBUG VARIANT DATA ===");
+            console.log("Parent Product ID:", data.parentProduct?.id);
+            console.log("Variants count:", data.variants?.length);
+            console.log("Variants data:", data.variants);
+            console.log("Selected variant:", data.selectedVariant);
+            console.log("Reviews data:", data.reviews); // Log reviews
+            console.log(
+              "Reviews count:",
+              data.reviews ? data.reviews.length : 0
+            );
+
+            // Store reviews globally
+            reviews = data.reviews || [];
+
+            setupProductPage();
+          } else {
+            console.error("❌ API returned success: false", data.error);
+            showErrorState(data.error || "Could not retrieve product details.");
+          }
+        } catch (error) {
+          console.error("❌ Fetch error:", error);
+          console.error("Error name:", error.name);
+          console.error("Error message:", error.message);
+          showErrorState("Network error: Could not connect to the server.");
+        }
+      }
+
+      function setupProductPage() {
+        console.log("Setting up product page with data:", productData);
+
+        if (!productData) {
+          console.error("No productData available!");
+          showErrorState("No product data available!");
           return;
         }
 
-        console.log("Parsed data:", data);
+        const {
+          parentProduct,
+          variants,
+          selectedVariant,
+          reviews: fetchedReviews,
+        } = productData;
 
-        if (data.success) {
-          productData = data;
-          console.log("✅ Product data stored successfully");
+        console.log("Parent product:", parentProduct);
+        console.log("Selected variant:", selectedVariant);
+        console.log("Variants:", variants);
+        console.log("Fetched reviews:", fetchedReviews);
 
-          // DEBUG: Check why variants are empty
-          console.log("=== DEBUG VARIANT DATA ===");
-          console.log("Parent Product ID:", data.parentProduct?.id);
-          console.log("Variants count:", data.variants?.length);
-          console.log("Variants data:", data.variants);
-          console.log("Selected variant:", data.selectedVariant);
-          console.log("Reviews data:", data.reviews); // Log reviews
-
-          // Store reviews globally
-          reviews = data.reviews || [];
-
-          setupProductPage();
-        } else {
-          console.error("❌ API returned success: false", data.error);
-          showErrorState(data.error || "Could not retrieve product details.");
-        }
-      } catch (error) {
-        console.error("❌ Fetch error:", error);
-        console.error("Error name:", error.name);
-        console.error("Error message:", error.message);
-        showErrorState("Network error: Could not connect to the server.");
-      }
-    }
-
-    function setupProductPage() {
-      console.log("Setting up product page with data:", productData);
-
-      if (!productData) {
-        console.error("No productData available!");
-        showErrorState("No product data available!");
-        return;
-      }
-
-      const {
-        parentProduct,
-        variants,
-        selectedVariant,
-        reviews: fetchedReviews
-      } = productData; // Destructure fetched reviews here
-
-      console.log("Parent product:", parentProduct);
-      console.log("Selected variant:", selectedVariant);
-      console.log("Variants:", variants);
-      console.log("Fetched reviews:", fetchedReviews); // Confirm fetched reviews
-
-      // Check if we have the essential data
-      if (!parentProduct || !selectedVariant) {
-        console.error("Missing essential product data");
-        showErrorState("Missing product information!");
-        return;
-      }
-
-      // Safe element selection and updates
-      try {
-        // Update product title
-        const productTitle = document.querySelector(".product-title");
-        if (productTitle) {
-          const parentName = parentProduct.name ? parentProduct.name.replace("Parent REcord: ", "") : 'Product';
-          const variantName = selectedVariant.name || "";
-          productTitle.textContent = `${parentName} - ${variantName}`;
-          console.log("Updated product title:", productTitle.textContent);
+        // Check if we have the essential data
+        if (!parentProduct || !selectedVariant) {
+          console.error("Missing essential product data");
+          showErrorState("Missing product information!");
+          return;
         }
 
-        // Update product price
-        const priceElement = document.querySelector(".price");
-        if (priceElement) {
-          if (selectedVariant.price && parseFloat(selectedVariant.price) > 0) {
-            priceElement.textContent = `₱${parseFloat(selectedVariant.price).toFixed(2)}`;
-            console.log("Updated price to:", priceElement.textContent);
-          } else {
-            priceElement.textContent = "Price not available";
+        // Safe element selection and updates
+        try {
+          // Update product title - Use parent name + shade variant
+          const productTitle = document.querySelector(".product-title");
+          if (productTitle) {
+            const parentName = parentProduct.name || "Product";
+            const variantName = selectedVariant.name || "";
+
+            // Format: "Kiss Beauty Sweet Blush Stick - 3"
+            const displayName = variantName
+              ? `${parentName} - ${variantName}`
+              : parentName;
+            productTitle.textContent = displayName;
+            console.log("Updated product title:", productTitle.textContent);
           }
-        } else {
-          console.error("Price element not found - looking for .price class");
-        }
 
-
-        // Update stock status
-        const stockElement = document.querySelector(".stock-status");
-        if (stockElement) {
-          if (selectedVariant.stock > 0) {
-            stockElement.textContent = `In Stock (${selectedVariant.stock} available)`;
-            stockElement.style.color = "green";
+          // Update product price
+          const priceElement = document.querySelector(".price");
+          if (priceElement) {
+            if (
+              selectedVariant.price &&
+              parseFloat(selectedVariant.price) > 0
+            ) {
+              priceElement.textContent = `₱${parseFloat(
+                selectedVariant.price
+              ).toFixed(2)}`;
+              console.log("Updated price to:", priceElement.textContent);
+            } else {
+              priceElement.textContent = "Price not available";
+            }
           } else {
-            stockElement.textContent = "Out of Stock";
-            stockElement.style.color = "red";
+            console.error("Price element not found - looking for .price class");
           }
-        }
 
-        // Update description
-        const descElement = document.querySelector(".product-description");
-        if (descElement) {
-          descElement.textContent = selectedVariant.description || "No description available";
-          console.log("Updated description");
-        }
+          // Update stock status
+          const stockElement = document.querySelector(".stock-status");
+          if (stockElement) {
+            if (selectedVariant.stock > 0) {
+              stockElement.textContent = `In Stock (${selectedVariant.stock} available)`;
+              stockElement.style.color = "green";
+            } else {
+              stockElement.textContent = "Out of Stock";
+              stockElement.style.color = "red";
+            }
+          }
 
-        // Update ingredients
-        const ingredientsElement = document.querySelector(".product-ingredient");
-        if (ingredientsElement) {
-          ingredientsElement.textContent = selectedVariant.ingredients || "No ingredients listed";
-          console.log("Updated ingredients");
-        }
+          // Update description
+          const descElement = document.querySelector(".product-description");
+          if (descElement) {
+            descElement.textContent =
+              selectedVariant.description || "No description available";
+            console.log("Updated description");
+          }
 
-        // UPDATE PRODUCT ATTRIBUTES
-        updateProductAttributes(selectedVariant.attributes, parentProduct);
+          // Update ingredients
+          const ingredientsElement = document.querySelector(
+            ".product-ingredient"
+          );
+          if (ingredientsElement) {
+            ingredientsElement.textContent =
+              selectedVariant.ingredients || "No ingredients listed";
+            console.log("Updated ingredients");
+          }
 
-        // ===== INITIALIZE IMAGE GALLERY =====
-        console.log("=== SETTING UP IMAGE GALLERY ===");
-        initializeImageGallery(selectedVariant, parentProduct);
+          // UPDATE PRODUCT ATTRIBUTES
+          updateProductAttributes(selectedVariant.attributes, parentProduct);
 
-        // Set up navigation buttons
-        const prevButton = document.querySelector(".prev-button");
-        const nextButton = document.querySelector(".next-button");
+          // ===== INITIALIZE IMAGE GALLERY =====
+          console.log("=== SETTING UP IMAGE GALLERY ===");
+          initializeImageGallery(selectedVariant, parentProduct);
 
-        if (prevButton && nextButton) {
-          prevButton.addEventListener("click", showPreviousImage);
-          nextButton.addEventListener("click", showNextImage);
-          console.log("Navigation buttons set up");
-        }
+          // Set up navigation buttons
+          const prevButton = document.querySelector(".prev-button");
+          const nextButton = document.querySelector(".next-button");
 
-        // ===== DEBUG AND SET UP VARIANTS =====
-        const variationsContainer = document.querySelector(".variations-container");
-        console.log("=== DEBUG VARIANT DISPLAY ===");
-        console.log("Variations container exists:", !!variationsContainer);
-        console.log("Variants array:", variants);
-        console.log("Variants length:", variants?.length);
-        console.log("Selected variant ID:", selectedVariant.id);
+          if (prevButton && nextButton) {
+            prevButton.addEventListener("click", showPreviousImage);
+            nextButton.addEventListener("click", showNextImage);
+            console.log("Navigation buttons set up");
+          }
 
-        if (variationsContainer) {
-          if (variants && variants.length > 0) {
-            console.log("Loading variants:", variants.length);
-            variationsContainer.innerHTML = variants.map((variant) => `
-          <div class="variation-option ${variant.id === selectedVariant.id ? "active" : ""}"
+          // ===== DEBUG AND SET UP VARIANTS =====
+          const variationsContainer = document.querySelector(
+            ".variations-container"
+          );
+          console.log("=== DEBUG VARIANT DISPLAY ===");
+          console.log("Variations container exists:", !!variationsContainer);
+          console.log("Variants array:", variants);
+          console.log("Variants length:", variants?.length);
+          console.log("Selected variant ID:", selectedVariant.id);
+
+          if (variationsContainer) {
+            if (variants && variants.length > 0) {
+              console.log("Loading variants:", variants.length);
+              variationsContainer.innerHTML = variants
+                .map(
+                  (variant) => `
+          <div class="variation-option ${
+            variant.id === selectedVariant.id ? "active" : ""
+          }"
                data-variant-id="${variant.id}"
                data-variant-price="${variant.price || 0}"
                data-variant-image="${variant.image || ""}"
                data-variant-description="${variant.description || ""}"
                data-variant-ingredients="${variant.ingredients || ""}"
                data-variant-stock="${variant.stock || 0}"
-               data-variant-attributes='${JSON.stringify(variant.attributes || {})}'>
-            <div class="color-circle" style="background-color: ${variant.hexCode || "#CCCCCC"}"></div>
+               data-variant-attributes='${JSON.stringify(
+                 variant.attributes || {}
+               )}'>
+            <div class="color-circle" style="background-color: ${
+              variant.hexCode || "#CCCCCC"
+            }"></div>
             <span>${variant.name || "Variant"}</span>
           </div>
-        `).join("");
+        `
+                )
+                .join("");
 
-            // Set up variation selection with better debugging
-            const variationOptions = document.querySelectorAll(".variation-option");
-            console.log("Variation options found:", variationOptions.length);
+              // Set up variation selection with better debugging
+              const variationOptions =
+                document.querySelectorAll(".variation-option");
+              console.log("Variation options found:", variationOptions.length);
 
-            variationOptions.forEach((option, index) => {
-              console.log(`Setting up click event for variant ${index + 1}:`, option.querySelector('span').textContent);
+              variationOptions.forEach((option, index) => {
+                console.log(
+                  `Setting up click event for variant ${index + 1}:`,
+                  option.querySelector("span").textContent
+                );
 
-              option.addEventListener("click", function () {
-                console.log("=== VARIANT CLICKED ===");
-                console.log("Clicked variant:", this.querySelector('span').textContent);
-                console.log("Variant ID:", this.getAttribute('data-variant-id'));
+                option.addEventListener("click", function () {
+                  console.log("=== VARIANT CLICKED ===");
+                  console.log(
+                    "Clicked variant:",
+                    this.querySelector("span").textContent
+                  );
+                  console.log(
+                    "Variant ID:",
+                    this.getAttribute("data-variant-id")
+                  );
 
-                variationOptions.forEach((opt) => opt.classList.remove("active"));
-                this.classList.add("active");
+                  variationOptions.forEach((opt) =>
+                    opt.classList.remove("active")
+                  );
+                  this.classList.add("active");
 
-                // Call update function
-                updateProductDetails(this);
+                  // Call update function
+                  updateProductDetails(this);
+                });
               });
-            });
 
-            console.log("✅ Variants loaded successfully");
+              console.log("✅ Variants loaded successfully");
+            } else {
+              console.log("No variants found in data");
+              variationsContainer.innerHTML = "<p>No shades available</p>";
+            }
           } else {
-            console.log("No variants found in data");
-            variationsContainer.innerHTML = "<p>No shades available</p>";
+            console.error(
+              "Variations container not found - looking for .variations-container"
+            );
+          }
+
+          // Check if product is liked
+          if (selectedVariant?.id) {
+            checkIfProductIsLiked(selectedVariant.id);
+          }
+
+          // Update reviews section with fetched reviews
+          updateReviewsDisplay();
+
+          console.log("✅ Product page setup completed successfully");
+        } catch (error) {
+          console.error("Error during page setup:", error);
+          showErrorState("Error displaying product: " + error.message);
+        }
+      }
+
+      function showErrorState(message) {
+        const titleElement = document.querySelector(".product-title");
+        const priceElement = document.querySelector(".price");
+        const descriptionElement = document.querySelector(
+          ".product-description"
+        );
+        const variantsContainer = document.querySelector(
+          ".variations-container"
+        );
+        const actionButtons = document.querySelector(".action-buttons");
+
+        if (titleElement)
+          titleElement.textContent = message || "Error Loading Product";
+        if (priceElement) priceElement.textContent = "N/A";
+        if (descriptionElement)
+          descriptionElement.textContent =
+            "Could not load product information.";
+        if (variantsContainer)
+          variantsContainer.innerHTML = "<p>No variants could be loaded.</p>";
+        if (actionButtons) actionButtons.style.display = "none"; // Hide buttons on error
+
+        console.error("Error state:", message);
+      }
+
+      // Function to initialize image gallery
+      function initializeImageGallery(selectedVariant, parentProduct) {
+        console.log("=== INITIALIZING IMAGE GALLERY ===");
+        console.log("Selected variant:", selectedVariant);
+        console.log("Parent product:", parentProduct);
+
+        // Reset gallery
+        currentImageGallery = [];
+        currentImageIndex = 0;
+
+        // 1. Add variant image if available
+        if (selectedVariant.image && selectedVariant.image.trim() !== "") {
+          currentImageGallery.push({
+            src: selectedVariant.image,
+            type: "VARIANT",
+          });
+          console.log("Added variant image:", selectedVariant.image);
+        }
+
+        // 2. Add parent preview image if available
+        if (
+          parentProduct.previewImage &&
+          parentProduct.previewImage.trim() !== ""
+        ) {
+          currentImageGallery.push({
+            src: parentProduct.previewImage,
+            type: "PREVIEW",
+          });
+          console.log("Added preview image:", parentProduct.previewImage);
+        }
+
+        // 3. Add parent gallery images if available
+        if (
+          parentProduct.galleryImages &&
+          parentProduct.galleryImages.length > 0
+        ) {
+          // Ensure galleryImages is an array and filter out empty strings
+          const cleanedGalleryImages = Array.isArray(
+            parentProduct.galleryImages
+          )
+            ? parentProduct.galleryImages.filter(
+                (img) => img && img.trim() !== ""
+              )
+            : [];
+
+          cleanedGalleryImages.forEach((galleryImage) => {
+            currentImageGallery.push({
+              src: galleryImage,
+              type: "GALLERY",
+            });
+            console.log("Added gallery image:", galleryImage);
+          });
+        }
+
+        console.log("Final image gallery:", currentImageGallery);
+
+        // Display the first image
+        displayCurrentImage();
+      }
+
+      // Function to display current image
+      function displayCurrentImage() {
+        const productImage = document.querySelector(".product-image");
+        const imagePlaceholder = document.querySelector(".image-placeholder");
+        const prevButton = document.querySelector(".prev-button");
+        const nextButton = document.querySelector(".next-button");
+
+        console.log(
+          "Displaying image - Gallery length:",
+          currentImageGallery.length
+        );
+        console.log("Current image index:", currentImageIndex);
+
+        if (
+          currentImageGallery.length > 0 &&
+          currentImageGallery[currentImageIndex]
+        ) {
+          const currentImage = currentImageGallery[currentImageIndex];
+          console.log("Loading image:", currentImage.src);
+
+          // Show actual image, hide placeholder
+          productImage.src = currentImage.src;
+          productImage.alt = `Product Image - ${currentImage.type}`;
+          productImage.style.display = "block";
+
+          if (imagePlaceholder) {
+            imagePlaceholder.style.display = "none";
+          }
+
+          // Show navigation buttons if there are multiple images
+          if (prevButton && nextButton) {
+            if (currentImageGallery.length > 1) {
+              prevButton.style.display =
+                currentImageIndex > 0 ? "flex" : "none";
+              nextButton.style.display =
+                currentImageIndex < currentImageGallery.length - 1
+                  ? "flex"
+                  : "none";
+            } else {
+              // Only one image, hide buttons
+              prevButton.style.display = "none";
+              nextButton.style.display = "none";
+            }
           }
         } else {
-          console.error("Variations container not found - looking for .variations-container");
-        }
+          // No images available, show placeholder
+          console.log("No images available, showing placeholder");
+          if (productImage) {
+            productImage.style.display = "none";
+          }
+          if (imagePlaceholder) {
+            imagePlaceholder.style.display = "flex";
+          }
 
-        // Check if product is liked
-        if (selectedVariant?.id) {
-          checkIfProductIsLiked(selectedVariant.id);
-        }
-
-        // Update reviews section with fetched reviews
-        updateReviewsDisplay();
-
-
-        console.log("✅ Product page setup completed successfully");
-
-      } catch (error) {
-        console.error("Error during page setup:", error);
-        showErrorState("Error displaying product: " + error.message);
-      }
-    }
-
-
-    function showErrorState(message) {
-      const titleElement = document.querySelector(".product-title");
-      const priceElement = document.querySelector(".price");
-      const descriptionElement = document.querySelector(".product-description");
-      const variantsContainer = document.querySelector(".variations-container");
-      const actionButtons = document.querySelector(".action-buttons");
-
-      if (titleElement) titleElement.textContent = message || "Error Loading Product";
-      if (priceElement) priceElement.textContent = "N/A";
-      if (descriptionElement) descriptionElement.textContent = "Could not load product information.";
-      if (variantsContainer) variantsContainer.innerHTML = "<p>No variants could be loaded.</p>";
-      if (actionButtons) actionButtons.style.display = 'none'; // Hide buttons on error
-
-      console.error("Error state:", message);
-    }
-
-    // Function to initialize image gallery
-    function initializeImageGallery(selectedVariant, parentProduct) {
-      console.log("=== INITIALIZING IMAGE GALLERY ===");
-      console.log("Selected variant:", selectedVariant);
-      console.log("Parent product:", parentProduct);
-
-      // Reset gallery
-      currentImageGallery = [];
-      currentImageIndex = 0;
-
-      // 1. Add variant image if available
-      if (selectedVariant.image && selectedVariant.image.trim() !== "") {
-        currentImageGallery.push({
-          src: selectedVariant.image,
-          type: 'VARIANT'
-        });
-        console.log("Added variant image:", selectedVariant.image);
-      }
-
-      // 2. Add parent preview image if available
-      if (parentProduct.previewImage && parentProduct.previewImage.trim() !== "") {
-        currentImageGallery.push({
-          src: parentProduct.previewImage,
-          type: 'PREVIEW'
-        });
-        console.log("Added preview image:", parentProduct.previewImage);
-      }
-
-      // 3. Add parent gallery images if available
-      if (parentProduct.galleryImages && parentProduct.galleryImages.length > 0) {
-        // Ensure galleryImages is an array and filter out empty strings
-        const cleanedGalleryImages = Array.isArray(parentProduct.galleryImages) ?
-          parentProduct.galleryImages.filter(img => img && img.trim() !== "") : [];
-
-        cleanedGalleryImages.forEach(galleryImage => {
-          currentImageGallery.push({
-            src: galleryImage,
-            type: 'GALLERY'
-          });
-          console.log("Added gallery image:", galleryImage);
-        });
-      }
-
-      console.log("Final image gallery:", currentImageGallery);
-
-      // Display the first image
-      displayCurrentImage();
-    }
-
-    // Function to display current image
-    function displayCurrentImage() {
-      const productImage = document.querySelector(".product-image");
-      const imagePlaceholder = document.querySelector(".image-placeholder");
-      const prevButton = document.querySelector(".prev-button");
-      const nextButton = document.querySelector(".next-button");
-
-      console.log("Displaying image - Gallery length:", currentImageGallery.length);
-      console.log("Current image index:", currentImageIndex);
-
-      if (currentImageGallery.length > 0 && currentImageGallery[currentImageIndex]) {
-        const currentImage = currentImageGallery[currentImageIndex];
-        console.log("Loading image:", currentImage.src);
-
-        // Show actual image, hide placeholder
-        productImage.src = currentImage.src;
-        productImage.alt = `Product Image - ${currentImage.type}`;
-        productImage.style.display = 'block';
-
-        if (imagePlaceholder) {
-          imagePlaceholder.style.display = 'none';
-        }
-
-        // Show navigation buttons if there are multiple images
-        if (prevButton && nextButton) {
-          if (currentImageGallery.length > 1) {
-            prevButton.style.display = currentImageIndex > 0 ? 'flex' : 'none';
-            nextButton.style.display = currentImageIndex < currentImageGallery.length - 1 ? 'flex' : 'none';
-          } else {
-            // Only one image, hide buttons
-            prevButton.style.display = 'none';
-            nextButton.style.display = 'none';
+          // Hide navigation buttons
+          if (prevButton && nextButton) {
+            prevButton.style.display = "none";
+            nextButton.style.display = "none";
           }
         }
-
-      } else {
-        // No images available, show placeholder
-        console.log("No images available, showing placeholder");
-        if (productImage) {
-          productImage.style.display = 'none';
-        }
-        if (imagePlaceholder) {
-          imagePlaceholder.style.display = 'flex';
-        }
-
-        // Hide navigation buttons
-        if (prevButton && nextButton) {
-          prevButton.style.display = 'none';
-          nextButton.style.display = 'none';
-        }
-      }
-    }
-
-    // Navigation functions
-    function showNextImage() {
-      if (currentImageIndex < currentImageGallery.length - 1) {
-        currentImageIndex++;
-        displayCurrentImage();
-      }
-    }
-
-    function showPreviousImage() {
-      if (currentImageIndex > 0) {
-        currentImageIndex--;
-        displayCurrentImage();
-      }
-    }
-
-    // UPDATED FUNCTION: Update Product Attributes in Specifications Section
-    function updateProductAttributes(attributes, parentProduct) {
-      console.log("Updating product attributes:", attributes);
-      console.log("Parent product in attributes function:", parentProduct);
-
-      // Update basic product info
-      const categoryElement = document.getElementById('spec-category');
-      if (categoryElement && parentProduct?.category) {
-        categoryElement.textContent = parentProduct.category;
       }
 
-      // Set default values for specs list
-      const defaultSpecs = {
-        'spec-category': parentProduct?.category || '-',
-        'spec-finish': '-',
-        'spec-skin-type': '-',
-        'spec-skin-tone': '-',
-        'spec-undertone': '-',
-        'spec-concerns': 'Not Defined'
-      };
-
-      // Apply defaults first
-      Object.entries(defaultSpecs).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.textContent = value;
-        }
-      });
-
-      if (!attributes) {
-        console.log("No attributes available");
-        return;
-      }
-
-      // Process finish attributes
-      const finishTypes = [];
-      // Use loose comparison (==) to handle both 1 and '1'
-      if (attributes.Matte == 1) finishTypes.push('Matte');
-      if (attributes.Dewy == 1) finishTypes.push('Dewy');
-      if (attributes.Satin == 1) finishTypes.push('Satin'); // Added Satin
-      if (attributes.Glossy == 1) finishTypes.push('Glossy'); // Added Glossy
-
-      if (finishTypes.length > 0) {
-        const finishElement = document.getElementById('spec-finish');
-        if (finishElement) {
-          finishElement.textContent = finishTypes.join(', ');
-          console.log("Updated finish to:", finishTypes.join(', '));
-        }
-      } else {
-        const finishElement = document.getElementById('spec-finish');
-        if (finishElement) {
-          finishElement.textContent = 'Natural';
+      // Navigation functions
+      function showNextImage() {
+        if (currentImageIndex < currentImageGallery.length - 1) {
+          currentImageIndex++;
+          displayCurrentImage();
         }
       }
 
-      // Process skin concerns
-      const concerns = [];
-      if (attributes.Acne == 1) concerns.push('Acne');
-      if (attributes.Dryness == 1) concerns.push('Dryness');
-      if (attributes.DarkSpots == 1) concerns.push('Dark Spots');
-      if (attributes.Oiliness == 1) concerns.push('Oiliness'); // Added Oiliness
-      if (attributes.Sensitivity == 1) concerns.push('Sensitivity'); // Added Sensitivity
-
-
-      const concernsElement = document.getElementById('spec-concerns');
-      if (concernsElement) {
-        concernsElement.textContent = concerns.length > 0 ? concerns.join(', ') : 'Not Defined';
+      function showPreviousImage() {
+        if (currentImageIndex > 0) {
+          currentImageIndex--;
+          displayCurrentImage();
+        }
       }
 
-      // Process basic skin attributes
-      const skinAttributes = {
-        'SkinType': 'spec-skin-type',
-        'SkinTone': 'spec-skin-tone',
-        'Undertone': 'spec-undertone'
-      };
+      // UPDATED FUNCTION: Update Product Attributes in Specifications Section
+      function updateProductAttributes(attributes, parentProduct) {
+        console.log("Updating product attributes:", attributes);
+        console.log("Parent product in attributes function:", parentProduct);
 
-      Object.entries(skinAttributes).forEach(([attrKey, elementId]) => {
-        if (attributes[attrKey]) {
-          const element = document.getElementById(elementId);
+        // Update basic product info
+        const categoryElement = document.getElementById("spec-category");
+        if (categoryElement && parentProduct?.category) {
+          categoryElement.textContent = parentProduct.category;
+        }
+
+        // Set default values for specs list
+        const defaultSpecs = {
+          "spec-category": parentProduct?.category || "-",
+          "spec-finish": "-",
+          "spec-skin-type": "-",
+          "spec-skin-tone": "-",
+          "spec-undertone": "-",
+          "spec-concerns": "Not Defined",
+        };
+
+        // Apply defaults first
+        Object.entries(defaultSpecs).forEach(([id, value]) => {
+          const element = document.getElementById(id);
           if (element) {
-            element.textContent = attributes[attrKey];
+            element.textContent = value;
           }
-        }
-      });
+        });
 
-      console.log("✅ Product specifications updated");
-    }
-
-    // Function to update product details when a variant is selected
-    function updateProductDetails(selectedOption) {
-      console.log("=== UPDATING PRODUCT DETAILS FOR VARIANT ===");
-
-      try {
-        if (!selectedOption) {
-          console.error("No selected option provided");
+        if (!attributes) {
+          console.log("No attributes available");
           return;
         }
-        console.log("Selected option:", selectedOption);
-        console.log("Selected option class:", selectedOption.className);
 
-        // Get data from the clicked variant option
-        const variantId = selectedOption.getAttribute('data-variant-id');
-        const variantPrice = selectedOption.getAttribute('data-variant-price');
-        const variantImage = selectedOption.getAttribute('data-variant-image');
-        const variantDescription = selectedOption.getAttribute('data-variant-description');
-        const variantIngredients = selectedOption.getAttribute('data-variant-ingredients');
-        const variantStock = selectedOption.getAttribute('data-variant-stock');
-        const variantAttributes = JSON.parse(selectedOption.getAttribute('data-variant-attributes') || '{}');
+        // Process finish attributes
+        const finishTypes = [];
+        // Use loose comparison (==) to handle both 1 and '1'
+        if (attributes.Matte == 1) finishTypes.push("Matte");
+        if (attributes.Dewy == 1) finishTypes.push("Dewy");
+        if (attributes.Satin == 1) finishTypes.push("Satin"); // Added Satin
+        if (attributes.Glossy == 1) finishTypes.push("Glossy"); // Added Glossy
 
-        console.log("Selected variant data:", {
-          variantId,
-          variantPrice,
-          variantImage,
-          variantDescription,
-          variantIngredients,
-          variantStock,
-          variantAttributes
+        if (finishTypes.length > 0) {
+          const finishElement = document.getElementById("spec-finish");
+          if (finishElement) {
+            finishElement.textContent = finishTypes.join(", ");
+            console.log("Updated finish to:", finishTypes.join(", "));
+          }
+        } else {
+          const finishElement = document.getElementById("spec-finish");
+          if (finishElement) {
+            finishElement.textContent = "Natural";
+          }
+        }
+
+        // Process skin concerns
+        const concerns = [];
+        if (attributes.Acne == 1) concerns.push("Acne");
+        if (attributes.Dryness == 1) concerns.push("Dryness");
+        if (attributes.DarkSpots == 1) concerns.push("Dark Spots");
+        if (attributes.Oiliness == 1) concerns.push("Oiliness"); // Added Oiliness
+        if (attributes.Sensitivity == 1) concerns.push("Sensitivity"); // Added Sensitivity
+
+        const concernsElement = document.getElementById("spec-concerns");
+        if (concernsElement) {
+          concernsElement.textContent =
+            concerns.length > 0 ? concerns.join(", ") : "Not Defined";
+        }
+
+        // Process basic skin attributes
+        const skinAttributes = {
+          SkinType: "spec-skin-type",
+          SkinTone: "spec-skin-tone",
+          Undertone: "spec-undertone",
+        };
+
+        Object.entries(skinAttributes).forEach(([attrKey, elementId]) => {
+          if (attributes[attrKey]) {
+            const element = document.getElementById(elementId);
+            if (element) {
+              element.textContent = attributes[attrKey];
+            }
+          }
         });
 
-        // Update price
-        const priceElement = document.querySelector(".price");
-        if (priceElement && variantPrice) {
-          priceElement.textContent = `₱${parseFloat(variantPrice).toFixed(2)}`;
-          console.log("Updated price to:", priceElement.textContent);
-        }
+        console.log("✅ Product specifications updated");
+      }
 
-        // Update images when variant changes
-        if (productData?.parentProduct) {
-          console.log("Updating image gallery for new variant...");
-          initializeImageGallery(
-            {
-              image: variantImage,
-              id: variantId,
-              name: selectedOption.querySelector('span').textContent
-            },
-            productData.parentProduct
+      // Function to update product details when a variant is selected
+      function updateProductDetails(selectedOption) {
+        console.log("=== UPDATING PRODUCT DETAILS FOR VARIANT ===");
+
+        try {
+          if (!selectedOption) {
+            console.error("No selected option provided");
+            return;
+          }
+          console.log("Selected option:", selectedOption);
+          console.log("Selected option class:", selectedOption.className);
+
+          // Get data from the clicked variant option
+          const variantId = selectedOption.getAttribute("data-variant-id");
+          const variantPrice =
+            selectedOption.getAttribute("data-variant-price");
+          const variantImage =
+            selectedOption.getAttribute("data-variant-image");
+          const variantDescription = selectedOption.getAttribute(
+            "data-variant-description"
           );
-        }
+          const variantIngredients = selectedOption.getAttribute(
+            "data-variant-ingredients"
+          );
+          const variantStock =
+            selectedOption.getAttribute("data-variant-stock");
+          const variantAttributes = JSON.parse(
+            selectedOption.getAttribute("data-variant-attributes") || "{}"
+          );
 
-        // Update description
-        const descElement = document.querySelector(".product-description");
-        if (descElement) {
-          descElement.textContent = variantDescription || "No description available";
-          console.log("Updated description");
-        }
-
-        // Update ingredients
-        const ingredientsElement = document.querySelector(".product-ingredient");
-        if (ingredientsElement) {
-          ingredientsElement.textContent = variantIngredients || "No ingredients listed";
-          console.log("Updated ingredients");
-        }
-
-        // Update product title to show selected variant name
-        const productTitle = document.querySelector(".product-title");
-        if (productTitle && productData?.parentProduct) {
-          const variantName = selectedOption.querySelector('span').textContent;
-          productTitle.textContent = `${productData.parentProduct.name} - ${variantName}`;
-          console.log("Updated product title:", productTitle.textContent);
-        }
-
-        // Update stock status
-        const stockElement = document.querySelector(".stock-status");
-        if (stockElement && variantStock !== null) {
-          const stock = parseInt(variantStock);
-          if (stock > 0) {
-            stockElement.textContent = `In Stock (${stock} available)`;
-            stockElement.style.color = "green";
-          } else {
-            stockElement.textContent = "Out of Stock";
-            stockElement.style.color = "red";
-          }
-          console.log("Updated stock to:", stockElement.textContent);
-        }
-
-        // Update product attributes
-        updateProductAttributes(variantAttributes, productData?.parentProduct);
-
-        // Update the selected variant in global productData
-        if (productData && productData.variants) {
-          const newSelectedVariant = productData.variants.find(v => v.id === variantId);
-          if (newSelectedVariant) {
-            productData.selectedVariant = newSelectedVariant;
-            console.log("Updated selected variant in productData:", newSelectedVariant);
-          }
-        }
-
-        // Check favorite status for the newly selected variant
-        checkIfProductIsLiked(variantId);
-
-      } catch (error) {
-        console.error("❌ Error in updateProductDetails:", error);
-      }
-    }
-
-    // Keep this function separate - it's different from updateProductDetails
-    function updateLikeButtonUI() {
-      const likeButton = document.querySelector(".like-button");
-      const likeIcon = likeButton.querySelector("i");
-
-      if (likeButton && likeIcon) {
-        if (isProductLiked) {
-          likeButton.classList.add("active");
-          likeIcon.className = "fas fa-heart";
-          likeButton.innerHTML = '<i class="fas fa-heart"></i> <span>Liked</span>';
-        } else {
-          likeButton.classList.remove("active");
-          likeIcon.className = "far fa-heart";
-          likeButton.innerHTML = '<i class="far fa-heart"></i> <span>Like</span>';
-        }
-      }
-    }
-
-    // Check if product is in user's favorites
-    async function checkIfProductIsLiked(productId) {
-      try {
-        const response = await fetch(`../php/favorites-handler.php?action=list`);
-        const result = await response.json();
-
-        if (result.success && result.products) {
-          // Check if any product or variant matches the current productId
-          const isLiked = result.products.some(product => {
-            if (product.id === productId) return true; // Direct product match
-            if (product.variants) {
-              return product.variants.some(v => v.id === productId); // Variant match
-            }
-            return false;
+          console.log("Selected variant data:", {
+            variantId,
+            variantPrice,
+            variantImage,
+            variantDescription,
+            variantIngredients,
+            variantStock,
+            variantAttributes,
           });
 
-          isProductLiked = isLiked;
-          updateLikeButtonUI();
-          console.log(`Product ${productId} liked status:`, isLiked);
-        } else {
-          console.log("No favorite products found or API error checking favorites.");
+          // Update price
+          const priceElement = document.querySelector(".price");
+          if (priceElement && variantPrice) {
+            priceElement.textContent = `₱${parseFloat(variantPrice).toFixed(
+              2
+            )}`;
+            console.log("Updated price to:", priceElement.textContent);
+          }
+
+          // Update images when variant changes
+          if (productData?.parentProduct) {
+            console.log("Updating image gallery for new variant...");
+            initializeImageGallery(
+              {
+                image: variantImage,
+                id: variantId,
+                name: selectedOption.querySelector("span").textContent,
+              },
+              productData.parentProduct
+            );
+          }
+
+          // Update description
+          const descElement = document.querySelector(".product-description");
+          if (descElement) {
+            descElement.textContent =
+              variantDescription || "No description available";
+            console.log("Updated description");
+          }
+
+          // Update ingredients
+          const ingredientsElement = document.querySelector(
+            ".product-ingredient"
+          );
+          if (ingredientsElement) {
+            ingredientsElement.textContent =
+              variantIngredients || "No ingredients listed";
+            console.log("Updated ingredients");
+          }
+
+          // Update product title to show selected variant name
+          const productTitle = document.querySelector(".product-title");
+          if (productTitle && productData?.parentProduct) {
+            const variantName =
+              selectedOption.querySelector("span").textContent;
+            productTitle.textContent = `${productData.parentProduct.name} - ${variantName}`;
+            console.log("Updated product title:", productTitle.textContent);
+          }
+
+          // Update stock status
+          const stockElement = document.querySelector(".stock-status");
+          if (stockElement && variantStock !== null) {
+            const stock = parseInt(variantStock);
+            if (stock > 0) {
+              stockElement.textContent = `In Stock (${stock} available)`;
+              stockElement.style.color = "green";
+            } else {
+              stockElement.textContent = "Out of Stock";
+              stockElement.style.color = "red";
+            }
+            console.log("Updated stock to:", stockElement.textContent);
+          }
+
+          // Update product attributes
+          updateProductAttributes(
+            variantAttributes,
+            productData?.parentProduct
+          );
+
+          // Update the selected variant in global productData
+          if (productData && productData.variants) {
+            const newSelectedVariant = productData.variants.find(
+              (v) => v.id === variantId
+            );
+            if (newSelectedVariant) {
+              productData.selectedVariant = newSelectedVariant;
+              console.log(
+                "Updated selected variant in productData:",
+                newSelectedVariant
+              );
+            }
+          }
+
+          // Check favorite status for the newly selected variant
+          checkIfProductIsLiked(variantId);
+        } catch (error) {
+          console.error("❌ Error in updateProductDetails:", error);
+        }
+      }
+
+      // Keep this function separate - it's different from updateProductDetails
+      function updateLikeButtonUI() {
+        const likeButton = document.querySelector(".like-button");
+        const likeIcon = likeButton.querySelector("i");
+
+        if (likeButton && likeIcon) {
+          if (isProductLiked) {
+            likeButton.classList.add("active");
+            likeIcon.className = "fas fa-heart";
+            likeButton.innerHTML =
+              '<i class="fas fa-heart"></i> <span>Liked</span>';
+          } else {
+            likeButton.classList.remove("active");
+            likeIcon.className = "far fa-heart";
+            likeButton.innerHTML =
+              '<i class="far fa-heart"></i> <span>Like</span>';
+          }
+        }
+      }
+
+      // Check if product is in user's favorites
+      async function checkIfProductIsLiked(productId) {
+        try {
+          const response = await fetch(
+            `../php/favorites-handler.php?action=list`
+          );
+          const result = await response.json();
+
+          if (result.success && result.products) {
+            // Check if any product or variant matches the current productId
+            const isLiked = result.products.some((product) => {
+              if (product.id === productId) return true; // Direct product match
+              if (product.variants) {
+                return product.variants.some((v) => v.id === productId); // Variant match
+              }
+              return false;
+            });
+
+            isProductLiked = isLiked;
+            updateLikeButtonUI();
+            console.log(`Product ${productId} liked status:`, isLiked);
+          } else {
+            console.log(
+              "No favorite products found or API error checking favorites."
+            );
+            isProductLiked = false;
+            updateLikeButtonUI();
+          }
+        } catch (err) {
+          console.error("Error checking favorite status:", err);
           isProductLiked = false;
           updateLikeButtonUI();
         }
-      } catch (err) {
-        console.error("Error checking favorite status:", err);
-        isProductLiked = false;
-        updateLikeButtonUI();
-      }
-    }
-
-    // Function to update reviews display on the product page
-    function updateReviewsDisplay() {
-      console.log("=== UPDATING REVIEWS DISPLAY ===");
-      if (!productData || !productData.reviews) {
-        console.log("No review data available.");
-        return;
       }
 
-      reviews = productData.reviews; // Ensure global 'reviews' variable is updated
+      function updateReviewsDisplay() {
+        console.log("=== UPDATING REVIEWS DISPLAY ===");
+        if (!productData || !productData.reviews) {
+          console.log("No review data available.");
+          return;
+        }
 
-      const reviewCount = reviews.length;
-      const averageRating = reviewCount > 0 ? (reviews.reduce((sum, review) => sum + parseFloat(review.rating), 0) / reviewCount).toFixed(1) : '0.0';
+        reviews = productData.reviews;
 
-      // Update average rating and count
-      const averageRatingElement = document.querySelector(".average-rating");
-      const ratingCountElement = document.querySelector(".rating-count");
-      const starsSummaryElement = document.querySelector(".rating-summary .stars");
+        const reviewCount = reviews.length;
+        const averageRating = calculateAverageRating(reviews);
 
-      if (averageRatingElement) averageRatingElement.textContent = averageRating;
-      if (ratingCountElement) ratingCountElement.textContent = `Based on ${reviewCount} review${reviewCount === 1 ? '' : 's'}`;
-      if (starsSummaryElement) starsSummaryElement.innerHTML = getStarHTML(averageRating);
+        // Update BOTH desktop and mobile placements
+        const averageRatingElements =
+          document.querySelectorAll(".average-rating");
+        const ratingCountElements = document.querySelectorAll(".rating-count");
+        const starsSummaryElements = document.querySelectorAll(
+          ".rating-summary .stars"
+        );
+        const featuredReviewsContainers =
+          document.querySelectorAll(".featured-reviews");
+        const viewAllBtnsDesktop = document.querySelectorAll(
+          "#viewAllReviewsBtnDesktop"
+        );
+        const viewAllBtnsMobile = document.querySelectorAll(
+          "#viewAllReviewsBtnMobile"
+        );
 
-      // Display featured reviews (first two, or all if less than two)
-      const featuredReviewsContainer = document.querySelector(".featured-reviews");
-      if (featuredReviewsContainer) {
-        featuredReviewsContainer.innerHTML = ''; // Clear existing reviews
-        const reviewsToDisplay = reviews.slice(0, 2); // Show up to 2 featured reviews
+        // Update all average rating elements
+        averageRatingElements.forEach((el) => {
+          el.textContent = averageRating;
+        });
 
-        if (reviewsToDisplay.length === 0) {
-          featuredReviewsContainer.innerHTML = '<p>No reviews yet. Be the first to review this product!</p>';
+        // Update all rating count elements
+        ratingCountElements.forEach((el) => {
+          el.textContent = `Based on ${reviewCount} review${
+            reviewCount === 1 ? "" : "s"
+          }`;
+        });
+
+        // Update all stars elements
+        starsSummaryElements.forEach((el) => {
+          el.innerHTML = getStarHTML(averageRating);
+        });
+
+        // Update all featured reviews containers
+        featuredReviewsContainers.forEach((container) => {
+          container.innerHTML = ""; // Clear existing reviews
+          const reviewsToDisplay = reviews.slice(0, 2); // Show up to 2 featured reviews
+
+          if (reviewsToDisplay.length === 0) {
+            container.innerHTML =
+              "<p>No reviews yet. Be the first to review this product!</p>";
+          } else {
+            reviewsToDisplay.forEach((review) => {
+              container.innerHTML += createReviewItemHTML(review);
+            });
+          }
+        });
+
+        // Hide "View All Reviews" buttons if no reviews
+        viewAllBtnsDesktop.forEach((btn) => {
+          btn.style.display = reviewCount > 0 ? "block" : "none";
+        });
+
+        viewAllBtnsMobile.forEach((btn) => {
+          btn.style.display = reviewCount > 0 ? "block" : "none";
+        });
+
+        console.log("✅ Reviews display updated. Total reviews:", reviewCount);
+      }
+
+      // Helper function to generate star HTML
+      function getStarHTML(rating) {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+        const emptyStars = 5 - fullStars - halfStar;
+        return (
+          "★".repeat(fullStars) + (halfStar ? "½" : "") + "☆".repeat(emptyStars)
+        );
+      }
+
+      function createReviewItemHTML(review) {
+        const stars = getStarHTML(review.rating);
+
+        // Add variant/shade information if available
+        const variantInfoHTML =
+          review.shade_variant || review.variant_name
+            ? `<div class="review-variant">
+            <span class="variant-indicator" style="background-color: ${
+              review.hex_code || "#CCCCCC"
+            };"></span>
+            ${review.shade_variant || review.variant_name}
+        </div>`
+            : "";
+
+        // Create profile photo HTML - ensure the path is correct
+        let profilePhotoPath;
+        if (review.profile_photo && review.profile_photo.trim() !== "") {
+          // Ensure the path starts with / and remove any leading backslashes
+          const cleanPath = review.profile_photo
+            .replace(/^\\+/, "")
+            .replace(/^\/*/, "/");
+          profilePhotoPath = cleanPath;
         } else {
-          reviewsToDisplay.forEach(review => {
-            featuredReviewsContainer.innerHTML += createReviewItemHTML(review);
+          // Default gray avatar SVG
+          profilePhotoPath =
+            "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTIwIDIyQzIzLjMxMzcgMjIgMjYgMTkuMzEzNyAyNiAxNkMyNiAxMi42ODYzIDIzLjMxMzcgMTAgMjAgMTBDMTYuNjg2MyAxMCAxNCAxMi42ODYzIDE0IDE2QzE0IDE5LjMxMzcgMTYuNjg2MyAyMiAyMCAyMloiIGZpbGw9IiNBOUE5QTkiLz4KPHBhdGggZD0iTTIwIDM0QzI2LjYyODcgMzQgMzIgMjguNjI4NyAzMiAyMkgyMEMxMy4zNzEzIDIyIDggMjcuMzcxMyA4IDM0SDEyQzEyIDI4LjQ3NzIgMTYuNDc3MiAyNCAyMiAyNEgyMEMxMy4zNzEzIDI0IDggMjkuMzcxMyA4IDM2SDEyQzEyIDMwLjQ3NzIgMTYuNDc3MiAyNiAyMiAyNkgyMEMxMy4zNzEzIDI2IDggMzEuMzcxMyA4IDM4SDEyQzEyIDMyLjQ3NzIgMTYuNDc3MiAyOCAyMiAyOEgyMEMxMy4zNzEzIDI4IDggMzMuMzcxMyA4IDQwSDEyQzEyIDM0LjQ3NzIgMTYuNDc3MiAzMCAyMiAzMEgyMEMxMy4zNzEzIDMwIDggMzUuMzcxMyA4IDQySDEyQzEyIDM2LjQ3NzIgMTYuNDc3MiAzMiAyMiAzMkgyMEMxMy4zNzEzIDMyIDggMzcuMzcxMyA4IDQ0SDEyQzEyIDM4LjQ3NzIgMTYuNDc3MiAzNCAyMiAzNEgyMFoiIGZpbGw9IiNBOUE5QTkiLz4KPC9zdmc+";
+        }
+
+        return `
+        <div class="rating-item">
+            <div class="rating-header">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <img src="${profilePhotoPath}" alt="${
+          review.user_name || "Anonymous"
+        }" class="profile-photo" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTIwIDIyQzIzLjMxMzcgMjIgMjYgMTkuMzEzNyAyNiAxNkMyNiAxMi42ODYzIDIzLjMxMzcgMTAgMjAgMTBDMTYuNjg2MyAxMCAxNCAxMi42ODYzIDE0IDE2QzE0IDE5LjMxMzcgMTYuNjg2MyAyMiAyMCAyMloiIGZpbGw9IiNBOUE5QTkiLz4KPHBhdGggZD0iTTIwIDM0QzI2LjYyODcgMzQgMzIgMjguNjI4NyAzMiAyMkgyMEMxMy4zNzEzIDIyIDggMjcuMzcxMyA4IDM0SDEyQzEyIDI4LjQ3NzIgMTYuNDc3MiAyNCAyMiAyNEgyMEMxMy4zNzEzIDI0IDggMjkuMzcxMyA4IDM2SDEyQzEyIDMwLjQ3NzIgMTYuNDc3MiAyNiAyMiAyNkgyMEMxMy4zNzEzIDI2IDggMzEuMzcxMyA4IDM4SDEyQzEyIDMyLjQ3NzIgMTYuNDc3MiAyOCAyMiAyOEgyMEMxMy4zNzEzIDI4IDggMzMuMzcxMyA4IDQwSDEyQzEyIDM0LjQ3NzIgMTYuNDc3MiAzMCAyMiAzMEgyMEMxMy4zNzEzIDMwIDggMzUuMzcxMyA4IDQySDEyQzEyIDM2LjQ3NzIgMTYuNDc3MiAzMiAyMiAzMkgyMEMxMy4zNzEzIDMyIDggMzcuMzcxMyA4IDQ0SDEyQzEyIDM4LjQ3NzIgMTYuNDc3MiAzNCAyMiAzNEgyMFoiIGZpbGw9IiNBOUE5QTkiLz4KPC9zdmc+'">
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">${
+                          review.user_name || "Anonymous"
+                        }</div>
+                        ${variantInfoHTML}
+                    </div>
+                </div>
+                <div class="rating-date">${formatReviewDate(
+                  review.review_date
+                )}</div>
+            </div>
+            <div class="stars">${stars}</div>
+            <p class="rating-text">${
+              review.review_text || "No text provided."
+            }</p>
+        </div>
+    `;
+      }
+
+      function formatReviewDate(dateString) {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      // Function to calculate average rating from all reviews
+      function calculateAverageRating(reviews) {
+        if (!reviews || reviews.length === 0) return 0;
+        const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+        return (total / reviews.length).toFixed(1);
+      }
+
+      // Setup modal functionality (keep your existing code)
+      function setupModal() {
+        const viewAllBtnDesktop = document.getElementById(
+          "viewAllReviewsBtnDesktop"
+        );
+        const viewAllBtnMobile = document.getElementById(
+          "viewAllReviewsBtnMobile"
+        );
+        const modal = document.getElementById("reviewsModal");
+        const closeModal = document.getElementById("closeModal");
+
+        if (viewAllBtnDesktop) {
+          viewAllBtnDesktop.addEventListener("click", function () {
+            openAllReviewsModal();
+          });
+        }
+
+        if (viewAllBtnMobile) {
+          viewAllBtnMobile.addEventListener("click", function () {
+            openAllReviewsModal();
+          });
+        }
+
+        if (closeModal) {
+          closeModal.addEventListener("click", function () {
+            closeAllReviewsModal();
+          });
+        }
+
+        // Close modal when clicking outside
+        if (modal) {
+          modal.addEventListener("click", function (e) {
+            if (e.target === modal) {
+              closeAllReviewsModal();
+            }
           });
         }
       }
 
-      // Hide "View All Reviews" button if no reviews
-      const viewAllBtnDesktop = document.getElementById("viewAllReviewsBtnDesktop");
-      const viewAllBtnMobile = document.getElementById("viewAllReviewsBtnMobile");
+      // Open all reviews modal (keep your existing code)
+      function openAllReviewsModal() {
+        const modal = document.getElementById("reviewsModal");
+        const allReviewsContainer = document.getElementById("allReviews");
 
-      if (viewAllBtnDesktop) viewAllBtnDesktop.style.display = reviewCount > 0 ? 'block' : 'none';
-      if (viewAllBtnMobile) viewAllBtnMobile.style.display = reviewCount > 0 ? 'block' : 'none';
+        // Clear previous content
+        allReviewsContainer.innerHTML = "";
 
-      console.log("✅ Reviews display updated.");
-    }
-
-    // Helper function to generate star HTML
-    function getStarHTML(rating) {
-      const fullStars = Math.floor(rating);
-      const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-      const emptyStars = 5 - fullStars - halfStar;
-      return '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars);
-    }
-
-    // Helper function to create HTML for a single review item
-    function createReviewItemHTML(review) {
-      const stars = getStarHTML(review.rating);
-      const reviewImagesHTML = review.image_url ?
-        `
-        <div class="rating-images">
-            <img src="${review.image_url}" alt="Review image" class="rating-image">
-        </div>
-        ` : '';
-
-      return `
-        <div class="rating-item">
-            <div class="rating-header">
-                <div class="user-name">${review.user_name || 'Anonymous'}</div>
-                <div class="rating-date">${review.review_date || ''}</div>
-            </div>
-            <div class="stars">${stars}</div>
-            ${reviewImagesHTML}
-            <p class="rating-text">${review.review_text || 'No text provided.'}</p>
-        </div>
-    `;
-    }
-
-
-    // Setup modal functionality (keep your existing code)
-    function setupModal() {
-      const viewAllBtnDesktop = document.getElementById("viewAllReviewsBtnDesktop");
-      const viewAllBtnMobile = document.getElementById(
-        "viewAllReviewsBtnMobile"
-      );
-      const modal = document.getElementById("reviewsModal");
-      const closeModal = document.getElementById("closeModal");
-
-      if (viewAllBtnDesktop) {
-        viewAllBtnDesktop.addEventListener("click", function () {
-          openAllReviewsModal();
-        });
-      }
-
-      if (viewAllBtnMobile) {
-        viewAllBtnMobile.addEventListener("click", function () {
-          openAllReviewsModal();
-        });
-      }
-
-      if (closeModal) {
-        closeModal.addEventListener("click", function () {
-          closeAllReviewsModal();
-        });
-      }
-
-
-      // Close modal when clicking outside
-      if (modal) {
-        modal.addEventListener("click", function (e) {
-          if (e.target === modal) {
-            closeAllReviewsModal();
-          }
-        });
-      }
-    }
-
-    // Open all reviews modal (keep your existing code)
-    function openAllReviewsModal() {
-      const modal = document.getElementById("reviewsModal");
-      const allReviewsContainer = document.getElementById("allReviews");
-
-      // Clear previous content
-      allReviewsContainer.innerHTML = "";
-
-      if (reviews.length === 0) {
-        allReviewsContainer.innerHTML = '<p style="text-align: center; color: var(--text-gray);">No reviews available yet.</p>';
-        modal.classList.add("active");
-        return;
-      }
-
-      // Sort reviews by rating (highest first)
-      const sortedReviews = [...reviews].sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
-
-      // Add all reviews to modal
-      sortedReviews.forEach((review) => {
-        allReviewsContainer.innerHTML += createReviewItemHTML(review);
-      });
-
-      modal.classList.add("active");
-    }
-
-    // Close all reviews modal (keep your existing code)
-    function closeAllReviewsModal() {
-      const modal = document.getElementById("reviewsModal");
-      modal.classList.remove("active");
-    }
-
-    // Add product to cart (now supports variants via product ID lookup)
-    async function addToCart() {
-      if (!productData || !productData.selectedVariant || !productData.selectedVariant.id) {
-        showNotification("Please select a product variant first.", "error");
-        return;
-      }
-      const productId = productData.selectedVariant.id;
-
-      try {
-        const response = await fetch("../php/cart.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: `action=add&product_id=${encodeURIComponent(productId)}&quantity=1`
-        });
-
-        const result = await response.json();
-        console.log("Add to cart response:", result);
-
-        if (result.success) {
-          // Update cart count
-          updateCartCount(result.cartCount);
-
-          // Show success notification
-          showNotification(result.message);
-
-          // Update cart button UI temporarily
-          const cartButton = document.querySelector('.cart-button');
-          if (cartButton) {
-            const originalHTML = cartButton.innerHTML;
-            const originalBackground = cartButton.style.background;
-            cartButton.innerHTML = '<i class="fas fa-check"></i> <span>Added!</span>';
-            cartButton.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
-            setTimeout(() => {
-              cartButton.innerHTML = originalHTML;
-              cartButton.style.background = originalBackground;
-            }, 2000);
-          }
-        } else {
-          showNotification(result.message || "Failed to add to cart", "error");
+        if (reviews.length === 0) {
+          allReviewsContainer.innerHTML =
+            '<p style="text-align: center; color: var(--text-gray);">No reviews available yet.</p>';
+          modal.classList.add("active");
+          return;
         }
-      } catch (error) {
-        console.error("Error adding to cart:", error);
-        showNotification("Error adding to cart. Please try again.", "error");
+
+        // Sort reviews by rating (highest first)
+        const sortedReviews = [...reviews].sort(
+          (a, b) => parseFloat(b.rating) - parseFloat(a.rating)
+        );
+
+        // Add all reviews to modal
+        sortedReviews.forEach((review) => {
+          allReviewsContainer.innerHTML += createReviewItemHTML(review);
+        });
+
+        modal.classList.add("active");
       }
-    }
 
-    // Show notification
-    function showNotification(message, type = "success") {
-      const notificationBox = document.getElementById("notification-box");
-
-      if (!notificationBox) {
-        console.error("Notification box not found");
-        return;
+      // Close all reviews modal (keep your existing code)
+      function closeAllReviewsModal() {
+        const modal = document.getElementById("reviewsModal");
+        modal.classList.remove("active");
       }
 
-      // Set message and icon
-      const iconClass = type === "success" ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-      notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
-      notificationBox.style.background = type === 'success' ? 'linear-gradient(135deg, var(--primary-pink), var(--dark-pink))' : 'linear-gradient(135deg, #ef4444, #dc2626)';
+      // Add product to cart (now supports variants via product ID lookup)
+      async function addToCart() {
+        if (
+          !productData ||
+          !productData.selectedVariant ||
+          !productData.selectedVariant.id
+        ) {
+          showNotification("Please select a product variant first.", "error");
+          return;
+        }
+        const productId = productData.selectedVariant.id;
+
+        try {
+          const response = await fetch("../php/cart.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `action=add&product_id=${encodeURIComponent(
+              productId
+            )}&quantity=1`,
+          });
+
+          const result = await response.json();
+          console.log("Add to cart response:", result);
+
+          if (result.success) {
+            // Update cart count using the same method as navigation
+            updateCartCount();
+
+            // Show success notification
+            showNotification(result.message);
+
+            // Update cart button UI temporarily
+            const cartButton = document.querySelector(".cart-button");
+            if (cartButton) {
+              const originalHTML = cartButton.innerHTML;
+              const originalBackground = cartButton.style.background;
+              cartButton.innerHTML =
+                '<i class="fas fa-check"></i> <span>Added!</span>';
+              cartButton.style.background =
+                "linear-gradient(135deg, #4ade80, #22c55e)";
+              setTimeout(() => {
+                cartButton.innerHTML = originalHTML;
+                cartButton.style.background = originalBackground;
+              }, 2000);
+            }
+          } else {
+            showNotification(
+              result.message || "Failed to add to cart",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error adding to cart:", error);
+          showNotification("Error adding to cart. Please try again.", "error");
+        }
+      }
 
       // Show notification
-      notificationBox.classList.add("show");
+      function showNotification(message, type = "success") {
+        const notificationBox = document.getElementById("notification-box");
 
-      // Hide after 3 seconds
-      setTimeout(() => {
-        notificationBox.classList.remove("show");
-      }, 3000);
-    }
+        if (!notificationBox) {
+          console.error("Notification box not found");
+          return;
+        }
 
-    // Update cart count
-    function updateCartCount(count = null) {
-      const cartCountElement = document.querySelector(".cart-count");
-      if (cartCountElement) {
-        if (count !== null) {
-          cartCountElement.textContent = count;
-        } else {
-          // Fetch from server if count not provided
-          fetch("../php/cart.php?action=count")
-            .then(res => res.json())
-            .then(data => {
+        // Set message and icon
+        const iconClass =
+          type === "success"
+            ? "fas fa-check-circle"
+            : "fas fa-exclamation-circle";
+        notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
+        notificationBox.style.background =
+          type === "success"
+            ? "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))"
+            : "linear-gradient(135deg, #ef4444, #dc2626)";
+
+        // Show notification
+        notificationBox.classList.add("show");
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          notificationBox.classList.remove("show");
+        }, 3000);
+      }
+
+      // Update cart count to show TOTAL QUANTITY (like navigation)
+      async function updateCartCount(count = null) {
+        const cartCountElement = document.querySelector(".cart-count");
+        if (cartCountElement) {
+          if (count !== null) {
+            cartCountElement.textContent = count;
+          } else {
+            try {
+              // Use the same logic as navigation - get total quantity
+              const response = await fetch("../php/get-cart-count.php");
+              const data = await response.json();
+
               if (data.success) {
-                cartCountElement.textContent = data.cartCount;
+                cartCountElement.textContent = data.count;
               } else {
                 console.error("Failed to fetch cart count:", data.message);
-                cartCountElement.textContent = '0'; // Default to 0 on error
+                cartCountElement.textContent = "0";
               }
-            })
-            .catch(err => {
-              console.error("Error fetching cart count:", err);
-              cartCountElement.textContent = '0'; // Default to 0 on network error
-            });
-        }
-      } else {
-        console.warn("Cart count element not found.");
-      }
-    }
-
-    // Order now functionality - redirects to checkout.html (modified for real product)
-    function orderNow() {
-      if (!productData || !productData.selectedVariant || !productData.selectedVariant.id) {
-        showNotification("Please select a product variant before ordering.", "error");
-        return;
-      }
-
-      const variantId = productData.selectedVariant.id;
-
-      // First, add to cart (or ensure it's in cart)
-      addToCart(variantId)
-        .then(() => {
-          // Then redirect to checkout
-          window.location.href = `checkout.html?productId=${variantId}`;
-        })
-        .catch(error => {
-          console.error("Error during order now process:", error);
-          showNotification("Failed to add to cart or proceed to checkout.", "error");
-        });
-    }
-
-    // Go back to home page
-    function goBack() {
-      window.history.back(); // Go back to the previous page
-      // Alternatively, if you want to always go to a specific home page:
-      // window.location.href = "home.html";
-    }
-
-    // Like button functionality
-    document.addEventListener('DOMContentLoaded', function () {
-      const likeButton = document.querySelector('.like-button');
-      const cartButton = document.querySelector('.cart-button'); // Get cart button for event listener
-
-      if (likeButton) {
-        likeButton.addEventListener('click', async function () {
-          if (!productData?.selectedVariant?.id) {
-            console.error('No product selected for like/unlike operation');
-            showNotification("Please select a product variant.", "error");
-            return;
+            } catch (error) {
+              console.error("Error fetching cart count:", error);
+              cartCountElement.textContent = "0";
+            }
           }
+        } else {
+          console.warn("Cart count element not found.");
+        }
+      }
+      function updateAllCartCounts() {
+        // Get total quantity from server
+        fetch("../php/cart.php?action=get")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              const totalQuantity = data.cart.reduce(
+                (sum, item) => sum + item.quantity,
+                0
+              );
 
-          const productId = productData.selectedVariant.id;
+              // Update navigation cart count
+              const navCartCounts =
+                document.querySelectorAll(".nav-cart-count");
+              navCartCounts.forEach((count) => {
+                count.textContent = totalQuantity;
+                if (totalQuantity > 0) {
+                  count.classList.add("show");
+                } else {
+                  count.classList.remove("show");
+                }
+              });
 
-          // Optimistic UI update
-          isProductLiked = !isProductLiked;
-          updateLikeButtonUI();
+              // Update floating cart count
+              const floatingCartCount = document.querySelector(".cart-count");
+              if (floatingCartCount) {
+                floatingCartCount.textContent = totalQuantity;
+              }
+            }
+          })
+          .catch((err) => {
+            console.error("Error fetching cart count:", err);
+            // Set all to 0 on error
+            document
+              .querySelectorAll(".nav-cart-count, .cart-count")
+              .forEach((el) => {
+                el.textContent = "0";
+                el.classList.remove("show");
+              });
+          });
+      }
 
-          try {
-            const response = await fetch("../php/favorites-handler.php", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              body: `action=toggle&product_id=${encodeURIComponent(productId)}`
-            });
+      function refreshCartDisplay() {
+        updateAllCartCounts();
+        // You can also refresh cart items display if needed
+      }
 
-            const result = await response.json();
-            console.log("Favorites handler response:", result);
+      // Order now functionality - redirects to checkout.html (modified for real product)
+      function orderNow() {
+        if (
+          !productData ||
+          !productData.selectedVariant ||
+          !productData.selectedVariant.id
+        ) {
+          showNotification(
+            "Please select a product variant before ordering.",
+            "error"
+          );
+          return;
+        }
 
-            if (!result.success) {
-              // Backend failed – revert UI
-              isProductLiked = !isProductLiked;
-              updateLikeButtonUI();
-              showNotification("Failed to update favorites.", "error");
+        const variantId = productData.selectedVariant.id;
+
+        // First, add to cart (or ensure it's in cart)
+        addToCart(variantId)
+          .then(() => {
+            // Then redirect to checkout
+            window.location.href = `checkout.html?productId=${variantId}`;
+          })
+          .catch((error) => {
+            console.error("Error during order now process:", error);
+            showNotification(
+              "Failed to add to cart or proceed to checkout.",
+              "error"
+            );
+          });
+      }
+
+      // Go back to home page
+      function goBack() {
+        window.history.back(); // Go back to the previous page
+        // Alternatively, if you want to always go to a specific home page:
+        // window.location.href = "home.html";
+      }
+
+      // Like button functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const likeButton = document.querySelector(".like-button");
+        const cartButton = document.querySelector(".cart-button"); // Get cart button for event listener
+
+        if (likeButton) {
+          likeButton.addEventListener("click", async function () {
+            if (!productData?.selectedVariant?.id) {
+              console.error("No product selected for like/unlike operation");
+              showNotification("Please select a product variant.", "error");
               return;
             }
 
-            if (result.action === "liked") {
-              console.log("Added to Favorites ❤️");
-              showNotification("Added to Favorites!");
-            } else if (result.action === "unliked") {
-              console.log("Removed from Favorites 💔");
-              showNotification("Removed from Favorites.");
-            }
+            const productId = productData.selectedVariant.id;
 
-          } catch (err) {
-            console.error("Favorite toggle error:", err);
-            isProductLiked = !isProductLiked; // revert on error
+            // Optimistic UI update
+            isProductLiked = !isProductLiked;
             updateLikeButtonUI();
-            showNotification("Error updating favorites. Try again later.", "error");
-          }
-        });
-      }
 
-      if (cartButton) {
-        cartButton.addEventListener('click', addToCart); // Attach addToCart to cart button
-      }
-    });
-  </script>
-</body>
+            try {
+              const response = await fetch("../php/favorites-handler.php", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `action=toggle&product_id=${encodeURIComponent(
+                  productId
+                )}`,
+              });
 
+              const result = await response.json();
+              console.log("Favorites handler response:", result);
+
+              if (!result.success) {
+                // Backend failed – revert UI
+                isProductLiked = !isProductLiked;
+                updateLikeButtonUI();
+                showNotification("Failed to update favorites.", "error");
+                return;
+              }
+
+              if (result.action === "liked") {
+                console.log("Added to Favorites ❤️");
+                showNotification("Added to Favorites!");
+              } else if (result.action === "unliked") {
+                console.log("Removed from Favorites 💔");
+                showNotification("Removed from Favorites.");
+              }
+            } catch (err) {
+              console.error("Favorite toggle error:", err);
+              isProductLiked = !isProductLiked; // revert on error
+              updateLikeButtonUI();
+              showNotification(
+                "Error updating favorites. Try again later.",
+                "error"
+              );
+            }
+          });
+        }
+
+        if (cartButton) {
+          cartButton.addEventListener("click", addToCart); // Attach addToCart to cart button
+        }
+      });
+    </script>
+  </body>
 </html>

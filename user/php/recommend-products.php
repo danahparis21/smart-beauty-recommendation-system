@@ -195,7 +195,7 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
     $product_ids = array_column($recommendations, 'id');
     $placeholders = str_repeat('?,', count($product_ids) - 1) . '?';
 
-    // Get product details
+    // Get product details WITH AVAILABILITY FILTERING
     $query = "
         SELECT 
             p.ProductID,
@@ -207,6 +207,8 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
             p.ProductRating,
             p.Stocks,
             p.Status,
+            p.ParentProductID,
+            p.ExpirationDate,
             COALESCE(
                 (SELECT pm.ImagePath FROM ProductMedia pm 
                  WHERE pm.VariantProductID = p.ProductID AND pm.MediaType = 'VARIANT' 
@@ -220,6 +222,9 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
             ) as image
         FROM Products p
         WHERE p.ProductID IN ($placeholders)
+        AND p.Status IN ('Available', 'Low Stock')  -- ONLY available products
+        AND p.Stocks > 0                           -- Must have stock
+        AND (p.ExpirationDate IS NULL OR p.ExpirationDate > CURDATE())  -- Not expired
     ";
 
     $stmt = $conn->prepare($query);
@@ -258,6 +263,7 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
     $collaborative_data = getCollaborativeData($user_id, $conn);
 
     // Merge ML scores with product details, user feedback, and collaborative data
+    // BUT ONLY FOR AVAILABLE PRODUCTS
     $enhanced = [];
     foreach ($recommendations as $rec) {
         $details = array_filter($product_details, function ($p) use ($rec) {
@@ -266,6 +272,19 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
 
         if (!empty($details)) {
             $details = reset($details);
+            
+            // Double-check availability (should already be filtered by SQL, but just in case)
+            $stock = intval($details['Stocks'] ?? 0);
+            $status = $details['Status'] ?? '';
+            $expiration = $details['ExpirationDate'] ?? null;
+            
+            $isAvailable = $stock > 0 && 
+                          in_array($status, ['Available', 'Low Stock']) &&
+                          ($expiration === null || strtotime($expiration) > time());
+            
+            if (!$isAvailable) {
+                continue; // Skip unavailable products
+            }
             
             // Add user feedback if exists
             if (isset($feedback_lookup[$rec['id']])) {
@@ -295,6 +314,9 @@ function getFallbackRecommendations($conn, $input, $user_id)
             p.Price,
             p.Description,
             p.ProductRating,
+            p.Stocks,
+            p.Status,
+            p.ExpirationDate,
             COALESCE(
                 (SELECT pm.ImagePath FROM ProductMedia pm 
                  WHERE pm.VariantProductID = p.ProductID AND pm.MediaType = 'VARIANT' 
@@ -309,6 +331,9 @@ function getFallbackRecommendations($conn, $input, $user_id)
         FROM Products p
         LEFT JOIN ProductAttributes pa ON p.ProductID = pa.ProductID
         WHERE pa.ProductID IS NOT NULL
+        AND p.Status IN ('Available', 'Low Stock')  -- ONLY available
+        AND p.Stocks > 0                           -- Must have stock
+        AND (p.ExpirationDate IS NULL OR p.ExpirationDate > CURDATE())  -- Not expired
         ORDER BY p.ProductRating DESC
         LIMIT 6
     ";

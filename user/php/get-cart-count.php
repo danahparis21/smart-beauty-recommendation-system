@@ -20,8 +20,8 @@ if (!isset($_SESSION['user_id'])) {
 try {
     $user_id = $_SESSION['user_id'];
 
-    // Use $conn (MySQLi) instead of $pdo
-    $stmt = $conn->prepare('SELECT SUM(quantity) as total FROM cart WHERE user_id = ?');
+    // ✅ FIX: Only count active cart items (not checked_out)
+    $stmt = $conn->prepare('SELECT SUM(quantity) as total FROM cart WHERE user_id = ? AND status = "active"');
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
