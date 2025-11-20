@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <title>Beauty & Blessed | Order History</title>
+    <title>Blessence | Order History</title>
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -380,6 +381,69 @@
       .buy-again-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+      }
+
+      .buy-again-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+      }
+
+      .buy-again-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* Notification Box Styles */
+      .notification-box {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+        z-index: 9999;
+        font-weight: 500;
+        transform: translateX(400px);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .notification-box.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      .notification-box.error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+      }
+
+      @media (max-width: 480px) {
+        .notification-box {
+          right: 10px;
+          left: 10px;
+          max-width: none;
+          top: 70px;
+        }
+
+        .buy-again-container {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .quantity-input {
+          width: auto;
+        }
       }
 
       .review-btn {
@@ -1043,15 +1107,84 @@
         font-style: italic;
       }
       .rating-comment-group {
-  margin-bottom: 30px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 1px solid #e9ecef;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+      }
+
+      .rating-comment-group:last-of-type {
+        margin-bottom: 0;
+      }
+
+      /* Read-only review styles */
+.review-readonly .rating-star {
+    pointer-events: none;
+    cursor: default;
 }
 
-.rating-comment-group:last-of-type {
-  margin-bottom: 0;
+.review-readonly .comment-textarea {
+    background: #f8f9fa !important;
+    border-color: #e5e7eb !important;
+    color: #6b7280 !important;
+    cursor: not-allowed;
+}
+
+.already-reviewed-btn {
+    background: #10b981 !important;
+    cursor: not-allowed;
+}
+
+.review-submitted-note {
+    text-align: center;
+    padding: 10px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    color: #166534;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+      /* Cancel Order Button */
+      .cancel-order-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .cancel-order-btn:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+      }
+
+      .cancel-order-btn:active {
+        transform: translateY(0);
+      }
+
+      .cancel-section {
+        text-align: center;
+      }
+
+      .status-cancelled {
+        background: #6b7280;
+        color: white;
+      }
+      .review-date-note {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 5px;
+    text-align: center;
+    font-style: italic;
 }
     </style>
   </head>
@@ -1062,8 +1195,8 @@
         <i class="fas fa-arrow-left"></i>
       </button>
       <div class="brand-header">
-        <h1 class="brand-name">Beauty & Blessed</h1>
-        <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+        <h1 class="brand-name">Blessence</h1>
+        <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
       <!-- Empty div to maintain layout balance -->
       <div style="width: 44px"></div>
@@ -1077,92 +1210,98 @@
       </section>
     </main>
 
- <!-- Review Modal -->
-<div class="modal-overlay" id="reviewModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Write a Review</h3>
-        <button class="close-modal" id="closeModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="review-product">
-          <div class="review-product-image">
-            <i class="fas fa-palette" id="modalProductIcon"></i>
+    <!-- Review Modal -->
+    <div class="modal-overlay" id="reviewModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Write a Review</h3>
+          <button class="close-modal" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="review-product">
+            <div class="review-product-image">
+              <i class="fas fa-palette" id="modalProductIcon"></i>
+            </div>
+            <div class="review-product-details">
+              <div class="product-name" id="modalProductName"></div>
+              <div class="product-variant" id="modalProductVariant"></div>
+            </div>
           </div>
-          <div class="review-product-details">
-            <div class="product-name" id="modalProductName"></div>
-            <div class="product-variant" id="modalProductVariant"></div>
+
+          <!-- Product Quality Section -->
+          <div class="rating-comment-group">
+            <div class="rating-section">
+              <div class="rating-label">
+                <i class="fas fa-star"></i>
+                How would you rate this product's quality?
+              </div>
+              <div class="rating-stars" id="productRatingStars">
+                <span class="rating-star" data-rating="1">★</span>
+                <span class="rating-star" data-rating="2">★</span>
+                <span class="rating-star" data-rating="3">★</span>
+                <span class="rating-star" data-rating="4">★</span>
+                <span class="rating-star" data-rating="5">★</span>
+              </div>
+              <div
+                class="rating-description"
+                id="productRatingDescription"
+              ></div>
+            </div>
+
+            <div class="comment-section">
+              <div class="comment-label">
+                <i class="fas fa-star"></i>
+                Product Review (optional)
+              </div>
+              <textarea
+                class="comment-textarea"
+                id="productReview"
+                placeholder="Share your thoughts about this product's quality, performance, etc..."
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Recommendation Accuracy Section -->
+          <div class="rating-comment-group">
+            <div class="rating-section">
+              <div class="rating-label">
+                <i class="fas fa-user-check"></i>
+                How well did this match your preferences?
+              </div>
+              <div class="rating-stars" id="recommendationRatingStars">
+                <span class="rating-star" data-rating="1">★</span>
+                <span class="rating-star" data-rating="2">★</span>
+                <span class="rating-star" data-rating="3">★</span>
+                <span class="rating-star" data-rating="4">★</span>
+                <span class="rating-star" data-rating="5">★</span>
+              </div>
+              <div
+                class="rating-description"
+                id="recommendationRatingDescription"
+              ></div>
+            </div>
+
+            <div class="comment-section">
+              <div class="comment-label">
+                <i class="fas fa-user-check"></i>
+                Recommendation Feedback (optional)
+              </div>
+              <textarea
+                class="comment-textarea"
+                id="recommendationComment"
+                placeholder="How well did this match your preferences? What could make recommendations better?"
+              ></textarea>
+            </div>
           </div>
         </div>
-  
-        <!-- Product Quality Section -->
-        <div class="rating-comment-group">
-          <div class="rating-section">
-            <div class="rating-label">
-              <i class="fas fa-star"></i>
-              How would you rate this product's quality?
-            </div>
-            <div class="rating-stars" id="productRatingStars">
-              <span class="rating-star" data-rating="1">★</span>
-              <span class="rating-star" data-rating="2">★</span>
-              <span class="rating-star" data-rating="3">★</span>
-              <span class="rating-star" data-rating="4">★</span>
-              <span class="rating-star" data-rating="5">★</span>
-            </div>
-            <div class="rating-description" id="productRatingDescription"></div>
-          </div>
-  
-          <div class="comment-section">
-            <div class="comment-label">
-              <i class="fas fa-star"></i>
-              Product Review (optional)
-            </div>
-            <textarea
-              class="comment-textarea"
-              id="productReview"
-              placeholder="Share your thoughts about this product's quality, performance, etc..."
-            ></textarea>
-          </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="cancelReviewBtn">Cancel</button>
+          <button class="btn btn-primary" id="submitReviewBtn">
+            Submit Review
+          </button>
         </div>
-  
-        <!-- Recommendation Accuracy Section -->
-        <div class="rating-comment-group">
-          <div class="rating-section">
-            <div class="rating-label">
-              <i class="fas fa-user-check"></i>
-              How well did this match your preferences?
-            </div>
-            <div class="rating-stars" id="recommendationRatingStars">
-              <span class="rating-star" data-rating="1">★</span>
-              <span class="rating-star" data-rating="2">★</span>
-              <span class="rating-star" data-rating="3">★</span>
-              <span class="rating-star" data-rating="4">★</span>
-              <span class="rating-star" data-rating="5">★</span>
-            </div>
-            <div class="rating-description" id="recommendationRatingDescription"></div>
-          </div>
-  
-          <div class="comment-section">
-            <div class="comment-label">
-              <i class="fas fa-user-check"></i>
-              Recommendation Feedback (optional)
-            </div>
-            <textarea
-              class="comment-textarea"
-              id="recommendationComment"
-              placeholder="How well did this match your preferences? What could make recommendations better?"
-            ></textarea>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="cancelReviewBtn">Cancel</button>
-        <button class="btn btn-primary" id="submitReviewBtn">
-          Submit Review
-        </button>
       </div>
     </div>
-  </div>
 
     <script>
       // Current user from session
@@ -1371,99 +1510,234 @@
           descriptionContainer.textContent = "";
         }
       }
-      // Open review modal
-      function openReviewModal(orderIndex, productIndex) {
-        currentOrderIndex = orderIndex;
-        currentProductIndex = productIndex;
-        currentProduct = orders[orderIndex].products[productIndex];
-        currentOrder = orders[orderIndex];
+      async function openReviewModal(orderIndex, productIndex) {
+    currentOrderIndex = orderIndex;
+    currentProductIndex = productIndex;
+    currentProduct = orders[orderIndex].products[productIndex];
+    currentOrder = orders[orderIndex];
 
-        // Set product details in modal
-        modalProductName.textContent = currentProduct.name;
-        modalProductVariant.textContent = currentProduct.variant;
+    // Set product details in modal
+    modalProductName.textContent = currentProduct.name;
+    modalProductVariant.textContent = currentProduct.variant;
 
-        // Reset form
-        selectedProductRating = 0;
-        selectedRecommendationRating = 0;
-        highlightStars(
-          selectedProductRating,
-          productRatingStars,
-          productRatingDescription,
-          productRatingDescriptions
-        );
-        highlightStars(
-          selectedRecommendationRating,
-          recommendationRatingStars,
-          recommendationRatingDescription,
-          recommendationRatingDescriptions
-        );
+    // Check if review already exists
+    const existingReview = await checkExistingReview(currentProduct.id, currentOrder.order_id);
+    
+    if (existingReview) {
+        // Show existing review (read-only mode)
+        showExistingReview(existingReview);
+    } else {
+        // Show empty form for new review
+        showNewReviewForm();
+    }
 
-        // Reset both comment fields
-        document.getElementById("productReview").value = "";
-        document.getElementById("recommendationComment").value = "";
+    // Open modal
+    reviewModal.classList.add("active");
+}
+// Function to show existing review (read-only) - UPDATED
+function showExistingReview(reviewData) {
+    // Set ratings (read-only)
+    selectedProductRating = reviewData.product_rating;
+    selectedRecommendationRating = reviewData.recommendation_rating;
+    
+    // Highlight stars
+    highlightStars(
+        selectedProductRating,
+        productRatingStars,
+        productRatingDescription,
+        productRatingDescriptions
+    );
+    highlightStars(
+        selectedRecommendationRating,
+        recommendationRatingStars,
+        recommendationRatingDescription,
+        recommendationRatingDescriptions
+    );
 
-        // Open modal
-        reviewModal.classList.add("active");
-      }
+    // Set comments (read-only)
+    document.getElementById("productReview").value = reviewData.product_review || "No product review provided";
+    document.getElementById("recommendationComment").value = reviewData.recommendation_comment || "No recommendation feedback provided";
 
-      // Close review modal
-      function closeReviewModal() {
-        reviewModal.classList.remove("active");
-      }
+    // Make form read-only
+    makeReviewFormReadOnly();
 
-      // Submit review to backend
-      async function submitReview() {
-        if (selectedProductRating === 0 || selectedRecommendationRating === 0) {
-          alert("Please provide both ratings before submitting your review.");
-          return;
-        }
+    // Update submit button and show review date
+    const submitBtn = document.getElementById("submitReviewBtn");
+    submitBtn.textContent = "✓ Review Submitted";
+    submitBtn.disabled = true;
+    submitBtn.style.background = "#10b981";
+    
+    // Optional: Show review date if available
+    if (reviewData.review_date) {
+        const reviewDate = new Date(reviewData.review_date).toLocaleDateString();
+        const dateNote = document.createElement('div');
+        dateNote.className = 'review-date-note';
+        dateNote.textContent = `Reviewed on ${reviewDate}`;
+        dateNote.style.fontSize = '12px';
+        dateNote.style.color = '#6b7280';
+        dateNote.style.marginTop = '5px';
+        dateNote.style.textAlign = 'center';
+        
+        submitBtn.parentNode.insertBefore(dateNote, submitBtn.nextSibling);
+    }
+}
 
-        try {
-          const reviewData = {
+// Function to show new review form (editable)
+function showNewReviewForm() {
+    // Reset form
+    selectedProductRating = 0;
+    selectedRecommendationRating = 0;
+    highlightStars(
+        selectedProductRating,
+        productRatingStars,
+        productRatingDescription,
+        productRatingDescriptions
+    );
+    highlightStars(
+        selectedRecommendationRating,
+        recommendationRatingStars,
+        recommendationRatingDescription,
+        recommendationRatingDescriptions
+    );
+
+    // Reset comment fields
+    document.getElementById("productReview").value = "";
+    document.getElementById("recommendationComment").value = "";
+
+    // Make form editable
+    makeReviewFormEditable();
+
+    // Reset submit button
+    const submitBtn = document.getElementById("submitReviewBtn");
+    submitBtn.textContent = "Submit Review";
+    submitBtn.disabled = false;
+    submitBtn.style.background = "";
+}
+
+// Make review form read-only
+function makeReviewFormReadOnly() {
+    // Make stars non-clickable
+    const allStars = document.querySelectorAll('.rating-star');
+    allStars.forEach(star => {
+        star.style.pointerEvents = 'none';
+        star.style.cursor = 'default';
+    });
+
+    // Make textareas read-only
+    document.getElementById("productReview").readOnly = true;
+    document.getElementById("recommendationComment").readOnly = true;
+    
+    // Style read-only textareas
+    const textareas = document.querySelectorAll('.comment-textarea');
+    textareas.forEach(textarea => {
+        textarea.style.background = '#f8f9fa';
+        textarea.style.borderColor = '#e5e7eb';
+        textarea.style.color = '#6b7280';
+    });
+}
+
+// Make review form editable
+function makeReviewFormEditable() {
+    // Make stars clickable
+    const allStars = document.querySelectorAll('.rating-star');
+    allStars.forEach(star => {
+        star.style.pointerEvents = 'auto';
+        star.style.cursor = 'pointer';
+    });
+
+    // Make textareas editable
+    document.getElementById("productReview").readOnly = false;
+    document.getElementById("recommendationComment").readOnly = false;
+    
+    // Style editable textareas
+    const textareas = document.querySelectorAll('.comment-textarea');
+    textareas.forEach(textarea => {
+        textarea.style.background = '';
+        textarea.style.borderColor = '';
+        textarea.style.color = '';
+    });
+}
+     // Close review modal - UPDATED to reset state
+function closeReviewModal() {
+    reviewModal.classList.remove("active");
+    
+    // Reset form to editable state for next time
+    makeReviewFormEditable();
+    
+    // Reset submit button
+    const submitBtn = document.getElementById("submitReviewBtn");
+    submitBtn.textContent = "Submit Review";
+    submitBtn.disabled = false;
+    submitBtn.style.background = "";
+}
+async function submitReview() {
+    if (selectedProductRating === 0 || selectedRecommendationRating === 0) {
+        alert("Please provide both ratings before submitting your review.");
+        return;
+    }
+
+    // Show loading state
+    const submitBtn = document.getElementById("submitReviewBtn");
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    submitBtn.disabled = true;
+
+    try {
+        const reviewData = {
             product_id: currentProduct.id,
             order_id: currentOrder.order_id,
             product_rating: selectedProductRating,
             recommendation_rating: selectedRecommendationRating,
-            product_review: document
-              .getElementById("productReview")
-              .value.trim(),
-            recommendation_comment: document
-              .getElementById("recommendationComment")
-              .value.trim(),
-          };
+            product_review: document.getElementById("productReview").value.trim(),
+            recommendation_comment: document.getElementById("recommendationComment").value.trim(),
+        };
 
-          const response = await fetch("../php/submit_review.php", {
+        console.log("Submitting review:", reviewData);
+
+        const response = await fetch("../php/submit_review.php", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(reviewData),
-          });
+        });
 
-          const data = await response.json();
+        // Get the raw response text first
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
 
-          if (data.success) {
+        // Try to parse as JSON
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error("JSON parse error:", parseError);
+            console.error("Response was:", responseText);
+            throw new Error('Server returned invalid JSON: ' + responseText.substring(0, 100));
+        }
+
+        console.log("Parsed response:", data);
+
+        if (data.success) {
             // Update local data to show as rated
-            orders[currentOrderIndex].products[
-              currentProductIndex
-            ].rated = true;
-            orders[currentOrderIndex].products[
-              currentProductIndex
-            ].quickRating = selectedProductRating;
+            orders[currentOrderIndex].products[currentProductIndex].rated = true;
+            orders[currentOrderIndex].products[currentProductIndex].quickRating = selectedProductRating;
 
-            alert(
-              "Thank you for your review! Your feedback helps improve our recommendations."
-            );
+            alert("Thank you for your review! Your feedback helps improve our recommendations.");
             closeReviewModal();
             renderOrders();
-          } else {
+        } else {
             alert("Error submitting review: " + data.message);
-          }
-        } catch (error) {
-          console.error("Error submitting review:", error);
-          alert("Error submitting review. Please try again.");
         }
-      }
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        alert("Error: " + error.message);
+    } finally {
+        // Restore button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
       // Initialize rating stars event listeners
       function initializeRatingStars() {
         // Product quality rating stars
@@ -1535,6 +1809,22 @@
           );
         });
       }
+      // Function to check if review already exists
+async function checkExistingReview(productId, orderId) {
+    try {
+        const response = await fetch(`../php/check_review.php?product_id=${productId}&order_id=${orderId}`);
+        const data = await response.json();
+        
+        if (data.success && data.reviewExists) {
+            return data.reviewData;
+        }
+        return null;
+    } catch (error) {
+        console.error("Error checking existing review:", error);
+        return null;
+    }
+}
+
 
       // Quick rating function
       function setQuickRating(orderIndex, productIndex, rating) {
@@ -1588,7 +1878,19 @@
           });
       }
 
-      // Update the renderOrders function to show QR codes for pending orders
+      function debugProductData(product, productIndex) {
+        console.log(`🔍 Product ${productIndex} data:`, {
+          product_id: product.product_id,
+          id: product.id,
+          name: product.name,
+          variant: product.variant,
+          price: product.price,
+          quantity: product.quantity,
+          // Log all available properties
+          allProperties: Object.keys(product),
+        });
+      }
+
       function renderOrders() {
         ordersList.innerHTML = "";
 
@@ -1685,6 +1987,27 @@
             </div>
         `;
 
+          // ✅ ADD CANCEL ORDER BUTTON FOR PENDING ORDERS
+          if (order.status === "pending") {
+            const cancelSection = document.createElement("div");
+            cancelSection.className = "cancel-section";
+            cancelSection.style.marginTop = "15px";
+            cancelSection.style.paddingTop = "15px";
+            cancelSection.style.borderTop = "1px solid #eee";
+
+            const cancelBtn = document.createElement("button");
+            cancelBtn.className = "cancel-order-btn";
+            cancelBtn.innerHTML =
+              '<i class="fas fa-times-circle"></i> Cancel Order';
+            cancelBtn.addEventListener("click", (e) => {
+              e.stopPropagation(); // Prevent triggering the order toggle
+              cancelOrder(order.order_id);
+            });
+
+            cancelSection.appendChild(cancelBtn);
+            orderSummary.appendChild(cancelSection);
+          }
+
           orderSummary.appendChild(totalSection);
           orderContent.appendChild(orderSummary);
 
@@ -1693,30 +2016,57 @@
           productsContainer.className = "products-container";
 
           order.products.forEach((product, productIndex) => {
+            // debugProductData(product, productIndex);
             const productItem = document.createElement("div");
             productItem.className = "product-item";
 
-            // Product image
-            const productImage = document.createElement("div");
-            productImage.className = "product-image";
+           // Product image - CORRECTED PATH (FIXED VERSION)
+const productImage = document.createElement("div");
+productImage.className = "product-image";
 
-            if (product.image && product.image !== "null") {
-              const img = document.createElement("img");
-              img.src = `../uploads/products/${product.image}`;
-              img.alt = product.name;
-              img.onerror = function () {
-                this.style.display = "none";
-                const icon = document.createElement("i");
-                icon.className = "fas fa-palette";
-                productImage.appendChild(icon);
-              };
-              productImage.appendChild(img);
-            } else {
-              const icon = document.createElement("i");
-              icon.className = "fas fa-palette";
-              productImage.appendChild(icon);
-            }
-
+if (product.image && product.image !== "null") {
+  const img = document.createElement("img");
+  
+  // DEBUG: Log the original image path
+  console.log('Original image path from API:', product.image);
+  
+  // FIX: Always prepend /admin/ to the path
+  let imagePath = product.image;
+  
+  // If the path doesn't already include /admin/, add it
+  if (!imagePath.includes('/admin/')) {
+    // Remove any leading slashes or uploads/ from the path
+    imagePath = imagePath.replace(/^\/?uploads\//, '');
+    imagePath = `/admin/uploads/product_images/${imagePath}`;
+  }
+  
+  // Ensure we have the correct path structure
+  imagePath = imagePath.replace(/\\/g, '/'); // Convert backslashes to forward slashes
+  imagePath = imagePath.replace(/(\/\/+)/g, '/'); // Remove duplicate slashes
+  
+  console.log('Final image path:', imagePath);
+  
+  img.src = imagePath;
+  img.alt = product.name;
+  img.onerror = function () {
+    console.error('Failed to load image from:', this.src);
+    this.style.display = "none";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-palette";
+    productImage.appendChild(icon);
+  };
+  
+  img.onload = function() {
+    console.log('✅ Successfully loaded image:', this.src);
+  };
+  
+  productImage.appendChild(img);
+} else {
+  console.log('No image data for product:', product.name);
+  const icon = document.createElement("i");
+  icon.className = "fas fa-palette";
+  productImage.appendChild(icon);
+}
             // Product details
             const productDetails = document.createElement("div");
             productDetails.className = "product-details";
@@ -1765,16 +2115,60 @@
 
             const buyAgainBtn = document.createElement("button");
             buyAgainBtn.className = "buy-again-btn";
-            buyAgainBtn.textContent = "Buy Again";
-            buyAgainBtn.addEventListener("click", () => {
+            buyAgainBtn.innerHTML =
+              '<i class="fas fa-cart-plus"></i> Buy Again';
+            buyAgainBtn.addEventListener("click", async () => {
               const qty = parseInt(qtyInput.value);
-              const total = qty * product.price;
-              alert(
-                `Adding ${qty} x ${
-                  product.name
-                } to your cart! Total: ${formatPrice(total)}`
+
+              if (qty < 1) {
+                showNotification("Quantity must be at least 1", "error");
+                return;
+              }
+
+              // ✅ FIX: Use product.id instead of product.product_id
+              const productId = product.id; // This should be LIP014, LIP008, etc.
+
+              if (!productId) {
+                showNotification(
+                  "Error: Could not find product information",
+                  "error"
+                );
+                console.error("Missing product ID for:", product);
+                return;
+              }
+
+              console.log(
+                `🛒 Adding to cart: ${productId} (${product.name}) x ${qty}`
               );
-              // Here you would add to cart via API
+
+              // Show loading state
+              const originalText = buyAgainBtn.innerHTML;
+              buyAgainBtn.innerHTML =
+                '<i class="fas fa-spinner fa-spin"></i> Adding...';
+              buyAgainBtn.disabled = true;
+
+              try {
+                const success = await addToCart(productId, qty);
+
+                if (success) {
+                  const total = qty * product.price;
+                  showNotification(
+                    `Added ${qty} × ${
+                      product.name
+                    } to cart! Total: ${formatPrice(total)}`
+                  );
+                }
+              } catch (error) {
+                console.error("Error in buy again:", error);
+                showNotification(
+                  "Error adding to cart. Please try again.",
+                  "error"
+                );
+              } finally {
+                // Restore button state
+                buyAgainBtn.innerHTML = originalText;
+                buyAgainBtn.disabled = false;
+              }
             });
 
             buyAgainContainer.appendChild(qtyInput);
@@ -1852,6 +2246,98 @@
         });
       }
 
+      function getProductIdFromOrder(product) {
+        // The product ID is in the 'id' field, not 'product_id'
+        if (product.id) return product.id;
+        if (product.product_id) return product.product_id;
+        if (product.ProductID) return product.ProductID;
+
+        console.error("❌ Could not find product ID in:", product);
+        return null;
+      }
+
+      function showNotification(message, type = "success") {
+        // Create notification element if it doesn't exist
+        let notificationBox = document.getElementById("notification-box");
+
+        if (!notificationBox) {
+          notificationBox = document.createElement("div");
+          notificationBox.id = "notification-box";
+          notificationBox.className = "notification-box";
+          document.body.appendChild(notificationBox);
+        }
+
+        // Set message and icon
+        const iconClass =
+          type === "success"
+            ? "fas fa-check-circle"
+            : "fas fa-exclamation-circle";
+        notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
+        notificationBox.style.background =
+          type === "success"
+            ? "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))"
+            : "linear-gradient(135deg, #ef4444, #dc2626)";
+
+        // Show notification
+        notificationBox.classList.add("show");
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          notificationBox.classList.remove("show");
+        }, 3000);
+      }
+      async function addToCart(productId, quantity = 1) {
+        try {
+          console.log(
+            `📤 Adding to cart - Product: ${productId}, Quantity: ${quantity}`
+          );
+
+          const response = await fetch("../php/cart.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `action=add&product_id=${encodeURIComponent(
+              productId
+            )}&quantity=${quantity}`,
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          console.log("📦 Add to cart response:", result);
+
+          if (result.success) {
+           
+            showNotification(result.message || "Added to cart! 🛒");
+            return true;
+          } else {
+            // More specific error handling
+            let errorMessage = result.message || "Failed to add to cart";
+
+            if (result.message?.toLowerCase().includes("not found")) {
+              errorMessage = `Product "${productId}" is no longer available`;
+            } else if (result.message?.toLowerCase().includes("stock")) {
+              errorMessage = "Insufficient stock available";
+            } else if (result.message?.toLowerCase().includes("login")) {
+              errorMessage = "Please login to add items to cart";
+            }
+
+            showNotification(errorMessage, "error");
+            console.error("Add to cart failed:", result.message);
+            return false;
+          }
+        } catch (error) {
+          console.error("❌ Network error adding to cart:", error);
+          showNotification(
+            "Network error. Please check your connection.",
+            "error"
+          );
+          return false;
+        }
+      }
       async function initializePage() {
         try {
           // Get user session first
@@ -1876,6 +2362,43 @@
           await fetchOrders();
         } catch (error) {
           console.error("Error initializing page:", error);
+        }
+      }
+
+      // CANCEL ORDER FUNCTIONALITY
+      async function cancelOrder(orderId) {
+        if (
+          !confirm(
+            "Are you sure you want to cancel this order? The items will be moved back to your cart."
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch("../php/cancel_order.php", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ order_id: orderId }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Show success message
+            alert("✅ " + result.message);
+
+            // Refresh the orders list
+            await fetchOrders();
+          } else {
+            alert("❌ " + result.message);
+          }
+        } catch (error) {
+          console.error("Error cancelling order:", error);
+          alert("❌ Error cancelling order. Please try again.");
         }
       }
 

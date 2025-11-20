@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Favorites | Beauty & Blessed</title>
+    <title>Favorites | Blessence</title>
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -504,6 +505,93 @@
         );
         transform: translateY(-2px);
       }
+      /* Cart total popup - Compact & Elegant */
+      .cart-total-popup {
+        position: absolute;
+        background: white;
+        border-radius: 12px;
+        padding: 12px 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        min-width: 160px;
+        max-width: 180px;
+        transform: translateY(-8px) scale(0.95);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        border: 1px solid #f3f4f6;
+        text-align: center;
+      }
+
+      /* Desktop positioning */
+      .desktop-nav .cart-total-popup {
+        top: calc(100% + 8px);
+        right: 50%;
+        transform: translateX(50%) translateY(-8px) scale(0.95);
+      }
+
+      .desktop-nav .cart-total-popup::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-left: 1px solid #f3f4f6;
+        border-top: 1px solid #f3f4f6;
+      }
+
+      /* Mobile positioning */
+      .mobile-nav .cart-total-popup {
+        bottom: calc(100% + 8px);
+        right: 50%;
+        transform: translateX(50%) translateY(8px) scale(0.95);
+      }
+
+      .mobile-nav .cart-total-popup::before {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-right: 1px solid #f3f4f6;
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      .cart-total-popup.show {
+        transform: translateX(50%) translateY(0) scale(1);
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .cart-total-amount {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--primary-pink);
+        margin: 3px 0;
+        line-height: 1.2;
+      }
+
+      .cart-total-label {
+        font-size: 11px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+      }
+
+      .cart-total-popup small {
+        font-size: 10px;
+        color: #9ca3af;
+        display: block;
+        margin-top: 2px;
+        line-height: 1.3;
+      }
     </style>
   </head>
 
@@ -514,8 +602,8 @@
     <!-- Header -->
     <header class="header">
       <div class="brand-header">
-        <h1 class="brand-name">Beauty & Blessed</h1>
-        <p class="brand-tagline">Elevate Your Everyday Glam.</p>
+        <h1 class="brand-name">Blessence</h1>
+        <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
@@ -527,11 +615,11 @@
         </button>
       </div>
       <button
-      class="mobile-profile-btn"
-      onclick="window.location.href='user_profile.html'"
-    >
-      <i class="fas fa-user"></i>
-    </button>
+        class="mobile-profile-btn"
+        onclick="window.location.href='user_profile.html'"
+      >
+        <i class="fas fa-user"></i>
+      </button>
     </header>
 
     <!-- Navigation -->
@@ -906,22 +994,24 @@
         }
       }
 
-      // --- Load Favorites on DOMContentLoaded ---
-      // --- Load Favorites on DOMContentLoaded ---
       document.addEventListener("DOMContentLoaded", async () => {
+        if (typeof setupPageProtection === "function") {
+          setupPageProtection();
+        }
+
         await updateUserGreeting();
-        await updateCartCount(); // 🛒 ADD THIS LINE!
+        await updateCartCount();
 
-        const apiData = await testFavoritesAPI();
-
-        const user = await getUserSession();
+        // Use currentUser from user-session.js instead of getUserSession()
         const favoritesGrid = document.getElementById("favorites-grid");
 
-        if (!user) {
+        if (!currentUser) {
           favoritesGrid.innerHTML =
             "<p class='text-center p-4 text-gray-500'>Please log in to view your favorites.</p>";
           return;
         }
+
+        const apiData = await testFavoritesAPI();
 
         try {
           const res = await fetch("../php/favorites-handler.php", {
@@ -942,7 +1032,238 @@
           console.error(err);
           favoritesGrid.innerHTML = `<p class='text-center text-red-500'>Error loading favorites: ${err.message}</p>`;
         }
+        setupCartHoverListeners();
       });
+      // ADD THIS FUNCTION TO HOME PAGE:
+      function setupCartHoverListeners() {
+        const desktopCartNav = document.querySelector(
+          '.desktop-nav .nav-item[data-page="cart"]'
+        );
+        const mobileCartNav = document.querySelector(
+          '.mobile-nav .nav-item[data-page="cart"]'
+        );
+
+        console.log("Setting up cart hover listeners...");
+        console.log("Desktop cart nav found:", !!desktopCartNav);
+        console.log("Mobile cart nav found:", !!mobileCartNav);
+
+        // Desktop hover
+        if (desktopCartNav) {
+          desktopCartNav.addEventListener("mouseenter", function () {
+            console.log("Desktop cart hover triggered");
+            showCartTotalOnHover();
+          });
+        }
+
+        // Mobile touch (for better mobile experience)
+        if (mobileCartNav) {
+          let touchTimer;
+
+          mobileCartNav.addEventListener("touchstart", function () {
+            touchTimer = setTimeout(() => {
+              console.log("Mobile cart long press triggered");
+              showCartTotalOnHover();
+            }, 500); // Show after 500ms long press
+          });
+
+          mobileCartNav.addEventListener("touchend", function () {
+            clearTimeout(touchTimer);
+          });
+
+          // Also show on click for mobile
+          mobileCartNav.addEventListener("click", function (e) {
+            // Only show if it's not navigating (prevent double trigger)
+            if (!e.target.closest("a")) {
+              console.log("Mobile cart click triggered");
+              showCartTotalOnHover();
+            }
+          });
+        }
+      }
+
+      // Notification function
+      function showNotification(message, type = "success") {
+        // Remove existing notification if any
+        const existingNotification =
+          document.querySelector(".cart-notification");
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        // Create notification element
+        const notification = document.createElement("div");
+        notification.className = `cart-notification ${type}`;
+        notification.innerHTML = `
+    <div class="notification-content">
+        <i class="fas ${
+          type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
+        }"></i>
+        <span>${message}</span>
+    </div>
+  `;
+
+        // Add to page
+        document.body.appendChild(notification);
+
+        // Show with animation
+        setTimeout(() => {
+          notification.classList.add("show");
+        }, 10);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+          notification.classList.remove("show");
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 300);
+        }, 3000);
+      }
+
+      // Cart total popup function
+      function showCartTotal(totalAmount) {
+        // Remove existing popups if any
+        const existingPopups = document.querySelectorAll(".cart-total-popup");
+        existingPopups.forEach((popup) => popup.remove());
+
+        // Get both desktop and mobile cart nav items
+        const desktopCartNav = document.querySelector(
+          '.desktop-nav .nav-item[data-page="cart"]'
+        );
+        const mobileCartNav = document.querySelector(
+          '.mobile-nav .nav-item[data-page="cart"]'
+        );
+
+        // Create popup for desktop
+        if (desktopCartNav) {
+          const desktopPopup = document.createElement("div");
+          desktopPopup.className = "cart-total-popup";
+          desktopPopup.innerHTML = `
+      <div class="cart-total-label">Cart Total</div>
+      <div class="cart-total-amount">₱${formatNumberWithCommas(
+        parseFloat(totalAmount).toFixed(2)
+      )}</div>
+      <small>Click cart to view items</small>
+    `;
+
+          desktopCartNav.style.position = "relative";
+          desktopCartNav.appendChild(desktopPopup);
+
+          setTimeout(() => {
+            desktopPopup.classList.add("show");
+          }, 10);
+        }
+
+        // Create popup for mobile
+        if (mobileCartNav) {
+          const mobilePopup = document.createElement("div");
+          mobilePopup.className = "cart-total-popup";
+          mobilePopup.innerHTML = `
+      <div class="cart-total-label">Cart Total</div>
+      <div class="cart-total-amount">₱${formatNumberWithCommas(
+        parseFloat(totalAmount).toFixed(2)
+      )}</div>
+      <small>Tap cart to view items</small>
+    `;
+
+          mobileCartNav.style.position = "relative";
+          mobileCartNav.appendChild(mobilePopup);
+
+          setTimeout(() => {
+            mobilePopup.classList.add("show");
+          }, 10);
+        }
+
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+          const allPopups = document.querySelectorAll(".cart-total-popup");
+          allPopups.forEach((popup) => {
+            popup.classList.remove("show");
+            setTimeout(() => {
+              if (popup.parentNode) {
+                popup.remove();
+              }
+            }, 300);
+          });
+        }, 3000);
+      }
+
+      async function showCartTotalOnHover() {
+        try {
+          const response = await fetch("../php/cart.php?action=get");
+          const result = await response.json();
+
+          if (result.success && result.cartCount > 0) {
+            const existingPopups =
+              document.querySelectorAll(".cart-total-popup");
+
+            // Don't show if there's already a popup
+            if (existingPopups.length > 0) return;
+
+            const desktopCartNav = document.querySelector(
+              '.desktop-nav .nav-item[data-page="cart"]'
+            );
+            const mobileCartNav = document.querySelector(
+              '.mobile-nav .nav-item[data-page="cart"]'
+            );
+
+            // Create popup for desktop
+            if (desktopCartNav) {
+              const desktopPopup = document.createElement("div");
+              desktopPopup.className = "cart-total-popup";
+              desktopPopup.innerHTML = `
+                    <div class="cart-total-label">Cart Total</div>
+                    <div class="cart-total-amount">₱${formatNumberWithCommas(
+                      parseFloat(result.totalAmount).toFixed(2)
+                    )}</div>
+                    
+                `;
+
+              desktopCartNav.appendChild(desktopPopup);
+              setTimeout(() => desktopPopup.classList.add("show"), 10);
+
+              // Remove on mouse leave (desktop only)
+              desktopCartNav.addEventListener(
+                "mouseleave",
+                function () {
+                  desktopPopup.classList.remove("show");
+                  setTimeout(() => {
+                    if (desktopPopup.parentNode) desktopPopup.remove();
+                  }, 300);
+                },
+                { once: true }
+              );
+            }
+
+            // Create popup for mobile
+            if (mobileCartNav) {
+              const mobilePopup = document.createElement("div");
+              mobilePopup.className = "cart-total-popup";
+              mobilePopup.innerHTML = `
+                    <div class="cart-total-label">Cart Total</div>
+                    <div class="cart-total-amount">₱${formatNumberWithCommas(
+                      parseFloat(result.totalAmount).toFixed(2)
+                    )}</div>
+                    
+                `;
+
+              mobileCartNav.appendChild(mobilePopup);
+              setTimeout(() => mobilePopup.classList.add("show"), 10);
+
+              // Auto-remove after 3 seconds on mobile
+              setTimeout(() => {
+                mobilePopup.classList.remove("show");
+                setTimeout(() => {
+                  if (mobilePopup.parentNode) mobilePopup.remove();
+                }, 300);
+              }, 3000);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching cart total:", error);
+        }
+      }
     </script>
   </body>
 </html>

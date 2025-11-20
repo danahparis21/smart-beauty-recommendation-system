@@ -1,5 +1,5 @@
 <?php
-// favorites-handler.php — fetches user's favorites and allows like/unlike
+// favorites-handler.php — SIMPLIFIED using home.php logic
 session_start();
 
 // Enable error reporting but hide from users
@@ -51,6 +51,12 @@ try {
         $filename = basename($dbPath);
         return '/admin/uploads/product_images/' . $filename;
     }
+
+    // Clean product name function
+    $cleanName = function($name) {
+        if (empty($name)) return '';
+        return trim(str_ireplace(['Parent Record:', 'Product Record:', ':'], '', $name));
+    };
 
     // ===================== TOGGLE FAVORITE ===================== //
     if ($action === 'toggle') {
@@ -110,116 +116,200 @@ try {
         exit;
     }
 
+    // ===================== GET FAVORITES USING SIMPLIFIED HOME.PHP LOGIC ===================== //
     $sql = "
-    SELECT DISTINCT 
-        p.ProductID AS id,
-        p.Name AS name,
-        p.Category AS category,
+    SELECT 
+        p.ProductID AS id, 
+        p.Name AS name, 
+        p.Category AS category, 
         p.ParentProductID AS parentID,
         p.ShadeOrVariant AS variant,
         p.Price AS price,
         p.HexCode AS hexCode,
-        p.Status AS status,
-        p.Stocks AS stockQuantity,
-        p.CreatedAt AS createdAt,
+        p.Status AS status, 
+        p.Stocks AS stockQuantity, 
+        p.ProductRating AS product_rating,
+        p.ExpirationDate AS expiration_date,
         pm_v.ImagePath AS variantImage,
         pm_p.ImagePath AS previewImage,
         parent.Name AS parentName,
-        parent.Status AS parentStatus
-    FROM Products p
+        parent.Status AS parentStatus,
+        parent.ProductRating AS parent_rating,
+        1 AS liked  -- All these are favorites by definition
+    FROM 
+        favorites f
+    JOIN Products p ON (
+        f.product_id = p.ProductID 
+        OR f.product_id = p.ParentProductID
+        OR (p.ParentProductID IS NOT NULL AND f.product_id = p.ParentProductID)
+    )
+    LEFT JOIN ProductMedia pm_v 
+        ON pm_v.VariantProductID = p.ProductID 
+        AND pm_v.MediaType = 'VARIANT'
+    LEFT JOIN ProductMedia pm_p 
+        ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
+        AND pm_p.MediaType = 'PREVIEW'
     LEFT JOIN Products parent 
         ON p.ParentProductID = parent.ProductID
-    LEFT JOIN ProductMedia pm_v 
-        ON pm_v.VariantProductID = p.ProductID AND pm_v.MediaType = 'VARIANT'
-    LEFT JOIN ProductMedia pm_p 
-        ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID) AND pm_p.MediaType = 'PREVIEW'
     WHERE 
-        (
-            p.ParentProductID IN (
-                SELECT COALESCE(pr.ParentProductID, pr.ProductID)
-                FROM favorites f
-                JOIN Products pr ON f.product_id = pr.ProductID
-                WHERE f.user_id = ?
-            )
-            OR p.ProductID IN (
-                SELECT COALESCE(pr.ParentProductID, pr.ProductID)
-                FROM favorites f
-                JOIN Products pr ON f.product_id = pr.ProductID
-                WHERE f.user_id = ?
-            )
-        )
-        AND p.Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
+        f.user_id = ?
+        AND p.Status IN ('Available', 'Low Stock')
         AND p.Stocks > 0
-    ORDER BY p.CreatedAt DESC
-    ";
+        AND (p.ExpirationDate IS NULL OR p.ExpirationDate > CURDATE())
+    ORDER BY 
+        p.CreatedAt DESC
+";
+
     $stmt = $conn->prepare($sql);
-    if (!$stmt)
+    if (!$stmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
-    $stmt->bind_param('ii', $user_id, $user_id);
+    }
+    
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Group products by parent
+    if (!$result) {
+        throw new Exception('Query failed: ' . $conn->error);
+    }
+
     $groupedProducts = [];
+    $processedParentIds = [];
+
     while ($row = $result->fetch_assoc()) {
         $parentID = $row['parentID'];
         $isParent = ($parentID === null || $parentID === $row['id']);
 
+        // Convert image paths
         $row['variantImage'] = getPublicImagePath($row['variantImage'] ?? '');
         $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
-        $row['name'] = trim(str_ireplace('Product Record', '', $row['name']));
-        $row['parentName'] = trim(str_ireplace('Product Record', '', $row['parentName'] ?? ''));
+        $row['name'] = $cleanName($row['name']);
+        $row['parentName'] = $cleanName($row['parentName'] ?? '');
+        
+        // Ratings data - use the highest rating among all variants
+        $variantRating = floatval($row['product_rating']);
+        $parentRating = floatval($row['parent_rating']);
 
-        $parentKey = $isParent ? $row['id'] : $parentID;
-        $parentName = $row['parentName'] ?? $row['name'];
+        if ($isParent) {
+            // Parent product - only add if not already processed
+            if (!isset($groupedProducts[$row['id']])) {
+                $groupedProducts[$row['id']] = [
+                    'id' => $row['id'],
+                    'name' => $row['name'],
+                    'category' => strtolower($row['category']),
+                    'price' => floatval($row['price']),
+                    'status' => $row['status'],
+                    'stockQuantity' => intval($row['stockQuantity']),
+                    'image' => $row['previewImage'],
+                    'previewImage' => $row['previewImage'],
+                    'liked' => true, // All are favorites
+                    'average_rating' => $parentRating,
+                    'variants' => []
+                ];
+                $processedParentIds[] = $row['id'];
+            }
+        } else {
+            // Variant product - use the actual parent name
+            $parentKey = $parentID;
+            $parentName = $row['parentName'] ?? $row['name'];
 
-        if (!isset($groupedProducts[$parentKey])) {
-            $groupedProducts[$parentKey] = [
-                'id' => $parentKey,
-                'name' => $parentName,
-                'category' => strtolower($row['category']),
+            // Only create parent if it has at least one available variant
+            if (!isset($groupedProducts[$parentKey])) {
+                // Fetch the actual parent product details for the name
+                $parentSql = "SELECT Name, Category FROM Products WHERE ProductID = ?";
+                $parentStmt = $conn->prepare($parentSql);
+                $parentStmt->bind_param('s', $parentKey);
+                $parentStmt->execute();
+                $parentResult = $parentStmt->get_result();
+                $actualParent = $parentResult->fetch_assoc();
+                $parentStmt->close();
+                
+                $actualParentName = $actualParent ? $cleanName($actualParent['Name']) : $parentName;
+                
+                $groupedProducts[$parentKey] = [
+                    'id' => $parentKey,
+                    'name' => $actualParentName,
+                    'category' => strtolower($row['category']),
+                    'price' => floatval($row['price']),
+                    'status' => $row['parentStatus'] ?? 'Available',
+                    'stockQuantity' => 0,
+                    'image' => $row['previewImage'],
+                    'previewImage' => $row['previewImage'],
+                    'liked' => true, // All are favorites
+                    'average_rating' => $variantRating,
+                    'variants' => []
+                ];
+                $processedParentIds[] = $parentKey;
+            } else {
+                // Update to the highest rating among variants
+                if ($variantRating > $groupedProducts[$parentKey]['average_rating']) {
+                    $groupedProducts[$parentKey]['average_rating'] = $variantRating;
+                }
+            }
+
+            // Add variant (already filtered by SQL to exclude bad statuses)
+            $groupedProducts[$parentKey]['variants'][] = [
+                'id' => $row['id'],
+                'name' => $row['variant'] ?? $row['name'],
+                'variant' => $row['variant'] ?? $row['name'],
                 'price' => floatval($row['price']),
-                'status' => $row['status'] ?? ($row['parentStatus'] ?? 'Available'),
+                'image' => $row['variantImage'],
+                'hexCode' => $row['hexCode'] ?? '#CCCCCC',
+                'status' => $row['status'],
                 'stockQuantity' => intval($row['stockQuantity']),
-                'image' => $row['previewImage'],
-                'previewImage' => $row['previewImage'],
-                'variants' => []
+                'product_rating' => $variantRating,
             ];
         }
-
-        $groupedProducts[$parentKey]['variants'][] = [
-            'id' => $row['id'],
-            'name' => $row['variant'] ?? $row['name'],
-            'variant' => $row['variant'] ?? $row['name'],
-            'price' => floatval($row['price']),
-            'image' => $row['variantImage'],
-            'hexCode' => $row['hexCode'] ?? '#CCCCCC',
-            'status' => $row['status'],
-            'stockQuantity' => intval($row['stockQuantity']),
-            'favorited' => 1
-        ];
     }
 
-    // Final cleanup (same as before)
+    // Calculate parent stock based on available variants and clean up empty parents
     $finalProducts = [];
     foreach ($groupedProducts as $productId => $product) {
+        // If parent has variants, calculate total stock from available variants
         if (!empty($product['variants'])) {
             $totalStock = 0;
-            $hasAvailable = false;
+            $hasAvailableVariants = false;
+
             foreach ($product['variants'] as $variant) {
                 $totalStock += $variant['stockQuantity'];
-                if ($variant['stockQuantity'] > 0)
-                    $hasAvailable = true;
+                if ($variant['stockQuantity'] > 0 && $variant['status'] !== 'No Stock') {
+                    $hasAvailableVariants = true;
+                }
             }
+
             $product['stockQuantity'] = $totalStock;
-            if (!$hasAvailable)
+
+            // If no variants are available, skip this product
+            if (!$hasAvailableVariants) {
                 continue;
+            }
         }
 
+        // Additional check: Remove parent products that have no available variants
+        if (empty($product['variants'])) {
+            continue;
+        }
+
+        // Check if at least one variant is actually available
+        $hasAvailable = false;
+        foreach ($product['variants'] as $variant) {
+            if ($variant['stockQuantity'] > 0 && in_array($variant['status'], ['Available', 'Low Stock'])) {
+                $hasAvailable = true;
+                break;
+            }
+        }
+
+        if (!$hasAvailable) {
+            continue;
+        }
+
+        // Ensure required fields
         if (!isset($product['status']))
             $product['status'] = 'Available';
         if (!isset($product['stockQuantity']))
             $product['stockQuantity'] = 0;
+        if (!isset($product['average_rating']))
+            $product['average_rating'] = 0;
 
         $finalProducts[] = $product;
     }
@@ -230,6 +320,7 @@ try {
         'debug' => [
             'user_id' => $user_id,
             'total_favorites' => count($finalProducts),
+            'raw_count' => $result->num_rows
         ]
     ]);
 
