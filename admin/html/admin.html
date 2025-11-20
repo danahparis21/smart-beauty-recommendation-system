@@ -23,6 +23,229 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
   <style>
+    /* Full Screen Reveal Effect */
+    .fullscreen-reveal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,
+          #ffffff 0%,
+          #fff5f9 30%,
+          #ffe6f2 70%,
+          #ffd1dc 100%);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      box-shadow: 0 0 0 0 rgba(255, 229, 236, 0.7);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      /* Ensure it can expand beyond viewport */
+      transform-origin: center center;
+    }
+
+    /* Remove the white overlay background to see the circle properly */
+    .reveal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      /* Changed from white to transparent */
+      z-index: 9998;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .fullscreen-reveal.active {
+      display: flex;
+    }
+
+    .fullscreen-reveal.expanding {
+      transform: translate(-50%, -50%) scale(20);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fullscreen-reveal-content {
+      position: absolute;
+      top: 40%;
+      /* slightly above the finger press */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      color: white;
+      opacity: 0;
+      /* hidden initially */
+      text-align: center;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+
+    .fullscreen-reveal.expanding .fullscreen-reveal-content {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .reveal-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .reveal-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    /* Progress indicator for the reveal */
+    .reveal-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(rgb(172, 163, 163) 0%, transparent 0%);
+      mask: radial-gradient(transparent 65%, black 66%);
+      -webkit-mask: radial-gradient(transparent 65%, black 66%);
+      z-index: 1;
+    }
+
+    /* Cashier Mode Entry Screen */
+    .cashier-mode-entry {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+      z-index: 10000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .cashier-mode-entry.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .cashier-logo-container {
+      text-align: center;
+      margin-bottom: 30px;
+      animation: pulse 2s infinite;
+    }
+
+    .cashier-logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .cashier-logo img {
+      max-width: 80px;
+      max-height: 80px;
+    }
+
+    .cashier-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .cashier-subtitle {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 30px;
+    }
+
+    .cashier-loading {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .cashier-loading-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: white;
+      opacity: 0.6;
+      animation: loadingDots 1.4s infinite ease-in-out;
+    }
+
+    .cashier-loading-dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .cashier-loading-dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes loadingDots {
+      0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Make logo container press-friendly */
+    @media (max-width: 991px) {
+      .logo-container {
+        position: relative;
+        cursor: pointer;
+        padding: 15px !important;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        margin: 10px;
+      }
+
+      .logo-container:active {
+        background: rgba(228, 151, 170, 0.1);
+        transform: scale(0.95);
+      }
+
+      .logo-container.pressing {
+        background: rgba(228, 151, 170, 0.15);
+        transform: scale(0.92);
+      }
+    }
+
     /* Base Styles for Cards & Buttons */
     .stats-buttons {
       display: grid;
@@ -1035,37 +1258,76 @@
     </div>
   </div>
 
+  <!-- Full Screen Reveal Effect -->
+  <div class="reveal-overlay" id="revealOverlay"></div>
+  <div class="fullscreen-reveal" id="fullscreenReveal">
+    <div class="reveal-progress" id="revealProgress"></div>
+    <div class="fullscreen-reveal-content">
+      <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
+    </div>
+  </div>
+
+  <!-- Cashier Mode Entry Screen -->
+  <div class="cashier-mode-entry" id="cashierModeEntry">
+    <div class="cashier-logo-container">
+      <div class="cashier-logo">
+        <img src="../images/mainlogo.png" alt="Store Logo">
+      </div>
+      <div class="cashier-title">Entering Cashier Mode</div>
+      <div class="cashier-subtitle">Blessence Point of Sale</div>
+    </div>
+    <div class="cashier-loading">
+      <div class="cashier-loading-dot"></div>
+      <div class="cashier-loading-dot"></div>
+      <div class="cashier-loading-dot"></div>
+    </div>
+  </div>
+
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     // Track typed keys for Shift + "cashier"
-    let typedKeys = '';
-    const triggerWord = 'CASHIER'; // Uppercase because Shift is pressed
+let typedKeys = '';
+const triggerWord = 'CASHIER'; // Uppercase because Shift is pressed
+const cashierModeEntry = document.getElementById('cashierModeEntry');
 
-    document.addEventListener('keydown', (e) => {
-      // Only count keys if Shift is held down
-      if (e.shiftKey && e.key.length === 1) {
-        typedKeys += e.key.toUpperCase();
+document.addEventListener('keydown', (e) => {
+  // Only count keys if Shift is held down
+  if (e.shiftKey && e.key.length === 1) {
+    typedKeys += e.key.toUpperCase();
 
-        // Keep buffer length reasonable
-        if (typedKeys.length > triggerWord.length) {
-          typedKeys = typedKeys.slice(-triggerWord.length);
-        }
+    // Keep buffer length reasonable
+    if (typedKeys.length > triggerWord.length) {
+      typedKeys = typedKeys.slice(-triggerWord.length);
+    }
 
-        // Check if typedKeys match the trigger word
-        if (typedKeys === triggerWord) {
-          // Redirect to cashier mode
-          window.location.href = 'cashier-mode.html'; // Replace with your cashier page URL
-          typedKeys = ''; // Reset buffer
-        }
-      } else if (!e.shiftKey && e.key === 'Shift') {
-        // Do nothing if just Shift is pressed
-      } else {
-        // Reset buffer if any other key pressed without Shift
-        typedKeys = '';
-      }
-    });
+    // Check if typedKeys match the trigger word
+    if (typedKeys === triggerWord) {
+      // Show cashier mode entry screen
+      showCashierModeEntry();
+      
+      // Redirect to cashier mode after showing the entry screen
+      setTimeout(() => {
+        window.location.href = 'cashier-mode.html'; // Replace with your cashier page URL
+      }, 2000);
+      
+      typedKeys = ''; // Reset buffer
+    }
+  } else if (!e.shiftKey && e.key === 'Shift') {
+    // Do nothing if just Shift is pressed
+  } else {
+    // Reset buffer if any other key pressed without Shift
+    typedKeys = '';
+  }
+});
+
+// Function to show cashier mode entry screen
+function showCashierModeEntry() {
+  if (cashierModeEntry) {
+    cashierModeEntry.classList.add('active');
+  }
+}
     // --- Mobile Sidebar Toggle Logic ---
     document.addEventListener('DOMContentLoaded', () => {
       const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -1410,7 +1672,7 @@
           'orders_today': document.querySelector('.orders-today .stat-value'),
           'orders_week': document.querySelector('.this-week .stat-value'),
           'total_sales': document.querySelector('.total-sales .stat-value'),
-          'total_favorites': document.querySelector('.favorites-count .stat-value'), 
+          'total_favorites': document.querySelector('.favorites-count .stat-value'),
           // 'qr_codes': document.querySelector('.qr-code .stat-value') // QR code button has static text, not dynamic
         };
 
@@ -1632,6 +1894,259 @@
       highlightActiveNavLink();
     });
 
+    // --- Mobile Long Press Cashier Mode with Smooth Gradual Screen Cover ---
+    class LongPressCashierMode {
+      constructor() {
+        this.logoElement = document.querySelector('.logo-container');
+        this.revealElement = document.getElementById('fullscreenReveal');
+        this.overlayElement = document.getElementById('revealOverlay');
+        this.cashierModeEntry = document.getElementById('cashierModeEntry');
+        this.pressTimer = null;
+        this.pressDuration = 5000; // 5 seconds
+        this.startTime = 0;
+        this.animationFrame = null;
+        this.isActivating = false;
+        this.hasTriggered = false;
+        this.currentScale = 0;
+
+        this.init();
+      }
+
+      init() {
+        this.bindEvents();
+      }
+
+      bindEvents() {
+        // Touch events for mobile
+        this.logoElement.addEventListener('touchstart', (e) => this.handlePressStart(e), { passive: false });
+        this.logoElement.addEventListener('touchend', (e) => this.handlePressEnd(e), { passive: false });
+        this.logoElement.addEventListener('touchmove', (e) => this.handlePressMove(e), { passive: false });
+        this.logoElement.addEventListener('touchcancel', (e) => this.handlePressEnd(e), { passive: false });
+
+        // Prevent context menu on long press
+        this.logoElement.addEventListener('contextmenu', (e) => e.preventDefault());
+      }
+
+      handlePressStart(e) {
+        // Only activate on mobile devices (in sidebar)
+        if (window.innerWidth >= 992) return;
+
+        e.preventDefault();
+        this.startTime = Date.now();
+        this.isActivating = true;
+        this.hasTriggered = false;
+        this.currentScale = 0;
+
+        // Add pressing state to logo with haptic feedback
+        this.logoElement.classList.add('pressing');
+        if (navigator.vibrate) {
+          navigator.vibrate(30); // Subtle vibration feedback
+        }
+
+        // Show the reveal elements
+        this.showReveal();
+
+        // Start the gradual expansion animation
+        this.animateGradualExpansion();
+      }
+
+      handlePressEnd(e) {
+        if (!this.isActivating || this.hasTriggered) return;
+
+        const pressDuration = Date.now() - this.startTime;
+
+        this.cleanup();
+
+        // Animate the circle shrinking back
+        if (pressDuration > 200) {
+          this.cancelReveal();
+        } else {
+          this.hideReveal();
+        }
+      }
+
+      handlePressMove(e) {
+        if (!this.isActivating || this.hasTriggered) return;
+
+        // If user moves finger too much, cancel the long press
+        const touch = e.touches ? e.touches[0] : e;
+        const rect = this.logoElement.getBoundingClientRect();
+        const x = touch.clientX;
+        const y = touch.clientY;
+
+        // Check if touch moved outside logo area with some tolerance
+        const tolerance = 50;
+        if (x < rect.left - tolerance || x > rect.right + tolerance ||
+          y < rect.top - tolerance || y > rect.bottom + tolerance) {
+          this.handlePressEnd(e);
+        }
+      }
+
+      showReveal() {
+        // Position the reveal circle at the logo's center
+        const rect = this.logoElement.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        this.revealElement.style.left = centerX + 'px';
+        this.revealElement.style.top = centerY + 'px';
+        this.revealElement.style.transform = 'translate(-50%, -50%) scale(0)';
+        this.revealElement.style.transition = 'none';
+
+        // Show elements
+        this.revealElement.classList.add('active');
+        this.overlayElement.classList.add('active');
+      }
+
+      animateGradualExpansion() {
+        // Get logo center position
+        const rect = this.logoElement.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // Distances to the four corners
+        const distTL = Math.hypot(centerX - 0, centerY - 0); // top-left
+        const distTR = Math.hypot(centerX - window.innerWidth, centerY - 0); // top-right
+        const distBL = Math.hypot(centerX - 0, centerY - window.innerHeight); // bottom-left
+        const distBR = Math.hypot(centerX - window.innerWidth, centerY - window.innerHeight); // bottom-right
+
+        // Pick the farthest corner
+        const maxRadius = Math.max(distTL, distTR, distBL, distBR);
+
+        // Your circle is 100px → radius = 50px
+        const maxScale = (maxRadius * 2) / 100;
+
+
+        const updateExpansion = () => {
+          if (!this.isActivating) return;
+
+          const elapsed = Date.now() - this.startTime;
+          const progress = Math.min(elapsed / this.pressDuration, 1);
+
+          // Use easeInOutCubic for smooth acceleration and deceleration
+          const eased = progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+          // Calculate current scale
+          this.currentScale = eased * maxScale;
+
+          // Apply the transform
+          this.revealElement.style.transform = `translate(-50%, -50%) scale(${this.currentScale})`;
+
+          // Update shadow intensity as it grows
+          const shadowIntensity = Math.min(eased * 50, 50);
+          this.revealElement.style.boxShadow = `0 0 ${shadowIntensity}px ${shadowIntensity / 2}px rgba(228, 151, 170, ${0.3 + eased * 0.2})`;
+
+          // Check if we've reached the end
+          if (progress >= 1) {
+            this.triggerComplete();
+            return;
+          }
+
+          // Continue animation
+          this.animationFrame = requestAnimationFrame(updateExpansion);
+        };
+
+        this.animationFrame = requestAnimationFrame(updateExpansion);
+      }
+
+      triggerComplete() {
+        if (this.hasTriggered) return;
+
+        this.hasTriggered = true;
+
+        // Haptic feedback for completion
+        if (navigator.vibrate) {
+          navigator.vibrate([50, 30, 50]); // Success pattern
+        }
+
+        // Hide the reveal elements
+        this.hideReveal();
+
+        // Show the cashier mode entry screen
+        this.showCashierModeEntry();
+
+        // Wait for the screen to be fully covered before redirecting
+        // Add a slight delay to ensure the animation completes visually
+        setTimeout(() => {
+          window.location.href = 'cashier-mode.html';
+        }, 2000);
+      }
+
+      showCashierModeEntry() {
+        this.cashierModeEntry.classList.add('active');
+      }
+
+      cancelReveal() {
+        // Smoothly animate the circle back to zero scale
+        this.revealElement.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease, box-shadow 0.4s ease';
+        this.revealElement.style.transform = 'translate(-50%, -50%) scale(0)';
+        this.revealElement.style.opacity = '0';
+        this.revealElement.style.boxShadow = '0 0 0 0 rgba(228, 151, 170, 0)';
+
+        this.overlayElement.style.transition = 'opacity 0.4s ease';
+        this.overlayElement.style.opacity = '0';
+
+        setTimeout(() => {
+          this.hideReveal();
+        }, 500);
+      }
+
+      hideReveal() {
+        this.revealElement.classList.remove('active');
+        this.overlayElement.classList.remove('active');
+
+        // Reset styles
+        this.revealElement.style.transition = '';
+        this.revealElement.style.transform = '';
+        this.revealElement.style.left = '';
+        this.revealElement.style.top = '';
+        this.revealElement.style.opacity = '';
+        this.revealElement.style.boxShadow = '';
+        this.overlayElement.style.transition = '';
+        this.overlayElement.style.opacity = '';
+
+        const content = this.revealElement.querySelector('.fullscreen-reveal-content');
+        if (content) {
+          content.style.transition = '';
+          content.style.opacity = '';
+        }
+      }
+
+      cleanup() {
+        if (this.pressTimer) {
+          clearTimeout(this.pressTimer);
+          this.pressTimer = null;
+        }
+
+        if (this.animationFrame) {
+          cancelAnimationFrame(this.animationFrame);
+          this.animationFrame = null;
+        }
+
+        this.isActivating = false;
+        this.logoElement.classList.remove('pressing');
+      }
+    }
+
+    // Initialize the long press functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      // ... your existing DOMContentLoaded code ...
+
+      // Initialize long press cashier mode (only on mobile)
+      if (window.innerWidth < 992) {
+        new LongPressCashierMode();
+      }
+
+      // Reinitialize on resize if switching to mobile view
+      let cashierMode = null;
+      window.addEventListener('resize', () => {
+        if (window.innerWidth < 992 && !cashierMode) {
+          cashierMode = new LongPressCashierMode();
+        }
+      });
+    });
 
   </script>
 </body>
