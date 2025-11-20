@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Virtual Lipstick Try-On | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -132,7 +132,7 @@
 
       .camera-view {
         width: 100%;
-        height: 400px;
+        height: 500px; /* Default height for desktop */
         background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
         border-radius: 10px;
         display: flex;
@@ -142,12 +142,59 @@
         position: relative;
       }
 
+      /* MOBILE - Make camera view reasonably taller for portrait mode */
+      @media (max-width: 768px) {
+        .camera-view {
+          height: 55vh; /* Reduced from 75vh to 65vh */
+          min-height: 450px; /* Reduced from 700px to 550px */
+        }
+
+        .camera-view img {
+          transform: scale(1.5); /* Reduced from 1.3 to 1.2 */
+        }
+      }
+
+      /* Make it slightly taller on smaller screens */
+      @media (max-width: 480px) {
+        .camera-view {
+          height: 60vh; /* Reduced from 80vh to 70vh */
+          min-height: 500px; /* Reduced from 750px to 600px */
+        }
+
+        .camera-view img {
+          transform: scale(1.5); /* Reduced from 1.4 to 1.25 */
+        }
+      }
+
+      /* Maximum height for very small screens */
+      @media (max-width: 375px) {
+        .camera-view {
+          height: 65vh; /* Reduced from 85vh to 75vh */
+          min-height: 550px; /* Reduced from 800px to 650px */
+        }
+
+        .camera-view img {
+          transform: scale(1.3); /* Reduced from 1.5 to 1.3 */
+        }
+      }
+
+      /* Ultra small screens */
+      @media (max-width: 320px) {
+        .camera-view {
+          height: 68vh; /* Reduced from 88vh to 78vh */
+          min-height: 600px; /* Reduced from 850px to 700px */
+        }
+
+        .camera-view img {
+          transform: scale(1.35); /* Reduced from 1.6 to 1.35 */
+        }
+      }
+
       .camera-view img {
         width: 100%;
         height: 100%;
         object-fit: contain;
         display: none;
-        /* Keep this as none - we'll use canvas for display */
       }
 
       .camera-placeholder {
@@ -159,6 +206,36 @@
         text-align: center;
         padding: 30px 20px;
         height: 100%;
+      }
+
+      /* Adjust placeholder for taller view */
+      @media (max-width: 768px) {
+        .camera-placeholder {
+          padding: 50px 20px; /* More padding for taller container */
+        }
+
+        .camera-placeholder h3 {
+          font-size: 26px; /* Larger text for taller space */
+          margin-bottom: 35px;
+        }
+
+        .placeholder-icon i {
+          font-size: 90px; /* Larger icon */
+          margin-bottom: 25px;
+        }
+
+        .tutorial-steps {
+          max-width: 320px; /* Wider tutorial steps */
+          gap: 12px;
+        }
+
+        .tutorial-step {
+          padding: 12px 10px;
+        }
+
+        .tutorial-step span {
+          font-size: 13px; /* Slightly larger text */
+        }
       }
 
       .camera-placeholder i {
@@ -202,240 +279,194 @@
       }
 
       .tutorial-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-  width: 100%;
-  max-width: 280px;
-}
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 280px;
+      }
 
-.tutorial-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px 8px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 6px;
-  border-left: 2px solid var(--primary-pink);
-}
+      .tutorial-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 8px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 6px;
+        border-left: 2px solid var(--primary-pink);
+      }
 
-.tutorial-step i {
-  font-size: 12px;
-  color: var(--primary-pink);
-  width: 16px;
-  text-align: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
+      .tutorial-step i {
+        font-size: 12px;
+        color: var(--primary-pink);
+        width: 16px;
+        text-align: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
 
-.tutorial-step span {
-  font-size: 12px;
-  color: #555;
-  text-align: left;
-  flex: 1;
-  line-height: 1.3;
-}
+      .tutorial-step span {
+        font-size: 12px;
+        color: #555;
+        text-align: left;
+        flex: 1;
+        line-height: 1.3;
+      }
 
-.placeholder-note {
-  background: rgba(255, 126, 185, 0.1);
-  border: 1px solid rgba(255, 126, 185, 0.3);
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 11px;
-  color: #666;
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  max-width: 280px;
-  line-height: 1.3;
-}
+      .placeholder-note {
+        background: rgba(255, 126, 185, 0.1);
+        border: 1px solid rgba(255, 126, 185, 0.3);
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 11px;
+        color: #666;
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        max-width: 280px;
+        line-height: 1.3;
+      }
 
-.placeholder-note i {
-  color: var(--primary-pink);
-  font-size: 12px;
-  flex-shrink: 0;
-  margin-top: 0;
-}
+      .placeholder-note i {
+        color: var(--primary-pink);
+        font-size: 12px;
+        flex-shrink: 0;
+        margin-top: 0;
+      }
 
-/* MOBILE NUKES - For 400px and below */
-@media (max-width: 400px) {
-  .photobooth-container {
-    padding: 10px !important;
-    margin: 5px !important;
-  }
-  
-  .camera-placeholder h3 {
-    font-size: 14px !important;
-    margin-bottom: 10px !important;
-    text-align: center;
-  }
+      /* MOBILE NUKES - For 400px and below */
+      @media (max-width: 400px) {
+        .photobooth-container {
+          padding: 10px !important;
+          margin: 5px !important;
+        }
 
-  .placeholder-icon i {
-    font-size: 40px !important;
-    margin-bottom: 10px !important;
-  }
+        .camera-placeholder h3 {
+          font-size: 18px !important;
+          margin-bottom: 20px !important;
+          text-align: center;
+        }
 
-  .tutorial-steps {
-    gap: 6px !important;
-    margin-bottom: 15px !important;
-    max-width: 100% !important;
-  }
+        .placeholder-icon i {
+          font-size: 60px !important;
+          margin-bottom: 20px !important;
+        }
 
-  .tutorial-step {
-    padding: 6px 5px !important;
-    gap: 6px !important;
-    border-left-width: 2px !important;
-    min-height: auto !important;
-  }
+        .tutorial-steps {
+          gap: 8px !important;
+          margin-bottom: 20px !important;
+          max-width: 100% !important;
+        }
 
-  .tutorial-step i {
-    font-size: 10px !important;
-    width: 14px !important;
-  }
+        .tutorial-step {
+          padding: 10px 8px !important;
+          gap: 6px !important;
+        }
 
-  .tutorial-step span {
-    font-size: 10px !important;
-    line-height: 1.2 !important;
-  }
+        .tutorial-step i {
+          font-size: 10px !important;
+          width: 14px !important;
+        }
 
-  .placeholder-note {
-    font-size: 9px !important;
-    padding: 6px 8px !important;
-    max-width: 100% !important;
-    line-height: 1.2 !important;
-    gap: 4px !important;
-  }
+        .tutorial-step span {
+          font-size: 11px !important;
+          line-height: 1.3 !important;
+        }
 
-  .placeholder-note i {
-    font-size: 10px !important;
-  }
-}
+        .placeholder-note {
+          font-size: 10px !important;
+          padding: 8px 10px !important;
+          max-width: 100% !important;
+        }
+      }
 
-/* NUCLEAR OPTION - For 320px and below (iPhone SE) */
-@media (max-width: 320px) {
-  .camera-placeholder h3 {
-    font-size: 13px !important;
-  }
+      /* NUCLEAR OPTION - For 320px and below (iPhone SE) */
+      @media (max-width: 320px) {
+        .camera-placeholder h3 {
+          font-size: 16px !important;
+        }
 
-  .tutorial-step {
-    padding: 5px 4px !important;
-  }
+        .tutorial-step {
+          padding: 8px 6px !important;
+        }
 
-  .tutorial-step span {
-    font-size: 9px !important;
-  }
+        .tutorial-step span {
+          font-size: 10px !important;
+        }
 
-  .placeholder-note {
-    font-size: 8px !important;
-    padding: 5px 6px !important;
-  }
+        .placeholder-note {
+          font-size: 9px !important;
+        }
+      }
 
-  /* Stack icons above text for ultra-small screens */
-  .tutorial-step {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 3px !important;
-  }
+      /* BRUTE FORCE MOBILE FIX */
+      @media (max-width: 400px) {
+        .tutorial-steps {
+          transform: scale(0.9);
+          transform-origin: top center;
+          margin-bottom: 15px;
+        }
 
-  .tutorial-step i {
-    margin-bottom: 2px;
-  }
-}
-/* BRUTE FORCE MOBILE FIX */
-@media (max-width: 400px) {
-  .tutorial-steps {
-    transform: scale(0.8);
-    transform-origin: top center;
-    margin-bottom: 10px;
-  }
-  
-  .placeholder-note {
-    transform: scale(0.8);
-    transform-origin: top center;
-  }
-  
-  .camera-placeholder h3 {
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-  
-  .placeholder-icon i {
-    font-size: 35px;
-    margin-bottom: 8px;
-  }
-}
+        .placeholder-note {
+          transform: scale(0.9);
+          transform-origin: top center;
+        }
 
-/* NUCLEAR FIX FOR FONT AWESOME ICONS ON MOBILE */
-@media (max-width: 400px) {
-  .tutorial-step i.fas {
-    font-size: 10px !important;
-    width: 14px !important;
-    height: 14px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-  
-  .placeholder-note i.fas {
-    font-size: 10px !important;
-    width: 14px !important;
-    height: 14px !important;
-  }
-  
-  /* Force scale the entire tutorial section */
-  .tutorial-steps {
-    transform: scale(0.7) !important;
-    transform-origin: top center !important;
-    margin-bottom: 5px !important;
-  }
-  
-  .placeholder-note {
-    transform: scale(0.7) !important;
-    transform-origin: top center !important;
-  }
-}
+        .camera-placeholder h3 {
+          font-size: 16px;
+          margin-bottom: 15px;
+        }
 
-@media (max-width: 320px) {
-  .tutorial-step i.fas {
-    font-size: 8px !important;
-    width: 12px !important;
-    height: 12px !important;
-  }
-  
-  .tutorial-steps {
-    transform: scale(0.6) !important;
-  }
-  
-  .placeholder-note {
-    transform: scale(0.6) !important;
-  }
-}
-/* SUPER NUCLEAR - Replace all icons with simple bullets */
-@media (max-width: 400px) {
-  .tutorial-step i.fas {
-    display: none !important;
-  }
-  
-  .tutorial-step::before {
-    content: "•";
-    color: var(--primary-pink);
-    font-size: 8px;
-    width: 8px;
-    flex-shrink: 0;
-  }
-  
-  .placeholder-note i.fas {
-    display: none !important;
-  }
-  
-  .placeholder-note::before {
-    content: "💡";
-    font-size: 8px;
-    margin-right: 4px;
-  }
-}
+        .placeholder-icon i {
+          font-size: 50px;
+          margin-bottom: 15px;
+        }
+      }
+
+      /* NUCLEAR FIX FOR FONT AWESOME ICONS ON MOBILE */
+      @media (max-width: 400px) {
+        .tutorial-step i.fas {
+          font-size: 10px !important;
+          width: 14px !important;
+          height: 14px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        .placeholder-note i.fas {
+          font-size: 10px !important;
+          width: 14px !important;
+          height: 14px !important;
+        }
+      }
+
+      /* SUPER NUCLEAR - Replace all icons with simple bullets */
+      @media (max-width: 400px) {
+        .tutorial-step i.fas {
+          display: none !important;
+        }
+
+        .tutorial-step::before {
+          content: "•";
+          color: var(--primary-pink);
+          font-size: 8px;
+          width: 8px;
+          flex-shrink: 0;
+        }
+
+        .placeholder-note i.fas {
+          display: none !important;
+        }
+
+        .placeholder-note::before {
+          content: "💡";
+          font-size: 8px;
+          margin-right: 4px;
+        }
+      }
+
       .camera-controls {
         display: flex;
         justify-content: center;
@@ -575,6 +606,11 @@
         font-size: 14px;
         font-weight: 500;
         margin-bottom: 3px;
+        /* Limit product name length and wrap to next line */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 180px;
+        line-height: 1.3;
       }
 
       .product-brand {
@@ -1280,6 +1316,105 @@
         backdrop-filter: blur(10px);
       }
 
+      /* DESKTOP - Slimmer modal that doesn't cover the face */
+      @media (min-width: 769px) {
+        #compatibility-result {
+          max-width: 220px; /* Slimmer width */
+          padding: 16px 12px; /* More vertical padding, less horizontal */
+          top: 20px;
+          right: 20px;
+        }
+
+        .skin-info p {
+          font-size: 11px; /* Slightly smaller text to fit */
+          margin: 5px 0;
+        }
+
+        .recommendation {
+          font-size: 10px;
+          line-height: 1.3;
+          padding: 6px;
+        }
+
+        .compatibility-header h4 {
+          font-size: 14px;
+          margin-bottom: 4px;
+        }
+
+        .match-bar {
+          margin: 6px 0;
+        }
+      }
+
+      /* MOBILE - Bottom of camera-view, above upload button */
+      @media (max-width: 768px) {
+        #compatibility-result {
+          position: absolute;
+          bottom: 80px; /* Position above the upload button area */
+          left: 50%;
+          transform: translateX(-50%) translateY(20px);
+          top: auto;
+          right: auto;
+          max-width: 85%;
+          width: 300px;
+          animation: slideUpFromBottom 0.4s ease-out;
+          margin: 0 auto;
+        }
+
+        /* Make it taller for better content spacing */
+        .skin-info {
+          margin: 12px 0;
+          padding: 12px;
+        }
+
+        .skin-info p {
+          font-size: 13px;
+          margin: 8px 0;
+        }
+
+        .recommendation {
+          font-size: 12px;
+          line-height: 1.4;
+          padding: 10px;
+        }
+
+        .compatibility-header h4 {
+          font-size: 16px;
+          margin-bottom: 8px;
+        }
+
+        .match-bar {
+          margin: 10px 0;
+          height: 8px;
+        }
+      }
+
+      /* Extra small mobile adjustments */
+      @media (max-width: 480px) {
+        #compatibility-result {
+          bottom: 70px; /* Slightly higher on smaller screens */
+          width: 90%;
+          max-width: 280px;
+        }
+
+        .skin-info p {
+          font-size: 12px;
+        }
+
+        .recommendation {
+          font-size: 11px;
+        }
+      }
+
+      /* Ultra small screens */
+      @media (max-width: 320px) {
+        #compatibility-result {
+          bottom: 65px;
+          width: 95%;
+          max-width: 260px;
+        }
+      }
+
       /* Elegant match levels with soft backgrounds */
       #compatibility-result.excellent-match {
         background: linear-gradient(135deg, #fff9fd, #fff0f5);
@@ -1414,6 +1549,17 @@
         }
       }
 
+      @keyframes slideUpFromBottom {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+
       /* Elegant close button */
       .close-btn {
         position: absolute;
@@ -1460,33 +1606,68 @@
         text-align: center;
         margin-bottom: 8px;
       }
-
-      /* Mobile Responsiveness */
+      /* MOBILE - Wide horizontal modal at bottom */
       @media (max-width: 768px) {
         #compatibility-result {
-          top: 10px;
-          right: 10px;
-          max-width: 200px;
-          padding: 12px;
-          border-radius: 10px;
+          position: absolute;
+          bottom: 20px; /* Position at bottom of camera-view */
+          left: 15px; /* Start from left */
+          right: 15px; /* Extend to right */
+          width: auto; /* Full width between left/right */
+          max-width: none; /* Remove max-width restriction */
+          transform: translateX(0) translateY(0);
+          top: auto;
+          animation: slideUpFromBottom 0.3s ease-out;
+          margin: 0;
+          padding: 12px 15px; /* More horizontal padding */
+          height: auto;
+          min-height: 80px; /* Fixed short height */
+        }
+
+        /* Horizontal layout for content */
+        .compatibility-header {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          margin-bottom: 8px;
+        }
+
+        .compatibility-header h4 {
+          font-size: 14px;
+          margin: 0;
+          white-space: nowrap;
+        }
+
+        .source-badge {
+          margin: 0;
+          font-size: 0.7em;
+          white-space: nowrap;
         }
 
         .match-bar {
-          height: 5px;
-          margin: 6px 0;
+          flex: 1;
+          margin: 0;
+          height: 6px;
         }
 
+        /* Compact skin info in one line */
         .skin-info {
+          margin: 8px 0 0 0;
           padding: 8px;
-          margin: 8px 0;
+          display: flex;
+          gap: 15px;
+          justify-content: space-between;
         }
 
         .skin-info p {
+          margin: 0;
           font-size: 11px;
+          white-space: nowrap;
         }
 
+        /* Hide recommendation to save space */
         .recommendation {
-          font-size: 10px;
+          display: none; /* Hide on mobile to save vertical space */
         }
 
         .close-btn {
@@ -1494,28 +1675,457 @@
           right: 6px;
           width: 18px;
           height: 18px;
+          font-size: 11px;
         }
       }
 
+      /* Extra small mobile adjustments */
       @media (max-width: 480px) {
         #compatibility-result {
-          top: 8px;
-          right: 8px;
-          max-width: 180px;
-          padding: 10px;
+          bottom: 15px;
+          left: 10px;
+          right: 10px;
+          padding: 10px 12px;
+          min-height: 70px;
+        }
+
+        .compatibility-header {
+          gap: 10px;
+        }
+
+        .compatibility-header h4 {
+          font-size: 13px;
+        }
+
+        .skin-info {
+          gap: 10px;
+          padding: 6px;
         }
 
         .skin-info p {
           font-size: 10px;
         }
+      }
 
-        .recommendation {
-          font-size: 9px;
-          padding: 6px;
+      /* Ultra small screens */
+      @media (max-width: 320px) {
+        #compatibility-result {
+          bottom: 10px;
+          left: 8px;
+          right: 8px;
+          padding: 8px 10px;
+          min-height: 65px;
         }
 
         .compatibility-header h4 {
-          font-size: 14px;
+          font-size: 12px;
+        }
+
+        .skin-info p {
+          font-size: 9px;
+        }
+      }
+      .products-section {
+        flex: 0 0 320px; /* Slightly wider to accommodate images */
+      }
+
+      .products-container {
+        background: var(--white);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .products-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 22px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .products-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .product-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .product-item:hover {
+        background: var(--light-gray);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-item.active {
+        background: rgba(255, 126, 185, 0.1);
+        border: 2px solid rgba(255, 126, 185, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 126, 185, 0.2);
+      }
+
+      /* Replace the color circle with product image */
+      .product-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 182, 193, 0.3);
+      }
+
+      .product-info {
+        flex: 1;
+        min-width: 0; /* Prevent text overflow */
+      }
+
+      .product-name {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: var(--text-color);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 180px;
+        line-height: 1.3;
+      }
+
+      .product-brand {
+        font-size: 12px;
+        color: var(--dark-gray);
+        margin-bottom: 5px;
+      }
+
+      .product-price {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-pink);
+      }
+
+      .product-shades-count {
+        font-size: 0.7em;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 4px 8px;
+        border-radius: 10px;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+
+      /* MOBILE - Horizontal lipstick carousel */
+      @media (max-width: 768px) {
+        .products-section {
+          order: 3; /* Move products section after shades */
+          flex: 0 0 auto; /* Don't grow, just take needed space */
+          width: 100%;
+          margin-top: 0;
+        }
+
+        .products-container {
+          max-height: none;
+          padding: 15px;
+          border-radius: 12px;
+          margin-top: 10px;
+        }
+
+        .products-title {
+          font-size: 18px;
+          margin-bottom: 12px;
+        }
+
+        .products-list {
+          flex-direction: row; /* Horizontal layout */
+          gap: 10px;
+          overflow-x: auto; /* Horizontal scrolling */
+          padding: 5px;
+          margin: 0 -5px;
+          scrollbar-width: none; /* Hide scrollbar for cleaner look */
+        }
+
+        .products-list::-webkit-scrollbar {
+          display: none; /* Hide scrollbar for Webkit browsers */
+        }
+
+        .product-item {
+          flex-direction: column; /* Stack image and minimal info */
+          align-items: center;
+          padding: 10px;
+          min-width: 80px; /* Fixed width for consistent sizing */
+          border-radius: 10px;
+          gap: 8px;
+        }
+
+        .product-image {
+          width: 60px; /* Larger images for mobile */
+          height: 60px;
+          border-radius: 10px;
+        }
+
+        /* Hide all text info on mobile - show only images */
+        .product-info,
+        .product-shades-count {
+          display: none;
+        }
+
+        /* Show product name as tooltip on hover/tap */
+        .product-item::after {
+          content: attr(data-product-name);
+          position: absolute;
+          bottom: -25px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0, 0, 0, 0.8);
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+          z-index: 1000;
+        }
+
+        .product-item:hover::after,
+        .product-item:active::after {
+          opacity: 1;
+        }
+
+        /* Active state for mobile */
+        .product-item.active {
+          border: 2px solid var(--primary-pink);
+          background: rgba(255, 126, 185, 0.15);
+          transform: scale(1.05);
+        }
+      }
+
+      /* Extra small mobile adjustments */
+      @media (max-width: 480px) {
+        .products-container {
+          padding: 12px;
+        }
+
+        .products-title {
+          font-size: 16px;
+        }
+
+        .product-item {
+          min-width: 70px;
+          padding: 8px;
+        }
+
+        .product-image {
+          width: 55px;
+          height: 55px;
+        }
+      }
+      /* DESKTOP - Full product details */
+      @media (min-width: 769px) {
+        .products-section {
+          flex: 0 0 320px;
+        }
+
+        .products-container {
+          max-height: 600px;
+          overflow-y: auto;
+        }
+
+        .products-list {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .product-item {
+          flex-direction: row;
+          align-items: center;
+          padding: 12px;
+          min-width: auto;
+        }
+
+        .product-image {
+          width: 50px;
+          height: 50px;
+        }
+
+        .product-info,
+        .product-shades-count {
+          display: block; /* Ensure these are visible on desktop */
+        }
+
+        .product-item::after {
+          display: none; /* Hide mobile tooltip on desktop */
+        }
+      }
+      .photobooth-container {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      /* Hide/Show based on screen size */
+      .desktop-products {
+        display: none;
+      }
+      .mobile-products {
+        display: block;
+      }
+
+      /* DESKTOP Layout - Products as sidebar */
+      @media (min-width: 769px) {
+        .photobooth-container {
+          flex-direction: row;
+          align-items: flex-start;
+        }
+
+        .camera-section {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .desktop-products {
+          display: block;
+          flex: 0 0 320px;
+          margin-left: 25px;
+        }
+
+        .mobile-products {
+          display: none;
+        }
+
+        /* Desktop product styling */
+        .products-list {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .product-item {
+          flex-direction: row;
+          align-items: center;
+          padding: 12px;
+        }
+
+        .product-image {
+          width: 50px;
+          height: 50px;
+        }
+
+        .product-info,
+        .product-shades-count {
+          display: block;
+        }
+      }
+
+      /* MOBILE Layout - Reorder elements */
+      @media (max-width: 768px) {
+        .photobooth-container {
+          flex-direction: column;
+        }
+
+        .camera-section {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .desktop-products {
+          display: none;
+        }
+
+        .mobile-products {
+          display: block;
+        }
+
+        /* Reorder elements INSIDE camera-section for mobile */
+        .camera-container {
+          order: 1; /* Camera first */
+        }
+
+        .mobile-products {
+          order: 2; /* Products second */
+          width: 100%;
+          margin-top: 15px;
+        }
+
+        .action-buttons-container {
+          order: 3; /* Action buttons LAST */
+          width: 100%;
+          margin-top: 15px;
+        }
+
+        .loading {
+          order: 4; /* Loading last */
+        }
+
+        /* Mobile product styling - Horizontal carousel */
+        .products-list {
+          flex-direction: row;
+          gap: 10px;
+          overflow-x: auto;
+          padding: 5px;
+          margin: 0 -5px;
+          scrollbar-width: none;
+        }
+
+        .products-list::-webkit-scrollbar {
+          display: none;
+        }
+
+        .product-item {
+          flex-direction: column;
+          align-items: center;
+          padding: 10px;
+          min-width: 80px;
+          border-radius: 10px;
+          gap: 8px;
+        }
+
+        .product-image {
+          width: 60px;
+          height: 60px;
+        }
+
+        .product-info,
+        .product-shades-count {
+          display: none;
+        }
+
+        .product-item::after {
+          content: attr(data-product-name);
+          position: absolute;
+          bottom: -25px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0, 0, 0, 0.8);
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+          z-index: 1000;
+        }
+
+        .product-item:hover::after,
+        .product-item:active::after {
+          opacity: 1;
         }
       }
     </style>
@@ -1648,7 +2258,7 @@
               </div>
             </div>
 
-            <!-- Add this action buttons container -->
+            <!-- Action buttons container - INSIDE camera-section -->
             <div class="action-buttons-container">
               <div class="current-product-info">
                 <h4>Current Selection</h4>
@@ -1671,13 +2281,24 @@
               <div class="loading-spinner"></div>
               <p>Detecting lips and applying lipstick...</p>
             </div>
+
+            <!-- MOBILE Products Section - INSIDE camera-section -->
+            <div class="products-section mobile-products">
+              <div class="products-container">
+                <h3 class="products-title">Try These Products</h3>
+                <div class="products-list" id="tryon-products">
+                  <!-- Mobile products will be dynamically added here -->
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="products-section">
+          <!-- DESKTOP Products Section - OUTSIDE camera-section -->
+          <div class="products-section desktop-products">
             <div class="products-container">
               <h3 class="products-title">Try These Products</h3>
-              <div class="products-list" id="tryon-products">
-                <!-- Try-on products will be dynamically added here -->
+              <div class="products-list" id="tryon-products-desktop">
+                <!-- Desktop products will be dynamically added here -->
               </div>
             </div>
           </div>
@@ -2156,6 +2777,14 @@
             const reader = new FileReader();
 
             reader.onload = function (event) {
+              // 1. --- ADD THIS NEW RESET BLOCK HERE ---
+              // Clear previous face detection state to ensure fresh processing
+              canvas._lastLandmarks = null;
+              if (faceMesh) {
+                faceMesh = null; // Forces a re-initialization on the next processImageWithFaceMesh call
+              }
+              // 2. ------------------------------------
+
               // Store the image in localStorage
               localStorage.setItem("lastUploadedImage", event.target.result);
 
@@ -2523,13 +3152,16 @@
             errorDiv.remove();
           }
         }
+        const OUTER_LIP_CONTOUR = [
+          61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314,
+          17, 84, 181, 91, 146, 61,
+        ];
 
         function applyLipstickToLandmarks(landmarks) {
+          // Clear and redraw image (kept the same)
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-
           const displayInfo = canvas._displayInfo;
 
-          // Draw uploaded image first
           ctx.drawImage(
             uploadedImage,
             displayInfo.offsetX,
@@ -2538,52 +3170,31 @@
             displayInfo.displayedHeight
           );
 
-          // --- Detect if lips are closed ---
-          const topLipY = landmarks[13].y;
-          const bottomLipY = landmarks[14].y;
-          const lipHeight = Math.abs(bottomLipY - topLipY);
-          const isClosedLips = lipHeight < 0.025; // Slightly more sensitive detection
+          // --- BEGIN LIPSTICK APPLICATION ---
 
-          // --- SIMPLIFIED APPROACH: Just fill the lip area directly ---
           ctx.save();
           ctx.globalCompositeOperation = "soft-light";
-          ctx.globalAlpha = 0.75; // Slightly more opacity
+          ctx.globalAlpha = 0.75;
           ctx.fillStyle = currentShade;
 
-          // Draw upper lip - use more points for better coverage
+          // Draw the entire lip area using the complete OUTER contour
           ctx.beginPath();
 
-          // Upper lip outer contour - WITH CLOSED MOUTH ADJUSTMENT
-          const upperLipPoints = [61, 84, 87, 314, 317, 14, 11, 302];
-          upperLipPoints.forEach((i, idx) => {
-            const p = landmarks[i];
-            let x = p.x * displayInfo.displayedWidth + displayInfo.offsetX;
-            let y = p.y * displayInfo.displayedHeight + displayInfo.offsetY;
-
-            // TINY adjustment for closed lips only - lifts top lip slightly
-            if (isClosedLips && [84, 87, 314, 317, 14, 11].includes(i)) {
-              y -= displayInfo.displayedHeight * 0.005; // Very subtle lift
-            }
-
-            idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-          });
-
-          // Lower lip outer contour
-          const lowerLipPoints = [
-            61, 146, 91, 181, 84, 17, 314, 405, 320, 307, 308,
-          ];
-          lowerLipPoints.forEach((i) => {
+          // Draw the full outer lip contour
+          OUTER_LIP_CONTOUR.forEach((i, idx) => {
             const p = landmarks[i];
             const x = p.x * displayInfo.displayedWidth + displayInfo.offsetX;
             const y = p.y * displayInfo.displayedHeight + displayInfo.offsetY;
-            ctx.lineTo(x, y);
+
+            // Use absolute coordinates in canvas for drawing
+            idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
           });
 
           ctx.closePath();
           ctx.fill();
           ctx.restore();
 
-          // --- Add soft shine ---
+          // --- Add soft shine (kept the same) ---
           const leftCorner = landmarks[61];
           const rightCorner = landmarks[291];
           const lipWidth =
@@ -2772,77 +3383,99 @@
             displaySampleProducts();
           }
         }
-
         function displayProducts(products) {
-          productsList.innerHTML = "";
+  const mobileProductsList = document.getElementById("tryon-products");
+  const desktopProductsList = document.getElementById("tryon-products-desktop");
 
-          // Display products in the products list (grouped by parent)
-          products.forEach((product) => {
-            const productItem = document.createElement("div");
-            productItem.className = "product-item";
-            // Use first shade as default for this product
-            const firstShade = product.shades[0];
+  if (!mobileProductsList || !desktopProductsList) {
+    console.error("Product lists not found!");
+    return;
+  }
 
-            productItem.setAttribute("data-product-id", product.id);
-            productItem.setAttribute("data-parent-id", product.id);
+  // Clear both lists
+  mobileProductsList.innerHTML = "";
+  desktopProductsList.innerHTML = "";
 
-            productItem.innerHTML = `
-            <div class="product-color" style="background-color: ${
-              firstShade.hexCode
-            };" title="${firstShade.shadeName}"></div>
-            <div class="product-info">
-                <div class="product-name">${product.name}</div>
-                <div class="product-price">₱${parseFloat(
-                  firstShade.price
-                ).toFixed(2)}</div>
-            </div>
-            <div class="product-shades-count">
-                ${product.shades.length} shade${
-              product.shades.length !== 1 ? "s" : ""
-            }
-            </div>
-        `;
+  products.forEach((product) => {
+    const firstShade = product.shades[0];
 
-            productItem.addEventListener("click", function () {
-              const parentId = this.getAttribute("data-parent-id");
+    // Use variant image
+    let productImage;
+    if (firstShade.variantImage) {
+      productImage = firstShade.variantImage;
+    } else if (product.variantImage) {
+      productImage = product.variantImage;
+    } else {
+      const color = firstShade.hexCode.replace("#", "");
+      productImage = `https://via.placeholder.com/50/${color}/ffffff?text=${product.name.charAt(0)}`;
+    }
 
-              // Update current product
-              currentProduct = products.find((p) => p.id === parentId);
+    // Create MOBILE product item (image only)
+    const mobileProductItem = document.createElement("div");
+    mobileProductItem.className = "product-item";
+    mobileProductItem.setAttribute("data-product-id", product.id);
+    mobileProductItem.setAttribute("data-parent-id", product.id);
+    mobileProductItem.setAttribute("data-product-name", product.name);
+    
+    mobileProductItem.innerHTML = `
+      <img src="${productImage}" alt="${product.name}" class="product-image" 
+           onerror="this.onerror=null; this.src='https://via.placeholder.com/60/${firstShade.hexCode.replace("#", "")}/ffffff?text=${product.name.charAt(0)}'">
+    `;
 
-              // Update shade options to show ONLY shades from this product
-              updateShadeOptions(currentProduct.shades);
+    // Create DESKTOP product item (full details)
+    const desktopProductItem = document.createElement("div");
+    desktopProductItem.className = "product-item";
+    desktopProductItem.setAttribute("data-product-id", product.id);
+    desktopProductItem.setAttribute("data-parent-id", product.id);
+    desktopProductItem.setAttribute("data-product-name", product.name);
+    
+    desktopProductItem.innerHTML = `
+      <img src="${productImage}" alt="${product.name}" class="product-image" 
+           onerror="this.onerror=null; this.src='https://via.placeholder.com/50/${firstShade.hexCode.replace("#", "")}/ffffff?text=${product.name.charAt(0)}'">
+      <div class="product-info">
+          <div class="product-name">${product.name}</div>
+          <div class="product-price">₱${parseFloat(firstShade.price).toFixed(2)}</div>
+      </div>
+      <div class="product-shades-count">
+          ${product.shades.length} shade${product.shades.length !== 1 ? "s" : ""}
+      </div>
+    `;
 
-              // Update active product in the list
-              updateActiveProduct(parentId);
+    // Add click handler to both product items
+    const clickHandler = function() {
+      const parentId = this.getAttribute("data-product-id");
+      currentProduct = products.find((p) => p.id === parentId);
+      updateShadeOptions(currentProduct.shades);
+      updateActiveProduct(parentId);
 
-              // Set the first shade as active
-              if (currentProduct.shades.length > 0) {
-                const firstShade = currentProduct.shades[0];
-                currentShade = firstShade.hexCode;
-
-                // Re-apply lipstick if image exists
-                if (!isProcessing) {
-                  applyLipstickToCurrentImage();
-                }
-              }
-            });
-
-            productsList.appendChild(productItem);
-          });
-
-          // Set first product as active by default
-          if (products.length > 0) {
-            const firstProduct = products[0];
-            currentProduct = firstProduct;
-            updateShadeOptions(firstProduct.shades);
-            updateActiveProduct(firstProduct.id);
-
-            if (firstProduct.shades.length > 0) {
-              currentShade = firstProduct.shades[0].hexCode;
-            }
-          }
+      if (currentProduct.shades.length > 0) {
+        const firstShade = currentProduct.shades[0];
+        currentShade = firstShade.hexCode;
+        if (!isProcessing) {
+          applyLipstickToCurrentImage();
         }
+      }
+    };
 
+    mobileProductItem.addEventListener("click", clickHandler);
+    desktopProductItem.addEventListener("click", clickHandler);
+
+    mobileProductsList.appendChild(mobileProductItem);
+    desktopProductsList.appendChild(desktopProductItem);
+  });
+
+  // Set first product as active
+  if (products.length > 0) {
+    const firstProduct = products[0];
+    currentProduct = firstProduct;
+    updateShadeOptions(firstProduct.shades);
+    updateActiveProduct(firstProduct.id);
+
+    if (firstProduct.shades.length > 0) {
+      currentShade = firstProduct.shades[0].hexCode;
+    }
+  }
+}
         function updateShadeOptions(shades) {
           const shadesContainer = document.querySelector(".shades-container");
           shadesContainer.innerHTML = "";
@@ -3112,7 +3745,9 @@
             desktopPopup.className = "cart-total-popup";
             desktopPopup.innerHTML = `
       <div class="cart-total-label">Cart Total</div>
-      <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(totalAmount).toFixed(2))}</div>
+      <div class="cart-total-amount">₱${formatNumberWithCommas(
+        parseFloat(totalAmount).toFixed(2)
+      )}</div>
       <small>Click cart to view items</small>
     `;
 
@@ -3130,7 +3765,9 @@
             mobilePopup.className = "cart-total-popup";
             mobilePopup.innerHTML = `
       <div class="cart-total-label">Cart Total</div>
-      <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(totalAmount).toFixed(2))}</div>
+      <div class="cart-total-amount">₱${formatNumberWithCommas(
+        parseFloat(totalAmount).toFixed(2)
+      )}</div>
       <small>Tap cart to view items</small>
     `;
 
@@ -3231,7 +3868,7 @@
             console.error("Error fetching cart total:", error);
           }
         }
-       
+
         // Initialize the page
         populateProducts();
         initializeFaceMesh();
