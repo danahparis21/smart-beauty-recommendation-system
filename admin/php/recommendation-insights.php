@@ -1,5 +1,7 @@
 <?php
 header('Content-Type: application/json');
+error_reporting(E_ALL); 
+ini_set('display_errors', 0); // Don't display errors to output, keep JSON clean
 
 // Configuration & Connection
 if (getenv('DOCKER_ENV') === 'true') {
@@ -27,16 +29,23 @@ switch($filter) {
 
 try {
     // 1. Get Success Rate (Positive Feedback = rating 4 or 5, Negative = 1-3)
+    // FIXED: Added 'pf' alias after table name so $dateCondition works
     $successQuery = "
         SELECT 
             COUNT(CASE WHEN UserRating >= 4 THEN 1 END) as positive,
             COUNT(CASE WHEN UserRating <= 3 THEN 1 END) as negative,
             COUNT(*) as total
-        FROM productfeedback
+        FROM productfeedback pf 
         WHERE UserRating IS NOT NULL
         $dateCondition
     ";
+    
     $successResult = $conn->query($successQuery);
+    
+    if (!$successResult) {
+        throw new Exception("Query 1 Failed: " . $conn->error);
+    }
+
     $successData = $successResult->fetch_assoc();
     $successRate = $successData['total'] > 0 ? 
         round(($successData['positive'] / $successData['total']) * 100) : 0;
@@ -50,35 +59,47 @@ try {
     // 4. Average Match Score (Average user rating out of 5)
     $avgScoreQuery = "
         SELECT AVG(UserRating) as avg_score
-        FROM productfeedback
+        FROM productfeedback pf
         WHERE UserRating IS NOT NULL
         $dateCondition
     ";
     $avgScoreResult = $conn->query($avgScoreQuery);
+    
+    if (!$avgScoreResult) {
+        throw new Exception("Query 2 Failed: " . $conn->error);
+    }
+    
     $avgScoreData = $avgScoreResult->fetch_assoc();
     $avgScore = $avgScoreData['avg_score'] ? round($avgScoreData['avg_score'], 1) : 0;
 
     // 5. Most Recommended Products (Products with most feedback)
     $productsQuery = "
-        SELECT 
-            p.ProductID,
-            p.Name,
-            p.Category,
-            p.ShadeOrVariant,
-            p.HexCode,
-            COUNT(pf.FeedbackID) as recommendation_count,
-            SUM(CASE WHEN pf.UserRating >= 4 THEN 1 ELSE 0 END) as positive_feedback,
-            SUM(CASE WHEN pf.UserRating <= 3 THEN 1 ELSE 0 END) as negative_feedback,
-            ROUND(AVG(pf.UserRating), 1) as avg_rating
-        FROM productfeedback pf
-        JOIN products p ON pf.ProductID = p.ProductID
-        WHERE pf.UserRating IS NOT NULL
-        $dateCondition
-        GROUP BY p.ProductID
-        ORDER BY recommendation_count DESC, avg_rating DESC
-        LIMIT 10
+       SELECT 
+    p.ProductID,
+    p.Name,
+    p.Category,
+    p.ShadeOrVariant,
+    p.HexCode,
+    COUNT(pf.FeedbackID) AS recommendation_count,
+    SUM(CASE WHEN pf.UserRating >= 4 THEN 1 ELSE 0 END) AS positive_feedback,
+    SUM(CASE WHEN pf.UserRating <= 3 THEN 1 ELSE 0 END) AS negative_feedback,
+    ROUND(AVG(pf.UserRating), 1) AS avg_rating,
+    ROUND(SUM(CASE WHEN pf.UserRating >= 4 THEN 1 ELSE 0 END) / COUNT(pf.FeedbackID) * 100, 1) AS positive_percentage
+FROM productfeedback pf
+JOIN products p ON pf.ProductID = p.ProductID
+WHERE pf.UserRating IS NOT NULL
+$dateCondition
+GROUP BY p.ProductID
+ORDER BY positive_percentage DESC
+LIMIT 10;
+
     ";
     $productsResult = $conn->query($productsQuery);
+    
+    if (!$productsResult) {
+        throw new Exception("Query 3 Failed: " . $conn->error);
+    }
+
     $products = [];
     while($row = $productsResult->fetch_assoc()) {
         $successPercentage = $row['recommendation_count'] > 0 ? 
@@ -112,21 +133,26 @@ try {
         GROUP BY pa.SkinTone
     ";
     $preferencesResult = $conn->query($preferencesQuery);
-    $skinTones = ['fair' => 0, 'medium' => 0, 'tan' => 0, 'deep' => 0];
     
-    while($row = $preferencesResult->fetch_assoc()) {
-        // Handle comma-separated skin tones
-        $tones = explode(',', strtolower($row['SkinTone']));
-        foreach($tones as $tone) {
-            $tone = trim($tone);
-            if($tone === 'fair' || $tone === 'light') {
-                $skinTones['fair'] += $row['count'];
-            } elseif($tone === 'medium') {
-                $skinTones['medium'] += $row['count'];
-            } elseif($tone === 'tan') {
-                $skinTones['tan'] += $row['count'];
-            } elseif($tone === 'deep') {
-                $skinTones['deep'] += $row['count'];
+    if (!$preferencesResult) {
+        // If productattributes table issues occur, don't crash the whole page, just empty array
+        $skinTones = ['fair' => 0, 'medium' => 0, 'tan' => 0, 'deep' => 0];
+    } else {
+        $skinTones = ['fair' => 0, 'medium' => 0, 'tan' => 0, 'deep' => 0];
+        while($row = $preferencesResult->fetch_assoc()) {
+            // Handle comma-separated skin tones
+            $tones = explode(',', strtolower($row['SkinTone']));
+            foreach($tones as $tone) {
+                $tone = trim($tone);
+                if($tone === 'fair' || $tone === 'light') {
+                    $skinTones['fair'] += $row['count'];
+                } elseif($tone === 'medium') {
+                    $skinTones['medium'] += $row['count'];
+                } elseif($tone === 'tan') {
+                    $skinTones['tan'] += $row['count'];
+                } elseif($tone === 'deep') {
+                    $skinTones['deep'] += $row['count'];
+                }
             }
         }
     }
@@ -147,19 +173,20 @@ try {
     $undertonesResult = $conn->query($undertonesQuery);
     $undertones = ['warm' => 0, 'cool' => 0, 'neutral' => 0];
     
-    while($row = $undertonesResult->fetch_assoc()) {
-        $key = strtolower(trim($row['Undertone']));
-        if($key === 'warm') {
-            $undertones['warm'] += $row['count'];
-        } elseif($key === 'cool') {
-            $undertones['cool'] += $row['count'];
-        } elseif($key === 'neutral') {
-            $undertones['neutral'] += $row['count'];
-        } elseif($key === 'all') {
-            // Distribute 'all' equally among the three
-            $undertones['warm'] += floor($row['count'] / 3);
-            $undertones['cool'] += floor($row['count'] / 3);
-            $undertones['neutral'] += floor($row['count'] / 3);
+    if ($undertonesResult) {
+        while($row = $undertonesResult->fetch_assoc()) {
+            $key = strtolower(trim($row['Undertone']));
+            if($key === 'warm') {
+                $undertones['warm'] += $row['count'];
+            } elseif($key === 'cool') {
+                $undertones['cool'] += $row['count'];
+            } elseif($key === 'neutral') {
+                $undertones['neutral'] += $row['count'];
+            } elseif($key === 'all') {
+                $undertones['warm'] += floor($row['count'] / 3);
+                $undertones['cool'] += floor($row['count'] / 3);
+                $undertones['neutral'] += floor($row['count'] / 3);
+            }
         }
     }
 
@@ -193,6 +220,11 @@ try {
         LIMIT 15
     ";
     $recentFeedbackResult = $conn->query($recentFeedbackQuery);
+    
+    if (!$recentFeedbackResult) {
+         throw new Exception("Query 5 Failed: " . $conn->error);
+    }
+    
     $recentFeedback = [];
     while($row = $recentFeedbackResult->fetch_assoc()) {
         $recentFeedback[] = [
