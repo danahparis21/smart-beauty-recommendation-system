@@ -309,3 +309,237 @@ main::-webkit-scrollbar {
     padding: 12px 15px;
   }
 }
+
+/* Full Screen Reveal Effect */
+.fullscreen-reveal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,
+      #ffffff 0%,
+      #fff5f9 30%,
+      #ffe6f2 70%,
+      #ffd1dc 100%);
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 0 0 0 rgba(255, 229, 236, 0.7);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center center;
+}
+
+.reveal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 9998;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.fullscreen-reveal.active {
+  display: flex;
+}
+
+.fullscreen-reveal.expanding {
+  transform: translate(-50%, -50%) scale(20);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fullscreen-reveal-content {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  color: white;
+  opacity: 0;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.fullscreen-reveal.expanding .fullscreen-reveal-content {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.reveal-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(rgb(172, 163, 163) 0%, transparent 0%);
+  mask: radial-gradient(transparent 65%, black 66%);
+  -webkit-mask: radial-gradient(transparent 65%, black 66%);
+  z-index: 1;
+}
+
+/* Cashier Mode Entry Screen */
+.cashier-mode-entry {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+  z-index: 10000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.cashier-mode-entry.active {
+  display: flex;
+  opacity: 1;
+}
+
+.cashier-logo-container {
+  text-align: center;
+  margin-bottom: 30px;
+  animation: pulse 2s infinite;
+}
+
+.cashier-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cashier-logo img {
+  max-width: 80px;
+  max-height: 80px;
+}
+
+.cashier-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cashier-subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 30px;
+}
+
+.cashier-loading {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cashier-loading-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  opacity: 0.6;
+  animation: loadingDots 1.4s infinite ease-in-out;
+}
+
+.cashier-loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.cashier-loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes loadingDots {
+  0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Make cashier mode link press-friendly on mobile */
+@media (max-width: 991px) {
+  .cashier-mode-link {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+  }
+
+  .cashier-mode-link.pressing {
+    background: rgba(228, 151, 170, 0.15) !important;
+    transform: scale(0.95);
+  }
+}
+
+/* Cashier mode tap counter */
+.cashier-tap-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(228, 151, 170, 0.9);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: none;
+}
+
+.cashier-tap-counter.show {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.cashier-tap-counter.hide {
+  animation: fadeOut 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; display: none; }
+}
+
+/* Remove blue color from cashier mode link */
+.cashier-mode-link {
+  color: inherit !important;
+}
+
+.cashier-mode-link:link,
+.cashier-mode-link:visited,
+.cashier-mode-link:hover,
+.cashier-mode-link:active,
+.cashier-mode-link:focus {
+  color: inherit !important;
+}
