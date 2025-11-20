@@ -264,7 +264,6 @@
             max-width: 600px;
             width: 90%;
             max-height: 90vh;
-
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
@@ -496,6 +495,172 @@
             font-size: 0.9rem;
         }
 
+        /* Cashier Mode Transition Screens */
+        .cashier-transition-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .cashier-transition-screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .cashier-logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        .cashier-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .cashier-logo img {
+            max-width: 80px;
+            max-height: 80px;
+        }
+
+        .cashier-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cashier-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+        }
+
+        .cashier-loading {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cashier-loading-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            opacity: 0.6;
+            animation: loadingDots 1.4s infinite ease-in-out;
+        }
+
+        .cashier-loading-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .cashier-loading-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        /* Long Press Animation */
+        .long-press-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 9998;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .long-press-circle {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f9 30%, #ffe6f2 70%, #ffd1dc 100%);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 0 0 0 rgba(255, 229, 236, 0.7);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center center;
+        }
+
+        .long-press-circle.active {
+            display: flex;
+        }
+
+        .long-press-circle.expanding {
+            transform: scale(20);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+
+        .long-press-content {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            color: #e497aa;
+            opacity: 0;
+            text-align: center;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .long-press-circle.expanding .long-press-content {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes loadingDots {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .page-title {
@@ -514,11 +679,47 @@
                 width: 200px;
                 height: 200px;
             }
+
+            .cashier-title {
+                font-size: 2rem;
+            }
+
+            .cashier-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .cashier-logo img {
+                max-width: 60px;
+                max-height: 60px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- Long Press Animation Elements -->
+    <div class="long-press-overlay" id="longPressOverlay"></div>
+    <div class="long-press-circle" id="longPressCircle">
+        <div class="long-press-content">Exiting Cashier Mode…</div>
+    </div>
+
+    <!-- Exiting Cashier Mode Screen -->
+    <div class="cashier-transition-screen" id="exitingCashierMode">
+        <div class="cashier-logo-container">
+            <div class="cashier-logo">
+                <img src="../images/mainlogo.png" alt="Store Logo">
+            </div>
+            <div class="cashier-title">Exiting Cashier Mode</div>
+            <div class="cashier-subtitle">Returning to Admin Dashboard</div>
+        </div>
+        <div class="cashier-loading">
+            <div class="cashier-loading-dot"></div>
+            <div class="cashier-loading-dot"></div>
+            <div class="cashier-loading-dot"></div>
+        </div>
+    </div>
+
     <div class="cashier-container">
 
         <div class="row">
@@ -597,7 +798,6 @@
 
     <!-- QR Scanner Modal -->
     <div class="qr-modal" id="qrScannerModal">
-
         <div class="qr-modal-content">
             <div class="qr-modal-header">
                 <h5>
@@ -615,7 +815,6 @@
             </div>
 
             <div class="camera-container">
-
                 <div class="camera-placeholder" id="cameraPlaceholder">
                     <i class="fas fa-camera"></i>
                 </div>
@@ -662,6 +861,11 @@
             const scannerResults = document.getElementById('scannerResults');
             const closeQrScannerBtn = document.getElementById('closeQrScanner'); 
 
+            // Long Press Elements
+            const longPressOverlay = document.getElementById('longPressOverlay');
+            const longPressCircle = document.getElementById('longPressCircle');
+            const exitingCashierMode = document.getElementById('exitingCashierMode');
+
             // State
             let products = [];
             let cart = [];
@@ -675,9 +879,21 @@
             let lastScanTime = 0;
             const SCAN_COOLDOWN = 3000; // 3 seconds cooldown between scans
 
+            // Long Press State
+            let pressTimer = null;
+            let pressDuration = 5000; // 5 seconds
+            let startTime = 0;
+            let animationFrame = null;
+            let isActivating = false;
+            let hasTriggered = false;
+            let currentScale = 0;
+            let pressX = 0;
+            let pressY = 0;
+
             // Initialize
             loadProducts();
             setupEventListeners();
+            setupLongPress();
 
             // Load products from server
             function loadProducts() {
@@ -1268,6 +1484,195 @@
                 stopCamera();
             }
 
+            // Long Press Functions
+            function setupLongPress() {
+                // Only activate on mobile devices
+                if (window.innerWidth < 992) {
+                    document.body.addEventListener('touchstart', handlePressStart, { passive: false });
+                    document.body.addEventListener('touchend', handlePressEnd, { passive: false });
+                    document.body.addEventListener('touchmove', handlePressMove, { passive: false });
+                    document.body.addEventListener('touchcancel', handlePressEnd, { passive: false });
+                }
+            }
+
+            function handlePressStart(e) {
+                // Only activate on mobile devices
+                if (window.innerWidth >= 992) return;
+
+                e.preventDefault();
+                
+                // Get the touch position
+                const touch = e.touches[0];
+                pressX = touch.clientX;
+                pressY = touch.clientY;
+                
+                startTime = Date.now();
+                isActivating = true;
+                hasTriggered = false;
+                currentScale = 0;
+
+                // Show the long press elements at the touch position
+                showLongPress(pressX, pressY);
+
+                // Start the gradual expansion animation
+                animateGradualExpansion();
+            }
+
+            function handlePressEnd(e) {
+                if (!isActivating || hasTriggered) return;
+
+                const pressDuration = Date.now() - startTime;
+
+                cleanup();
+
+                // Animate the circle shrinking back
+                if (pressDuration > 200) {
+                    cancelLongPress();
+                } else {
+                    hideLongPress();
+                }
+            }
+
+            function handlePressMove(e) {
+                if (!isActivating || hasTriggered) return;
+
+                // If user moves finger too much, cancel the long press
+                const touch = e.touches[0];
+                const x = touch.clientX;
+                const y = touch.clientY;
+
+                // Check if touch moved significantly from original position
+                const tolerance = 50;
+                if (Math.abs(x - pressX) > tolerance || Math.abs(y - pressY) > tolerance) {
+                    handlePressEnd(e);
+                }
+            }
+
+            function showLongPress(x, y) {
+                // Position the circle at the touch position
+                longPressCircle.style.left = x + 'px';
+                longPressCircle.style.top = y + 'px';
+                longPressCircle.style.transform = 'translate(-50%, -50%) scale(0)';
+                longPressCircle.style.transition = 'none';
+
+                // Show elements
+                longPressCircle.classList.add('active');
+                longPressOverlay.classList.add('active');
+            }
+
+            function animateGradualExpansion() {
+                const maxScale = 20; // Maximum scale to cover the screen
+
+                const updateExpansion = () => {
+                    if (!isActivating) return;
+
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / pressDuration, 1);
+
+                    // Use easeInOutCubic for smooth acceleration and deceleration
+                    const eased = progress < 0.5
+                        ? 4 * progress * progress * progress
+                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+                    // Calculate current scale
+                    currentScale = eased * maxScale;
+
+                    // Apply the transform from the original touch position
+                    longPressCircle.style.transform = `translate(-50%, -50%) scale(${currentScale})`;
+
+                    // Update shadow intensity as it grows
+                    const shadowIntensity = Math.min(eased * 50, 50);
+                    longPressCircle.style.boxShadow = `0 0 ${shadowIntensity}px ${shadowIntensity / 2}px rgba(228, 151, 170, ${0.3 + eased * 0.2})`;
+
+                    // Check if we've reached the end
+                    if (progress >= 1) {
+                        triggerExit();
+                        return;
+                    }
+
+                    // Continue animation
+                    animationFrame = requestAnimationFrame(updateExpansion);
+                };
+
+                animationFrame = requestAnimationFrame(updateExpansion);
+            }
+
+            function triggerExit() {
+                if (hasTriggered) return;
+
+                hasTriggered = true;
+
+                // Haptic feedback for completion
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 30, 50]); // Success pattern
+                }
+
+                // Hide the long press elements
+                hideLongPress();
+
+                // Show the exiting cashier mode screen
+                showExitingCashierMode();
+
+                // Wait for the screen to be fully covered before redirecting
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 2000);
+            }
+
+            function showExitingCashierMode() {
+                exitingCashierMode.classList.add('active');
+            }
+
+            function cancelLongPress() {
+                // Smoothly animate the circle back to zero scale
+                longPressCircle.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease, box-shadow 0.4s ease';
+                longPressCircle.style.transform = 'translate(-50%, -50%) scale(0)';
+                longPressCircle.style.opacity = '0';
+                longPressCircle.style.boxShadow = '0 0 0 0 rgba(228, 151, 170, 0)';
+
+                longPressOverlay.style.transition = 'opacity 0.4s ease';
+                longPressOverlay.style.opacity = '0';
+
+                setTimeout(() => {
+                    hideLongPress();
+                }, 500);
+            }
+
+            function hideLongPress() {
+                longPressCircle.classList.remove('active');
+                longPressOverlay.classList.remove('active');
+
+                // Reset styles
+                longPressCircle.style.transition = '';
+                longPressCircle.style.transform = '';
+                longPressCircle.style.left = '';
+                longPressCircle.style.top = '';
+                longPressCircle.style.opacity = '';
+                longPressCircle.style.boxShadow = '';
+                longPressOverlay.style.transition = '';
+                longPressOverlay.style.opacity = '';
+
+                const content = longPressCircle.querySelector('.long-press-content');
+                if (content) {
+                    content.style.transition = '';
+                    content.style.opacity = '';
+                }
+            }
+
+            function cleanup() {
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                }
+
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                    animationFrame = null;
+                }
+
+                isActivating = false;
+            }
+
             // Helper functions
             function getStockClass(stocks, status) {
                 if (status === 'No Stock' || status === 'Expired' || stocks <= 0) {
@@ -1372,54 +1777,63 @@
                 });
             }
         });
-    // ================== Disable Back/Forward ==================
-    (function() {
-        // Push initial state
-        history.pushState(null, null, location.href);
 
-        // Re-push the state every time user tries to go back/forward
-        window.addEventListener('popstate', function(e) {
+        // ================== Disable Back/Forward ==================
+        (function() {
+            // Push initial state
             history.pushState(null, null, location.href);
+
+            // Re-push the state every time user tries to go back/forward
+            window.addEventListener('popstate', function(e) {
+                history.pushState(null, null, location.href);
+            });
+
+            // Optional: block keyboard shortcuts like Alt+Left/Right
+            window.addEventListener('keydown', function(e) {
+                // Back (Alt + Left), Forward (Alt + Right)
+                if ((e.altKey && e.key === 'ArrowLeft') || (e.altKey && e.key === 'ArrowRight')) {
+                    e.preventDefault();
+                }
+
+                // Ctrl+Backspace (sometimes navigates back)
+                if (e.ctrlKey && e.key === 'Backspace') {
+                    e.preventDefault();
+                }
+            });
+        })();
+
+        // ================== Admin Shortcut (Shift + "admin") ==================
+        let adminBuffer = ''; // Stores typed characters
+        const exitingCashierMode = document.getElementById('exitingCashierMode');
+
+        document.addEventListener('keydown', function (e) {
+            // Only capture letters
+            if (e.key.length === 1) {
+                if (e.shiftKey) {
+                    adminBuffer += e.key.toLowerCase(); // Treat shift as lowercase for simplicity
+                } else {
+                    adminBuffer += e.key.toLowerCase();
+                }
+            }
+
+            // Limit buffer to last 5 characters to match "admin"
+            if (adminBuffer.length > 5) {
+                adminBuffer = adminBuffer.slice(-5);
+            }
+
+            // Check for match
+            if (adminBuffer === 'admin') {
+                // Show exiting cashier mode screen
+                exitingCashierMode.classList.add('active');
+                
+                // Redirect to admin dashboard after showing the screen
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 2000);
+                
+                adminBuffer = ''; // Reset buffer
+            }
         });
-
-        // Optional: block keyboard shortcuts like Alt+Left/Right
-        window.addEventListener('keydown', function(e) {
-            // Back (Alt + Left), Forward (Alt + Right)
-            if ((e.altKey && e.key === 'ArrowLeft') || (e.altKey && e.key === 'ArrowRight')) {
-                e.preventDefault();
-            }
-
-            // Ctrl+Backspace (sometimes navigates back)
-            if (e.ctrlKey && e.key === 'Backspace') {
-                e.preventDefault();
-            }
-        });
-    })();
-
-
-    // ================== Admin Shortcut (Shift + "admin") ==================
-    let adminBuffer = ''; // Stores typed characters
-
-    document.addEventListener('keydown', function (e) {
-        // Only capture letters
-        if (e.key.length === 1) {
-            if (e.shiftKey) {
-                adminBuffer += e.key.toLowerCase(); // Treat shift as lowercase for simplicity
-            } else {
-                adminBuffer += e.key.toLowerCase();
-            }
-        }
-
-        // Limit buffer to last 5 characters to match "admin"
-        if (adminBuffer.length > 5) {
-            adminBuffer = adminBuffer.slice(-5);
-        }
-
-        // Check for match
-        if (adminBuffer === 'admin') {
-            window.location.href = 'admin.html'; // Redirect to admin dashboard
-        }
-    });
     </script>
 </body>
 
