@@ -6,7 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <title>Blessence | Order History</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -912,6 +912,11 @@
         color: #721c24;
         border: 1px solid #f5c6cb;
       }
+      .status-expired {
+        background: #e2e3e5;
+        color: #383d41;
+        border: 1px solid #d6d8db;
+      }
 
       /* QR Code Section */
       .qr-section {
@@ -1119,33 +1124,33 @@
       }
 
       /* Read-only review styles */
-.review-readonly .rating-star {
-    pointer-events: none;
-    cursor: default;
-}
+      .review-readonly .rating-star {
+        pointer-events: none;
+        cursor: default;
+      }
 
-.review-readonly .comment-textarea {
-    background: #f8f9fa !important;
-    border-color: #e5e7eb !important;
-    color: #6b7280 !important;
-    cursor: not-allowed;
-}
+      .review-readonly .comment-textarea {
+        background: #f8f9fa !important;
+        border-color: #e5e7eb !important;
+        color: #6b7280 !important;
+        cursor: not-allowed;
+      }
 
-.already-reviewed-btn {
-    background: #10b981 !important;
-    cursor: not-allowed;
-}
+      .already-reviewed-btn {
+        background: #10b981 !important;
+        cursor: not-allowed;
+      }
 
-.review-submitted-note {
-    text-align: center;
-    padding: 10px;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 8px;
-    color: #166534;
-    margin-bottom: 15px;
-    font-size: 14px;
-}
+      .review-submitted-note {
+        text-align: center;
+        padding: 10px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        color: #166534;
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
       /* Cancel Order Button */
       .cancel-order-btn {
         background: #ef4444;
@@ -1180,12 +1185,12 @@
         color: white;
       }
       .review-date-note {
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 5px;
-    text-align: center;
-    font-style: italic;
-}
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 5px;
+        text-align: center;
+        font-style: italic;
+      }
     </style>
   </head>
   <body>
@@ -1511,233 +1516,251 @@
         }
       }
       async function openReviewModal(orderIndex, productIndex) {
-    currentOrderIndex = orderIndex;
-    currentProductIndex = productIndex;
-    currentProduct = orders[orderIndex].products[productIndex];
-    currentOrder = orders[orderIndex];
+        currentOrderIndex = orderIndex;
+        currentProductIndex = productIndex;
+        currentProduct = orders[orderIndex].products[productIndex];
+        currentOrder = orders[orderIndex];
 
-    // Set product details in modal
-    modalProductName.textContent = currentProduct.name;
-    modalProductVariant.textContent = currentProduct.variant;
+        // Set product details in modal
+        modalProductName.textContent = currentProduct.name;
+        modalProductVariant.textContent = currentProduct.variant;
 
-    // Check if review already exists
-    const existingReview = await checkExistingReview(currentProduct.id, currentOrder.order_id);
-    
-    if (existingReview) {
-        // Show existing review (read-only mode)
-        showExistingReview(existingReview);
-    } else {
-        // Show empty form for new review
-        showNewReviewForm();
-    }
+        // In openReviewModal function - remove order_id from the check
+        const existingReview = await checkExistingReview(currentProduct.id);
+        // Remove currentOrder.order_id parameter
+        if (existingReview) {
+          // Show existing review (read-only mode)
+          showExistingReview(existingReview);
+        } else {
+          // Show empty form for new review
+          showNewReviewForm();
+        }
 
-    // Open modal
-    reviewModal.classList.add("active");
-}
-// Function to show existing review (read-only) - UPDATED
-function showExistingReview(reviewData) {
-    // Set ratings (read-only)
-    selectedProductRating = reviewData.product_rating;
-    selectedRecommendationRating = reviewData.recommendation_rating;
-    
-    // Highlight stars
-    highlightStars(
-        selectedProductRating,
-        productRatingStars,
-        productRatingDescription,
-        productRatingDescriptions
-    );
-    highlightStars(
-        selectedRecommendationRating,
-        recommendationRatingStars,
-        recommendationRatingDescription,
-        recommendationRatingDescriptions
-    );
+        // Open modal
+        reviewModal.classList.add("active");
+      }
+      // Function to show existing review (read-only) - UPDATED
+      function showExistingReview(reviewData) {
+        // Set ratings (read-only)
+        selectedProductRating = reviewData.product_rating;
+        selectedRecommendationRating = reviewData.recommendation_rating;
 
-    // Set comments (read-only)
-    document.getElementById("productReview").value = reviewData.product_review || "No product review provided";
-    document.getElementById("recommendationComment").value = reviewData.recommendation_comment || "No recommendation feedback provided";
+        // Highlight stars
+        highlightStars(
+          selectedProductRating,
+          productRatingStars,
+          productRatingDescription,
+          productRatingDescriptions
+        );
+        highlightStars(
+          selectedRecommendationRating,
+          recommendationRatingStars,
+          recommendationRatingDescription,
+          recommendationRatingDescriptions
+        );
 
-    // Make form read-only
-    makeReviewFormReadOnly();
+        // Set comments (read-only)
+        document.getElementById("productReview").value =
+          reviewData.product_review || "No product review provided";
+        document.getElementById("recommendationComment").value =
+          reviewData.recommendation_comment ||
+          "No recommendation feedback provided";
 
-    // Update submit button and show review date
-    const submitBtn = document.getElementById("submitReviewBtn");
-    submitBtn.textContent = "✓ Review Submitted";
-    submitBtn.disabled = true;
-    submitBtn.style.background = "#10b981";
-    
-    // Optional: Show review date if available
-    if (reviewData.review_date) {
-        const reviewDate = new Date(reviewData.review_date).toLocaleDateString();
-        const dateNote = document.createElement('div');
-        dateNote.className = 'review-date-note';
-        dateNote.textContent = `Reviewed on ${reviewDate}`;
-        dateNote.style.fontSize = '12px';
-        dateNote.style.color = '#6b7280';
-        dateNote.style.marginTop = '5px';
-        dateNote.style.textAlign = 'center';
-        
-        submitBtn.parentNode.insertBefore(dateNote, submitBtn.nextSibling);
-    }
-}
+        // Make form read-only
+        makeReviewFormReadOnly();
 
-// Function to show new review form (editable)
-function showNewReviewForm() {
-    // Reset form
-    selectedProductRating = 0;
-    selectedRecommendationRating = 0;
-    highlightStars(
-        selectedProductRating,
-        productRatingStars,
-        productRatingDescription,
-        productRatingDescriptions
-    );
-    highlightStars(
-        selectedRecommendationRating,
-        recommendationRatingStars,
-        recommendationRatingDescription,
-        recommendationRatingDescriptions
-    );
+        // Update submit button and show review date
+        const submitBtn = document.getElementById("submitReviewBtn");
+        submitBtn.textContent = "✓ Review Submitted";
+        submitBtn.disabled = true;
+        submitBtn.style.background = "#10b981";
 
-    // Reset comment fields
-    document.getElementById("productReview").value = "";
-    document.getElementById("recommendationComment").value = "";
+        // Optional: Show review date if available
+        if (reviewData.review_date) {
+          const reviewDate = new Date(
+            reviewData.review_date
+          ).toLocaleDateString();
+          const dateNote = document.createElement("div");
+          dateNote.className = "review-date-note";
+          dateNote.textContent = `Reviewed on ${reviewDate}`;
+          dateNote.style.fontSize = "12px";
+          dateNote.style.color = "#6b7280";
+          dateNote.style.marginTop = "5px";
+          dateNote.style.textAlign = "center";
 
-    // Make form editable
-    makeReviewFormEditable();
+          submitBtn.parentNode.insertBefore(dateNote, submitBtn.nextSibling);
+        }
+      }
 
-    // Reset submit button
-    const submitBtn = document.getElementById("submitReviewBtn");
-    submitBtn.textContent = "Submit Review";
-    submitBtn.disabled = false;
-    submitBtn.style.background = "";
-}
+      // Function to show new review form (editable)
+      function showNewReviewForm() {
+        // Reset form
+        selectedProductRating = 0;
+        selectedRecommendationRating = 0;
+        highlightStars(
+          selectedProductRating,
+          productRatingStars,
+          productRatingDescription,
+          productRatingDescriptions
+        );
+        highlightStars(
+          selectedRecommendationRating,
+          recommendationRatingStars,
+          recommendationRatingDescription,
+          recommendationRatingDescriptions
+        );
 
-// Make review form read-only
-function makeReviewFormReadOnly() {
-    // Make stars non-clickable
-    const allStars = document.querySelectorAll('.rating-star');
-    allStars.forEach(star => {
-        star.style.pointerEvents = 'none';
-        star.style.cursor = 'default';
-    });
+        // Reset comment fields
+        document.getElementById("productReview").value = "";
+        document.getElementById("recommendationComment").value = "";
 
-    // Make textareas read-only
-    document.getElementById("productReview").readOnly = true;
-    document.getElementById("recommendationComment").readOnly = true;
-    
-    // Style read-only textareas
-    const textareas = document.querySelectorAll('.comment-textarea');
-    textareas.forEach(textarea => {
-        textarea.style.background = '#f8f9fa';
-        textarea.style.borderColor = '#e5e7eb';
-        textarea.style.color = '#6b7280';
-    });
-}
+        // Make form editable
+        makeReviewFormEditable();
 
-// Make review form editable
-function makeReviewFormEditable() {
-    // Make stars clickable
-    const allStars = document.querySelectorAll('.rating-star');
-    allStars.forEach(star => {
-        star.style.pointerEvents = 'auto';
-        star.style.cursor = 'pointer';
-    });
+        // Reset submit button
+        const submitBtn = document.getElementById("submitReviewBtn");
+        submitBtn.textContent = "Submit Review";
+        submitBtn.disabled = false;
+        submitBtn.style.background = "";
+      }
 
-    // Make textareas editable
-    document.getElementById("productReview").readOnly = false;
-    document.getElementById("recommendationComment").readOnly = false;
-    
-    // Style editable textareas
-    const textareas = document.querySelectorAll('.comment-textarea');
-    textareas.forEach(textarea => {
-        textarea.style.background = '';
-        textarea.style.borderColor = '';
-        textarea.style.color = '';
-    });
-}
-     // Close review modal - UPDATED to reset state
-function closeReviewModal() {
-    reviewModal.classList.remove("active");
-    
-    // Reset form to editable state for next time
-    makeReviewFormEditable();
-    
-    // Reset submit button
-    const submitBtn = document.getElementById("submitReviewBtn");
-    submitBtn.textContent = "Submit Review";
-    submitBtn.disabled = false;
-    submitBtn.style.background = "";
-}
-async function submitReview() {
-    if (selectedProductRating === 0 || selectedRecommendationRating === 0) {
-        alert("Please provide both ratings before submitting your review.");
-        return;
-    }
+      // Make review form read-only
+      function makeReviewFormReadOnly() {
+        // Make stars non-clickable
+        const allStars = document.querySelectorAll(".rating-star");
+        allStars.forEach((star) => {
+          star.style.pointerEvents = "none";
+          star.style.cursor = "default";
+        });
 
-    // Show loading state
-    const submitBtn = document.getElementById("submitReviewBtn");
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-    submitBtn.disabled = true;
+        // Make textareas read-only
+        document.getElementById("productReview").readOnly = true;
+        document.getElementById("recommendationComment").readOnly = true;
 
-    try {
-        const reviewData = {
+        // Style read-only textareas
+        const textareas = document.querySelectorAll(".comment-textarea");
+        textareas.forEach((textarea) => {
+          textarea.style.background = "#f8f9fa";
+          textarea.style.borderColor = "#e5e7eb";
+          textarea.style.color = "#6b7280";
+        });
+      }
+
+      // Make review form editable
+      function makeReviewFormEditable() {
+        // Make stars clickable
+        const allStars = document.querySelectorAll(".rating-star");
+        allStars.forEach((star) => {
+          star.style.pointerEvents = "auto";
+          star.style.cursor = "pointer";
+        });
+
+        // Make textareas editable
+        document.getElementById("productReview").readOnly = false;
+        document.getElementById("recommendationComment").readOnly = false;
+
+        // Style editable textareas
+        const textareas = document.querySelectorAll(".comment-textarea");
+        textareas.forEach((textarea) => {
+          textarea.style.background = "";
+          textarea.style.borderColor = "";
+          textarea.style.color = "";
+        });
+      }
+      // Close review modal - UPDATED to reset state
+      function closeReviewModal() {
+        reviewModal.classList.remove("active");
+
+        // Reset form to editable state for next time
+        makeReviewFormEditable();
+
+        // Reset submit button
+        const submitBtn = document.getElementById("submitReviewBtn");
+        submitBtn.textContent = "Submit Review";
+        submitBtn.disabled = false;
+        submitBtn.style.background = "";
+      }
+      async function submitReview() {
+        if (selectedProductRating === 0 || selectedRecommendationRating === 0) {
+          alert("Please provide both ratings before submitting your review.");
+          return;
+        }
+
+        // Show loading state
+        const submitBtn = document.getElementById("submitReviewBtn");
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        submitBtn.disabled = true;
+
+        try {
+          const reviewData = {
             product_id: currentProduct.id,
             order_id: currentOrder.order_id,
             product_rating: selectedProductRating,
             recommendation_rating: selectedRecommendationRating,
-            product_review: document.getElementById("productReview").value.trim(),
-            recommendation_comment: document.getElementById("recommendationComment").value.trim(),
-        };
+            product_review: document
+              .getElementById("productReview")
+              .value.trim(),
+            recommendation_comment: document
+              .getElementById("recommendationComment")
+              .value.trim(),
+          };
 
-        console.log("Submitting review:", reviewData);
+          console.log("Submitting review:", reviewData);
 
-        const response = await fetch("../php/submit_review.php", {
+          const response = await fetch("../php/submit_review.php", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(reviewData),
-        });
+          });
 
-        // Get the raw response text first
-        const responseText = await response.text();
-        console.log("Raw response:", responseText);
+          // Get the raw response text first
+          const responseText = await response.text();
+          console.log("Raw response:", responseText);
 
-        // Try to parse as JSON
-        let data;
-        try {
+          // Try to parse as JSON
+          let data;
+          try {
             data = JSON.parse(responseText);
-        } catch (parseError) {
+          } catch (parseError) {
             console.error("JSON parse error:", parseError);
             console.error("Response was:", responseText);
-            throw new Error('Server returned invalid JSON: ' + responseText.substring(0, 100));
-        }
+            throw new Error(
+              "Server returned invalid JSON: " + responseText.substring(0, 100)
+            );
+          }
 
-        console.log("Parsed response:", data);
+          console.log("Parsed response:", data);
 
-        if (data.success) {
+          if (data.success) {
             // Update local data to show as rated
-            orders[currentOrderIndex].products[currentProductIndex].rated = true;
-            orders[currentOrderIndex].products[currentProductIndex].quickRating = selectedProductRating;
+            orders[currentOrderIndex].products[
+              currentProductIndex
+            ].rated = true;
+            orders[currentOrderIndex].products[
+              currentProductIndex
+            ].quickRating = selectedProductRating;
 
-            alert("Thank you for your review! Your feedback helps improve our recommendations.");
+            alert(
+              "Thank you for your review! Your feedback helps improve our recommendations."
+            );
             closeReviewModal();
             renderOrders();
-        } else {
+          } else {
             alert("Error submitting review: " + data.message);
+          }
+        } catch (error) {
+          console.error("Error submitting review:", error);
+          alert("Error: " + error.message);
+        } finally {
+          // Restore button state
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
         }
-    } catch (error) {
-        console.error("Error submitting review:", error);
-        alert("Error: " + error.message);
-    } finally {
-        // Restore button state
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }
-}
+      }
       // Initialize rating stars event listeners
       function initializeRatingStars() {
         // Product quality rating stars
@@ -1809,22 +1832,23 @@ async function submitReview() {
           );
         });
       }
-      // Function to check if review already exists
-async function checkExistingReview(productId, orderId) {
-    try {
-        const response = await fetch(`../php/check_review.php?product_id=${productId}&order_id=${orderId}`);
-        const data = await response.json();
-        
-        if (data.success && data.reviewExists) {
-            return data.reviewData;
-        }
-        return null;
-    } catch (error) {
-        console.error("Error checking existing review:", error);
-        return null;
-    }
-}
+      async function checkExistingReview(productId) {
+        // Remove orderId parameter
+        try {
+          const response = await fetch(
+            `../php/check_review.php?product_id=${productId}`
+          );
+          const data = await response.json();
 
+          if (data.success && data.reviewExists) {
+            return data.reviewData;
+          }
+          return null;
+        } catch (error) {
+          console.error("Error checking review:", error);
+          return null;
+        }
+      }
 
       // Quick rating function
       function setQuickRating(orderIndex, productIndex, rating) {
@@ -1947,6 +1971,8 @@ async function checkExistingReview(productId, orderId) {
           const orderSummary = document.createElement("div");
           orderSummary.className = "order-summary";
 
+
+          
           // Show QR code only for pending orders
           if (order.status === "pending" && order.qr_code) {
             const qrSection = document.createElement("div");
@@ -2020,53 +2046,53 @@ async function checkExistingReview(productId, orderId) {
             const productItem = document.createElement("div");
             productItem.className = "product-item";
 
-           // Product image - CORRECTED PATH (FIXED VERSION)
-const productImage = document.createElement("div");
-productImage.className = "product-image";
+            // Product image - CORRECTED PATH (FIXED VERSION)
+            const productImage = document.createElement("div");
+            productImage.className = "product-image";
 
-if (product.image && product.image !== "null") {
-  const img = document.createElement("img");
-  
-  // DEBUG: Log the original image path
-  console.log('Original image path from API:', product.image);
-  
-  // FIX: Always prepend /admin/ to the path
-  let imagePath = product.image;
-  
-  // If the path doesn't already include /admin/, add it
-  if (!imagePath.includes('/admin/')) {
-    // Remove any leading slashes or uploads/ from the path
-    imagePath = imagePath.replace(/^\/?uploads\//, '');
-    imagePath = `/admin/uploads/product_images/${imagePath}`;
-  }
-  
-  // Ensure we have the correct path structure
-  imagePath = imagePath.replace(/\\/g, '/'); // Convert backslashes to forward slashes
-  imagePath = imagePath.replace(/(\/\/+)/g, '/'); // Remove duplicate slashes
-  
-  console.log('Final image path:', imagePath);
-  
-  img.src = imagePath;
-  img.alt = product.name;
-  img.onerror = function () {
-    console.error('Failed to load image from:', this.src);
-    this.style.display = "none";
-    const icon = document.createElement("i");
-    icon.className = "fas fa-palette";
-    productImage.appendChild(icon);
-  };
-  
-  img.onload = function() {
-    console.log('✅ Successfully loaded image:', this.src);
-  };
-  
-  productImage.appendChild(img);
-} else {
-  console.log('No image data for product:', product.name);
-  const icon = document.createElement("i");
-  icon.className = "fas fa-palette";
-  productImage.appendChild(icon);
-}
+            if (product.image && product.image !== "null") {
+              const img = document.createElement("img");
+
+              // DEBUG: Log the original image path
+              console.log("Original image path from API:", product.image);
+
+              // FIX: Always prepend /admin/ to the path
+              let imagePath = product.image;
+
+              // If the path doesn't already include /admin/, add it
+              if (!imagePath.includes("/admin/")) {
+                // Remove any leading slashes or uploads/ from the path
+                imagePath = imagePath.replace(/^\/?uploads\//, "");
+                imagePath = `/admin/uploads/product_images/${imagePath}`;
+              }
+
+              // Ensure we have the correct path structure
+              imagePath = imagePath.replace(/\\/g, "/"); // Convert backslashes to forward slashes
+              imagePath = imagePath.replace(/(\/\/+)/g, "/"); // Remove duplicate slashes
+
+              console.log("Final image path:", imagePath);
+
+              img.src = imagePath;
+              img.alt = product.name;
+              img.onerror = function () {
+                console.error("Failed to load image from:", this.src);
+                this.style.display = "none";
+                const icon = document.createElement("i");
+                icon.className = "fas fa-palette";
+                productImage.appendChild(icon);
+              };
+
+              img.onload = function () {
+                console.log("✅ Successfully loaded image:", this.src);
+              };
+
+              productImage.appendChild(img);
+            } else {
+              console.log("No image data for product:", product.name);
+              const icon = document.createElement("i");
+              icon.className = "fas fa-palette";
+              productImage.appendChild(icon);
+            }
             // Product details
             const productDetails = document.createElement("div");
             productDetails.className = "product-details";
@@ -2310,7 +2336,6 @@ if (product.image && product.image !== "null") {
           console.log("📦 Add to cart response:", result);
 
           if (result.success) {
-           
             showNotification(result.message || "Added to cart! 🛒");
             return true;
           } else {

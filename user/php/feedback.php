@@ -1,11 +1,19 @@
 <?php
+date_default_timezone_set('Asia/Manila');
 session_start();
+
 // Auto-switch between Docker and XAMPP
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+
+// Set database timezone
+$conn->query("SET time_zone = '+08:00'");
+
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
 
 header('Content-Type: application/json');
 
@@ -66,16 +74,16 @@ if ($_POST['action'] == 'save_product_feedback') {
         if ($user_rating_thumbs == "1") {
             $rating_scale = 5.0;  // Good - Perfect match
             $recommendation_feedback = "Good";
+            $feedback_type = "positive";
         } elseif ($user_rating_thumbs == "0.5") {
             $rating_scale = 3.0;  // Okay - Neutral  
             $recommendation_feedback = "Okay";
+            $feedback_type = "neutral";
         } else {
             $rating_scale = 1.0;  // Poor - Bad recommendation
             $recommendation_feedback = "Poor";
+            $feedback_type = "negative";
         }
-
-        // REMOVE THIS LINE - it's overwriting your string with a float!
-        // $recommendation_feedback = $user_rating_float;  // DELETE THIS LINE
 
         // Check if feedback already exists
         $check_stmt = $conn->prepare('SELECT FeedbackID FROM productfeedback WHERE UserID = ? AND ProductID = ?');
@@ -91,6 +99,8 @@ if ($_POST['action'] == 'save_product_feedback') {
         $check_result = $check_stmt->get_result();
         $existing_feedback = $check_result->fetch_assoc();
         $check_stmt->close();
+
+        $is_update = false;
 
         if ($existing_feedback) {
             // Update existing feedback
@@ -122,6 +132,7 @@ if ($_POST['action'] == 'save_product_feedback') {
             }
             $stmt->close();
 
+            $is_update = true;
             error_log("🔄 Updated existing feedback for product $product_id");
         } else {
             // Insert new feedback
@@ -153,6 +164,13 @@ if ($_POST['action'] == 'save_product_feedback') {
         }
 
         if ($success) {
+            // ✅ LOG FEEDBACK ACTIVITY
+            $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+            $action = $is_update ? 'Feedback updated' : 'Feedback submitted';
+            $feedbackDetails = "Product: {$product_name} (ID: {$product_id}), Rating: {$rating_scale}/5 ({$feedback_type}), IP: {$userIP}";
+            
+            logUserActivity($conn, $user_id, $action, $feedbackDetails);
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Feedback saved successfully',
@@ -160,10 +178,15 @@ if ($_POST['action'] == 'save_product_feedback') {
                 'thumbs_rating' => $user_rating_thumbs, // This is "1", "0.5", or "0"
                 'recommendation_feedback' => $recommendation_feedback // This is "Good", "Okay", "Poor"
             ]);
-        }else {
+        } else {
             echo json_encode(['success' => false, 'message' => 'Failed to save feedback: ' . $conn->error]);
         }
     } catch (Exception $e) {
+        // ✅ LOG FEEDBACK ERROR
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $errorDetails = "Product: {$product_id}, Error: " . $e->getMessage() . ", IP: {$userIP}";
+        logUserActivity($conn, $user_id, 'Feedback save failed', $errorDetails);
+        
         error_log('❌ Database error: ' . $e->getMessage());
         echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
     }

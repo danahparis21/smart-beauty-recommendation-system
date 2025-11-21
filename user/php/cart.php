@@ -9,6 +9,9 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
+
 // Initialize response
 $response = [
     'success' => false,
@@ -132,6 +135,11 @@ function addToCart($conn, $userId, &$response) {
         $response['success'] = true;
         $response['message'] = 'Cart updated successfully 🛒';
         $response['action'] = 'updated';
+        
+        // ✅ LOG CART UPDATE
+        logUserActivity($conn, $userId, 'Cart updated', 
+            "Updated quantity for product {$productId} to {$newQuantity}"
+        );
     } else {
         // Add new item
         $insertQuery = "INSERT INTO cart (user_id, product_id, quantity, added_at) VALUES (?, ?, ?, NOW())";
@@ -140,8 +148,13 @@ function addToCart($conn, $userId, &$response) {
         $stmt->execute();
 
         $response['success'] = true;
-        $response['message'] = 'Added to cart 🎉';
+        $response['message'] = 'Added to cart';
         $response['action'] = 'added';
+        
+        // ✅ LOG CART ADDITION
+        logUserActivity($conn, $userId, 'Add to cart', 
+            "Added product {$productId} (Qty: {$quantity}) - {$product['Name']}"
+        );
     }
 
     getCart($conn, $userId, $response);
@@ -158,6 +171,14 @@ function removeFromCart($conn, $userId, &$response) {
         return;
     }
 
+    // Get product name before deleting for logging
+    $productQuery = "SELECT Name FROM products WHERE ProductID = ?";
+    $stmt = $conn->prepare($productQuery);
+    $stmt->bind_param("s", $productId);
+    $stmt->execute();
+    $productResult = $stmt->get_result();
+    $productName = $productResult->num_rows > 0 ? $productResult->fetch_assoc()['Name'] : 'Unknown Product';
+
     $deleteQuery = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($deleteQuery);
     $stmt->bind_param("is", $userId, $productId);
@@ -167,6 +188,11 @@ function removeFromCart($conn, $userId, &$response) {
         $response['success'] = true;
         $response['message'] = 'Removed from cart 🗑️';
         $response['action'] = 'removed';
+        
+        // ✅ LOG CART REMOVAL
+        logUserActivity($conn, $userId, 'Remove from cart', 
+            "Removed product {$productId} - {$productName}"
+        );
     } else {
         $response['message'] = 'Item not found in cart';
     }
@@ -191,8 +217,8 @@ function updateCartQuantity($conn, $userId, &$response) {
         return;
     }
 
-    // Check stock
-    $stockQuery = "SELECT Stocks FROM products WHERE ProductID = ?";
+    // Check stock and get product name
+    $stockQuery = "SELECT Stocks, Name FROM products WHERE ProductID = ?";
     $stmt = $conn->prepare($stockQuery);
     $stmt->bind_param("s", $productId);
     $stmt->execute();
@@ -218,6 +244,11 @@ function updateCartQuantity($conn, $userId, &$response) {
         $response['success'] = true;
         $response['message'] = 'Quantity updated ✓';
         $response['action'] = 'updated';
+        
+        // ✅ LOG QUANTITY UPDATE
+        logUserActivity($conn, $userId, 'Cart quantity updated', 
+            "Updated product {$productId} - {$product['Name']} to quantity {$quantity}"
+        );
     } else {
         $response['message'] = 'Item not found in cart';
     }
@@ -304,6 +335,11 @@ function updateCartStatus($conn, $userId, &$response) {
     if ($stmt->affected_rows > 0) {
         $response['success'] = true;
         $response['message'] = 'Cart item status updated';
+        
+        // ✅ LOG STATUS UPDATE
+        logUserActivity($conn, $userId, 'Cart status updated', 
+            "Updated product {$productId} status to '{$status}'"
+        );
     } else {
         $response['message'] = 'Item not found in cart';
     }
@@ -313,6 +349,14 @@ function updateCartStatus($conn, $userId, &$response) {
  * Clear cart
  */
 function clearCart($conn, $userId, &$response) {
+    // Get cart items before clearing for logging
+    $cartQuery = "SELECT COUNT(*) as item_count FROM cart WHERE user_id = ?";
+    $stmt = $conn->prepare($cartQuery);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $cartResult = $stmt->get_result();
+    $itemCount = $cartResult->fetch_assoc()['item_count'];
+
     $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
@@ -322,6 +366,13 @@ function clearCart($conn, $userId, &$response) {
     $response['cart'] = [];
     $response['cartCount'] = 0;
     $response['totalAmount'] = 0;
+    
+    // ✅ LOG CART CLEAR
+    if ($itemCount > 0) {
+        logUserActivity($conn, $userId, 'Cart cleared', 
+            "Cleared entire cart with {$itemCount} items"
+        );
+    }
 }
 
 /**

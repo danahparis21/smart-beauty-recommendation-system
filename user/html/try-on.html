@@ -859,48 +859,9 @@
         font-size: 0.8em;
         color: #6b7280;
       }
-      /* Cart Notification */
-      .cart-notification {
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: var(--success-color);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        max-width: 300px;
-      }
+     
 
-      .cart-notification.show {
-        transform: translateX(0);
-      }
-
-      .cart-notification.error {
-        background: var(--error-color);
-      }
-
-      .notification-content {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .notification-content i {
-        font-size: 1.2em;
-      }
-
-      .cart-notification.success .notification-content i {
-        color: var(--primary-pink);
-      }
-
-      .cart-notification.error .notification-content i {
-        color: #ef4444;
-      }
-
+      
       /* Cart total popup - Compact & Elegant */
       .cart-total-popup {
         position: absolute;
@@ -1074,37 +1035,40 @@
         padding-top: 8px;
         border-top: 1px solid var(--border-color);
       }
-      /* Cart Notification */
-      .cart-notification {
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: var(--success-color);
-        color: white;
-        padding: 12px 16px;
-        border-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        max-width: 280px;
-      }
+      /* Unified Notification Box Styles - Based on productdetail.html */
+.notification-box {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+    z-index: 9999;
+    font-weight: 500;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-      .cart-notification.show {
-        transform: translateX(0);
-      }
+.notification-box.show {
+    transform: translateX(0);
+    opacity: 1;
+}
 
-      .cart-notification.error {
-        background: var(--error-color);
-      }
-
-      .notification-content {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.9em;
-      }
-
+@media (max-width: 480px) {
+    .notification-box {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        top: 70px;
+    }
+}
       /* Action Buttons Container */
       .action-buttons-container {
         background: var(--white);
@@ -1247,41 +1211,7 @@
         box-shadow: none !important;
       }
 
-      /* Notification Styles */
-      .cart-notification {
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: var(--success-color);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        max-width: 300px;
-        border: none;
-      }
-
-      .cart-notification.show {
-        transform: translateX(0);
-      }
-
-      .cart-notification.error {
-        background: var(--error-color);
-      }
-
-      .notification-content {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .notification-content i {
-        font-size: 1.2em;
-      }
-
+     
       /* Mobile responsiveness for action buttons */
       @media (max-width: 768px) {
         .action-buttons {
@@ -1732,32 +1662,30 @@
       .products-container {
         background: var(--white);
         border-radius: 18px;
-        padding: 20px;
+        padding: 16px; /* Reduced from 20px */
         box-shadow: var(--card-shadow);
         border: 1px solid rgba(255, 182, 193, 0.2);
         max-height: 600px;
         overflow-y: auto;
       }
-
       .products-title {
         font-family: "Cormorant Garamond", serif;
         font-size: 22px;
         font-weight: 600;
         color: #333;
-        margin-bottom: 15px;
+        margin-bottom: 12px; /* Reduced from 15px */
         text-align: center;
       }
-
       .products-list {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 12x;
       }
 
       .product-item {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         padding: 12px;
         border-radius: 12px;
         transition: all 0.3s ease;
@@ -1778,10 +1706,9 @@
         box-shadow: 0 4px 15px rgba(255, 126, 185, 0.2);
       }
 
-      /* Replace the color circle with product image */
       .product-image {
-        width: 50px;
-        height: 50px;
+        width: 65px;
+        height: 65px;
         border-radius: 8px;
         object-fit: cover;
         flex-shrink: 0;
@@ -1837,23 +1764,23 @@
 
         .products-container {
           max-height: none;
-          padding: 15px;
+          padding: 12px; /* Reduced from 15px */
           border-radius: 12px;
-          margin-top: 10px;
+          margin-top: 8px; /* Reduced from 10px */
         }
 
         .products-title {
           font-size: 18px;
-          margin-bottom: 12px;
+          margin-bottom: 10px; /* Reduced from 12px */
         }
 
         .products-list {
-          flex-direction: row; /* Horizontal layout */
-          gap: 10px;
-          overflow-x: auto; /* Horizontal scrolling */
-          padding: 5px;
-          margin: 0 -5px;
-          scrollbar-width: none; /* Hide scrollbar for cleaner look */
+          flex-direction: row;
+          gap: 8px; /* Reduced from 10px */
+          overflow-x: auto;
+          padding: 4px; /* Reduced from 5px */
+          margin: 0 -4px; /* Reduced from -5px */
+          scrollbar-width: none;
         }
 
         .products-list::-webkit-scrollbar {
@@ -1861,18 +1788,18 @@
         }
 
         .product-item {
-          flex-direction: column; /* Stack image and minimal info */
+          flex-direction: column;
           align-items: center;
-          padding: 10px;
-          min-width: 80px; /* Fixed width for consistent sizing */
+          padding: 8px; /* Reduced from 10px */
+          min-width: 85px; /* Slightly increased for larger images */
           border-radius: 10px;
-          gap: 8px;
+          gap: 6px; /* Reduced from 8px */
         }
 
         .product-image {
-          width: 60px; /* Larger images for mobile */
-          height: 60px;
-          border-radius: 10px;
+          width: 70px; /* Increased from 60px */
+          height: 70px; /* Increased from 60px */
+          border-radius: 12px; /* Larger radius */
         }
 
         /* Hide all text info on mobile - show only images */
@@ -1916,7 +1843,7 @@
       /* Extra small mobile adjustments */
       @media (max-width: 480px) {
         .products-container {
-          padding: 12px;
+          padding: 10px; /* Reduced from 12px */
         }
 
         .products-title {
@@ -1924,52 +1851,43 @@
         }
 
         .product-item {
-          min-width: 70px;
-          padding: 8px;
+          min-width: 75px;
+          padding: 6px;
         }
 
         .product-image {
-          width: 55px;
-          height: 55px;
+          width: 65px;
+          height: 65px;
         }
       }
       /* DESKTOP - Full product details */
       @media (min-width: 769px) {
-        .products-section {
-          flex: 0 0 320px;
+        .photobooth-container {
+          gap: 20px; /* Reduced from 25px */
         }
 
-        .products-container {
-          max-height: 600px;
-          overflow-y: auto;
+        .camera-section {
+          gap: 16px; /* Reduced from 20px */
+        }
+
+        .desktop-products {
+          margin-left: 20px; /* Reduced from 25px */
         }
 
         .products-list {
-          flex-direction: column;
-          gap: 15px;
+          gap: 12px; /* Reduced from 15px */
         }
 
         .product-item {
-          flex-direction: row;
-          align-items: center;
-          padding: 12px;
-          min-width: auto;
+          padding: 10px; /* Reduced from 12px */
         }
 
         .product-image {
-          width: 50px;
-          height: 50px;
-        }
-
-        .product-info,
-        .product-shades-count {
-          display: block; /* Ensure these are visible on desktop */
-        }
-
-        .product-item::after {
-          display: none; /* Hide mobile tooltip on desktop */
+          width: 60px; /* Increased from 50px */
+          height: 60px; /* Increased from 50px */
         }
       }
+
       .photobooth-container {
         display: flex;
         flex-direction: column;
@@ -2034,9 +1952,8 @@
       /* MOBILE Layout - Reorder elements */
       @media (max-width: 768px) {
         .photobooth-container {
-          flex-direction: column;
+          gap: 20px; /* Reduced from 25px */
         }
-
         .camera-section {
           width: 100%;
           display: flex;
@@ -2378,45 +2295,55 @@
           });
         }
       }
-      function showNotification(message, type = "success") {
-        // Remove existing notification if any
-        const existingNotification =
-          document.querySelector(".cart-notification");
-        if (existingNotification) {
-          existingNotification.remove();
-        }
+    // Unified Notification Function - Use this on ALL pages
+function showNotification(message, type = "success") {
+    // Check if notification box exists, if not create it
+    let notificationBox = document.getElementById("notification-box");
+    
+    if (!notificationBox) {
+        // Create the notification box if it doesn't exist
+        notificationBox = document.createElement('div');
+        notificationBox.id = 'notification-box';
+        notificationBox.className = 'notification-box';
+        document.body.appendChild(notificationBox);
+    }
 
-        // Create notification element
-        const notification = document.createElement("div");
-        notification.className = `cart-notification ${type}`;
-        notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${
-              type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
-            }"></i>
-            <span>${message}</span>
-        </div>
-    `;
+    // Set message and icon based on type
+    let iconClass, background;
+    
+    switch(type) {
+        case "success":
+            iconClass = "fas fa-check-circle";
+            background = "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
+            break;
+        case "error":
+            iconClass = "fas fa-exclamation-circle";
+            background = "linear-gradient(135deg, #ef4444, #dc2626)";
+            break;
+        case "info":
+            iconClass = "fas fa-info-circle";
+            background = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
+            break;
+        case "warning":
+            iconClass = "fas fa-exclamation-triangle";
+            background = "linear-gradient(135deg, #f59e0b, #d97706)";
+            break;
+        default:
+            iconClass = "fas fa-check-circle";
+            background = "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
+    }
+    
+    notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
+    notificationBox.style.background = background;
 
-        // Add to page
-        document.body.appendChild(notification);
+    // Show notification
+    notificationBox.classList.add("show");
 
-        // Show with animation
-        setTimeout(() => {
-          notification.classList.add("show");
-        }, 10);
-
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-          notification.classList.remove("show");
-          setTimeout(() => {
-            if (notification.parentNode) {
-              notification.remove();
-            }
-          }, 300);
-        }, 3000);
-      }
-
+    // Hide after 3 seconds
+    setTimeout(() => {
+        notificationBox.classList.remove("show");
+    }, 3000);
+}
       function showCartTotal(totalAmount) {
         // Remove existing popups if any
         const existingPopups = document.querySelectorAll(".cart-total-popup");
@@ -3384,98 +3311,112 @@
           }
         }
         function displayProducts(products) {
-  const mobileProductsList = document.getElementById("tryon-products");
-  const desktopProductsList = document.getElementById("tryon-products-desktop");
+          const mobileProductsList = document.getElementById("tryon-products");
+          const desktopProductsList = document.getElementById(
+            "tryon-products-desktop"
+          );
 
-  if (!mobileProductsList || !desktopProductsList) {
-    console.error("Product lists not found!");
-    return;
-  }
+          if (!mobileProductsList || !desktopProductsList) {
+            console.error("Product lists not found!");
+            return;
+          }
 
-  // Clear both lists
-  mobileProductsList.innerHTML = "";
-  desktopProductsList.innerHTML = "";
+          // Clear both lists
+          mobileProductsList.innerHTML = "";
+          desktopProductsList.innerHTML = "";
 
-  products.forEach((product) => {
-    const firstShade = product.shades[0];
+          products.forEach((product) => {
+            const firstShade = product.shades[0];
 
-    // Use variant image
-    let productImage;
-    if (firstShade.variantImage) {
-      productImage = firstShade.variantImage;
-    } else if (product.variantImage) {
-      productImage = product.variantImage;
-    } else {
-      const color = firstShade.hexCode.replace("#", "");
-      productImage = `https://via.placeholder.com/50/${color}/ffffff?text=${product.name.charAt(0)}`;
-    }
+            // Use variant image
+            let productImage;
+            if (firstShade.variantImage) {
+              productImage = firstShade.variantImage;
+            } else if (product.variantImage) {
+              productImage = product.variantImage;
+            } else {
+              const color = firstShade.hexCode.replace("#", "");
+              productImage = `https://via.placeholder.com/50/${color}/ffffff?text=${product.name.charAt(
+                0
+              )}`;
+            }
 
-    // Create MOBILE product item (image only)
-    const mobileProductItem = document.createElement("div");
-    mobileProductItem.className = "product-item";
-    mobileProductItem.setAttribute("data-product-id", product.id);
-    mobileProductItem.setAttribute("data-parent-id", product.id);
-    mobileProductItem.setAttribute("data-product-name", product.name);
-    
-    mobileProductItem.innerHTML = `
+            // Create MOBILE product item (image only)
+            const mobileProductItem = document.createElement("div");
+            mobileProductItem.className = "product-item";
+            mobileProductItem.setAttribute("data-product-id", product.id);
+            mobileProductItem.setAttribute("data-parent-id", product.id);
+            mobileProductItem.setAttribute("data-product-name", product.name);
+
+            mobileProductItem.innerHTML = `
       <img src="${productImage}" alt="${product.name}" class="product-image" 
-           onerror="this.onerror=null; this.src='https://via.placeholder.com/60/${firstShade.hexCode.replace("#", "")}/ffffff?text=${product.name.charAt(0)}'">
+           onerror="this.onerror=null; this.src='https://via.placeholder.com/60/${firstShade.hexCode.replace(
+             "#",
+             ""
+           )}/ffffff?text=${product.name.charAt(0)}'">
     `;
 
-    // Create DESKTOP product item (full details)
-    const desktopProductItem = document.createElement("div");
-    desktopProductItem.className = "product-item";
-    desktopProductItem.setAttribute("data-product-id", product.id);
-    desktopProductItem.setAttribute("data-parent-id", product.id);
-    desktopProductItem.setAttribute("data-product-name", product.name);
-    
-    desktopProductItem.innerHTML = `
+            // Create DESKTOP product item (full details)
+            const desktopProductItem = document.createElement("div");
+            desktopProductItem.className = "product-item";
+            desktopProductItem.setAttribute("data-product-id", product.id);
+            desktopProductItem.setAttribute("data-parent-id", product.id);
+            desktopProductItem.setAttribute("data-product-name", product.name);
+
+            desktopProductItem.innerHTML = `
       <img src="${productImage}" alt="${product.name}" class="product-image" 
-           onerror="this.onerror=null; this.src='https://via.placeholder.com/50/${firstShade.hexCode.replace("#", "")}/ffffff?text=${product.name.charAt(0)}'">
+           onerror="this.onerror=null; this.src='https://via.placeholder.com/50/${firstShade.hexCode.replace(
+             "#",
+             ""
+           )}/ffffff?text=${product.name.charAt(0)}'">
       <div class="product-info">
           <div class="product-name">${product.name}</div>
-          <div class="product-price">₱${parseFloat(firstShade.price).toFixed(2)}</div>
+          <div class="product-price">₱${parseFloat(firstShade.price).toFixed(
+            2
+          )}</div>
       </div>
       <div class="product-shades-count">
-          ${product.shades.length} shade${product.shades.length !== 1 ? "s" : ""}
+          ${product.shades.length} shade${
+              product.shades.length !== 1 ? "s" : ""
+            }
       </div>
     `;
 
-    // Add click handler to both product items
-    const clickHandler = function() {
-      const parentId = this.getAttribute("data-product-id");
-      currentProduct = products.find((p) => p.id === parentId);
-      updateShadeOptions(currentProduct.shades);
-      updateActiveProduct(parentId);
+            // Add click handler to both product items
+            const clickHandler = function () {
+              const parentId = this.getAttribute("data-product-id");
+              currentProduct = products.find((p) => p.id === parentId);
+              updateShadeOptions(currentProduct.shades);
+              updateActiveProduct(parentId);
 
-      if (currentProduct.shades.length > 0) {
-        const firstShade = currentProduct.shades[0];
-        currentShade = firstShade.hexCode;
-        if (!isProcessing) {
-          applyLipstickToCurrentImage();
+              if (currentProduct.shades.length > 0) {
+                const firstShade = currentProduct.shades[0];
+                currentShade = firstShade.hexCode;
+                if (!isProcessing) {
+                  applyLipstickToCurrentImage();
+                }
+              }
+            };
+
+            mobileProductItem.addEventListener("click", clickHandler);
+            desktopProductItem.addEventListener("click", clickHandler);
+
+            mobileProductsList.appendChild(mobileProductItem);
+            desktopProductsList.appendChild(desktopProductItem);
+          });
+
+          // Set first product as active
+          if (products.length > 0) {
+            const firstProduct = products[0];
+            currentProduct = firstProduct;
+            updateShadeOptions(firstProduct.shades);
+            updateActiveProduct(firstProduct.id);
+
+            if (firstProduct.shades.length > 0) {
+              currentShade = firstProduct.shades[0].hexCode;
+            }
+          }
         }
-      }
-    };
-
-    mobileProductItem.addEventListener("click", clickHandler);
-    desktopProductItem.addEventListener("click", clickHandler);
-
-    mobileProductsList.appendChild(mobileProductItem);
-    desktopProductsList.appendChild(desktopProductItem);
-  });
-
-  // Set first product as active
-  if (products.length > 0) {
-    const firstProduct = products[0];
-    currentProduct = firstProduct;
-    updateShadeOptions(firstProduct.shades);
-    updateActiveProduct(firstProduct.id);
-
-    if (firstProduct.shades.length > 0) {
-      currentShade = firstProduct.shades[0].hexCode;
-    }
-  }
-}
         function updateShadeOptions(shades) {
           const shadesContainer = document.querySelector(".shades-container");
           shadesContainer.innerHTML = "";
@@ -3685,46 +3626,7 @@
           allProducts = sampleProducts;
           displayProducts(sampleProducts);
         }
-        // Notification function
-        function showNotification(message, type = "success") {
-          // Remove existing notification if any
-          const existingNotification =
-            document.querySelector(".cart-notification");
-          if (existingNotification) {
-            existingNotification.remove();
-          }
-
-          // Create notification element
-          const notification = document.createElement("div");
-          notification.className = `cart-notification ${type}`;
-          notification.innerHTML = `
-    <div class="notification-content">
-        <i class="fas ${
-          type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
-        }"></i>
-        <span>${message}</span>
-    </div>
-  `;
-
-          // Add to page
-          document.body.appendChild(notification);
-
-          // Show with animation
-          setTimeout(() => {
-            notification.classList.add("show");
-          }, 10);
-
-          // Auto remove after 3 seconds
-          setTimeout(() => {
-            notification.classList.remove("show");
-            setTimeout(() => {
-              if (notification.parentNode) {
-                notification.remove();
-              }
-            }, 300);
-          }, 3000);
-        }
-
+       
         // Cart total popup function
         function showCartTotal(totalAmount) {
           // Remove existing popups if any

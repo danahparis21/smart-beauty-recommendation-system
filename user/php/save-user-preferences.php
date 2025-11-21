@@ -5,6 +5,16 @@ ini_set('display_errors', 1);
 
 header('Content-Type: application/json');
 
+// Auto-switch between Docker and XAMPP
+if (getenv('DOCKER_ENV') === 'true') {
+    require_once __DIR__ . '/../../config/db_docker.php';
+} else {
+    require_once __DIR__ . '/../../config/db.php';
+}
+
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
+
 // Log the request for debugging
 error_log('Save preferences request received');
 
@@ -12,13 +22,6 @@ if (!isset($_SESSION['user_id'])) {
     error_log('User not logged in');
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
     exit;
-}
-
-// Auto-switch between Docker and XAMPP
-if (getenv('DOCKER_ENV') === 'true') {
-    require_once __DIR__ . '/../../config/db_docker.php';
-} else {
-    require_once __DIR__ . '/../../config/db.php';
 }
 
 // Get the input data
@@ -56,6 +59,12 @@ try {
             $user_id);
         $updateStmt->execute();
         error_log('Update affected rows: ' . $updateStmt->affected_rows);
+        
+        // ✅ LOG PREFERENCES UPDATE
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $preferencesDetails = "Updated beauty preferences - Skin Type: {$input['skinType']}, Skin Tone: {$input['skinTone']}, Undertone: {$input['undertone']}, Finish: {$input['finish']}, Concerns: " . implode(', ', $input['concerns'] ?? []) . ", IP: {$userIP}";
+        logUserActivity($conn, $user_id, 'Preferences updated', $preferencesDetails);
+        
     } else {
         // Insert new preferences
         error_log('Inserting new preferences');
@@ -72,11 +81,22 @@ try {
             $input['finish']);
         $insertStmt->execute();
         error_log('Insert ID: ' . $insertStmt->insert_id);
+        
+        // ✅ LOG NEW PREFERENCES CREATION
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $preferencesDetails = "Created beauty preferences - Skin Type: {$input['skinType']}, Skin Tone: {$input['skinTone']}, Undertone: {$input['undertone']}, Finish: {$input['finish']}, Concerns: " . implode(', ', $input['concerns'] ?? []) . ", IP: {$userIP}";
+        logUserActivity($conn, $user_id, 'Preferences created', $preferencesDetails);
     }
 
     echo json_encode(['success' => true, 'message' => 'Preferences saved successfully']);
     error_log('Preferences saved successfully');
+    
 } catch (Exception $e) {
+    // ✅ LOG PREFERENCES SAVE ERROR
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $errorDetails = "Error: " . $e->getMessage() . ", IP: {$userIP}";
+    logUserActivity($conn, $user_id, 'Preferences save failed', $errorDetails);
+    
     error_log('Error saving preferences: ' . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Error saving preferences: ' . $e->getMessage()]);
 }

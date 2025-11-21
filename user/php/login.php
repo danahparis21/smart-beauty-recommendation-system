@@ -15,12 +15,9 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+require_once __DIR__ . '/activity_logger.php';
+
 function returnJsonResponse($success, $message, $data = [], $conn = null) {
-    // Close database connection
-    if ($conn && !$conn->connect_error) {
-        $conn->close();
-    }
-    
     // Clear any output buffers
     if (ob_get_length()) ob_clean();
     
@@ -29,6 +26,11 @@ function returnJsonResponse($success, $message, $data = [], $conn = null) {
     
     // Send JSON response
     echo json_encode(array_merge(['success' => $success, 'message' => $message], $data));
+    
+    // Close database connection AFTER sending response
+    if ($conn && !$conn->connect_error) {
+        $conn->close();
+    }
     exit();
 }
 
@@ -103,6 +105,18 @@ if ($result->num_rows === 1) {
         $_SESSION['email'] = $user['Email']; 
         
         $stmt->close();
+        
+        // ✅ LOG USER LOGIN - MOVE THIS AFTER SESSION IS SET
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+        $loginDetails = "IP: {$userIP}, Browser: " . substr($userAgent, 0, 100);
+        
+        // Log the activity BEFORE sending response
+        $logSuccess = logUserActivity($conn, $user['UserID'], 'User login', $loginDetails);
+        
+        if (!$logSuccess) {
+            error_log("Failed to log user login activity for user ID: " . $user['UserID']);
+        }
         
         // Check if user is admin and handle redirect
         $redirectInfo = redirectBasedOnRole($user['Role']);

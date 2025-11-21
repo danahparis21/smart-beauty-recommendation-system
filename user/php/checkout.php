@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila');
 session_start();
 header('Content-Type: application/json');
 
@@ -8,6 +9,12 @@ if (getenv('DOCKER_ENV') === 'true') {
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+
+// Set database timezone too
+$conn->query("SET time_zone = '+08:00'");
+
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -33,10 +40,11 @@ try {
     // Calculate total amount
     $totalAmount = 0;
     $orderItems = [];
+    $productNames = [];
     
     foreach ($selectedItems as $item) {
         // Verify product exists and get current price
-        $stmt = $conn->prepare("SELECT ProductID, Price, Stocks FROM products WHERE ProductID = ?");
+        $stmt = $conn->prepare("SELECT ProductID, Name, Price, Stocks FROM products WHERE ProductID = ?");
         $stmt->bind_param("s", $item['id']);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -49,7 +57,7 @@ try {
         
         // Check stock availability
         if ($product['Stocks'] < $item['quantity']) {
-            throw new Exception("Insufficient stock for product: " . $item['id']);
+            throw new Exception("Insufficient stock for product: " . $product['Name']);
         }
         
         $subtotal = $product['Price'] * $item['quantity'];
@@ -57,15 +65,19 @@ try {
         
         $orderItems[] = [
             'product_id' => $product['ProductID'],
+            'product_name' => $product['Name'],
             'quantity' => $item['quantity'],
             'price' => $product['Price'],
             'subtotal' => $subtotal
         ];
+        
+        $productNames[] = $product['Name'] . " (Qty: {$item['quantity']})";
     }
     
-    // Create order
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_price, status, order_date) VALUES (?, ?, 'pending', NOW())");
-    $stmt->bind_param("id", $userId, $totalAmount);
+    // ✅ FIXED: Use PHP date instead of MySQL NOW()
+    $currentDateTime = date('Y-m-d H:i:s');
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_price, status, order_date) VALUES (?, ?, 'pending', ?)");
+    $stmt->bind_param("ids", $userId, $totalAmount, $currentDateTime);
     $stmt->execute();
     $orderId = $stmt->insert_id;
     
@@ -101,8 +113,22 @@ try {
         $updateCart->close();
     }
     
+    // ✅ ADD NOTIFICATION FOR ORDER PLACEMENT
+    $notificationTitle = "Order Placed Successfully! 🎉";
+    $notificationMessage = "Your order #{$orderId} has been placed. Total: ₱{$totalAmount}. Show the QR code at the counter to complete your purchase.";
+    
+    $notificationStmt = $conn->prepare("INSERT INTO notifications (UserID, Title, Message, IsRead, CreatedAt) VALUES (?, ?, ?, 0, NOW())");
+    $notificationStmt->bind_param("iss", $userId, $notificationTitle, $notificationMessage);
+    $notificationStmt->execute();
+    $notificationStmt->close();
+    
     // Commit transaction
     $conn->commit();
+    
+    // ✅ LOG SUCCESSFUL ORDER CREATION
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $orderDetails = "Order #{$orderId} - Total: ₱{$totalAmount}, Items: " . count($orderItems) . ", Products: " . implode(', ', $productNames) . ", QR: {$qrCode}, IP: {$userIP}";
+    logUserActivity($conn, $userId, 'Order placed', $orderDetails);
     
     // Return success response with CORRECT format
     echo json_encode([
@@ -113,13 +139,19 @@ try {
             'qr_code' => $qrCode,
             'total_amount' => $totalAmount,
             'status' => 'pending',
-            'order_date' => date('Y-m-d H:i:s'),
+            'order_date' => $currentDateTime, // Use the same PHP date
             'items_count' => count($orderItems)
         ]
     ]);
     
 } catch (Exception $e) {
     // Rollback transaction on error
+    
+    // ✅ LOG CHECKOUT FAILURE
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $errorDetails = "Error: " . $e->getMessage() . ", Items attempted: " . count($selectedItems) . ", IP: {$userIP}";
+    logUserActivity($conn, $userId, 'Checkout failed', $errorDetails);
+    
     $conn->rollback();
     
     echo json_encode([

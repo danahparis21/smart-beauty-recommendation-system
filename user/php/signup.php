@@ -12,6 +12,7 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 
 require_once __DIR__ . '/send-verification.php';
+require_once __DIR__ . '/activity_logger.php'; // Add activity logger
 
 function returnJsonError($message, $conn = null)
 {
@@ -131,15 +132,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param('sssssss', $username, $firstName, $lastName, $email, $passwordHash, $role, $verificationToken);
 
     if ($stmt->execute()) {
+        $newUserId = $stmt->insert_id; // Get the new user ID
+        
+        // ✅ LOG USER REGISTRATION
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+        $registrationDetails = "Username: {$username}, Email: {$email}, IP: {$userIP}, Browser: " . substr($userAgent, 0, 100);
+        
+        logUserActivity($conn, $newUserId, 'User registered', $registrationDetails);
+        
         // ===== SEND VERIFICATION EMAIL =====
         $emailSent = sendVerificationEmail($email, $firstName, $verificationToken);
         
         if (!$emailSent) {
-            // If email fails, delete the unverified account
+            // If email fails, delete the unverified account and log the failure
             $deleteStmt = $conn->prepare('DELETE FROM users WHERE Email = ? AND email_verified = 0');
             $deleteStmt->bind_param('s', $email);
             $deleteStmt->execute();
             $deleteStmt->close();
+            
+            // Log registration failure due to email
+            logUserActivity($conn, $newUserId, 'Registration failed', 'Verification email could not be sent');
             
             returnJsonError('Failed to send verification email. Please check your email address or try again later.', $conn);
         }
