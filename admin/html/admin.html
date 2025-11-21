@@ -23,7 +23,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
   <style>
-    
     /* Full Screen Reveal Effect */
     .fullscreen-reveal {
       position: fixed;
@@ -48,7 +47,6 @@
       transform-origin: center center;
     }
 
-    /* Remove the white overlay background to see the circle properly */
     .reveal-overlay {
       position: fixed;
       top: 0;
@@ -56,7 +54,6 @@
       width: 100%;
       height: 100%;
       background: transparent;
-      /* Changed from white to transparent */
       z-index: 9998;
       display: none;
       opacity: 0;
@@ -75,13 +72,11 @@
     .fullscreen-reveal-content {
       position: absolute;
       top: 40%;
-      /* slightly above the finger press */
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 20px;
       color: white;
       opacity: 0;
-      /* hidden initially */
       text-align: center;
       pointer-events: none;
       transition: opacity 0.5s ease;
@@ -93,19 +88,6 @@
       transform: scale(1);
     }
 
-    .reveal-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .reveal-text {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    /* Progress indicator for the reveal */
     .reveal-progress {
       position: absolute;
       top: 0;
@@ -1078,7 +1060,7 @@
         padding: 12px !important;
       }
     }
-    
+
     /* Cashier mode tap counter */
     .cashier-tap-counter {
       position: fixed;
@@ -1095,19 +1077,25 @@
       transition: all 0.3s ease;
       display: none;
     }
-    
+
     .cashier-tap-counter.show {
       display: block;
       animation: fadeIn 0.3s ease;
     }
-    
+
     .cashier-tap-counter.hide {
       animation: fadeOut 0.3s ease;
     }
-    
+
     @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; display: none; }
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+        display: none;
+      }
     }
 
     /* Remove blue color from cashier mode link */
@@ -1135,6 +1123,29 @@
     .sidebar .nav-link:focus {
       color: inherit !important;
     }
+
+    /* Helper for new charts */
+    .small-chart-container {
+      height: 300px;
+      position: relative;
+      width: 100%;
+    }
+
+    /* Analytics card styling */
+    .analytics-card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
+      height: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .analytics-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 
@@ -1143,12 +1154,8 @@
   <!-- Mobile Header -->
   <div class="mobile-header">
     <div class="mobile-header-content">
-      <button class="hamburger-btn" id="hamburgerBtn">
-        <i class="fas fa-bars"></i>
-      </button>
-      <a href="admin.html" class="mobile-logo">
-        <img src="../images/mainlogo.png" alt="Store Logo">
-      </a>
+      <button class="hamburger-btn" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+      <a href="admin.html" class="mobile-logo"><img src="../images/mainlogo.png" alt="Store Logo"></a>
     </div>
   </div>
 
@@ -1160,45 +1167,33 @@
       <!-- Sidebar -->
       <nav class="col-md-2 d-md-block sidebar" id="sidebar">
         <div class="logo-container">
-          <a href="admin.html">
-            <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
-          </a>
+          <a href="admin.html"><img src="../images/mainlogo.png" alt="Store Logo" class="logo" /></a>
           <div class="store-name">Blessence</div>
         </div>
         <div class="nav flex-column">
-          <a href="admin.html" class="nav-link">
-            <i class="fa-solid fa-tachometer-alt"></i>
-            <span>Dashboard</span>
+          <a href="admin.html" class="nav-link active">
+            <i class="fa-solid fa-tachometer-alt"></i><span>Dashboard</span>
           </a>
           <a href="product-management.html" class="nav-link">
-            <i class="fa-solid fa-box"></i>
-            <span>Product Management</span>
+            <i class="fa-solid fa-box"></i><span>Product Management</span>
           </a>
           <a href="recommendation-insights.html" class="nav-link">
-            <i class="fa-solid fa-lightbulb"></i>
-            <span>Recommendation Insights</span>
+            <i class="fa-solid fa-lightbulb"></i><span>Recommendation Insights</span>
           </a>
           <a href="customer-managemnet.html" class="nav-link">
-            <i class="fa-solid fa-users"></i>
-            <span>Customer Management</span>
+            <i class="fa-solid fa-users"></i><span>Customer Management</span>
           </a>
           <a href="order-transactions.html" class="nav-link">
-            <i class="fa-solid fa-credit-card"></i>
-            <span>Order Transaction</span>
+            <i class="fa-solid fa-credit-card"></i><span>Order Transaction</span>
           </a>
           <a href="activity-log.html" class="nav-link">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>Activity Log</span>
+            <i class="fa-solid fa-clock-rotate-left"></i><span>Activity Log</span>
           </a>
-          <!-- New Cashier Mode Link -->
           <a href="javascript:void(0)" class="nav-link cashier-mode-link" id="cashierModeLink">
-            <i class="fa-solid fa-cash-register"></i>
-            <span>Cashier Mode</span>
+            <i class="fa-solid fa-cash-register"></i><span>Cashier Mode</span>
           </a>
-
           <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Log Out</span>
+            <i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span>
           </a>
         </div>
       </nav>
@@ -1212,7 +1207,7 @@
             <i class="fa-solid fa-cart-shopping"></i>
             <div class="stat-content">
               <span class="stat-value">--</span>
-              <span class="stat-label">Orders Today</span>
+              <span class="stat-label">Orders</span>
             </div>
           </button>
 
@@ -1220,7 +1215,7 @@
             <i class="fa-solid fa-calendar-week"></i>
             <div class="stat-content">
               <span class="stat-value">--</span>
-              <span class="stat-label">Orders This Week</span>
+              <span class="stat-label">Sales Volume</span>
             </div>
           </button>
 
@@ -1228,7 +1223,7 @@
             <i class="fa-solid fa-coins"></i>
             <div class="stat-content">
               <span class="stat-value">--</span>
-              <span class="stat-label">Total Sales</span>
+              <span class="stat-label">Revenue</span>
             </div>
           </button>
 
@@ -1242,8 +1237,9 @@
         </div>
 
         <div class="row">
-          <!-- Graph Section -->
+          <!-- Main Graph Section & New Analytics -->
           <div class="col-md-8">
+            <!-- Sales Chart -->
             <div class="chart-container">
               <div class="chart-header">
                 <h5><i class="fas fa-chart-line"></i> Sales Overview</h5>
@@ -1258,7 +1254,31 @@
               <canvas id="salesChart"></canvas>
             </div>
 
-            <!-- AI Insights and Top Customers BELOW the chart -->
+            <!-- NEW: Advanced Analytics Charts -->
+            <div class="row mt-4 mb-4">
+              <div class="col-md-6 mb-3">
+                <div class="analytics-card">
+                  <div class="panel-section mb-0">
+                    <h6><i class="fas fa-chart-pie"></i> Sales by Category</h6>
+                    <div class="small-chart-container">
+                      <canvas id="categoryChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="analytics-card">
+                  <div class="panel-section mb-0">
+                    <h6><i class="fas fa-venus-mars"></i> Customer Demographics (Skin)</h6>
+                    <div class="small-chart-container">
+                      <canvas id="demographicsChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Insights and Top Customers -->
             <div class="row mt-4">
               <div class="col-md-6">
                 <div class="panel-section">
@@ -1302,6 +1322,14 @@
                 </div>
               </div>
 
+              <!-- NEW: Order Status Summary -->
+              <div class="panel-section mt-4">
+                <h6><i class="fas fa-clipboard-list"></i> Order Status</h6>
+                <div class="small-chart-container" style="height: 200px;">
+                  <canvas id="orderStatusChart"></canvas>
+                </div>
+              </div>
+
               <div class="panel-section">
                 <h6><i class="fas fa-star"></i> Store Ratings</h6>
                 <div class="ratings-container">
@@ -1312,6 +1340,7 @@
                   </div>
                 </div>
               </div>
+
             </div>
           </div> <!-- end of col-md-4 -->
         </div> <!-- end of row -->
@@ -1319,7 +1348,7 @@
     </div>
   </div>
 
-  <!-- Full Screen Reveal Effect -->
+  <!-- Reveal Overlay & Cashier Mode Elements -->
   <div class="reveal-overlay" id="revealOverlay"></div>
   <div class="fullscreen-reveal" id="fullscreenReveal">
     <div class="reveal-progress" id="revealProgress"></div>
@@ -1328,12 +1357,9 @@
     </div>
   </div>
 
-  <!-- Cashier Mode Entry Screen -->
   <div class="cashier-mode-entry" id="cashierModeEntry">
     <div class="cashier-logo-container">
-      <div class="cashier-logo">
-        <img src="../images/mainlogo.png" alt="Store Logo">
-      </div>
+      <div class="cashier-logo"><img src="../images/mainlogo.png" alt="Store Logo"></div>
       <div class="cashier-title">Entering Cashier Mode</div>
       <div class="cashier-subtitle">Blessence Point of Sale</div>
     </div>
@@ -1343,17 +1369,14 @@
       <div class="cashier-loading-dot"></div>
     </div>
   </div>
-
-  <!-- Cashier Mode Tap Counter -->
   <div class="cashier-tap-counter" id="cashierTapCounter"></div>
 
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    
-    // --- Mobile Sidebar Toggle Logic ---
     document.addEventListener('DOMContentLoaded', () => {
+      // --- Mobile Sidebar Logic ---
       const hamburgerBtn = document.getElementById('hamburgerBtn');
       const sidebar = document.getElementById('sidebar');
       const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -1365,10 +1388,8 @@
         sidebarOverlay.classList.toggle('active');
       };
 
-      hamburgerBtn.addEventListener('click', toggleSidebar);
-      sidebarOverlay.addEventListener('click', toggleSidebar);
-
-      // Close sidebar when a nav link is clicked (on mobile)
+      if (hamburgerBtn) hamburgerBtn.addEventListener('click', toggleSidebar);
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
       document.querySelectorAll('.sidebar .nav-link').forEach(link => {
         link.addEventListener('click', () => {
           if (window.innerWidth < 992 && sidebar.classList.contains('mobile-open')) {
@@ -1377,550 +1398,523 @@
         });
       });
 
-      // Adjust main content padding based on mobile header height
       const adjustContentForMobileHeader = () => {
         if (window.innerWidth < 992 && mobileHeader && mainContent) {
-          const headerHeight = mobileHeader.offsetHeight;
-          mainContent.style.paddingTop = `${headerHeight + 20}px`; // Add 20px extra padding
+          mainContent.style.paddingTop = (mobileHeader.offsetHeight + 20) + 'px';
         } else if (mainContent) {
-          mainContent.style.paddingTop = '35px'; // Reset to desktop default
+          mainContent.style.paddingTop = '35px';
+        }
+      };
+      window.addEventListener('load', adjustContentForMobileHeader);
+      window.addEventListener('resize', adjustContentForMobileHeader);
+
+      // --- Global Variables for Chart Instances ---
+      let categoryChartInstance = null;
+      let demographicsChartInstance = null;
+      let orderStatusChartInstance = null;
+      let salesChartInstance = null;
+
+      // --- Render Functions for All Charts ---
+
+      const updateStats = (stats) => {
+        const els = {
+          'orders_today': document.querySelector('.orders-today .stat-value'),
+          'orders_week': document.querySelector('.this-week .stat-value'),
+          'total_sales': document.querySelector('.total-sales .stat-value'),
+          'total_favorites': document.querySelector('.favorites-count .stat-value')
+        };
+        for (let k in els) {
+          if (els[k]) {
+            if (k === 'total_sales') {
+              els[k].textContent = '₱' + parseFloat(stats[k] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } else {
+              els[k].textContent = (stats[k] || 0);
+            }
+          }
         }
       };
 
-      window.addEventListener('load', adjustContentForMobileHeader);
-      window.addEventListener('resize', adjustContentForMobileHeader);
-      // Re-adjust after sidebar toggle animation completes
-      sidebar.addEventListener('transitionend', adjustContentForMobileHeader);
+      const updateBestSellers = (products) => {
+        const container = document.querySelector('.best-sellers-container');
+        if (!products || !products.length) {
+          container.innerHTML = `<div class="placeholder-box"><i class="fas fa-cube fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No sales data</div></div>`;
+          return;
+        }
+        container.innerHTML = products.map(p => `
+      <div class="product-item d-flex align-items-center justify-content-between p-3 mb-2" style="background:#f8f9fa; border-radius:10px;">
+        <div><div class="fw-bold" style="color:var(--dark-pink)">${p.product_name}</div><small class="text-muted">${p.Category} • ${p.total_quantity} sold</small></div>
+      </div>`).join('');
+      };
 
-      // --- Chart Filter System ---
-      class ChartFilterSystem {
+      const updateStoreRatings = (ratings) => {
+        const container = document.querySelector('.ratings-container');
+        if (!ratings) {
+          container.innerHTML = `<div class="placeholder-box"><i class="fas fa-star fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No ratings available</div></div>`;
+          return;
+        }
+        const avg = parseFloat(ratings.average_rating || 0).toFixed(1);
+        const total = ratings.total_reviews || 0;
+        if (total === 0) {
+          container.innerHTML = `<div class="placeholder-box"><i class="fas fa-star fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No ratings yet</div></div>`;
+          return;
+        }
+
+        let starsHTML = '';
+        for (let i = 0; i < Math.floor(avg); i++) starsHTML += '<i class="fas fa-star text-warning"></i>';
+        if (avg % 1 >= 0.5) starsHTML += '<i class="fas fa-star-half-alt text-warning"></i>';
+
+        let barsHTML = [5, 4, 3, 2, 1].map(s => {
+          const c = ratings[`${s}_star`] || 0;
+          const pct = total > 0 ? (c / total) * 100 : 0;
+          return `<div class="d-flex align-items-center mb-2"><span style="width:20px">${s}</span><i class="fas fa-star text-warning me-2" style="font-size:0.8rem"></i><div class="progress flex-grow-1 me-2" style="height:8px"><div class="progress-bar" style="width:${pct}%; background-color:var(--primary-pink)"></div></div><small class="text-muted" style="width:30px">${c}</small></div>`;
+        }).join('');
+
+        // Recent reviews section
+        let recentReviewsHTML = '';
+        if (ratings.recent_reviews && ratings.recent_reviews.length > 0) {
+          recentReviewsHTML = '<div class="mt-4"><h6 class="mb-3" style="font-size:0.95rem; color:var(--dark-pink); font-weight:600;">Recent Reviews</h6>';
+          ratings.recent_reviews.forEach(review => {
+            const reviewDate = new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const reviewStars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+            const userName = review.username || 'Anonymous';
+
+            recentReviewsHTML += `
+          <div class="customer-item p-3 mb-2" style="background:white; border-radius:10px;">
+            <div class="d-flex align-items-start mb-2">
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="fw-bold" style="color:var(--dark-pink); font-size:0.9rem">${userName}</span>
+                  <small class="text-muted" style="font-size:0.75rem">${reviewDate}</small>
+                </div>
+                <div class="mb-2" style="color:#FFC107; font-size:0.85rem">${reviewStars}</div>
+                ${review.comment ? `<p class="mb-0" style="font-size:0.85rem; color:#666; line-height:1.4">${review.comment}</p>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+          });
+          recentReviewsHTML += '</div>';
+        }
+
+        container.innerHTML = `<div class="text-center mb-3"><div style="font-size:2.5rem; font-weight:bold; color:var(--dark-pink)">${avg}</div><div class="mb-2">${starsHTML}</div><small class="text-muted">${total} reviews</small></div><div>${barsHTML}</div>${recentReviewsHTML}`;
+      };
+
+      const updateAIInsights = (insights) => {
+        const container = document.querySelector('.ai-insights-container');
+        if (!insights || !insights.length) {
+          container.innerHTML = `<div class="placeholder-box"><i class="fas fa-robot fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No insights yet</div></div>`;
+          return;
+        }
+        container.innerHTML = insights.map(i => `<div class="insight-item p-3 mb-2" style="background:white; border-radius:10px; border-left:4px solid var(--primary-pink)"><div class="d-flex align-items-start"><i class="fas fa-lightbulb mt-1 me-2" style="color:var(--primary-pink)"></i><small style="color:#333">${i}</small></div></div>`).join('');
+      };
+
+      const updateTopCustomers = (customers) => {
+        const container = document.querySelector('.top-customers-container');
+        if (!customers || !customers.length) {
+          container.innerHTML = `<div class="placeholder-box"><i class="fas fa-users fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No data</div></div>`;
+          return;
+        }
+        container.innerHTML = customers.map(c => {
+          const name = (c.first_name && c.last_name) ? `${c.first_name} ${c.last_name}` : (c.username || 'Unknown');
+          return `<div class="customer-item d-flex align-items-center justify-content-between p-3 mb-2" style="background:white; border-radius:10px;">
+            <div class="d-flex align-items-center"><div class="me-3" style="width:40px; height:40px; background:var(--primary-pink); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold">${name.charAt(0).toUpperCase()}</div><div><div class="fw-bold" style="color:var(--dark-pink)">${name}</div><small class="text-muted">${c.total_orders} orders</small></div></div>
+            <div class="text-end"><div class="fw-bold" style="color:var(--dark-pink)">₱${parseFloat(c.total_spent || 0).toFixed(2)}</div></div>
+        </div>`;
+        }).join('');
+      };
+
+      // Fixed render functions with animation stability
+      const renderCategoryChart = (data) => {
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        if (categoryChartInstance) categoryChartInstance.destroy();
+
+        let labels = [], values = [];
+        if (data && data.length > 0) {
+          labels = data.map(d => d.Category);
+          values = data.map(d => d.total_items_sold);
+        } else {
+          labels = ['No Data'];
+          values = [1];
+        }
+
+        const colors = ['#e497aa', '#db8299', '#c36c82', '#b05a70', '#9d4e5f', '#8a4250'];
+
+        categoryChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: (data && data.length) ? colors : ['#f0f0f0'],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { 
+                position: window.innerWidth < 768 ? 'bottom' : 'right',
+              }
+            },
+            animation: {
+              duration: 1000,
+              easing: 'easeOutQuart',
+              animateScale: true,
+              animateRotate: true
+            },
+            responsiveAnimationDuration: 0
+          }
+        });
+      };
+
+      const renderDemographicsChart = (data) => {
+        const ctx = document.getElementById('demographicsChart').getContext('2d');
+        if (demographicsChartInstance) demographicsChartInstance.destroy();
+
+        let labels = [], values = [];
+        if (data && data.length > 0) {
+          labels = data.map(d => d.skin_type.charAt(0).toUpperCase() + d.skin_type.slice(1));
+          values = data.map(d => d.count);
+        } else {
+          labels = ['No Data'];
+          values = [1];
+        }
+
+        demographicsChartInstance = new Chart(ctx, {
+          type: 'polarArea',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: [
+                'rgba(228, 151, 170, 0.8)',
+                'rgba(219, 130, 153, 0.8)',
+                'rgba(195, 108, 130, 0.8)',
+                'rgba(176, 90, 112, 0.8)',
+                'rgba(157, 78, 95, 0.8)'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { 
+              r: { 
+                ticks: { 
+                  backdropColor: 'transparent',
+                } 
+              } 
+            },
+            plugins: { 
+              legend: { 
+                position: 'bottom',
+              } 
+            },
+            animation: {
+              duration: 1200,
+              easing: 'easeOutQuart',
+              animateScale: true,
+              animateRotate: true
+            },
+            responsiveAnimationDuration: 0
+          }
+        });
+      };
+
+      const renderOrderStatusChart = (data) => {
+        const ctx = document.getElementById('orderStatusChart').getContext('2d');
+        if (orderStatusChartInstance) orderStatusChartInstance.destroy();
+
+        let labels = [], values = [], bgColors = [];
+
+        if (data && data.length > 0) {
+          labels = data.map(d => d.status.toUpperCase());
+          values = data.map(d => d.count);
+          const statusColors = {
+            'COMPLETED': '#28a745',
+            'PENDING': '#ffc107',
+            'CANCELLED': '#dc3545',
+            'PROCESSING': '#17a2b8'
+          };
+          bgColors = labels.map(l => statusColors[l] || '#6c757d');
+        } else {
+          labels = ['No Data'];
+          values = [1];
+          bgColors = ['#f0f0f0'];
+        }
+
+        orderStatusChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Orders',
+              data: values,
+              backgroundColor: bgColors,
+              borderRadius: 5
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { display: false } 
+            },
+            scales: { 
+              x: { 
+                grid: { display: false },
+                beginAtZero: true
+              }
+            },
+            animation: {
+              duration: 800,
+              easing: 'easeOutQuart',
+              animations: {
+                x: {
+                  from: 0,
+                  duration: 800
+                }
+              }
+            },
+            responsiveAnimationDuration: 0
+          }
+        });
+      };
+
+      const renderSalesChart = (chartData) => {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        if (salesChartInstance) salesChartInstance.destroy();
+
+        let labels = [], salesData = [], ordersData = [];
+
+        if (chartData && chartData.length > 0) {
+          labels = chartData.map(item => item.display_date || item.date);
+          salesData = chartData.map(item => parseFloat(item.sales) || 0);
+          ordersData = chartData.map(item => parseInt(item.orders) || 0);
+        } else {
+          labels = ["No Data"];
+          salesData = [0];
+          ordersData = [0];
+        }
+
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(228, 151, 170, 0.3)');
+        gradient.addColorStop(1, 'rgba(228, 151, 170, 0.05)');
+
+        salesChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Sales (₱)',
+                data: salesData,
+                borderColor: '#e497aa',
+                backgroundColor: gradient,
+                tension: 0.4,
+                fill: true,
+                yAxisID: 'y',
+                borderWidth: 3,
+                pointRadius: 3,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Orders',
+                data: ordersData,
+                borderColor: '#db8299',
+                backgroundColor: 'rgba(219, 130, 153, 0.1)',
+                tension: 0.4,
+                fill: false,
+                yAxisID: 'y1',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 2,
+                pointHoverRadius: 5
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+              y: {
+                position: 'left',
+                beginAtZero: true,
+                ticks: {
+                  callback: (val) => '₱' + val.toLocaleString()
+                }
+              },
+              y1: {
+                position: 'right',
+                beginAtZero: true,
+                grid: { drawOnChartArea: false }
+              },
+              x: { grid: { display: false } }
+            },
+            plugins: { 
+              legend: { position: 'top' } 
+            },
+            animation: {
+              duration: 1000,
+              easing: 'easeOutQuart',
+              animations: {
+                y: {
+                  from: 0,
+                  duration: 1000
+                }
+              }
+            },
+            responsiveAnimationDuration: 0
+          }
+        });
+      };
+
+      // Add CSS fixes for animation stability
+      const animationFixCSS = `
+        .chart-container {
+          position: relative;
+          min-height: 200px;
+        }
+        
+        .small-chart-container {
+          min-height: 250px;
+        }
+        
+        @media (max-width: 768px) {
+          .chart-container {
+            min-height: 300px;
+          }
+          .small-chart-container {
+            min-height: 200px;
+          }
+        }
+      `;
+
+      // Inject the CSS fix
+      const style = document.createElement('style');
+      style.textContent = animationFixCSS;
+      document.head.appendChild(style);
+
+      // --- SINGLE DashboardManager Class (No Duplicates) ---
+      class DashboardManager {
         constructor() {
-          this.currentChart = null;
-          this.isAnimating = false;
           this.currentPeriod = 'All Time';
-          this.chartContainer = document.querySelector('.chart-container');
-          this.chartCanvas = document.getElementById('salesChart');
+          this.isLoading = false;
           this.init();
         }
 
         init() {
           this.bindEvents();
-          this.loadInitialData(); // This will fetch and render the initial chart
+          this.fetchAndRefreshDashboard(this.currentPeriod);
         }
 
         bindEvents() {
           document.querySelectorAll('.btn-group .btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-              const period = e.target.dataset.period; // Use data-period attribute
-              await this.handlePeriodChange(period);
+            btn.addEventListener('click', (e) => {
+              const period = e.target.dataset.period;
+              if (period !== this.currentPeriod && !this.isLoading) {
+                this.currentPeriod = period;
+                document.querySelectorAll('.btn-group .btn').forEach(b => 
+                  b.classList.toggle('active', b.dataset.period === period)
+                );
+                this.fetchAndRefreshDashboard(period);
+              }
             });
           });
-        }
 
-        async handlePeriodChange(period) {
-          if (this.isAnimating || period === this.currentPeriod) return;
-
-          this.updateActiveButton(period);
-          this.currentPeriod = period;
-          await this.fetchAndUpdateChart(period);
-        }
-
-        updateActiveButton(period) {
-          document.querySelectorAll('.btn-group .btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.period === period);
+          // Fix for window resize - debounce to prevent multiple redraws
+          let resizeTimeout;
+          window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+              this.handleResize();
+            }, 250);
           });
         }
 
-        async fetchAndUpdateChart(period) {
+        handleResize() {
+          // Only redraw charts if they exist
+          if (salesChartInstance || categoryChartInstance || 
+              demographicsChartInstance || orderStatusChartInstance) {
+            this.fetchAndRefreshDashboard(this.currentPeriod, true);
+          }
+        }
+
+        async fetchAndRefreshDashboard(period, isResize = false) {
+          if (this.isLoading) return;
+
+          this.isLoading = true;
+
           try {
-            this.isAnimating = true;
-            this.startChartTransition();
-
-            const response = await fetch(`../php/admin.php?period=${encodeURIComponent(period)}&chartOnly=true`);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+            const response = await fetch(`../php/admin.php?period=${encodeURIComponent(period)}`);
             const result = await response.json();
+
             if (result.success) {
-              this.updateChart(result.data.chart_data, period);
+              // Small delay to ensure DOM is ready for animations
+              setTimeout(() => {
+                this.refreshAllComponents(result.data);
+              }, isResize ? 100 : 50);
             } else {
-              throw new Error(result.error || 'Failed to fetch chart data');
+              console.error("Failed to fetch dashboard data:", result.message);
+              this.showErrorState();
             }
           } catch (error) {
-            console.error('Chart filter error:', error);
-            this.showError('Failed to load chart data: ' + error.message);
-            this.renderEmptyChartState(); // Render an empty state on error
+            console.error("Error fetching dashboard data:", error);
+            this.showErrorState();
           } finally {
-            this.isAnimating = false;
+            this.isLoading = false;
           }
         }
 
-        startChartTransition() {
-          // Fade out current chart and scale down container slightly
-          this.chartContainer.style.opacity = '0.7';
-          this.chartContainer.style.transform = 'scale(0.98) translateY(8px)';
+        refreshAllComponents(data) {
+          // Ensure charts have proper container sizes before rendering
+          this.ensureChartContainers();
+          
+          // Update all charts
+          renderSalesChart(data.chart_data);
+          renderCategoryChart(data.category_sales);
+          renderDemographicsChart(data.customer_demographics);
+          renderOrderStatusChart(data.order_status_dist);
 
-          if (this.currentChart) {
-            this.currentChart.destroy();
-          }
+          // Update other components
+          updateStats(data.stats);
+          updateBestSellers(data.best_sellers);
+          updateStoreRatings(data.ratings);
+          updateAIInsights(data.ai_insights);
+          updateTopCustomers(data.top_customers);
         }
 
-        updateChart(chartData, period) {
-          const ctx = this.chartCanvas.getContext('2d');
-          const { labels, salesData, ordersData } = this.prepareChartData(chartData, period);
-
-          this.currentChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [
-                {
-                  label: 'Sales (₱)',
-                  data: salesData,
-                  borderColor: '#e497aa',
-                  backgroundColor: this.createGradient(ctx, '#e497aa'),
-                  tension: 0.4,
-                  fill: true,
-                  yAxisID: 'y',
-                  borderWidth: 3,
-                  pointBackgroundColor: '#e497aa',
-                  pointBorderColor: '#ffffff',
-                  pointBorderWidth: 2,
-                  pointRadius: 4,
-                  pointHoverRadius: 6
-                },
-                {
-                  label: 'Orders',
-                  data: ordersData,
-                  borderColor: '#db8299',
-                  backgroundColor: 'rgba(219, 130, 153, 0.1)',
-                  tension: 0.4,
-                  fill: false,
-                  yAxisID: 'y1',
-                  borderWidth: 2,
-                  borderDash: [5, 5],
-                  pointBackgroundColor: '#db8299',
-                  pointBorderColor: '#ffffff',
-                  pointBorderWidth: 2,
-                  pointRadius: 3,
-                  pointHoverRadius: 5
-                }
-              ]
-            },
-            options: this.getChartOptions(period)
-          });
-          this.animateChartIn();
-        }
-
-        renderEmptyChartState() {
-          if (this.currentChart) {
-            this.currentChart.destroy();
-            this.currentChart = null;
-          }
-          const ctx = this.chartCanvas.getContext('2d');
-          ctx.clearRect(0, 0, this.chartCanvas.width, this.chartCanvas.height); // Clear canvas
-
-          // You could draw a custom "No Data" message here if desired
-          ctx.font = '16px Arial';
-          ctx.fillStyle = '#999';
-          ctx.textAlign = 'center';
-          ctx.fillText('No chart data available', this.chartCanvas.width / 2, this.chartCanvas.height / 2);
-
-          this.animateChartIn(); // Still animate the container
-        }
-
-
-        prepareChartData(chartData, period) {
-          const labels = chartData.map(item => item.display_date || item.date);
-          const salesData = chartData.map(item => parseFloat(item.sales) || 0);
-          const ordersData = chartData.map(item => parseInt(item.orders) || 0);
-          return { labels, salesData, ordersData };
-        }
-
-        createGradient(ctx, color) {
-          const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-          gradient.addColorStop(0, this.hexToRgba(color, 0.3));
-          gradient.addColorStop(1, this.hexToRgba(color, 0.05));
-          return gradient;
-        }
-
-        hexToRgba(hex, alpha) {
-          const r = parseInt(hex.slice(1, 3), 16);
-          const g = parseInt(hex.slice(3, 5), 16);
-          const b = parseInt(hex.slice(5, 7), 16);
-          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        getChartOptions(period) {
-          return {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-              duration: 800,
-              easing: 'easeOutQuart'
-            },
-            interaction: {
-              mode: 'index',
-              intersect: false,
-            },
-            scales: {
-              x: {
-                grid: { display: false },
-                ticks: {
-                  maxRotation: period === 'Daily' ? 0 : 45,
-                  minRotation: period === 'Daily' ? 0 : 45
-                }
-              },
-              y: {
-                type: 'linear',
-                display: true,
-                position: 'left',
-                title: { display: false, text: 'Sales (₱)' },
-                grid: { color: 'rgba(0, 0, 0, 0.05)' },
-                ticks: {
-                  callback: function (value) {
-                    return '₱' + value.toLocaleString();
-                  }
-                }
-              },
-              y1: {
-                type: 'linear',
-                display: true,
-                position: 'right',
-                title: { display: false, text: 'Orders' },
-                grid: { drawOnChartArea: false },
-              }
-            },
-            plugins: {
-              legend: {
-                position: 'top',
-                labels: {
-                  padding: 20,
-                  usePointStyle: true,
-                  pointStyle: 'circle'
-                }
-              },
-              tooltip: {
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                titleColor: '#333',
-                bodyColor: '#666',
-                borderColor: '#e497aa',
-                borderWidth: 1,
-                usePointStyle: true,
-                callbacks: {
-                  label: function (context) {
-                    let label = context.dataset.label || '';
-                    if (label) label += ': ';
-                    if (context.parsed.y !== null) {
-                      if (context.dataset.label === 'Sales (₱)') {
-                        label += '₱' + context.parsed.y.toLocaleString();
-                      } else {
-                        label += context.parsed.y;
-                      }
-                    }
-                    return label;
-                  }
-                }
-              }
+        ensureChartContainers() {
+          // Force chart containers to have proper dimensions
+          const chartContainers = document.querySelectorAll('.chart-container, .small-chart-container');
+          chartContainers.forEach(container => {
+            if (container.offsetHeight === 0) {
+              container.style.minHeight = '200px';
             }
-          };
-        }
-
-        animateChartIn() {
-          this.chartContainer.style.opacity = '0';
-          this.chartContainer.style.transform = 'scale(1) translateY(0)';
-          requestAnimationFrame(() => {
-            this.chartContainer.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            this.chartContainer.style.opacity = '1';
-            this.chartContainer.style.transform = 'scale(1) translateY(0)';
           });
         }
 
-        showError(message) {
-          const errorDiv = document.createElement('div');
-          errorDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff4757;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            animation: slideInRight 0.3s ease;
-        `;
-          errorDiv.textContent = message;
-          document.body.appendChild(errorDiv);
-          setTimeout(() => {
-            errorDiv.style.animation = 'slideOutRight 0.3s ease';
-            setTimeout(() => errorDiv.remove(), 300);
-          }, 3000);
-        }
-
-        async loadInitialData() {
-          await this.fetchAndUpdateChart(this.currentPeriod);
+        showErrorState() {
+          console.error("Failed to load dashboard data");
         }
       }
 
-      // --- Dashboard Data Fetching & Updating ---
-      const fetchDashboardData = async () => {
-        try {
-          showLoadingState();
-          const response = await fetch(`../php/admin.php`);
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-          const result = await response.json();
+      // Initialize the dashboard
+      const dashboardManager = new DashboardManager();
+      window.dashboardManager = dashboardManager; // Make it globally accessible
 
-          if (result.success) {
-            updateDashboard(result.data);
-          } else {
-            throw new Error(result.error || 'Failed to fetch dashboard data');
-          }
-        } catch (error) {
-          console.error('Error fetching dashboard data:', error);
-          showErrorState(error.message);
-        } finally {
-          hideLoadingState();
-        }
-      };
-
-      const updateDashboard = (data) => {
-        updateStats(data.stats);
-        updateBestSellers(data.best_sellers);
-        updateStoreRatings(data.ratings);
-        updateAIInsights(data.ai_insights);
-        updateTopCustomers(data.top_customers);
-      };
-
-      const updateStats = (stats) => {
-        const statElements = {
-          'orders_today': document.querySelector('.orders-today .stat-value'),
-          'orders_week': document.querySelector('.this-week .stat-value'),
-          'total_sales': document.querySelector('.total-sales .stat-value'),
-          'total_favorites': document.querySelector('.favorites-count .stat-value'),
-        };
-
-        Object.keys(statElements).forEach(key => {
-          if (statElements[key]) {
-            statElements[key].style.transform = 'scale(0.8)';
-            setTimeout(() => {
-              statElements[key].textContent = key === 'total_sales' ? '₱' + parseFloat(stats[key] || 0).toFixed(2) : (stats[key] || 0);
-              statElements[key].style.transform = 'scale(1)';
-            }, 150);
-          }
-        });
-      };
-
-      const updateBestSellers = (products) => {
-        const container = document.querySelector('.best-sellers-container');
-        if (!container) return;
-
-        if (products.length === 0) {
-          container.innerHTML = `
-            <div class="placeholder-box">
-                <i class="fas fa-cube fa-2x mb-3" style="color: var(--primary-pink);"></i>
-                <div style="font-size: 1rem; margin-bottom: 6px;">No sales data available</div>
-                <small class="text-muted">Best selling products will appear here</small>
-            </div>
-        `;
-          return;
-        }
-
-        container.innerHTML = products.map((product, index) => `
-        <div class="product-item d-flex align-items-center justify-content-between p-3 mb-2" style="background: #f8f9fa; border-radius: 10px; animation: fadeInUp 0.5s ease ${index * 0.1}s both;">
-            <div class="d-flex align-items-center">
-                <div>
-                    <div class="product-name fw-bold" style="color: var(--dark-pink);">${product.product_name}</div>
-                    <small class="text-muted">${product.Category || 'N/A'} • ${product.total_quantity || 0} sold</small>
-                </div>
-            </div>
-        </div>
-        `).join('');
-      };
-
-      const updateStoreRatings = (ratings) => {
-        const container = document.querySelector('.ratings-container');
-        if (!container) return;
-
-        const averageRating = parseFloat(ratings.average_rating || 0).toFixed(1);
-        const totalReviews = ratings.total_reviews || 0;
-
-        if (totalReviews === 0) {
-          container.innerHTML = `
-            <div class="placeholder-box">
-                <i class="fas fa-star fa-2x mb-3" style="color: var(--primary-pink);"></i>
-                <div style="font-size: 1rem; margin-bottom: 6px;">No customer feedback yet</div>
-                <small class="text-muted">Rating statistics will appear here</small>
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = `
-          <div class="text-center mb-3" style="animation: fadeIn 0.6s ease;">
-              <div class="average-rating" style="font-size: 2.5rem; font-weight: bold; color: var(--dark-pink);">${averageRating}</div>
-              <div class="stars mb-2">
-                  ${generateStars(averageRating)}
-              </div>
-              <small class="text-muted">Based on ${totalReviews} reviews</small>
-          </div>
-          <div class="rating-bars">
-              ${generateRatingBars(ratings)}
-          </div>
-        `;
-
-        // Animate progress bars after DOM update
-        setTimeout(() => {
-          document.querySelectorAll('.ratings-container .progress-bar').forEach((bar, index) => {
-            const stars = 5 - index;
-            const count = ratings[`${stars}_star`] || 0;
-            const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-            bar.style.width = percentage + '%';
-          });
-        }, 100);
-      };
-
-      const generateStars = (rating) => {
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
-        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-        let starsHTML = '';
-        for (let i = 0; i < fullStars; i++) starsHTML += '<i class="fas fa-star" style="color: #ffc107;"></i>';
-        if (hasHalfStar) starsHTML += '<i class="fas fa-star-half-alt" style="color: #ffc107;"></i>';
-        for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="far fa-star" style="color: #ffc107;"></i>';
-        return starsHTML;
-      };
-
-      const generateRatingBars = (ratings) => {
-        const total = ratings.total_reviews || 0;
-        if (total === 0) return ''; // Handled by parent function's placeholder
-
-        const bars = [5, 4, 3, 2, 1].map((stars, index) => {
-          const count = ratings[`${stars}_star`] || 0;
-          return `
-            <div class="rating-bar-item d-flex align-items-center mb-2" style="animation: fadeIn 0.5s ease ${index * 0.1}s both;">
-                <span class="me-2" style="width: 20px;">${stars}</span>
-                <i class="fas fa-star me-2" style="color: #ffc107; font-size: 0.8rem;"></i>
-                <div class="progress flex-grow-1 me-2" style="height: 8px;">
-                    <div class="progress-bar" style="width: 0%; background-color: var(--primary-pink); transition: width 1s ease;"></div>
-                </div>
-                <small class="text-muted" style="width: 40px;">${count}</small>
-            </div>
-          `;
-        }).join('');
-        return bars;
-      };
-
-      const updateAIInsights = (insights) => {
-        const container = document.querySelector('.ai-insights-container');
-        if (!container) return;
-
-        if (!insights || insights.length === 0) {
-          container.innerHTML = `
-            <div class="placeholder-box">
-                <i class="fas fa-robot fa-2x mb-3" style="color: var(--primary-pink);"></i>
-                <div style="font-size: 1rem; margin-bottom: 6px;">AI-Powered Recommendations</div>
-                <small class="text-muted">Insights and suggestions will appear here</small>
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = insights.map((insight, index) => `
-          <div class="insight-item p-3 mb-2" style=" min-height: 81px; background: white; border-radius: 10px; border-left: 4px solid var(--primary-pink); animation: fadeIn 0.5s ease ${index * 0.1}s both;">
-              <div class="d-flex align-items-start">
-                  <i class="fas fa-lightbulb mt-1 me-2" style="color: var(--primary-pink);"></i>
-                  <div style="flex: 1;">
-                      <small style="font-size: 0.85rem; color: #333;">${insight}</small>
-                  </div>
-              </div>
-          </div>
-        `).join('');
-      };
-
-      const updateTopCustomers = (customers) => {
-        const container = document.querySelector('.top-customers-container');
-        if (!container) return;
-
-        if (!customers || customers.length === 0) {
-          container.innerHTML = `
-            <div class="placeholder-box">
-                <i class="fas fa-users fa-2x mb-3" style="color: var(--primary-pink) ;"></i>
-                <div style="font-size: 1rem; margin-bottom: 6px;">Customer Performance Data</div>
-                <small class="text-muted">Top customers will be listed here</small>
-            </div>
-        `;
-          return;
-        }
-
-        container.innerHTML = customers.map((customer, index) => {
-          const displayName = customer.first_name && customer.last_name
-            ? `${customer.first_name} ${customer.last_name}`
-            : customer.username || 'N/A';
-
-          return `
-            <div class="customer-item d-flex align-items-center justify-content-between p-3 mb-2" style="min-height: 81px; background: white; border-radius: 10px; animation: fadeInUp 0.5s ease 0.1s both;">
-                <div class="d-flex align-items-center">
-                    <div class="customer-avatar me-3" style="width: 40px; height: 40px; background: var(--primary-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                        ${displayName.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                        <div class="customer-name fw-bold" style="color: var(--dark-pink);">${displayName}</div>
-                        <small class="text-muted">${customer.total_orders || 0} orders</small>
-                    </div>
-                </div>
-                <div class="text-end">
-                    <div class="fw-bold" style="color: var(--dark-pink);">₱${parseFloat(customer.total_spent || 0).toFixed(2)}</div>
-                    <small class="text-muted">total spent</small>
-                </div>
-            </div>
-          `;
-        }).join('');
-      };
-
-      // Simple Loading/Error States for dashboard sections
-      const showLoadingState = () => {
-        document.querySelectorAll('.stats-buttons .stat-value').forEach(el => el.textContent = '...');
-      };
-
-      const hideLoadingState = () => {
-        // Data population automatically replaces '...'
-      };
-
-      const showErrorState = (message) => {
-        console.error('Dashboard error:', message);
-      };
-
-      // Highlight active sidebar link based on current URL
-      const highlightActiveNavLink = () => {
-        const navLinks = document.querySelectorAll('.sidebar .nav-link');
-        const currentPath = window.location.pathname.split('/').pop();
-
-        navLinks.forEach(link => {
-          const linkPath = link.getAttribute('href');
-          if (linkPath === currentPath) {
-            link.classList.add('active');
-          } else {
-            link.classList.remove('active');
-          }
-        });
-      };
-
-      // --- Initializations ---
-      new ChartFilterSystem();
-      fetchDashboardData();
-      
-      // Initialize cashier mode multi-tap (desktop)
-      new CashierModeMultiTap();
-      
-      // Initialize mobile long press cashier mode
-      new MobileLongPressCashierMode();
-
-      setInterval(fetchDashboardData, 300000);
-
-      highlightActiveNavLink();
+      // Auto-refresh every 5 minutes
+      setInterval(() => {
+        const activeBtn = document.querySelector('.btn-group .btn.active');
+        const currentPeriod = activeBtn ? activeBtn.dataset.period : 'All Time';
+        // You can add auto-refresh logic here if needed
+      }, 300000);
     });
-
   </script>
 </body>
 
