@@ -147,21 +147,10 @@
       color: rgba(255, 255, 255, 0.9);
     }
 
-    .total-customers {
-      background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
-    }
-
-    .new-this-month {
-      background: linear-gradient(135deg, #db8299 0%, #c36c82 100%);
-    }
-
-    .active-customers {
-      background: linear-gradient(135deg, #c36c82 0%, #b05a70 100%);
-    }
-
-    .feedback-received {
-      background: linear-gradient(135deg, #b05a70 0%, #9d4e5f 100%);
-    }
+    .total-customers { background: linear-gradient(135deg, #e497aa 0%, #db8299 100%); }
+    .new-this-month { background: linear-gradient(135deg, #db8299 0%, #c36c82 100%); }
+    .active-customers { background: linear-gradient(135deg, #c36c82 0%, #b05a70 100%); }
+    .feedback-received { background: linear-gradient(135deg, #b05a70 0%, #9d4e5f 100%); }
 
     /* Search and Filter */
     .search-filter-container {
@@ -170,11 +159,17 @@
       padding: 25px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       border: 1px solid rgba(228, 151, 170, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .search-box {
       position: relative;
-      margin-bottom: 20px;
+      flex-grow: 1;
+      max-width: 400px;
     }
 
     .search-box input {
@@ -230,6 +225,68 @@
       border-color: var(--primary-pink);
       color: white;
     }
+
+    /* --- Announcement Button & Modal Styles --- */
+    .btn-announcement {
+      background: var(--dark-pink);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(195, 108, 130, 0.3);
+    }
+    .btn-announcement:hover {
+      background: #b05a70;
+      transform: translateY(-2px);
+      color: white;
+    }
+
+    .btn-history {
+      background: white;
+      color: var(--dark-pink);
+      border: 2px solid var(--dark-pink);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+    .btn-history:hover {
+      background: var(--light-pink);
+    }
+    
+    /* Modal Customization */
+    .modal-header { background: var(--light-pink); border-bottom: 1px solid rgba(228, 151, 170, 0.2); }
+    .modal-title { color: var(--dark-pink); font-weight: 700; }
+    .user-selection-list {
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 10px;
+        background: #fcfcfc;
+    }
+    .user-checkbox-item { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
+    .user-checkbox-item:last-child { border-bottom: none; }
+    .user-checkbox-item:hover { background-color: #f8e2e7; }
+    .user-checkbox-item input { margin-right: 10px; width: 18px; height: 18px; accent-color: var(--dark-pink); }
+    .user-role-badge { font-size: 0.7rem; background: #eee; padding: 2px 6px; border-radius: 4px; margin-left: auto; }
+    
+    /* History Table Styles */
+    .history-table th { color: var(--dark-pink); font-weight: 600; border-bottom: 2px solid var(--primary-pink); }
+    .history-table td { vertical-align: middle; font-size: 0.9rem; }
+    .status-badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; }
+    .bg-active { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+    .bg-expired { background: rgba(108, 117, 125, 0.1); color: #6c757d; }
+
+    /* --------------------------------------------- */
 
     /* Customer Cards Grid */
     .customers-grid {
@@ -292,24 +349,11 @@
       text-transform: uppercase;
     }
 
-    .status-active {
-      background-color: rgba(40, 167, 69, 0.1);
-      color: #28a745;
-    }
+    .status-active { background-color: rgba(40, 167, 69, 0.1); color: #28a745; }
+    .status-inactive { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; }
+    .status-new { background-color: rgba(0, 123, 255, 0.1); color: #007bff; }
 
-    .status-inactive {
-      background-color: rgba(108, 117, 125, 0.1);
-      color: #6c757d;
-    }
-
-    .status-new {
-      background-color: rgba(0, 123, 255, 0.1);
-      color: #007bff;
-    }
-
-    .customer-details {
-      margin-bottom: 20px;
-    }
+    .customer-details { margin-bottom: 20px; }
 
     .customer-detail {
       display: flex;
@@ -333,9 +377,7 @@
       margin-top: 15px;
     }
 
-    .stat-item {
-      text-align: center;
-    }
+    .stat-item { text-align: center; }
 
     .stat-number {
       font-size: 1.25rem;
@@ -376,9 +418,7 @@
       color: var(--dark-pink);
     }
 
-    .action-btn i {
-      font-size: 0.9rem;
-    }
+    .action-btn i { font-size: 0.9rem; }
 
     /* Empty State */
     .empty-state {
@@ -408,23 +448,10 @@
       padding-right: 10px;
     }
 
-    .scrollable-content::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .scrollable-content::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-
-    .scrollable-content::-webkit-scrollbar-thumb {
-      background: var(--primary-pink);
-      border-radius: 10px;
-    }
-
-    .scrollable-content::-webkit-scrollbar-thumb:hover {
-      background: var(--dark-pink);
-    }
+    .scrollable-content::-webkit-scrollbar { width: 6px; }
+    .scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .scrollable-content::-webkit-scrollbar-thumb { background: var(--primary-pink); border-radius: 10px; }
+    .scrollable-content::-webkit-scrollbar-thumb:hover { background: var(--dark-pink); }
 
     /* Pagination Styles */
     .pagination-container {
@@ -442,9 +469,7 @@
       gap: 8px;
     }
 
-    .page-item {
-      margin: 0;
-    }
+    .page-item { margin: 0; }
 
     .page-link {
       display: flex;
@@ -486,108 +511,36 @@
     }
 
     /* Star Rating Styles */
-    .star-rating {
-      display: flex;
-      gap: 2px;
-      align-items: center;
-    }
-
-    .star {
-      color: #ddd;
-      font-size: 14px;
-    }
-
-    .star.filled {
-      color: #ffc107;
-    }
-
-    .rating-value {
-      margin-left: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #666;
-    }
-
-    .no-rating {
-      color: #999;
-      font-size: 0.85rem;
-      font-style: italic;
-    }
+    .star-rating { display: flex; gap: 2px; align-items: center; }
+    .star { color: #ddd; font-size: 14px; }
+    .star.filled { color: #ffc107; }
+    .rating-value { margin-left: 8px; font-size: 0.9rem; font-weight: 600; color: #666; }
+    .no-rating { color: #999; font-size: 0.85rem; font-style: italic; }
 
     /* Responsive Design */
     @media (max-width: 991px) {
-      .mobile-header {
-        display: block;
-      }
-
+      .mobile-header { display: block; }
       .sidebar {
         position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 280px;
-        transform: translateX(-100%);
-        z-index: 100;
-        padding-top: 60px;
+        top: 0; left: 0; height: 100%; width: 280px;
+        transform: translateX(-100%); z-index: 100; padding-top: 60px;
       }
-
-      .sidebar.mobile-open {
-        transform: translateX(0);
-      }
-
-      .sidebar-overlay.active {
-        display: block;
-      }
-
-      main {
-        margin-left: 0 !important;
-        width: 100% !important;
-        margin-top: 70px;
-      }
-
-      .stats-buttons {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .fixed-header {
-        position: relative;
-      }
-
-      .customers-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .sidebar-overlay.active { display: block; }
+      main { margin-left: 0 !important; width: 100% !important; margin-top: 70px; }
+      .stats-buttons { grid-template-columns: repeat(2, 1fr); }
+      .fixed-header { position: relative; }
+      .customers-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
     }
 
     @media (max-width: 575px) {
-      .stats-buttons {
-        grid-template-columns: 1fr;
-      }
-
-      .filter-options {
-        flex-direction: column;
-      }
-
-      .filter-btn {
-        text-align: center;
-      }
-
-      .pagination {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .customers-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .customer-actions {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .action-btn {
-        justify-content: center;
-      }
+      .stats-buttons { grid-template-columns: 1fr; }
+      .filter-options { flex-direction: column; }
+      .filter-btn { text-align: center; }
+      .pagination { flex-wrap: wrap; justify-content: center; }
+      .customers-grid { grid-template-columns: 1fr; }
+      .customer-actions { flex-direction: column; gap: 10px; }
+      .action-btn { justify-content: center; }
     }
   </style>
 </head>
@@ -699,158 +652,148 @@
 
           <!-- Search and Filter -->
           <div class="search-filter-container">
-            <div class="search-box">
-              <input type="text" placeholder="Search customers by name, email, or preferences...">
-              <i class="fas fa-search search-icon"></i>
+            <div class="d-flex gap-3 flex-grow-1 flex-wrap">
+                <div class="search-box">
+                  <input type="text" placeholder="Search customers by name, email, or preferences...">
+                  <i class="fas fa-search search-icon"></i>
+                </div>
+                <div class="filter-options">
+                  <button class="filter-btn active">All Customers</button>
+                  <button class="filter-btn">New Customers</button>
+                  <button class="filter-btn">With Feedback</button>
+                  <button class="filter-btn">Inactive</button>
+                </div>
             </div>
-            <div class="filter-options">
-              <button class="filter-btn active">All Customers</button>
-              <button class="filter-btn">New Customers</button>
-              <button class="filter-btn">With Feedback</button>
-              <button class="filter-btn">Inactive</button>
+            
+            <div class="d-flex gap-2">
+                <!-- NEW HISTORY BUTTON -->
+                <button class="btn-history" data-bs-toggle="modal" data-bs-target="#historyModal" onclick="loadAnnouncementHistory()">
+                    <i class="fas fa-history"></i> Manage History
+                </button>
+                <!-- NEW ANNOUNCEMENT BUTTON -->
+                <button class="btn-announcement" data-bs-toggle="modal" data-bs-target="#announcementModal">
+                    <i class="fas fa-bullhorn"></i> Create Announcement
+                </button>
             </div>
           </div>
         </div>
 
         <!-- Scrollable Content Area -->
         <div class="scrollable-content">
-          <!-- Sample Customer Cards -->
-          <div class="customers-grid">
-            <div class="customer-card">
-              <div class="customer-header">
-                <div>
-                  <div class="customer-name">Emily Johnson</div>
-                  <div class="customer-username">@emilyj</div>
-                </div>
-                <div class="customer-status status-active">Active</div>
-              </div>
-              <div class="customer-details">
-                <div class="customer-detail">
-                  <i class="fas fa-envelope"></i>
-                  <span>emily.johnson@example.com</span>
-                </div>
-                <div class="customer-detail">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>Joined: Jan 15, 2023</span>
-                </div>
-                <div class="customer-detail">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <span>New York, USA</span>
-                </div>
-              </div>
-              <div class="customer-stats">
-                <div class="stat-item">
-                  <div class="stat-number">12</div>
-                  <div class="stat-label">Orders</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">₱1,250</div>
-                  <div class="stat-label">Total Spent</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">4.8</div>
-                  <div class="stat-label">Rating</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="customer-card">
-              <div class="customer-header">
-                <div>
-                  <div class="customer-name">Michael Chen</div>
-                  <div class="customer-username">@michaelc</div>
-                </div>
-                <div class="customer-status status-new">New</div>
-              </div>
-              <div class="customer-details">
-                <div class="customer-detail">
-                  <i class="fas fa-envelope"></i>
-                  <span>michael.chen@example.com</span>
-                </div>
-                <div class="customer-detail">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>Joined: Oct 5, 2023</span>
-                </div>
-                <div class="customer-detail">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <span>San Francisco, USA</span>
-                </div>
-              </div>
-              <div class="customer-stats">
-                <div class="stat-item">
-                  <div class="stat-number">3</div>
-                  <div class="stat-label">Orders</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">₱420</div>
-                  <div class="stat-label">Total Spent</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">5.0</div>
-                  <div class="stat-label">Rating</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="customer-card">
-              <div class="customer-header">
-                <div>
-                  <div class="customer-name">Sarah Williams</div>
-                  <div class="customer-username">@sarahw</div>
-                </div>
-                <div class="customer-status status-inactive">Inactive</div>
-              </div>
-              <div class="customer-details">
-                <div class="customer-detail">
-                  <i class="fas fa-envelope"></i>
-                  <span>sarah.williams@example.com</span>
-                </div>
-                <div class="customer-detail">
-                  <i class="fas fa-calendar-alt"></i>
-                  <span>Joined: Mar 22, 2022</span>
-                </div>
-                <div class="customer-detail">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <span>London, UK</span>
-                </div>
-              </div>
-              <div class="customer-stats">
-                <div class="stat-item">
-                  <div class="stat-number">7</div>
-                  <div class="stat-label">Orders</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">₱890</div>
-                  <div class="stat-label">Total Spent</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-number">4.5</div>
-                  <div class="stat-label">Rating</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagination -->
-          <div class="pagination-container">
-            <ul class="pagination">
-              <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li class="page-item active"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </div>
+          <!-- Content loaded via JS -->
+           <div class="text-center p-5"><div class="spinner-border text-danger" role="status"></div></div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- CREATE ANNOUNCEMENT MODAL -->
+  <div class="modal fade" id="announcementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-bullhorn me-2"></i>Compose Announcement
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="announcementForm">
+            
+            <!-- Content Section -->
+            <div class="mb-3">
+              <label class="form-label fw-bold" style="color:var(--dark-pink)">Title</label>
+              <input type="text" class="form-control" id="annTitle" placeholder="e.g., Big Summer Sale!" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold" style="color:var(--dark-pink)">Message Body</label>
+              <textarea class="form-control" id="annMessage" rows="4" placeholder="Enter your announcement details here..." required></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold" style="color:var(--dark-pink)">Schedule Publish (Optional)</label>
+                    <input type="datetime-local" class="form-control" id="annSchedule">
+                    <div class="form-text">Leave blank to publish immediately.</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold" style="color:var(--dark-pink)">Expiration Date (Optional)</label>
+                    <input type="datetime-local" class="form-control" id="annExpire">
+                    <div class="form-text">Announcement disappears after this date.</div>
+                </div>
+            </div>
+
+            <!-- User Selection Section -->
+            <div class="mb-2">
+                <label class="form-label fw-bold" style="color:var(--dark-pink)">Target Recipients</label>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAllUsers">
+                        <label class="form-check-label" for="selectAllUsers">Select All</label>
+                    </div>
+                    <!-- Filter Users in Modal -->
+                    <select class="form-select form-select-sm w-auto" id="modalUserFilter">
+                        <option value="all">Filter: All Roles</option>
+                        <option value="customer">Customers Only</option>
+                        <option value="admin">Admins Only</option>
+                    </select>
+                </div>
+                
+                <input type="text" class="form-control form-control-sm mb-2" id="userSearchInModal" placeholder="Search specific user...">
+
+                <div class="user-selection-list" id="userCheckboxList">
+                   <!-- Populated by JS -->
+                   <div class="text-center p-3">Loading users...</div>
+                </div>
+                <div class="form-text text-end" id="selectedCount">0 users selected</div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-info text-white" id="previewBtn">
+            <i class="fas fa-eye"></i> Preview
+          </button>
+          <button type="button" class="btn btn-success" id="publishBtn" style="background-color: var(--dark-pink); border-color: var(--dark-pink);">
+            <i class="fas fa-paper-plane"></i> Publish / Schedule
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY / DELETE MODAL -->
+  <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-history me-2"></i>Announcement History
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+                <table class="table history-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date Sent</th>
+                            <th>Title</th>
+                            <th>Recipients</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr><td colspan="5" class="text-center py-4">Loading history...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -885,8 +828,11 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Load customer data
+      // Load customer data (Existing Logic)
       loadCustomerData('all', '', 1);
+      
+      // Load users for the announcement modal
+      loadUsersForModal();
 
       const searchBox = document.querySelector('.search-box input');
       const filterButtons = document.querySelectorAll('.filter-btn');
@@ -946,19 +892,242 @@
         sidebar.classList.remove('mobile-open');
         sidebarOverlay.classList.remove('active');
       });
-
-      // Optional: Close sidebar if a nav link is clicked (prevents it staying open)
-      const navLinks = sidebar.querySelectorAll('.nav-link');
-      navLinks.forEach(link => {
-        link.addEventListener('click', function () {
-          if (sidebar.classList.contains('mobile-open')) {
-            sidebar.classList.remove('mobile-open');
-            sidebarOverlay.classList.remove('active');
-          }
-        });
-      });
     }
 
+    // --- ANNOUNCEMENT CREATION LOGIC ---
+    let allModalUsers = []; 
+
+    function loadUsersForModal() {
+        fetch('../php/get-users-for-announcement.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    allModalUsers = data.users;
+                    renderUserList(allModalUsers);
+                } else {
+                    document.getElementById('userCheckboxList').innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                }
+            })
+            .catch(err => console.error('Error fetching users:', err));
+    }
+
+    function renderUserList(users) {
+        const container = document.getElementById('userCheckboxList');
+        if(users.length === 0) {
+            container.innerHTML = '<div class="text-center p-2 text-muted">No users found.</div>';
+            return;
+        }
+
+        let html = '';
+        users.forEach(user => {
+            html += `
+                <div class="user-checkbox-item">
+                    <input type="checkbox" class="user-select-cb" value="${user.id}" data-role="${user.role}">
+                    <div style="flex-grow:1">
+                        <div class="fw-bold small">${user.name}</div>
+                        <div class="small text-muted">${user.email}</div>
+                    </div>
+                    <span class="user-role-badge">${user.role}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        updateSelectedCount();
+    }
+
+    // Modal Filters & Search
+    document.getElementById('userSearchInModal').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        const roleFilter = document.getElementById('modalUserFilter').value;
+        filterModalUsers(term, roleFilter);
+    });
+
+    document.getElementById('modalUserFilter').addEventListener('change', function(e) {
+        const roleFilter = e.target.value;
+        const term = document.getElementById('userSearchInModal').value.toLowerCase();
+        filterModalUsers(term, roleFilter);
+    });
+
+    function filterModalUsers(term, role) {
+        const filtered = allModalUsers.filter(user => {
+            const matchesTerm = user.name.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
+            const matchesRole = role === 'all' || user.role.toLowerCase() === role;
+            return matchesTerm && matchesRole;
+        });
+        renderUserList(filtered);
+        document.getElementById('selectAllUsers').checked = false;
+    }
+
+    document.getElementById('selectAllUsers').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('#userCheckboxList .user-select-cb');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        updateSelectedCount();
+    });
+
+    document.getElementById('userCheckboxList').addEventListener('change', function(e) {
+        if (e.target.classList.contains('user-select-cb')) {
+            updateSelectedCount();
+        }
+    });
+
+    function updateSelectedCount() {
+        const count = document.querySelectorAll('#userCheckboxList .user-select-cb:checked').length;
+        document.getElementById('selectedCount').innerText = `${count} users selected`;
+    }
+
+    // Preview Button
+    document.getElementById('previewBtn').addEventListener('click', function() {
+        const title = document.getElementById('annTitle').value;
+        const message = document.getElementById('annMessage').value;
+
+        if(!title || !message) {
+            Swal.fire('Missing Info', 'Please enter a title and message first.', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: title,
+            html: `<div class="text-start p-3 border rounded bg-light">${message.replace(/\n/g, '<br>')}</div>`,
+            icon: 'info',
+            confirmButtonText: 'Looks Good',
+            confirmButtonColor: 'var(--dark-pink)'
+        });
+    });
+
+    // Publish Button
+    document.getElementById('publishBtn').addEventListener('click', function() {
+        const title = document.getElementById('annTitle').value;
+        const message = document.getElementById('annMessage').value;
+        const scheduledDate = document.getElementById('annSchedule').value;
+        const expirationDate = document.getElementById('annExpire').value;
+        const selectedCheckboxes = document.querySelectorAll('#userCheckboxList .user-select-cb:checked');
+        const recipients = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+        if (!title || !message) {
+            Swal.fire('Error', 'Title and Message are required.', 'error');
+            return;
+        }
+
+        if (recipients.length === 0) {
+            Swal.fire('Error', 'Please select at least one recipient.', 'error');
+            return;
+        }
+
+        let confirmText = scheduledDate ? 
+            `This will be scheduled for ${new Date(scheduledDate).toLocaleString()}.` : 
+            "This will be visible to users immediately.";
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: confirmText,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: scheduledDate ? 'Schedule It' : 'Publish Now',
+            confirmButtonColor: 'var(--dark-pink)'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                sendAnnouncement({ title, message, scheduledDate, expirationDate, recipients });
+            }
+        });
+    });
+
+    function sendAnnouncement(data) {
+        fetch('../php/send-announcement.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                Swal.fire('Success!', `Announcement sent/scheduled for ${response.count} users.`, 'success');
+                document.getElementById('announcementForm').reset();
+                document.getElementById('selectAllUsers').checked = false;
+                updateSelectedCount();
+                
+                const modalEl = document.getElementById('announcementModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+            } else {
+                Swal.fire('Error', response.error, 'error');
+            }
+        })
+        .catch(err => {
+            Swal.fire('Error', 'Failed to connect to server.', 'error');
+        });
+    }
+
+    // --- NEW: HISTORY & DELETE LOGIC ---
+    function loadAnnouncementHistory() {
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Loading history...</td></tr>';
+
+        fetch('../php/get-announcement-history.php')
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    if(data.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No announcements found.</td></tr>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.data.forEach(item => {
+                        const statusClass = item.status === 'Active' ? 'bg-active' : 'bg-expired';
+                        html += `
+                            <tr>
+                                <td>${item.date}</td>
+                                <td class="fw-bold text-dark">${item.title}</td>
+                                <td>${item.recipients} users</td>
+                                <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${item.title.replace(/'/g, "\\'")}', '${item.raw_date}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${data.error}</td></tr>`;
+                }
+            })
+            .catch(err => {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load history.</td></tr>';
+            });
+    }
+
+    function deleteAnnouncement(title, date) {
+        Swal.fire({
+            title: 'Delete this announcement?',
+            text: "This will remove it from all recipient's notifications. This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('../php/delete-announcement.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: title, date: date })
+                })
+                .then(res => res.json())
+                .then(response => {
+                    if(response.success) {
+                        Swal.fire('Deleted!', 'The announcement has been removed.', 'success');
+                        loadAnnouncementHistory(); // Refresh list
+                    } else {
+                        Swal.fire('Error', response.error, 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    // --- EXISTING FUNCTION: loadCustomerData ---
     function loadCustomerData(filter = 'all', search = '') {
       fetch(`../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(search)}`)
         .then(response => response.json())
@@ -967,25 +1136,24 @@
 
           if (data.success) {
             // Update stats
-            document.querySelector('.total-customers .stat-value').textContent = data.stats.total_customers;
-            document.querySelector('.new-this-month .stat-value').textContent = data.stats.new_this_month;
-            document.querySelector('.active-customers .stat-value').textContent = data.stats.active_customers;
-            document.querySelector('.feedback-received .stat-value').textContent = data.stats.feedback_received;
+            if(data.stats) {
+                document.querySelector('.total-customers .stat-value').textContent = data.stats.total_customers;
+                document.querySelector('.new-this-month .stat-value').textContent = data.stats.new_this_month;
+                document.querySelector('.active-customers .stat-value').textContent = data.stats.active_customers;
+                document.querySelector('.feedback-received .stat-value').textContent = data.stats.feedback_received;
+            }
 
             // Populate all customers
             if (data.customers.length > 0) {
               let customersHTML = '<div class="customers-grid">';
 
               data.customers.forEach(c => {
-                // Determine status class
                 let statusClass = 'status-active';
                 if (c.status.toLowerCase().includes('inactive')) {
                   statusClass = 'status-inactive';
                 } else if (c.status.toLowerCase().includes('new')) {
                   statusClass = 'status-new';
                 }
-
-                // Generate star rating HTML
                 const starRatingHTML = generateStarRating(c.avg_rating, c.has_feedback);
 
                 customersHTML += `
@@ -1074,38 +1242,27 @@
       }
 
       let starsHTML = '<div class="star-rating">';
-
-      // Create 5 stars
       for (let i = 1; i <= 5; i++) {
         if (i <= Math.floor(rating)) {
-          // Full star
           starsHTML += `<span class="star filled">★</span>`;
         } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
-          // Half star (you can use half-star character if available)
           starsHTML += `<span class="star filled">★</span>`;
         } else {
-          // Empty star
           starsHTML += `<span class="star">★</span>`;
         }
       }
-
       starsHTML += `<span class="rating-value">${rating.toFixed(1)}</span>`;
       starsHTML += '</div>';
-
       return starsHTML;
     }
 
     function generatePagination(currentPage, totalPages) {
       let paginationHTML = '<div class="pagination-container"><ul class="pagination">';
-
-      // Previous button
       if (currentPage > 1) {
         paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a></li>`;
       } else {
         paginationHTML += `<li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>`;
       }
-
-      // Page numbers
       for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage) {
           paginationHTML += `<li class="page-item active"><a class="page-link" href="#">${i}</a></li>`;
@@ -1113,16 +1270,12 @@
           paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
         }
       }
-
-      // Next button
       if (currentPage < totalPages) {
         paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a></li>`;
       } else {
         paginationHTML += `<li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>`;
       }
-
       paginationHTML += '</ul></div>';
-
       return paginationHTML;
     }
 
@@ -1144,5 +1297,4 @@
     highlightActiveNavLink();
   </script>
 </body>
-
 </html>
