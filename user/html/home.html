@@ -52,44 +52,113 @@
           transform: scale(1);
         }
       }
-      /* Categories - KEEP YOUR CATEGORIES STYLES */
-      .categories {
-        padding: 15px 20px;
-        overflow-x: auto;
-        white-space: nowrap;
-        background-color: var(--soft-white);
-      }
+     /* Categories - Refined Design */
+    
 
-      .categories::-webkit-scrollbar {
-        display: none;
-      }
+        .categories {
+            padding: 12px 18px;
+            overflow-x: auto;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.7);
+          
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 182, 193, 0.2);
+         
+        }
 
-      .category-btn {
-        display: inline-block;
-        padding: 8px 20px;
-        margin-right: 10px;
-        background-color: var(--light-gray);
-        border: none;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--dark-gray);
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
+        .categories::-webkit-scrollbar {
+            height: 4px;
+        }
 
-      .category-btn.active {
-        background: linear-gradient(
-          135deg,
-          var(--primary-pink),
-          var(--dark-pink)
-        );
-        color: white;
-      }
+        .categories::-webkit-scrollbar-track {
+            background: rgba(255, 182, 193, 0.15);
+            border-radius: 10px;
+        }
 
-      .category-btn:hover:not(.active) {
-        background-color: var(--medium-gray);
-      }
+        .categories::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, var(--primary-pink), var(--dark-pink));
+            border-radius: 10px;
+        }
+
+        #categories-container {
+            display: inline-flex;
+            gap: 10px;
+            padding: 3px;
+        }
+
+        .category-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 182, 193, 0.2);
+        }
+
+        .category-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transition: left 0.7s;
+        }
+
+        .category-btn:hover:before {
+            left: 100%;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(255, 105, 180, 0.2);
+            color: var(--primary-pink);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .category-btn i {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .categories {
+                padding: 10px 15px;
+                border-radius: 16px;
+            }
+            
+            .category-btn {
+                padding: 7px 14px;
+                font-size: 13px;
+                border-radius: 18px;
+            }
+            
+            .category-btn i {
+                margin-right: 5px;
+                font-size: 13px;
+            }
+        }
 
       /* Products Grid - USE FAVORITES STYLING */
       .products-container {

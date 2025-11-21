@@ -9,6 +9,9 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
+
 function returnJsonResponse($success, $message, $data = [], $conn = null) {
     if ($conn && !$conn->connect_error) {
         $conn->close();
@@ -67,12 +70,22 @@ try {
             $stmt->bind_param("si", $filename, $user_id);
             
             if ($stmt->execute()) {
+                // ✅ LOG PROFILE PHOTO UPLOAD
+                $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+                $uploadDetails = "Uploaded profile photo: {$filename}, IP: {$userIP}";
+                
+                logUserActivity($conn, $user_id, 'Profile photo updated', $uploadDetails);
+                
                 $stmt->close();
                 returnJsonResponse(true, 'Photo uploaded successfully.', ['filename' => $filename], $conn);
             } else {
                 $stmt->close();
                 // Delete the uploaded file if DB update fails
                 unlink($file_path);
+                
+                // ✅ LOG UPLOAD FAILURE
+                logUserActivity($conn, $user_id, 'Profile photo upload failed', 'Database update failed');
+                
                 returnJsonResponse(false, 'Failed to update profile photo in database.', [], $conn);
             }
         } else {
@@ -83,6 +96,9 @@ try {
     }
     
 } catch (Exception $e) {
+    // ✅ LOG UPLOAD ERROR
+    logUserActivity($conn, $user_id, 'Profile photo upload error', 'Error: ' . $e->getMessage());
+    
     returnJsonResponse(false, 'Error uploading photo: ' . $e->getMessage(), [], $conn);
 }
 ?>

@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila');
 session_start();
 header('Content-Type: application/json');
 
@@ -8,6 +9,12 @@ if (getenv('DOCKER_ENV') === 'true') {
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+
+// Set database timezone
+$conn->query("SET time_zone = '+08:00'");
+
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -30,8 +37,8 @@ try {
     // Start transaction
     $conn->begin_transaction();
     
-    // Verify order belongs to user and is pending
-    $stmt = $conn->prepare("SELECT order_id, status FROM orders WHERE order_id = ? AND user_id = ?");
+    // Verify order belongs to user and is pending - also get total price for notification
+    $stmt = $conn->prepare("SELECT order_id, status, total_price FROM orders WHERE order_id = ? AND user_id = ?");
     $stmt->bind_param("ii", $orderId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -48,13 +55,19 @@ try {
     
     // Get order items to restore stock and cart
     $stmt = $conn->prepare("
-        SELECT oi.product_id, oi.quantity, oi.price 
+        SELECT oi.product_id, oi.quantity, oi.price, p.Name as product_name
         FROM orderitems oi 
+        JOIN products p ON oi.product_id = p.ProductID
         WHERE oi.order_id = ?
     ");
     $stmt->bind_param("i", $orderId);
     $stmt->execute();
     $orderItems = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    
+    $productNames = [];
+    foreach ($orderItems as $item) {
+        $productNames[] = $item['product_name'] . " (Qty: {$item['quantity']})";
+    }
     
     // Restore product stock
     $updateStock = $conn->prepare("UPDATE products SET Stocks = Stocks + ? WHERE ProductID = ?");
@@ -91,8 +104,22 @@ try {
     $stmt->bind_param("i", $orderId);
     $stmt->execute();
     
+    // ✅ ADD NOTIFICATION FOR ORDER CANCELLATION
+    $notificationTitle = "Order Cancelled ❌";
+    $notificationMessage = "Your order #{$orderId} (₱{$order['total_price']}) has been cancelled. Items have been returned to your cart.";
+    
+    $notificationStmt = $conn->prepare("INSERT INTO notifications (UserID, Title, Message, IsRead, CreatedAt) VALUES (?, ?, ?, 0, NOW())");
+    $notificationStmt->bind_param("iss", $userId, $notificationTitle, $notificationMessage);
+    $notificationStmt->execute();
+    $notificationStmt->close();
+    
     // Commit transaction
     $conn->commit();
+    
+    // ✅ LOG ORDER CANCELLATION IN ACTIVITY LOGS
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $cancellationDetails = "Order #{$orderId} - Total: ₱{$order['total_price']}, Items: " . count($orderItems) . ", Products: " . implode(', ', $productNames) . ", IP: {$userIP}";
+    logUserActivity($conn, $userId, 'Order cancelled', $cancellationDetails);
     
     echo json_encode([
         'success' => true,
@@ -103,6 +130,11 @@ try {
 } catch (Exception $e) {
     // Rollback transaction on error
     $conn->rollback();
+    
+    // ✅ LOG CANCELLATION FAILURE
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $errorDetails = "Order #{$orderId}, Error: " . $e->getMessage() . ", IP: {$userIP}";
+    logUserActivity($conn, $userId, 'Order cancellation failed', $errorDetails);
     
     echo json_encode([
         'success' => false,

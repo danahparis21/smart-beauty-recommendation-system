@@ -8,6 +8,7 @@ define('DB_NAME', 'beauty_blessed');
 define('DB_PORT', '3306');
 
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
+$conn->query("SET time_zone = '+08:00'");
 
 if ($conn->connect_error) {
     error_log('Database Connection Failed: ' . $conn->connect_error);

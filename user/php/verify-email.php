@@ -10,6 +10,9 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
+
 if (!isset($_GET['token'])) {
     die('<script>alert("Invalid verification link."); window.location.href="/user/html/signup.html";</script>');
 }
@@ -30,12 +33,22 @@ if ($result->num_rows === 1) {
     if ($user['email_verified'] == 1) {
         $message = "Email already verified! You can now login.";
         $autoLogin = false;
+        
+        // ✅ LOG ALREADY VERIFIED ATTEMPT
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $details = "Attempted to verify already verified email, IP: {$userIP}";
+        logUserActivity($conn, $user['UserID'], 'Email verification attempt', $details);
     } else {
         // Mark email as verified
         $updateStmt = $conn->prepare('UPDATE users SET email_verified = 1, verification_token = NULL WHERE UserID = ?');
         $updateStmt->bind_param('i', $user['UserID']);
         
         if ($updateStmt->execute()) {
+            // ✅ LOG SUCCESSFUL EMAIL VERIFICATION
+            $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+            $verificationDetails = "Email verified successfully, IP: {$userIP}";
+            logUserActivity($conn, $user['UserID'], 'Email verified', $verificationDetails);
+            
             // Auto-login the user after verification
             $_SESSION['user_id'] = $user['UserID'];
             $_SESSION['email'] = $user['Email'];
@@ -48,6 +61,9 @@ if ($result->num_rows === 1) {
         } else {
             $message = "Error verifying email. Please try again.";
             $autoLogin = false;
+            
+            // ✅ LOG VERIFICATION FAILURE
+            logUserActivity($conn, $user['UserID'], 'Email verification failed', 'Database update error');
         }
         $updateStmt->close();
     }
@@ -128,6 +144,11 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
         // Get the new user ID
         $userId = $insertStmt->insert_id;
         
+        // ✅ LOG GOOGLE ACCOUNT VERIFICATION AND CREATION
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $googleVerificationDetails = "Google account verified and created, IP: {$userIP}";
+        logUserActivity($conn, $userId, 'Google account verified', $googleVerificationDetails);
+        
         // Clear pending registration
         unset($_SESSION['pending_google_registration']);
         
@@ -170,6 +191,10 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
         exit();
         
     } else {
+        // ✅ LOG GOOGLE ACCOUNT CREATION FAILURE
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        logUserActivity($conn, 0, 'Google account creation failed', "Email: {$pendingUser['email']}, IP: {$userIP}");
+        
         $insertStmt->close();
         $conn->close();
         unset($_SESSION['pending_google_registration']);
@@ -178,6 +203,11 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
 }
 
 // ===== INVALID TOKEN (Neither manual nor Google) =====
+
+// ✅ LOG INVALID VERIFICATION ATTEMPT
+$userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+logUserActivity($conn, 0, 'Invalid verification attempt', "Token: {$token}, IP: {$userIP}");
+
 $conn->close();
 
 echo '<script>

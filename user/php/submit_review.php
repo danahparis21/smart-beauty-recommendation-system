@@ -15,10 +15,15 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
-function sendResponse($success, $message, $data = []) {
+// Include activity logger
+require_once __DIR__ . '/activity_logger.php';
+
+function sendResponse($success, $message, $data = [])
+{
     // Clear any output buffers
-    while (ob_get_level()) ob_end_clean();
-    
+    while (ob_get_level())
+        ob_end_clean();
+
     echo json_encode(array_merge(['success' => $success, 'message' => $message], $data));
     exit();
 }
@@ -58,61 +63,123 @@ try {
     if ($conn->connect_error) {
         throw new Exception('Database connection failed');
     }
-    
+
     $conn->begin_transaction();
-    
-    // ✅ CHECK FOR EXISTING REVIEW FOR THIS PRODUCT IN THIS ORDER
-    $checkStmt = $conn->prepare("SELECT rating_id FROM ratings WHERE user_id = ? AND product_id = ? AND order_id = ?");
+
+    // Get product name for logging
+    $productNameStmt = $conn->prepare('SELECT Name FROM products WHERE ProductID = ?');
+    $productNameStmt->bind_param('s', $productId);
+    $productNameStmt->execute();
+    $productNameResult = $productNameStmt->get_result();
+    $productName = $productNameResult->num_rows > 0 ? $productNameResult->fetch_assoc()['Name'] : 'Unknown Product';
+    $productNameStmt->close();
+
+    // ✅ UPDATED: CHECK FOR EXISTING REVIEW FOR THIS PRODUCT BY THIS USER (ANY ORDER)
+    $checkStmt = $conn->prepare('SELECT rating_id, order_id FROM ratings WHERE user_id = ? AND product_id = ?');
     if (!$checkStmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
-    
-    $checkStmt->bind_param("isi", $userId, $productId, $orderId);
+
+    $checkStmt->bind_param('is', $userId, $productId);
     if (!$checkStmt->execute()) {
         throw new Exception('Execute failed: ' . $checkStmt->error);
     }
-    
+
     $checkResult = $checkStmt->get_result();
-    
+
     if ($checkResult->num_rows > 0) {
-        sendResponse(false, 'You have already reviewed this product from this order.');
+        // User has already reviewed this product - UPDATE existing review
+        $existingReview = $checkResult->fetch_assoc();
+        $existingRatingId = $existingReview['rating_id'];
+        $existingOrderId = $existingReview['order_id'];
+
+        $checkStmt->close();
+
+        // Update existing rating
+        $updateStmt = $conn->prepare('UPDATE ratings SET stars = ?, review = ?, order_id = ? WHERE rating_id = ?');
+        if (!$updateStmt) {
+            throw new Exception('Prepare failed: ' . $conn->error);
+        }
+
+        $updateStmt->bind_param('issi', $productRating, $productReview, $orderId, $existingRatingId);
+        if (!$updateStmt->execute()) {
+            throw new Exception('Execute failed: ' . $updateStmt->error);
+        }
+        $updateStmt->close();
+
+        // Also update productfeedback if it exists
+        $updateFeedbackStmt = $conn->prepare('
+            UPDATE productfeedback 
+            SET UserRating = ?, RecommendationFeedback = ?, Comment = ?, order_id = ?, CreatedAt = NOW() 
+            WHERE ProductID = ? AND UserID = ? AND order_id = ?
+        ');
+
+        if ($updateFeedbackStmt) {
+            $recommendationFeedback = "Rating: {$recommendationRating}/5 stars";
+            if (!empty($recommendationComment)) {
+                $recommendationFeedback .= ' - ' . substr($recommendationComment, 0, 150);
+            }
+
+            $updateFeedbackStmt->bind_param('dsssisi', $recommendationRating, $recommendationFeedback, $recommendationComment, $orderId, $productId, $userId, $existingOrderId);
+            $updateFeedbackStmt->execute();
+            $updateFeedbackStmt->close();
+        }
+
+        $action = 'updated';
+
+        // ✅ LOG REVIEW UPDATE
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $reviewDetails = "Updated review for {$productName} (ID: {$productId}) - Product: {$productRating}/5, Recommendation: {$recommendationRating}/5, IP: {$userIP}";
+        logUserActivity($conn, $userId, 'Review updated', $reviewDetails);
+    } else {
+        $checkStmt->close();
+
+        // No existing review - INSERT new review
+        // 1. Insert into ratings table
+        $stmt = $conn->prepare('INSERT INTO ratings (user_id, product_id, order_id, stars, review) VALUES (?, ?, ?, ?, ?)');
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $conn->error);
+        }
+
+        $stmt->bind_param('isiss', $userId, $productId, $orderId, $productRating, $productReview);
+        if (!$stmt->execute()) {
+            throw new Exception('Execute failed: ' . $stmt->error);
+        }
+        $ratingId = $stmt->insert_id;
+        $stmt->close();
+
+        // 2. Insert into productfeedback table
+        $userRating = (float) $recommendationRating;
+
+        $recommendationFeedback = "Rating: {$recommendationRating}/5 stars";
+        if (!empty($recommendationComment)) {
+            $recommendationFeedback .= ' - ' . substr($recommendationComment, 0, 150);
+        }
+
+        $feedbackStmt = $conn->prepare('INSERT INTO productfeedback (ProductID, UserID, UserRating, RecommendationFeedback, Comment, order_id, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, NOW())');
+        if (!$feedbackStmt) {
+            throw new Exception('Prepare failed: ' . $conn->error);
+        }
+
+        $feedbackStmt->bind_param('siissi', $productId, $userId, $userRating, $recommendationFeedback, $recommendationComment, $orderId);
+        if (!$feedbackStmt->execute()) {
+            throw new Exception('Execute failed: ' . $feedbackStmt->error);
+        }
+        $feedbackStmt->close();
+
+        $action = 'created';
+
+        // ✅ LOG NEW REVIEW SUBMISSION
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $hasProductReview = !empty($productReview) ? 'with comment' : 'without comment';
+        $hasRecommendationComment = !empty($recommendationComment) ? 'with feedback' : 'without feedback';
+
+        $reviewDetails = "Submitted review for {$productName} (ID: {$productId}) - Product: {$productRating}/5, Recommendation: {$recommendationRating}/5, {$hasProductReview}, {$hasRecommendationComment}, IP: {$userIP}";
+        logUserActivity($conn, $userId, 'Review submitted', $reviewDetails);
     }
-    $checkStmt->close();
-    
-    // 1. Insert into ratings table
-    $stmt = $conn->prepare("INSERT INTO ratings (user_id, product_id, order_id, stars, review) VALUES (?, ?, ?, ?, ?)");
-    if (!$stmt) {
-        throw new Exception('Prepare failed: ' . $conn->error);
-    }
-    
-    $stmt->bind_param("isiss", $userId, $productId, $orderId, $productRating, $productReview);
-    if (!$stmt->execute()) {
-        throw new Exception('Execute failed: ' . $stmt->error);
-    }
-    $ratingId = $stmt->insert_id;
-    $stmt->close();
-    
-    // 2. Insert into productfeedback table 
-    $userRating = (float)$recommendationRating;
-    
-    $recommendationFeedback = "Rating: {$recommendationRating}/5 stars";
-    if (!empty($recommendationComment)) {
-        $recommendationFeedback .= " - " . substr($recommendationComment, 0, 150);
-    }
-    
-    $feedbackStmt = $conn->prepare("INSERT INTO productfeedback (ProductID, UserID, UserRating, RecommendationFeedback, Comment, order_id, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, NOW())");
-    if (!$feedbackStmt) {
-        throw new Exception('Prepare failed: ' . $conn->error);
-    }
-    
-    $feedbackStmt->bind_param("siissi", $productId, $userId, $userRating, $recommendationFeedback, $recommendationComment, $orderId);
-    if (!$feedbackStmt->execute()) {
-        throw new Exception('Execute failed: ' . $feedbackStmt->error);
-    }
-    $feedbackStmt->close();
-    
-    // ✅ ENHANCED: Update product's average rating with better calculation
-    $updateStmt = $conn->prepare("
+
+    // ✅ UPDATE PRODUCT'S AVERAGE RATING (for both new and updated reviews)
+    $updateProductStmt = $conn->prepare('
         UPDATE products 
         SET 
             ProductRating = COALESCE(
@@ -121,38 +188,48 @@ try {
             ),
             UpdatedAt = NOW()
         WHERE ProductID = ?
-    ");
-    if (!$updateStmt) {
+    ');
+    if (!$updateProductStmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
-    
-    $updateStmt->bind_param("ss", $productId, $productId);
-    if (!$updateStmt->execute()) {
-        throw new Exception('Execute failed: ' . $updateStmt->error);
+
+    $updateProductStmt->bind_param('ss', $productId, $productId);
+    if (!$updateProductStmt->execute()) {
+        throw new Exception('Execute failed: ' . $updateProductStmt->error);
     }
-    
+    $updateProductStmt->close();
+
     // ✅ GET THE UPDATED RATING TO RETURN TO CLIENT
-    $getRatingStmt = $conn->prepare("SELECT ProductRating FROM products WHERE ProductID = ?");
-    $getRatingStmt->bind_param("s", $productId);
+    $getRatingStmt = $conn->prepare('SELECT ProductRating FROM products WHERE ProductID = ?');
+    $getRatingStmt->bind_param('s', $productId);
     $getRatingStmt->execute();
     $ratingResult = $getRatingStmt->get_result();
     $productData = $ratingResult->fetch_assoc();
     $newAverageRating = $productData['ProductRating'] ?? 0;
     $getRatingStmt->close();
-    
+
     $conn->commit();
-    
-    sendResponse(true, 'Review submitted successfully! Thank you for your detailed feedback.', [
+
+    $message = $action === 'updated'
+        ? 'Review updated successfully! Your feedback has been refreshed.'
+        : 'Review submitted successfully! Thank you for your detailed feedback.';
+
+    sendResponse(true, $message, [
         'new_average_rating' => $newAverageRating,
-        'product_id' => $productId
+        'product_id' => $productId,
+        'action' => $action
     ]);
-    
 } catch (Exception $e) {
     // Rollback if transaction was started
     if (isset($conn) && $conn) {
         $conn->rollback();
     }
-    
+
+    // ✅ LOG REVIEW SUBMISSION ERROR
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $errorDetails = "Product: {$productId}, Error: " . $e->getMessage() . ", IP: {$userIP}";
+    logUserActivity($conn, $userId, 'Review submission failed', $errorDetails);
+
     error_log('Review submission error: ' . $e->getMessage());
     sendResponse(false, 'Error submitting review. Please try again.');
 }
