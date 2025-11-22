@@ -23,9 +23,7 @@ async function loadUserProfile() {
                     
                     console.log('Loading profile image from:', profileImagePath); // Debug log
                     
-                    // Replace the button content with image
-                    buttonElement.innerHTML = `<img src="${profileImagePath}" alt="Profile" class="profile-icon">`;
-                    
+                    buttonElement.innerHTML = `<img src="${profileImagePath}" alt="Profile" class="profile-icon" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #ff69b4;">`;
                     // Add error handling for the image
                     const img = buttonElement.querySelector('img');
                     if (img) {

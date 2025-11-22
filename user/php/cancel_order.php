@@ -76,6 +76,9 @@ try {
         $updateStock->execute();
     }
     
+    // ✅ FIXED: Use PHP date for consistent timezone
+    $currentDateTime = date('Y-m-d H:i:s');
+    
     // Move items back to cart (update status from checked_out to active)
     $updateCart = $conn->prepare("
         UPDATE cart 
@@ -87,13 +90,13 @@ try {
         $updateCart->bind_param("is", $userId, $item['product_id']);
         $updateCart->execute();
         
-        // If item doesn't exist in cart, insert it
+        // If item doesn't exist in cart, insert it with PHP date
         if ($updateCart->affected_rows === 0) {
             $insertCart = $conn->prepare("
                 INSERT INTO cart (user_id, product_id, quantity, status, added_at) 
-                VALUES (?, ?, ?, 'active', NOW())
+                VALUES (?, ?, ?, 'active', ?)
             ");
-            $insertCart->bind_param("isi", $userId, $item['product_id'], $item['quantity']);
+            $insertCart->bind_param("isis", $userId, $item['product_id'], $item['quantity'], $currentDateTime);
             $insertCart->execute();
             $insertCart->close();
         }
@@ -108,8 +111,9 @@ try {
     $notificationTitle = "Order Cancelled ❌";
     $notificationMessage = "Your order #{$orderId} (₱{$order['total_price']}) has been cancelled. Items have been returned to your cart.";
     
-    $notificationStmt = $conn->prepare("INSERT INTO notifications (UserID, Title, Message, IsRead, CreatedAt) VALUES (?, ?, ?, 0, NOW())");
-    $notificationStmt->bind_param("iss", $userId, $notificationTitle, $notificationMessage);
+    // ✅ FIXED: Use PHP date for notification
+    $notificationStmt = $conn->prepare("INSERT INTO notifications (UserID, Title, Message, IsRead, CreatedAt) VALUES (?, ?, ?, 0, ?)");
+    $notificationStmt->bind_param("isss", $userId, $notificationTitle, $notificationMessage, $currentDateTime);
     $notificationStmt->execute();
     $notificationStmt->close();
     

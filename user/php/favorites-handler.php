@@ -14,6 +14,9 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
 
+// ✅ ADDED: Set timezone
+date_default_timezone_set('Asia/Manila');
+
 try {
     // Load DB config
     if (getenv('DOCKER_ENV') === 'true') {
@@ -21,6 +24,12 @@ try {
     } else {
         require_once __DIR__ . '/../../config/db.php';
     }
+
+    // ✅ ADDED: Set database timezone
+    $conn->query("SET time_zone = '+08:00'");
+
+    // ✅ ADDED: Include activity logger
+    require_once __DIR__ . '/activity_logger.php';
 
     if ($conn->connect_error) {
         throw new Exception('Connection failed: ' . $conn->connect_error);
@@ -67,15 +76,17 @@ try {
 
         $product_id = (string) $product_id;
 
-        // 1. Get the parent product ID (if it exists)
-        $stmtParent = $conn->prepare('SELECT ParentProductID FROM Products WHERE ProductID=?');
+        // 1. Get the parent product ID (if it exists) and product name for logging
+        $stmtParent = $conn->prepare('SELECT ParentProductID, Name FROM Products WHERE ProductID=?');
         $stmtParent->bind_param('s', $product_id);
         $stmtParent->execute();
         $resParent = $stmtParent->get_result();
         $parentID = null;
+        $productName = 'Unknown Product';
 
         if ($row = $resParent->fetch_assoc()) {
-            $parentID = $row['ParentProductID'] ?? $product_id;  // if no parent, use product itself
+            $parentID = $row['ParentProductID'] ?? $product_id;
+            $productName = $cleanName($row['Name']);
         }
 
         // 2. Check if the product is already in favorites
@@ -96,18 +107,44 @@ try {
             $stmtDelete->bind_param('iss', $user_id, $parentID, $parentID);
             $stmtDelete->execute();
 
+            $affectedRows = $stmtDelete->affected_rows;
+            
+            // ✅ LOG FAVORITE REMOVAL
+            if ($affectedRows > 0) {
+                $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+                $logDetails = "Removed product {$product_id} - {$productName} from favorites. Parent ID: {$parentID}, IP: {$userIP}";
+                logUserActivity($conn, $user_id, 'Remove from favorites', $logDetails);
+            }
+
             echo json_encode([
-                'success' => $stmtDelete->affected_rows > 0,
+                'success' => $affectedRows > 0,
                 'action' => 'unliked'
             ]);
         } else {
+            // ✅ OPTIONAL: Use PHP date if you change to DATETIME
+            $currentDateTime = date('Y-m-d H:i:s');
+            
             // 4. Add favorite for the single product
+            // If using DATETIME: 
+            // $stmtInsert = $conn->prepare('INSERT INTO favorites (user_id, product_id, created_at) VALUES (?, ?, ?)');
+            // $stmtInsert->bind_param('iss', $user_id, $product_id, $currentDateTime);
+            
+            // If keeping TIMESTAMP (uses MySQL NOW()):
             $stmtInsert = $conn->prepare('INSERT INTO favorites (user_id, product_id) VALUES (?, ?)');
             $stmtInsert->bind_param('is', $user_id, $product_id);
             $stmtInsert->execute();
 
+            $affectedRows = $stmtInsert->affected_rows;
+            
+            // ✅ LOG FAVORITE ADDITION
+            if ($affectedRows > 0) {
+                $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+                $logDetails = "Added product {$product_id} - {$productName} to favorites. Parent ID: {$parentID}, IP: {$userIP}";
+                logUserActivity($conn, $user_id, 'Add to favorites', $logDetails);
+            }
+
             echo json_encode([
-                'success' => $stmtInsert->affected_rows > 0,
+                'success' => $affectedRows > 0,
                 'action' => 'liked'
             ]);
         }
@@ -157,7 +194,7 @@ try {
         AND p.Stocks > 0
         AND (p.ExpirationDate IS NULL OR p.ExpirationDate > CURDATE())
     ORDER BY 
-        p.CreatedAt DESC
+        f.created_at DESC  -- ✅ Order by favorite date
 ";
 
     $stmt = $conn->prepare($sql);
@@ -314,6 +351,11 @@ try {
         $finalProducts[] = $product;
     }
 
+    // ✅ LOG FAVORITES VIEW
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $logDetails = "Viewed favorites list. Total items: " . count($finalProducts) . ", IP: {$userIP}";
+    logUserActivity($conn, $user_id, 'View favorites', $logDetails);
+
     echo json_encode([
         'success' => true,
         'products' => array_values($finalProducts),
@@ -326,6 +368,13 @@ try {
 
     $conn->close();
 } catch (Exception $e) {
+    // ✅ LOG ERROR
+    if (isset($user_id)) {
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $errorDetails = "Error: " . $e->getMessage() . ", Action: {$action}, IP: {$userIP}";
+        logUserActivity($conn, $user_id, 'Favorites error', $errorDetails);
+    }
+    
     ob_clean();
     http_response_code(500);
     echo json_encode([

@@ -10,7 +10,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Profile | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -823,6 +823,45 @@
         cursor: not-allowed;
         transform: none;
       }
+      /* Logout Modal Specific Styles */
+      #logoutModal .modal {
+        max-width: 400px;
+        text-align: center;
+      }
+
+      #logoutModal .modal-body {
+        padding: 10px 0;
+      }
+
+      /* Loading state for logout button */
+      .save-btn.loading {
+        position: relative;
+        color: transparent;
+      }
+
+      .save-btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-right-color: transparent;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -916,6 +955,52 @@
               <div class="menu-desc">Log out of your account</div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal-overlay" id="logoutModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Sign Out</h3>
+          <button class="close-modal" onclick="closeLogoutModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div style="text-align: center; padding: 20px 0">
+            <div
+              style="
+                font-size: 48px;
+                color: var(--primary-pink);
+                margin-bottom: 15px;
+              "
+            >
+              <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h4 style="margin: 0 0 10px 0; color: var(--dark-gray)">
+              Are you sure you want to sign out?
+            </h4>
+            <p style="color: var(--text-gray); margin: 0; font-size: 14px">
+              You'll need to sign in again to access your account.
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="cancel-btn" onclick="closeLogoutModal()">
+            Cancel
+          </button>
+          <button
+            class="save-btn"
+            onclick="confirmLogout()"
+            id="confirmLogoutBtn"
+          >
+            <i class="fas fa-sign-out-alt" style="margin-right: 5px"></i>
+            Yes, Sign Out
+          </button>
         </div>
       </div>
     </div>
@@ -1532,140 +1617,142 @@
       }
 
       // Change Password Functions
-function openChangePasswordModal() {
-    const modal = document.getElementById('change-password-modal');
-    modal.classList.add('active');
-    resetPasswordForm();
-}
+      function openChangePasswordModal() {
+        const modal = document.getElementById("change-password-modal");
+        modal.classList.add("active");
+        resetPasswordForm();
+      }
 
-function closeChangePasswordModal() {
-    const modal = document.getElementById('change-password-modal');
-    modal.classList.remove('active');
-    resetPasswordForm();
-}
+      function closeChangePasswordModal() {
+        const modal = document.getElementById("change-password-modal");
+        modal.classList.remove("active");
+        resetPasswordForm();
+      }
 
-function resetPasswordForm() {
-    document.getElementById('old-password').value = '';
-    document.getElementById('new-password').value = '';
-    document.getElementById('confirm-password').value = '';
-    document.getElementById('password-error').style.display = 'none';
-    document.getElementById('save-password').disabled = true;
-}
+      function resetPasswordForm() {
+        document.getElementById("old-password").value = "";
+        document.getElementById("new-password").value = "";
+        document.getElementById("confirm-password").value = "";
+        document.getElementById("password-error").style.display = "none";
+        document.getElementById("save-password").disabled = true;
+      }
 
-function validatePasswordForm() {
-    const oldPassword = document.getElementById('old-password').value;
-    const newPassword = document.getElementById('new-password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    const saveBtn = document.getElementById('save-password');
+      function validatePasswordForm() {
+        const oldPassword = document.getElementById("old-password").value;
+        const newPassword = document.getElementById("new-password").value;
+        const confirmPassword =
+          document.getElementById("confirm-password").value;
+        const saveBtn = document.getElementById("save-password");
 
-    // Enable button only if all fields have values
-    saveBtn.disabled = !(oldPassword && newPassword && confirmPassword);
-}
+        // Enable button only if all fields have values
+        saveBtn.disabled = !(oldPassword && newPassword && confirmPassword);
+      }
 
-async function changePassword() {
-    const oldPassword = document.getElementById('old-password').value;
-    const newPassword = document.getElementById('new-password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    const errorDiv = document.getElementById('password-error');
-    const saveBtn = document.getElementById('save-password');
+      async function changePassword() {
+        const oldPassword = document.getElementById("old-password").value;
+        const newPassword = document.getElementById("new-password").value;
+        const confirmPassword =
+          document.getElementById("confirm-password").value;
+        const errorDiv = document.getElementById("password-error");
+        const saveBtn = document.getElementById("save-password");
 
-    // Reset error
-    errorDiv.style.display = 'none';
+        // Reset error
+        errorDiv.style.display = "none";
 
-    // Validation
-    if (newPassword !== confirmPassword) {
-        showPasswordError('New passwords do not match');
-        return;
-    }
-
-    if (newPassword.length < 8) {
-        showPasswordError('Password must be at least 8 characters long');
-        return;
-    }
-
-    if (oldPassword === newPassword) {
-        showPasswordError('New password must be different from old password');
-        return;
-    }
-
-    try {
-        // Show loading state
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing...';
-        saveBtn.disabled = true;
-
-        const response = await fetch('../php/change_password.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                old_password: oldPassword,
-                new_password: newPassword,
-                confirm_password: confirmPassword
-            }),
-            credentials: 'same-origin'
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Success - close modal and show success message
-            closeChangePasswordModal();
-            showToast('Password changed successfully!', 'success');
-        } else {
-            showPasswordError(data.error || 'Failed to change password');
+        // Validation
+        if (newPassword !== confirmPassword) {
+          showPasswordError("New passwords do not match");
+          return;
         }
 
-        // Restore button state
-        saveBtn.innerHTML = originalText;
-        saveBtn.disabled = false;
+        if (newPassword.length < 8) {
+          showPasswordError("Password must be at least 8 characters long");
+          return;
+        }
 
-    } catch (error) {
-        console.error('Error changing password:', error);
-        showPasswordError('Network error: Could not change password');
-        
-        // Restore button state
-        saveBtn.innerHTML = 'Change Password';
-        saveBtn.disabled = false;
-    }
-}
+        if (oldPassword === newPassword) {
+          showPasswordError("New password must be different from old password");
+          return;
+        }
 
-function showPasswordError(message) {
-    const errorDiv = document.getElementById('password-error');
-    errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
-}
+        try {
+          // Show loading state
+          const originalText = saveBtn.innerHTML;
+          saveBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Changing...';
+          saveBtn.disabled = true;
 
-// Password visibility toggle
-function setupPasswordToggles() {
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
+          const response = await fetch("../php/change_password.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              old_password: oldPassword,
+              new_password: newPassword,
+              confirm_password: confirmPassword,
+            }),
+            credentials: "same-origin",
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Success - close modal and show success message
+            closeChangePasswordModal();
+            showToast("Password changed successfully!", "success");
+          } else {
+            showPasswordError(data.error || "Failed to change password");
+          }
+
+          // Restore button state
+          saveBtn.innerHTML = originalText;
+          saveBtn.disabled = false;
+        } catch (error) {
+          console.error("Error changing password:", error);
+          showPasswordError("Network error: Could not change password");
+
+          // Restore button state
+          saveBtn.innerHTML = "Change Password";
+          saveBtn.disabled = false;
+        }
+      }
+
+      function showPasswordError(message) {
+        const errorDiv = document.getElementById("password-error");
+        errorDiv.textContent = message;
+        errorDiv.style.display = "block";
+      }
+
+      // Password visibility toggle
+      function setupPasswordToggles() {
+        document.querySelectorAll(".toggle-password").forEach((button) => {
+          button.addEventListener("click", function () {
+            const targetId = this.getAttribute("data-target");
             const input = document.getElementById(targetId);
-            const icon = this.querySelector('i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        });
-    });
-}
+            const icon = this.querySelector("i");
 
-// Toast notification function (if not already exists)
-function showToast(message, type = 'success') {
-    // Create toast if it doesn't exist
-    let toast = document.getElementById('toast-notification');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast-notification';
-        toast.style.cssText = `
+            if (input.type === "password") {
+              input.type = "text";
+              icon.classList.remove("fa-eye");
+              icon.classList.add("fa-eye-slash");
+            } else {
+              input.type = "password";
+              icon.classList.remove("fa-eye-slash");
+              icon.classList.add("fa-eye");
+            }
+          });
+        });
+      }
+
+      // Toast notification function (if not already exists)
+      function showToast(message, type = "success") {
+        // Create toast if it doesn't exist
+        let toast = document.getElementById("toast-notification");
+        if (!toast) {
+          toast = document.createElement("div");
+          toast.id = "toast-notification";
+          toast.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
@@ -1679,31 +1766,30 @@ function showToast(message, type = 'success') {
             transition: all 0.3s ease;
             max-width: 300px;
         `;
-        document.body.appendChild(toast);
-    }
+          document.body.appendChild(toast);
+        }
 
-    // Set style based on type
-    if (type === 'success') {
-        toast.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-    } else {
-        toast.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
-    }
+        // Set style based on type
+        if (type === "success") {
+          toast.style.background = "linear-gradient(135deg, #27ae60, #2ecc71)";
+        } else {
+          toast.style.background = "linear-gradient(135deg, #e74c3c, #c0392b)";
+        }
 
-    toast.textContent = message;
+        toast.textContent = message;
 
-    // Show toast
-    setTimeout(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(0)';
-    }, 100);
+        // Show toast
+        setTimeout(() => {
+          toast.style.opacity = "1";
+          toast.style.transform = "translateX(0)";
+        }, 100);
 
-    // Hide after 3 seconds
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-    }, 3000);
-}
-
+        // Hide after 3 seconds
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(100%)";
+        }, 3000);
+      }
 
       // Open edit profile modal - UPDATED
       function openEditProfileModal() {
@@ -1985,168 +2071,177 @@ function showToast(message, type = 'success') {
         }
       }
 
-     // Store Feedback Functions
-async function openStoreFeedbackModal() {
-    const modal = document.getElementById('store-feedback-modal');
-    modal.classList.add('active');
-    
-    // Load existing feedback from database
-    await loadExistingFeedback();
-}
+      // Store Feedback Functions
+      async function openStoreFeedbackModal() {
+        const modal = document.getElementById("store-feedback-modal");
+        modal.classList.add("active");
 
-function closeStoreFeedbackModal() {
-    const modal = document.getElementById('store-feedback-modal');
-    modal.classList.remove('active');
-    resetFeedbackForm();
-}
+        // Load existing feedback from database
+        await loadExistingFeedback();
+      }
 
-async function loadExistingFeedback() {
-    try {
-        const response = await fetch('../php/get_store_feedback.php', {
-            method: 'GET',
+      function closeStoreFeedbackModal() {
+        const modal = document.getElementById("store-feedback-modal");
+        modal.classList.remove("active");
+        resetFeedbackForm();
+      }
+
+      async function loadExistingFeedback() {
+        try {
+          const response = await fetch("../php/get_store_feedback.php", {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            credentials: 'same-origin'
-        });
+            credentials: "same-origin",
+          });
 
-        if (response.ok) {
+          if (response.ok) {
             const data = await response.json();
-            
+
             if (data.success && data.feedback) {
-                showExistingFeedback(data.feedback);
+              showExistingFeedback(data.feedback);
             } else {
-                showNewFeedbackForm();
+              showNewFeedbackForm();
             }
-        } else {
-            throw new Error('Failed to load feedback');
+          } else {
+            throw new Error("Failed to load feedback");
+          }
+        } catch (error) {
+          console.error("Error loading feedback:", error);
+          showNewFeedbackForm();
         }
-    } catch (error) {
-        console.error('Error loading feedback:', error);
-        showNewFeedbackForm();
-    }
-}
+      }
 
-function showExistingFeedback(feedback) {
-    document.getElementById('existing-feedback').style.display = 'block';
-    document.getElementById('store-feedback-form').style.display = 'none';
-    document.getElementById('submit-feedback').style.display = 'none';
-    
-    // Display current feedback
-    document.getElementById('current-stars').innerHTML = '★'.repeat(feedback.rating);
-    document.getElementById('current-rating-text').textContent = `${feedback.rating}/5 stars`;
-    document.getElementById('current-comment-text').textContent = feedback.comment || 'No comment provided.';
-    document.getElementById('feedback-date').textContent = new Date(feedback.created_at).toLocaleDateString();
-}
+      function showExistingFeedback(feedback) {
+        document.getElementById("existing-feedback").style.display = "block";
+        document.getElementById("store-feedback-form").style.display = "none";
+        document.getElementById("submit-feedback").style.display = "none";
 
-function showNewFeedbackForm() {
-    document.getElementById('existing-feedback').style.display = 'none';
-    document.getElementById('store-feedback-form').style.display = 'block';
-    document.getElementById('submit-feedback').style.display = 'block';
-}
+        // Display current feedback
+        document.getElementById("current-stars").innerHTML = "★".repeat(
+          feedback.rating
+        );
+        document.getElementById(
+          "current-rating-text"
+        ).textContent = `${feedback.rating}/5 stars`;
+        document.getElementById("current-comment-text").textContent =
+          feedback.comment || "No comment provided.";
+        document.getElementById("feedback-date").textContent = new Date(
+          feedback.created_at
+        ).toLocaleDateString();
+      }
 
-function enableEditing() {
-    // We'll load the existing data into the form for editing
-    document.getElementById('existing-feedback').style.display = 'none';
-    document.getElementById('store-feedback-form').style.display = 'block';
-    document.getElementById('submit-feedback').style.display = 'block';
-    
-    // The form will be empty initially, we'll populate it when user clicks edit
-    loadCurrentFeedbackIntoForm();
-}
+      function showNewFeedbackForm() {
+        document.getElementById("existing-feedback").style.display = "none";
+        document.getElementById("store-feedback-form").style.display = "block";
+        document.getElementById("submit-feedback").style.display = "block";
+      }
 
-async function loadCurrentFeedbackIntoForm() {
-    try {
-        const response = await fetch('../php/get_store_feedback.php', {
-            method: 'GET',
+      function enableEditing() {
+        // We'll load the existing data into the form for editing
+        document.getElementById("existing-feedback").style.display = "none";
+        document.getElementById("store-feedback-form").style.display = "block";
+        document.getElementById("submit-feedback").style.display = "block";
+
+        // The form will be empty initially, we'll populate it when user clicks edit
+        loadCurrentFeedbackIntoForm();
+      }
+
+      async function loadCurrentFeedbackIntoForm() {
+        try {
+          const response = await fetch("../php/get_store_feedback.php", {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            credentials: 'same-origin'
-        });
+            credentials: "same-origin",
+          });
 
-        if (response.ok) {
+          if (response.ok) {
             const data = await response.json();
-            
-            if (data.success && data.feedback) {
-                const feedback = data.feedback;
-                
-                // Populate form with existing data
-                document.querySelector(`input[name="rating"][value="${feedback.rating}"]`).checked = true;
-                document.getElementById('feedback-comment').value = feedback.comment || '';
-                
-                updateSubmitButton();
-            }
-        }
-    } catch (error) {
-        console.error('Error loading current feedback:', error);
-    }
-}
 
-async function submitFeedback() {
-    const rating = document.querySelector('input[name="rating"]:checked');
-    const comment = document.getElementById('feedback-comment').value;
-    const errorDiv = document.getElementById('feedback-error');
-    const successDiv = document.getElementById('feedback-success');
-    
-    if (!rating) {
-        showError('Please select a rating');
-        return;
-    }
-    
-    try {
-        const response = await fetch('../php/save_store_feedback.php', {
-            method: 'POST',
+            if (data.success && data.feedback) {
+              const feedback = data.feedback;
+
+              // Populate form with existing data
+              document.querySelector(
+                `input[name="rating"][value="${feedback.rating}"]`
+              ).checked = true;
+              document.getElementById("feedback-comment").value =
+                feedback.comment || "";
+
+              updateSubmitButton();
+            }
+          }
+        } catch (error) {
+          console.error("Error loading current feedback:", error);
+        }
+      }
+
+      async function submitFeedback() {
+        const rating = document.querySelector('input[name="rating"]:checked');
+        const comment = document.getElementById("feedback-comment").value;
+        const errorDiv = document.getElementById("feedback-error");
+        const successDiv = document.getElementById("feedback-success");
+
+        if (!rating) {
+          showError("Please select a rating");
+          return;
+        }
+
+        try {
+          const response = await fetch("../php/save_store_feedback.php", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                rating: parseInt(rating.value),
-                comment: comment.trim()
+              rating: parseInt(rating.value),
+              comment: comment.trim(),
             }),
-            credentials: 'same-origin'
-        });
+            credentials: "same-origin",
+          });
 
-        const data = await response.json();
+          const data = await response.json();
 
-        if (data.success) {
+          if (data.success) {
             // Show success message
-            successDiv.textContent = 'Thank you for your feedback!';
-            successDiv.style.display = 'block';
-            errorDiv.style.display = 'none';
-            
+            successDiv.textContent = "Thank you for your feedback!";
+            successDiv.style.display = "block";
+            errorDiv.style.display = "none";
+
             // Close modal after delay
             setTimeout(() => {
-                closeStoreFeedbackModal();
+              closeStoreFeedbackModal();
             }, 1500);
-        } else {
-            showError(data.error || 'Failed to save feedback');
+          } else {
+            showError(data.error || "Failed to save feedback");
+          }
+        } catch (error) {
+          console.error("Error submitting feedback:", error);
+          showError("Network error: Could not submit feedback");
         }
-    } catch (error) {
-        console.error('Error submitting feedback:', error);
-        showError('Network error: Could not submit feedback');
-    }
-}
+      }
 
-function resetFeedbackForm() {
-    document.getElementById('feedback-error').style.display = 'none';
-    document.getElementById('feedback-success').style.display = 'none';
-    document.getElementById('store-feedback-form').reset();
-    document.getElementById('submit-feedback').disabled = true;
-}
+      function resetFeedbackForm() {
+        document.getElementById("feedback-error").style.display = "none";
+        document.getElementById("feedback-success").style.display = "none";
+        document.getElementById("store-feedback-form").reset();
+        document.getElementById("submit-feedback").disabled = true;
+      }
 
-function showError(message) {
-    const errorDiv = document.getElementById('feedback-error');
-    errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
-}
+      function showError(message) {
+        const errorDiv = document.getElementById("feedback-error");
+        errorDiv.textContent = message;
+        errorDiv.style.display = "block";
+      }
 
-function updateSubmitButton() {
-    const rating = document.querySelector('input[name="rating"]:checked');
-    const submitBtn = document.getElementById('submit-feedback');
-    submitBtn.disabled = !rating;
-}
-
+      function updateSubmitButton() {
+        const rating = document.querySelector('input[name="rating"]:checked');
+        const submitBtn = document.getElementById("submit-feedback");
+        submitBtn.disabled = !rating;
+      }
 
       document.addEventListener("DOMContentLoaded", async function () {
         // Use setupPageProtection if it exists, otherwise skip
@@ -2180,44 +2275,65 @@ function updateSubmitButton() {
         }
 
         // Star rating change
-    document.querySelectorAll('input[name="rating"]').forEach(radio => {
-        radio.addEventListener('change', updateSubmitButton);
-    });
-    
-    // Submit button
-    document.getElementById('submit-feedback').addEventListener('click', submitFeedback);
-    
-    // Close modal buttons
-    document.getElementById('close-feedback-modal').addEventListener('click', closeStoreFeedbackModal);
-    document.getElementById('cancel-feedback').addEventListener('click', closeStoreFeedbackModal);
-    
-    // Close modal when clicking outside
-    document.getElementById('store-feedback-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeStoreFeedbackModal();
-        }
-    });
-    setupPasswordToggles();
-    
-    // Real-time validation
-    document.getElementById('old-password').addEventListener('input', validatePasswordForm);
-    document.getElementById('new-password').addEventListener('input', validatePasswordForm);
-    document.getElementById('confirm-password').addEventListener('input', validatePasswordForm);
-    
-    // Save button
-    document.getElementById('save-password').addEventListener('click', changePassword);
-    
-    // Close modal buttons
-    document.getElementById('close-password-modal').addEventListener('click', closeChangePasswordModal);
-    document.getElementById('cancel-password').addEventListener('click', closeChangePasswordModal);
-    
-    // Close modal when clicking outside
-    document.getElementById('change-password-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeChangePasswordModal();
-        }
-    });
+        document.querySelectorAll('input[name="rating"]').forEach((radio) => {
+          radio.addEventListener("change", updateSubmitButton);
+        });
 
+        // Submit button
+        document
+          .getElementById("submit-feedback")
+          .addEventListener("click", submitFeedback);
+
+        // Close modal buttons
+        document
+          .getElementById("close-feedback-modal")
+          .addEventListener("click", closeStoreFeedbackModal);
+        document
+          .getElementById("cancel-feedback")
+          .addEventListener("click", closeStoreFeedbackModal);
+
+        // Close modal when clicking outside
+        document
+          .getElementById("store-feedback-modal")
+          .addEventListener("click", function (e) {
+            if (e.target === this) {
+              closeStoreFeedbackModal();
+            }
+          });
+        setupPasswordToggles();
+
+        // Real-time validation
+        document
+          .getElementById("old-password")
+          .addEventListener("input", validatePasswordForm);
+        document
+          .getElementById("new-password")
+          .addEventListener("input", validatePasswordForm);
+        document
+          .getElementById("confirm-password")
+          .addEventListener("input", validatePasswordForm);
+
+        // Save button
+        document
+          .getElementById("save-password")
+          .addEventListener("click", changePassword);
+
+        // Close modal buttons
+        document
+          .getElementById("close-password-modal")
+          .addEventListener("click", closeChangePasswordModal);
+        document
+          .getElementById("cancel-password")
+          .addEventListener("click", closeChangePasswordModal);
+
+        // Close modal when clicking outside
+        document
+          .getElementById("change-password-modal")
+          .addEventListener("click", function (e) {
+            if (e.target === this) {
+              closeChangePasswordModal();
+            }
+          });
       });
 
       function showErrorState(message) {

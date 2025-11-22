@@ -1191,6 +1191,457 @@
         text-align: center;
         font-style: italic;
       }
+      /* Beautiful Toast Notification Styles */
+      .toast {
+        background: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        margin-bottom: 12px;
+        border-left: 4px solid #4caf50;
+        min-width: 320px;
+        max-width: 400px;
+        transform: translateX(400px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .toast::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #4caf50, #45a049);
+        transform: scaleX(0);
+        transition: transform 5s linear;
+      }
+
+      .toast.show::before {
+        transform: scaleX(1);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+        animation: slideIn 0.4s ease-out;
+      }
+
+      @keyframes slideIn {
+        0% {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .toast.success {
+        border-left-color: #4caf50;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fff8 100%);
+      }
+
+      .toast.error {
+        border-left-color: #ff6b6b;
+        background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
+      }
+
+      .toast.info {
+        border-left-color: #2196f3;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+      }
+
+      .toast i {
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
+      }
+
+      .toast.success i {
+        color: #4caf50;
+        text-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+      }
+
+      .toast.error i {
+        color: #ff6b6b;
+        text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+      }
+
+      .toast.info i {
+        color: #2196f3;
+        text-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+      }
+
+      .toast-content {
+        flex: 1;
+        font-family: "Inter", sans-serif;
+      }
+
+      .toast-title {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 2px;
+        color: #2d3748;
+      }
+
+      .toast.success .toast-title {
+        color: #2d5a2d;
+      }
+
+      .toast.error .toast-title {
+        color: #7c2a2a;
+      }
+
+      .toast.info .toast-title {
+        color: #2c5282;
+      }
+
+      .toast-message {
+        font-size: 13px;
+        color: #718096;
+        line-height: 1.4;
+      }
+
+      .toast-close {
+        background: none;
+        border: none;
+        color: #a0aec0;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        font-size: 14px;
+      }
+
+      .toast-close:hover {
+        color: #718096;
+        background: #f7fafc;
+      }
+
+      /* Progress bar for auto-dismiss */
+      .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #4caf50, #45a049);
+        width: 100%;
+        transform: scaleX(1);
+        transform-origin: left;
+        animation: progress 5s linear forwards;
+      }
+
+      .toast.success .toast-progress {
+        background: linear-gradient(90deg, #4caf50, #45a049);
+      }
+
+      .toast.error .toast-progress {
+        background: linear-gradient(90deg, #ff6b6b, #ff5252);
+      }
+
+      .toast.info .toast-progress {
+        background: linear-gradient(90deg, #2196f3, #1976d2);
+      }
+
+      @keyframes progress {
+        to {
+          transform: scaleX(0);
+        }
+      }
+
+      /* Modal Button Styles */
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding: 20px;
+        border-top: 1px solid var(--light-gray);
+      }
+
+      .cancel-btn {
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 2px solid #e9ecef;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 120px;
+        justify-content: center;
+      }
+
+      .cancel-btn:hover {
+        background: #e9ecef;
+        border-color: #dee2e6;
+        color: #495057;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15);
+      }
+
+      .save-btn {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 140px;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+      }
+
+      .save-btn:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--dark-pink), #ff5252);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+      }
+
+      .save-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Specific style for cancel order button (red theme) */
+      .save-btn[style*="background: #ff6b6b"] {
+        background: linear-gradient(135deg, #ff6b6b, #ff5252) !important;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3) !important;
+      }
+
+      .save-btn[style*="background: #ff6b6b"]:hover:not(:disabled) {
+        background: linear-gradient(135deg, #ff5252, #ff3838) !important;
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4) !important;
+      }
+
+      /* Loading state for buttons */
+      .save-btn.loading {
+        position: relative;
+        color: transparent;
+      }
+
+      .save-btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        top: 50%;
+        left: 50%;
+        margin-left: -9px;
+        margin-top: -9px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-right-color: transparent;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .cancel-btn.loading {
+        position: relative;
+        color: transparent;
+      }
+
+      .cancel-btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        top: 50%;
+        left: 50%;
+        margin-left: -9px;
+        margin-top: -9px;
+        border: 2px solid #6c757d;
+        border-radius: 50%;
+        border-right-color: transparent;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Button focus states for accessibility */
+      .cancel-btn:focus,
+      .save-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+      }
+
+      .save-btn:focus {
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.5);
+      } /* Modal Button Styles - OPTIMIZED */
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding: 20px;
+        border-top: 1px solid var(--light-gray);
+      }
+
+      .cancel-btn {
+        background: #f8f9fa; /* Solid color instead of gradient */
+        color: #6c757d;
+        border: 2px solid #e9ecef;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease-out; /* Simpler timing function */
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 120px;
+        justify-content: center;
+        will-change: transform; /* Performance hint */
+      }
+
+      .cancel-btn:hover {
+        background: #e9ecef;
+        border-color: #dee2e6;
+        color: #495057;
+        transform: translateY(-1px); /* Smaller movement */
+        box-shadow: 0 2px 8px rgba(108, 117, 125, 0.12); /* Lighter shadow */
+      }
+
+      .save-btn {
+        background: var(--primary-pink); /* Solid color instead of gradient */
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease-out; /* Simpler timing function */
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 140px;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2); /* Lighter shadow */
+        will-change: transform; /* Performance hint */
+      }
+
+      .save-btn:hover:not(:disabled) {
+        background: var(--dark-pink); /* Solid color */
+        transform: translateY(-1px); /* Smaller movement */
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.25); /* Lighter shadow */
+      }
+
+      .save-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Specific style for cancel order button (red theme) - OPTIMIZED */
+      .save-btn[style*="background: #ff6b6b"] {
+        background: #ff6b6b !important; /* Solid color */
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2) !important;
+      }
+
+      .save-btn[style*="background: #ff6b6b"]:hover:not(:disabled) {
+        background: #ff5252 !important; /* Solid color */
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.25) !important;
+      }
+
+      /* Loading state for buttons - OPTIMIZED */
+      .save-btn.loading {
+        position: relative;
+        color: transparent;
+        pointer-events: none; /* Prevent clicks during loading */
+      }
+
+      .save-btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 16px; /* Slightly smaller */
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-right-color: transparent;
+        animation: spin 0.6s linear infinite; /* Faster animation */
+      }
+
+      .cancel-btn.loading {
+        position: relative;
+        color: transparent;
+        pointer-events: none; /* Prevent clicks during loading */
+      }
+
+      .cancel-btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 16px; /* Slightly smaller */
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid #6c757d;
+        border-radius: 50%;
+        border-right-color: transparent;
+        animation: spin 0.6s linear infinite; /* Faster animation */
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Button focus states for accessibility */
+      .cancel-btn:focus,
+      .save-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2); /* Lighter focus */
+      }
+
+      .save-btn:focus {
+        box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.3); /* Lighter focus */
+      }
+
+      /* Hardware acceleration for smoother animations */
+      .cancel-btn,
+      .save-btn {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+      }
     </style>
   </head>
   <body>
@@ -1308,6 +1759,63 @@
       </div>
     </div>
 
+    <div
+      id="toastContainer"
+      style="position: fixed; top: 20px; right: 20px; z-index: 10000"
+    ></div>
+    <!-- Cancel Order Confirmation Modal -->
+    <div class="modal-overlay" id="cancelOrderModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Cancel Order</h3>
+          <button class="close-modal" onclick="closeCancelOrderModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div style="text-align: center; padding: 20px 0">
+            <div style="font-size: 48px; color: #ff6b6b; margin-bottom: 15px">
+              <i class="fas fa-times-circle"></i>
+            </div>
+            <h4 style="margin: 0 0 10px 0; color: var(--dark-gray)">
+              Cancel this order?
+            </h4>
+            <p style="color: var(--text-gray); margin: 0; font-size: 14px">
+              This order will be cancelled and all items will be moved back to
+              your cart.
+            </p>
+            <p
+              style="
+                color: #ff6b6b;
+                margin: 10px 0 0 0;
+                font-size: 13px;
+                font-weight: 500;
+              "
+            >
+              <i class="fas fa-exclamation-triangle"></i> This action cannot be
+              undone.
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="cancel-btn" onclick="closeCancelOrderModal()">
+            Keep Order
+          </button>
+          <button
+            class="save-btn"
+            style="background: #ff6b6b"
+            onclick="confirmCancelOrder()"
+            id="confirmCancelOrderBtn"
+          >
+            <i class="fas fa-times-circle" style="margin-right: 5px"></i>
+            Yes, Cancel Order
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script>
       // Current user from session
       let currentUser = null;
@@ -1384,7 +1892,6 @@
 
           if (data.success) {
             orders = data.orders;
-            console.log("Fetched orders:", orders);
             renderOrders();
           } else {
             console.error("Failed to fetch orders:", data.message);
@@ -1423,7 +1930,7 @@
       // Generate QR code for pending orders - USE SAME DATA AS CHECKOUT
       function generateOrderQRCode(orderId, qrCode, container) {
         try {
-          console.log("Generating QR for order:", orderId, "QR data:", qrCode);
+         
 
           // Clear previous QR code
           container.innerHTML = "";
@@ -1682,7 +2189,10 @@
       }
       async function submitReview() {
         if (selectedProductRating === 0 || selectedRecommendationRating === 0) {
-          alert("Please provide both ratings before submitting your review.");
+          showNotification(
+            "Please provide both product and recommendation ratings.",
+            "info"
+          );
           return;
         }
 
@@ -1707,7 +2217,7 @@
               .value.trim(),
           };
 
-          console.log("Submitting review:", reviewData);
+         
 
           const response = await fetch("../php/submit_review.php", {
             method: "POST",
@@ -1717,9 +2227,9 @@
             body: JSON.stringify(reviewData),
           });
 
-          // Get the raw response text first
+      
           const responseText = await response.text();
-          console.log("Raw response:", responseText);
+      
 
           // Try to parse as JSON
           let data;
@@ -1733,7 +2243,7 @@
             );
           }
 
-          console.log("Parsed response:", data);
+      
 
           if (data.success) {
             // Update local data to show as rated
@@ -1744,17 +2254,22 @@
               currentProductIndex
             ].quickRating = selectedProductRating;
 
-            alert(
-              "Thank you for your review! Your feedback helps improve our recommendations."
+            showNotification(
+              "Thank you for your review! Your feedback helps improve our recommendations. 💖",
+              "success"
             );
             closeReviewModal();
             renderOrders();
           } else {
-            alert("Error submitting review: " + data.message);
+            showNotification(
+              "Error submitting review: " + data.message,
+              "error"
+            );
           }
         } catch (error) {
           console.error("Error submitting review:", error);
-          alert("Error: " + error.message);
+          // ✅ REPLACED: Beautiful toast instead of alert
+          showNotification("Error: " + error.message, "error");
         } finally {
           // Restore button state
           submitBtn.innerHTML = originalText;
@@ -1915,6 +2430,72 @@
         });
       }
 
+      function showNotification(message, type = "info") {
+        const toastContainer = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+
+        // Add appropriate icon based on type
+        let icon = "fas fa-info-circle";
+        let title = "Information";
+        if (type === "success") {
+          icon = "fas fa-check-circle";
+          title = "Success";
+        }
+        if (type === "error") {
+          icon = "fas fa-exclamation-circle";
+          title = "Error";
+        }
+
+        toast.innerHTML = `
+    <i class="${icon}"></i>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close" onclick="this.parentElement.remove()">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="toast-progress"></div>
+  `;
+
+        toastContainer.appendChild(toast);
+
+        // Animate in
+        setTimeout(() => toast.classList.add("show"), 100);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 400);
+        }, 5000);
+
+        // Add click to dismiss
+        toast.addEventListener("click", function (e) {
+          if (
+            e.target.classList.contains("toast-close") ||
+            e.target.closest(".toast-close")
+          ) {
+            this.classList.remove("show");
+            setTimeout(() => {
+              if (this.parentNode) {
+                this.parentNode.removeChild(this);
+              }
+            }, 300);
+          }
+        });
+      }
+
+      function cleanProductName(name) {
+        if (!name) return "";
+
+        return name.replace(/(Parent Record:|Product Record:)\s*/gi, "").trim();
+      }
+
       function renderOrders() {
         ordersList.innerHTML = "";
 
@@ -1971,8 +2552,6 @@
           const orderSummary = document.createElement("div");
           orderSummary.className = "order-summary";
 
-
-          
           // Show QR code only for pending orders
           if (order.status === "pending" && order.qr_code) {
             const qrSection = document.createElement("div");
@@ -2053,24 +2632,21 @@
             if (product.image && product.image !== "null") {
               const img = document.createElement("img");
 
-              // DEBUG: Log the original image path
-              console.log("Original image path from API:", product.image);
-
-              // FIX: Always prepend /admin/ to the path
+             
               let imagePath = product.image;
 
-              // If the path doesn't already include /admin/, add it
+        
               if (!imagePath.includes("/admin/")) {
-                // Remove any leading slashes or uploads/ from the path
+             
                 imagePath = imagePath.replace(/^\/?uploads\//, "");
                 imagePath = `/admin/uploads/product_images/${imagePath}`;
               }
 
-              // Ensure we have the correct path structure
-              imagePath = imagePath.replace(/\\/g, "/"); // Convert backslashes to forward slashes
-              imagePath = imagePath.replace(/(\/\/+)/g, "/"); // Remove duplicate slashes
+           
+              imagePath = imagePath.replace(/\\/g, "/"); 
+              imagePath = imagePath.replace(/(\/\/+)/g, "/");
 
-              console.log("Final image path:", imagePath);
+         
 
               img.src = imagePath;
               img.alt = product.name;
@@ -2083,7 +2659,7 @@
               };
 
               img.onload = function () {
-                console.log("✅ Successfully loaded image:", this.src);
+             
               };
 
               productImage.appendChild(img);
@@ -2099,7 +2675,8 @@
 
             const productName = document.createElement("div");
             productName.className = "product-name";
-            productName.textContent = product.name;
+
+            productName.textContent = cleanProductName(product.name);
 
             const productVariant = document.createElement("div");
             productVariant.className = "product-variant";
@@ -2163,9 +2740,7 @@
                 return;
               }
 
-              console.log(
-                `🛒 Adding to cart: ${productId} (${product.name}) x ${qty}`
-              );
+            
 
               // Show loading state
               const originalText = buyAgainBtn.innerHTML;
@@ -2314,9 +2889,7 @@
       }
       async function addToCart(productId, quantity = 1) {
         try {
-          console.log(
-            `📤 Adding to cart - Product: ${productId}, Quantity: ${quantity}`
-          );
+         
 
           const response = await fetch("../php/cart.php", {
             method: "POST",
@@ -2390,14 +2963,57 @@
         }
       }
 
-      // CANCEL ORDER FUNCTIONALITY
-      async function cancelOrder(orderId) {
-        if (
-          !confirm(
-            "Are you sure you want to cancel this order? The items will be moved back to your cart."
-          )
-        ) {
+      let currentOrderIdToCancel = null;
+
+      // Enhanced cancel order function with modal
+      function cancelOrder(orderId) {
+        currentOrderIdToCancel = orderId;
+        openCancelOrderModal();
+      }
+
+      // Open cancel order confirmation modal
+      function openCancelOrderModal() {
+        const modal = document.getElementById("cancelOrderModal");
+        if (modal) {
+          modal.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
+      }
+
+      // Close cancel order confirmation modal
+      function closeCancelOrderModal() {
+        const modal = document.getElementById("cancelOrderModal");
+        if (modal) {
+          modal.classList.remove("active");
+          document.body.style.overflow = "";
+
+          // Reset loading state
+          const confirmBtn = document.getElementById("confirmCancelOrderBtn");
+          if (confirmBtn) {
+            confirmBtn.classList.remove("loading");
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML =
+              '<i class="fas fa-times-circle" style="margin-right: 5px;"></i> Yes, Cancel Order';
+          }
+
+          currentOrderIdToCancel = null;
+        }
+      }
+
+      // Confirm and execute order cancellation
+      async function confirmCancelOrder() {
+        if (!currentOrderIdToCancel) {
+          console.error("No order ID to cancel");
           return;
+        }
+
+        const confirmBtn = document.getElementById("confirmCancelOrderBtn");
+
+        // Show loading state
+        if (confirmBtn) {
+          confirmBtn.classList.add("loading");
+          confirmBtn.disabled = true;
+          confirmBtn.innerHTML = "Cancelling...";
         }
 
         try {
@@ -2407,23 +3023,54 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ order_id: orderId }),
+            body: JSON.stringify({ order_id: currentOrderIdToCancel }),
           });
 
           const result = await response.json();
 
           if (result.success) {
-            // Show success message
-            alert("✅ " + result.message);
+            // Close modal first
+            closeCancelOrderModal();
+
+            // Use your existing showNotification function
+            showNotification("✅ " + result.message, "success");
 
             // Refresh the orders list
             await fetchOrders();
           } else {
-            alert("❌ " + result.message);
+            closeCancelOrderModal();
+            showNotification("❌ " + result.message, "error");
           }
         } catch (error) {
           console.error("Error cancelling order:", error);
-          alert("❌ Error cancelling order. Please try again.");
+          closeCancelOrderModal();
+          showNotification(
+            "❌ Error cancelling order. Please try again.",
+            "error"
+          );
+        }
+      }
+
+      // Add modal event listeners
+      function initializeCancelOrderModal() {
+        const cancelOrderModal = document.getElementById("cancelOrderModal");
+        if (cancelOrderModal) {
+          // Click outside to close
+          cancelOrderModal.addEventListener("click", function (e) {
+            if (e.target === cancelOrderModal) {
+              closeCancelOrderModal();
+            }
+          });
+
+          // Escape key to close
+          document.addEventListener("keydown", function (e) {
+            if (
+              e.key === "Escape" &&
+              cancelOrderModal.classList.contains("active")
+            ) {
+              closeCancelOrderModal();
+            }
+          });
         }
       }
 
@@ -2432,6 +3079,7 @@
       cancelReviewBtn.addEventListener("click", closeReviewModal);
       submitReviewBtn.addEventListener("click", submitReview);
       initializePage();
+      initializeCancelOrderModal();
     </script>
   </body>
 </html>
