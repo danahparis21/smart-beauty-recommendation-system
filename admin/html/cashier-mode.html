@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -242,7 +243,7 @@
             gap: 8px;
         }
 
-        /* QR Scanner Modal Styles */
+        /* QR Scanner Modal Styles - FIXED */
         .qr-modal {
             display: none;
             position: fixed;
@@ -250,22 +251,42 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
         .qr-modal-content {
             background: white;
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
             max-width: 600px;
-            width: 90%;
+            width: 100%;
             max-height: 90vh;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            overflow-y: auto;
+            position: relative;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(228, 151, 170, 0.5) transparent;
+        }
+
+        .qr-modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .qr-modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .qr-modal-content::-webkit-scrollbar-thumb {
+            background: rgba(228, 151, 170, 0.5);
+            border-radius: 4px;
+        }
+
+        .qr-modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(228, 151, 170, 0.7);
         }
 
         .qr-modal-header {
@@ -280,34 +301,46 @@
         .qr-modal-header h5 {
             color: var(--dark-pink);
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        .qr-modal-header h5 i {
+            font-size: 1.6rem;
         }
 
         .close-qr-modal {
-            background: none;
+            background: rgba(228, 151, 170, 0.1);
             border: none;
-            font-size: 1.5rem;
-            color: #6c757d;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            color: var(--dark-pink);
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .close-qr-modal:hover {
-            color: var(--dark-pink);
+            background: rgba(228, 151, 170, 0.2);
+            transform: rotate(90deg);
         }
 
         .camera-container {
             position: relative;
             width: 100%;
-            height: 300px;
+            height: 350px;
             border-radius: 16px;
             overflow: hidden;
-            background: #000;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         #qr-video {
@@ -323,17 +356,25 @@
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             color: #6c757d;
             text-align: center;
+            gap: 15px;
         }
 
         .camera-placeholder i {
             font-size: 4rem;
-            margin-bottom: 15px;
             color: var(--primary-pink);
+            opacity: 0.8;
+        }
+
+        .camera-placeholder p {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
         }
 
         .camera-overlay {
@@ -345,64 +386,53 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            pointer-events: none;
         }
 
         .scanner-frame {
             width: 250px;
             height: 250px;
-            border: 2px solid var(--primary-pink);
-            border-radius: 12px;
+            border: 3px solid var(--primary-pink);
+            border-radius: 16px;
             position: relative;
-            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
+            animation: scannerPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scannerPulse {
+            0%, 100% {
+                border-color: var(--primary-pink);
+                box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5), 0 0 20px rgba(228, 151, 170, 0.5);
+            }
+            50% {
+                border-color: rgba(228, 151, 170, 0.8);
+                box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5), 0 0 30px rgba(228, 151, 170, 0.8);
+            }
         }
 
         .scanner-frame::before,
         .scanner-frame::after {
             content: '';
             position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 3px solid var(--primary-pink);
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-pink);
         }
 
         .scanner-frame::before {
-            top: -3px;
-            left: -3px;
+            top: -4px;
+            left: -4px;
             border-right: none;
             border-bottom: none;
+            border-radius: 16px 0 0 0;
         }
 
         .scanner-frame::after {
-            bottom: -3px;
-            right: -3px;
+            bottom: -4px;
+            right: -4px;
             border-left: none;
             border-top: none;
-        }
-
-        .cancel-scan-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(220, 53, 69, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 20;
-            transition: all 0.3s ease;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .cancel-scan-btn:hover {
-            background: #dc3545;
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            border-radius: 0 0 16px 0;
         }
 
         .camera-controls {
@@ -413,86 +443,133 @@
         }
 
         .camera-btn {
-            background: var(--primary-pink);
+            background: linear-gradient(135deg, var(--primary-pink) 0%, var(--secondary-pink) 100%);
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 12px 25px;
+            padding: 14px 28px;
             font-weight: 600;
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(228, 151, 170, 0.3);
+            box-shadow: 0 4px 15px rgba(228, 151, 170, 0.3);
         }
 
-        .camera-btn:hover {
-            background: var(--secondary-pink);
+        .camera-btn i {
+            font-size: 1.1rem;
+        }
+
+        .camera-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(228, 151, 170, 0.4);
+            box-shadow: 0 6px 20px rgba(228, 151, 170, 0.4);
         }
 
-        .camera-btn:active {
+        .camera-btn:active:not(:disabled) {
             transform: translateY(0);
         }
 
-        .camera-btn.off {
-            background: #dc3545;
+        .camera-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .camera-btn.off:hover {
-            background: #c82333;
+        .camera-btn.off {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .camera-btn.off:hover:not(:disabled) {
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
         }
 
         .scanner-results {
             margin-top: 20px;
-            padding: 15px;
+            padding: 20px;
             border-radius: 12px;
             background: #f8f9fa;
             display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .scanner-results.success {
             display: block;
-            background: #d4edda;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border: 2px solid #b1dfbb;
         }
 
         .scanner-results.error {
             display: block;
-            background: #f8d7da;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border: 2px solid #f1aeb5;
         }
 
         .scanner-results.info {
             display: block;
-            background: #cce7ff;
-            color: #004085;
-            border: 1px solid #b3d7ff;
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+            border: 2px solid #abdde5;
         }
 
         .scan-instructions {
-            background: #e9f7fe;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            border: 2px solid #90caf9;
         }
 
         .scan-instructions i {
-            color: #17a2b8;
-            font-size: 1.2rem;
+            color: #1976d2;
+            font-size: 1.4rem;
+            flex-shrink: 0;
         }
 
         .scan-instructions p {
             margin: 0;
-            color: #0c5460;
-            font-size: 0.9rem;
+            color: #0d47a1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        /* Payment Method Badge */
+        .payment-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-pink);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .payment-badge.qr {
+            background: #28a745;
+        }
+
+        .payment-badge.manual {
+            background: var(--primary-pink);
         }
 
         /* Cashier Mode Transition Screens */
@@ -663,13 +740,35 @@
                 height: 120px;
             }
 
+            .qr-modal-content {
+                padding: 20px;
+                max-height: 85vh;
+            }
+
+            .qr-modal-header h5 {
+                font-size: 1.2rem;
+            }
+
             .camera-container {
-                height: 300px;
+                height: 280px;
             }
 
             .scanner-frame {
                 width: 200px;
                 height: 200px;
+            }
+
+            .camera-btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            .scan-instructions {
+                padding: 12px 15px;
+            }
+
+            .scan-instructions p {
+                font-size: 0.85rem;
             }
 
             .cashier-title {
@@ -764,6 +863,13 @@
                         </div>
                     </div>
                     <div class="card-body p-0">
+                        <!-- Payment Method Indicator -->
+                        <div class="p-3 border-bottom" id="paymentMethodIndicator" style="display: none;">
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold" id="paymentMethodText">Manual Payment</span>
+                            </div>
+                        </div>
+                        
                         <div class="cart-container p-3" id="cartItems">
                             <div class="empty-cart">
                                 <i class="fas fa-shopping-cart"></i>
@@ -802,12 +908,13 @@
 
             <div class="scan-instructions">
                 <i class="fas fa-info-circle"></i>
-                <p>Point the camera at the QR code to scan automatically</p>
+                <p>Point your camera at the QR code. The scanner will automatically detect and process it.</p>
             </div>
 
             <div class="camera-container">
                 <div class="camera-placeholder" id="cameraPlaceholder">
                     <i class="fas fa-camera"></i>
+                    <p>Camera not started</p>
                 </div>
                 <video id="qr-video" autoplay muted playsinline style="display: none;"></video>
                 <div class="camera-overlay">
@@ -851,6 +958,8 @@
             const stopCameraBtn = document.getElementById('stopCamera');
             const scannerResults = document.getElementById('scannerResults');
             const closeQrScannerBtn = document.getElementById('closeQrScanner');
+            const paymentMethodIndicator = document.getElementById('paymentMethodIndicator');
+            const paymentMethodText = document.getElementById('paymentMethodText');
 
             // Long Press Elements
             const longPressOverlay = document.getElementById('longPressOverlay');
@@ -869,6 +978,11 @@
             let lastScannedQR = null;
             let lastScanTime = 0;
             const SCAN_COOLDOWN = 3000; // 3 seconds cooldown between scans
+
+            // NEW: Track payment method and order details
+            let paymentMethod = 'manual'; // 'manual' or 'qr'
+            let scannedOrderId = null;
+            let scannedOrderDetails = null;
 
             // Long Press State
             let pressTimer = null;
@@ -1027,6 +1141,17 @@
 
             // Add product to cart
             function addToCart(product) {
+                // If adding manual product to QR order, show warning
+                if (paymentMethod === 'qr' && cart.length > 0) {
+                    Swal.fire({
+                        title: 'Mixed Payment Method',
+                        text: 'You cannot mix manual products with QR code orders. Clear the cart first to add manual products.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
                 // Check if product is already in cart
                 const existingItem = cart.find(item => item.ProductID === product.ProductID);
 
@@ -1054,6 +1179,11 @@
                     });
                 }
 
+                // Set payment method to manual if not already set
+                if (paymentMethod === 'manual' && cart.length === 1) {
+                    updatePaymentMethod('manual');
+                }
+
                 renderCart();
                 updateCartButtonState();
                 showSuccess(`${product.Name} added to cart`);
@@ -1070,6 +1200,7 @@
                         </div>
                     `;
                     totalAmount.textContent = '₱0.00';
+                    paymentMethodIndicator.style.display = 'none';
                     return;
                 }
 
@@ -1114,6 +1245,9 @@
                 }).join('');
 
                 totalAmount.textContent = `₱${total.toFixed(2)}`;
+
+                // Show payment method indicator
+                paymentMethodIndicator.style.display = 'block';
 
                 // Add event listeners to cart controls
                 document.querySelectorAll('.decrease-quantity').forEach(btn => {
@@ -1212,6 +1346,9 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         cart = [];
+                        paymentMethod = 'manual';
+                        scannedOrderId = null;
+                        scannedOrderDetails = null;
                         renderCart();
                         updateCartButtonState();
                         showInfo('Cart cleared');
@@ -1226,20 +1363,36 @@
                 // Calculate total
                 const total = cart.reduce((sum, item) => sum + (item.Price * item.quantity), 0);
 
-                Swal.fire({
-                    title: 'Complete Sale?',
-                    html: `
+                let confirmText = '';
+                if (paymentMethod === 'qr') {
+                    confirmText = `
                         <div class="text-start">
+                            <p>You are about to complete a <strong class="text-success">QR Code Order</strong>.</p>
+                            <p><strong>Order ID:</strong> #${scannedOrderId}</p>
+                            <p><strong>Customer:</strong> ${scannedOrderDetails.customer_name}</p>
+                            <p class="fw-bold">Total Amount: ₱${total.toFixed(2)}</p>
+                            <p class="text-success">This will update the order status to "completed".</p>
+                        </div>
+                    `;
+                } else {
+                    confirmText = `
+                        <div class="text-start">
+                            <p>You are about to complete a <strong class="text-primary">Manual Sale</strong>.</p>
                             <p>You are about to complete a sale with <strong>${cart.length}</strong> item(s).</p>
                             <p class="fw-bold">Total Amount: ₱${total.toFixed(2)}</p>
-                            <p>This action cannot be undone.</p>
+                            <p>This will create a new sale record.</p>
                         </div>
-                    `,
+                    `;
+                }
+
+                Swal.fire({
+                    title: paymentMethod === 'qr' ? 'Complete QR Order?' : 'Complete Manual Sale?',
+                    html: confirmText,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonColor: '#28a745',
+                    confirmButtonColor: paymentMethod === 'qr' ? '#28a745' : '#007bff',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, complete sale!',
+                    confirmButtonText: paymentMethod === 'qr' ? 'Yes, complete order!' : 'Yes, complete sale!',
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -1255,7 +1408,9 @@
                         product_id: item.ProductID,
                         quantity: item.quantity,
                         price: item.Price
-                    }))
+                    })),
+                    payment_method: paymentMethod,
+                    order_id: scannedOrderId
                 };
 
                 fetch('../php/cashier-mode.php?action=process_sale', {
@@ -1268,8 +1423,18 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            showSuccess('Sale completed successfully!');
+                            let successMessage = '';
+                            if (paymentMethod === 'qr') {
+                                successMessage = `QR Order #${scannedOrderId} completed successfully!`;
+                            } else {
+                                successMessage = `Manual sale completed successfully! Order ID: ${data.order_id}`;
+                            }
+
+                            showSuccess(successMessage);
                             cart = [];
+                            paymentMethod = 'manual';
+                            scannedOrderId = null;
+                            scannedOrderDetails = null;
                             renderCart();
                             updateCartButtonState();
                             loadProducts(); // Refresh product stock
@@ -1283,9 +1448,28 @@
                     });
             }
 
+            // Update payment method display
+            function updatePaymentMethod(method) {
+                paymentMethod = method;
+                if (method === 'qr') {
+                    paymentMethodText.innerHTML = '<i class="fas fa-qrcode me-2"></i>QR Code Order';
+                    paymentMethodText.className = 'fw-bold text-success';
+                } else {
+                    paymentMethodText.innerHTML = '<i class="fas fa-money-bill-wave me-2"></i>Manual Payment';
+                    paymentMethodText.className = 'fw-bold text-primary';
+                }
+            }
+
             // Update complete sale button state
             function updateCartButtonState() {
                 completeSaleBtn.disabled = cart.length === 0;
+                if (paymentMethod === 'qr') {
+                    completeSaleBtn.innerHTML = '<i class="fas fa-qrcode me-2"></i>Complete QR Order';
+                    completeSaleBtn.className = 'btn btn-success w-100';
+                } else {
+                    completeSaleBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Complete Sale';
+                    completeSaleBtn.className = 'btn btn-primary w-100';
+                }
             }
 
             // QR Scanner Functions
@@ -1321,8 +1505,13 @@
                     stopCameraBtn.disabled = false;
 
                     scanning = true;
-                    lastScannedQR = null; // Reset last scanned QR
-                    lastScanTime = 0; // Reset scan time
+                    lastScannedQR = null;
+                    lastScanTime = 0;
+                    
+                    // Clear any previous results
+                    scannerResults.textContent = '';
+                    scannerResults.className = 'scanner-results';
+                    
                     startScanning();
 
                 } catch (err) {
@@ -1350,8 +1539,6 @@
 
                 startCameraBtn.disabled = false;
                 stopCameraBtn.disabled = true;
-
-                scannerResults.className = 'scanner-results';
             }
 
             // Start scanning for QR codes
@@ -1391,6 +1578,10 @@
 
                 console.log('QR Code detected:', qrData);
 
+                // Show loading state
+                scannerResults.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin me-2"></i>Loading order details...</div>';
+                scannerResults.className = 'scanner-results info';
+
                 // Fetch order details
                 fetchOrderDetails(qrData);
             }
@@ -1404,62 +1595,87 @@
                     const data = await response.json();
 
                     if (data.success) {
+                        // Store order details
+                        scannedOrderId = data.order.order_id;
+                        scannedOrderDetails = data.order;
+                        
+                        // Set payment method to QR
+                        updatePaymentMethod('qr');
+                        
                         // Add scanned items to cart
                         addScannedItemsToCart(data.order.items);
 
-                        // Close modal immediately without showing success message
-                        closeQrScannerModal();
+                        // Show success message
+                        scannerResults.innerHTML = `
+                            <div class="text-center">
+                                <i class="fas fa-check-circle text-success mb-2" style="font-size: 2.5rem;"></i>
+                                <h6 class="text-success fw-bold mb-3">Order Found!</h6>
+                                <div class="text-start">
+                                    <p class="mb-2"><strong>Order ID:</strong> #${data.order.order_id}</p>
+                                    <p class="mb-2"><strong>Customer:</strong> ${data.order.customer_name}</p>
+                                    <p class="mb-2"><strong>Items:</strong> ${data.order.items.length}</p>
+                                    <p class="mb-0"><strong>Total:</strong> ₱${parseFloat(data.order.total_price).toFixed(2)}</p>
+                                </div>
+                            </div>
+                        `;
+                        scannerResults.className = 'scanner-results success';
+                        
+                        // Auto-close modal after 2 seconds
+                        setTimeout(() => {
+                            closeQrScannerModal();
+                        }, 2000);
+                        
                     } else {
-                        scannerResults.textContent = data.message || 'Order not found';
+                        scannerResults.innerHTML = `
+                            <div class="text-center">
+                                <i class="fas fa-exclamation-circle text-danger mb-2" style="font-size: 2rem;"></i>
+                                <p class="mb-0">${data.message || 'Order not found'}</p>
+                            </div>
+                        `;
                         scannerResults.className = 'scanner-results error';
                     }
                 } catch (error) {
                     console.error('Error fetching order:', error);
-                    scannerResults.textContent = 'Error loading order: ' + error.message;
+                    scannerResults.innerHTML = `
+                        <div class="text-center">
+                            <i class="fas fa-times-circle text-danger mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0">Error loading order: ${error.message}</p>
+                        </div>
+                    `;
                     scannerResults.className = 'scanner-results error';
                 }
             }
 
             // Add scanned items to cart
             function addScannedItemsToCart(items) {
+                // Clear existing cart first
+                cart = [];
+
                 items.forEach(item => {
                     // Find the product in our products list
                     const product = products.find(p => p.ProductID === item.product_id);
 
                     if (product) {
-                        // Check if product is already in cart
-                        const existingItem = cart.find(cartItem => cartItem.ProductID === product.ProductID);
-
-                        if (existingItem) {
-                            // Update quantity if already in cart
-                            const newQuantity = existingItem.quantity + parseInt(item.quantity);
-                            if (newQuantity <= product.Stocks) {
-                                existingItem.quantity = newQuantity;
-                            } else {
-                                showWarning(`Cannot add more ${product.Name}. Only ${product.Stocks} available.`);
-                            }
+                        // Add to cart
+                        if (parseInt(item.quantity) <= product.Stocks) {
+                            cart.push({
+                                ProductID: product.ProductID,
+                                Name: product.Name,
+                                Category: product.Category,
+                                ShadeOrVariant: product.ShadeOrVariant,
+                                Price: parseFloat(product.Price),
+                                quantity: parseInt(item.quantity),
+                                ImagePath: product.ImagePath
+                            });
                         } else {
-                            // Add to cart if not already there
-                            if (parseInt(item.quantity) <= product.Stocks) {
-                                cart.push({
-                                    ProductID: product.ProductID,
-                                    Name: product.Name,
-                                    Category: product.Category,
-                                    ShadeOrVariant: product.ShadeOrVariant,
-                                    Price: parseFloat(product.Price),
-                                    quantity: parseInt(item.quantity),
-                                    ImagePath: product.ImagePath
-                                });
-                            } else {
-                                showWarning(`Cannot add ${product.Name}. Only ${product.Stocks} available.`);
-                            }
+                            showWarning(`Cannot add ${product.Name}. Only ${product.Stocks} available.`);
                         }
                     }
                 });
 
                 renderCart();
                 updateCartButtonState();
-                showSuccess('Scanned items added to cart');
+                showSuccess('QR order items loaded into cart');
             }
 
             // Open QR Scanner Modal
@@ -1467,12 +1683,18 @@
                 qrScannerModal.style.display = 'flex';
                 scannerResults.textContent = '';
                 scannerResults.className = 'scanner-results';
+                
+                // Prevent body scroll
+                document.body.style.overflow = 'hidden';
             }
 
             // Close QR Scanner Modal
             function closeQrScannerModal() {
                 qrScannerModal.style.display = 'none';
                 stopCamera();
+                
+                // Restore body scroll
+                document.body.style.overflow = '';
             }
 
             // Long Press Functions
