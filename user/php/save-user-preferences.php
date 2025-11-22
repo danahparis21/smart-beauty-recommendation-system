@@ -5,12 +5,18 @@ ini_set('display_errors', 1);
 
 header('Content-Type: application/json');
 
+// ✅ ADDED: Set timezone at the top
+date_default_timezone_set('Asia/Manila');
+
 // Auto-switch between Docker and XAMPP
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+
+// ✅ ADDED: Set database timezone
+$conn->query("SET time_zone = '+08:00'");
 
 // Include activity logger
 require_once __DIR__ . '/activity_logger.php';
@@ -32,6 +38,9 @@ error_log('User ID: ' . $user_id);
 error_log('Input data: ' . print_r($input, true));
 
 try {
+    // ✅ ADDED: Get current datetime for consistent timing
+    $currentDateTime = date('Y-m-d H:i:s');
+
     // Check if user already has preferences
     $checkStmt = $conn->prepare('SELECT user_pref_id FROM user_preferences WHERE user_id = ?');
     $checkStmt->bind_param('i', $user_id);
@@ -45,17 +54,20 @@ try {
     if ($checkResult->num_rows > 0) {
         // Update existing preferences
         error_log('Updating existing preferences');
+        
+        // ✅ FIXED: Use PHP date instead of NOW()
         $updateStmt = $conn->prepare('
             UPDATE user_preferences 
-            SET skin_type = ?, skin_tone = ?, undertone = ?, skin_concerns = ?, preferred_finish = ?, updated_at = NOW() 
+            SET skin_type = ?, skin_tone = ?, undertone = ?, skin_concerns = ?, preferred_finish = ?, updated_at = ? 
             WHERE user_id = ?
         ');
-        $updateStmt->bind_param('sssssi',
+        $updateStmt->bind_param('ssssssi',
             $input['skinType'],
             $input['skinTone'],
             $input['undertone'],
             $concernsJson,
             $input['finish'],
+            $currentDateTime, // ✅ Use PHP datetime
             $user_id);
         $updateStmt->execute();
         error_log('Update affected rows: ' . $updateStmt->affected_rows);
@@ -68,17 +80,22 @@ try {
     } else {
         // Insert new preferences
         error_log('Inserting new preferences');
+        
+        // ✅ FIXED: Use PHP date instead of NOW()
         $insertStmt = $conn->prepare('
             INSERT INTO user_preferences (user_id, skin_type, skin_tone, undertone, skin_concerns, preferred_finish, created_at, updated_at) 
-            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ');
-        $insertStmt->bind_param('isssss',
+        $insertStmt->bind_param('isssssss',
             $user_id,
             $input['skinType'],
             $input['skinTone'],
             $input['undertone'],
             $concernsJson,
-            $input['finish']);
+            $input['finish'],
+            $currentDateTime, // ✅ created_at
+            $currentDateTime  // ✅ updated_at
+        );
         $insertStmt->execute();
         error_log('Insert ID: ' . $insertStmt->insert_id);
         
@@ -88,7 +105,11 @@ try {
         logUserActivity($conn, $user_id, 'Preferences created', $preferencesDetails);
     }
 
-    echo json_encode(['success' => true, 'message' => 'Preferences saved successfully']);
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Preferences saved successfully',
+        'timestamp' => $currentDateTime // ✅ Return the actual timestamp used
+    ]);
     error_log('Preferences saved successfully');
     
 } catch (Exception $e) {

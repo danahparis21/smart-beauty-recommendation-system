@@ -1,911 +1,1116 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blessence | Generate QR</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
-        rel="stylesheet">
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-pink: #ff69b4;
+        --light-pink: #ffb6c1;
+        --dark-pink: #ff1493;
+        --gold: #d4af37;
+        --light-gold: #f7e8c4;
+        --soft-white: #fefefe;
+        --light-gray: #f5f5f5;
+        --medium-gray: #e0e0e0;
+        --text-gray: #888;
+        --dark-gray: #555;
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --gradient-bg: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #fff5f9 30%,
+          #ffe6f2 70%,
+          #ffd1dc 100%
+        );
+        --gradient-header: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(255, 249, 252, 0.95) 100%
+        );
+        --gradient-card: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(255, 249, 252, 0.95) 100%
+        );
+      }
+
+      body {
+        background: var(--gradient-bg);
+        min-height: 100vh;
+        font-family: "Montserrat", sans-serif;
+        overflow-x: hidden;
+        position: relative;
+        background-attachment: fixed;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 10% 20%,
+            rgba(255, 255, 255, 0.8) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(255, 182, 193, 0.3) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(255, 105, 180, 0.1) 0%,
+            transparent 50%
+          );
+        z-index: -1;
+      }
+
+      /* Header Styles */
+      .header {
+        background: var(--gradient-header);
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.1);
+        padding: 15px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .back-button {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        font-size: 18px;
+      }
+
+      .back-button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+      }
+
+      .brand-header {
+        text-align: center;
+        flex-grow: 1;
+        padding: 0 20px;
+      }
+
+      .brand-name {
+        color: var(--primary-pink);
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        font-family: "Cormorant Garamond", serif;
+        margin-bottom: 2px;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .brand-tagline {
+        color: var(--text-gray);
+        font-size: 12px;
+        letter-spacing: 1px;
+        font-weight: 300;
+      }
+
+      /* Page Content */
+      .page-content {
+        padding: 30px 25px;
+        min-height: 60vh;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        margin-bottom: 25px;
+        font-family: "Cormorant Garamond", serif;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(
+          to right,
+          var(--primary-pink),
+          var(--light-pink)
+        );
+        border-radius: 3px;
+      }
+
+      /* Order Items */
+      .order-items {
+        margin-bottom: 25px;
+      }
+
+      .order-item {
+        display: flex;
+        background: var(--gradient-card);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 18px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .order-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          var(--primary-pink),
+          var(--light-pink)
+        );
+      }
+
+      .item-image {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 18px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .item-image i {
+        font-size: 32px;
+        color: var(--primary-pink);
+      }
+
+      .item-details {
+        flex: 1;
+      }
+
+      .item-name {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--dark-gray);
+        font-size: 16px;
+      }
+
+      .item-specs {
+        font-size: 14px;
+        color: var(--text-gray);
+        margin-bottom: 8px;
+      }
+
+      .item-price {
+        color: var(--primary-pink);
+        font-weight: 700;
+        margin-bottom: 12px;
+        font-size: 18px;
+      }
+
+      .item-quantity {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 182, 193, 0.15);
+        padding: 5px 12px;
+        border-radius: 20px;
+        width: fit-content;
+        font-size: 14px;
+        color: var(--dark-gray);
+      }
+
+      /* Order Summary */
+      .order-summary {
+        background: var(--gradient-card);
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+        margin-top: 25px;
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .order-summary::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(
+          to right,
+          var(--primary-pink),
+          var(--light-pink)
+        );
+      }
+
+      .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
+      }
+
+      .price-label {
+        color: var(--text-gray);
+      }
+
+      .price-value {
+        font-weight: 500;
+      }
+
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--medium-gray);
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--dark-gray);
+      }
+
+      /* QR Code Section */
+      .qr-section {
+        text-align: center;
+        margin-top: 35px;
+        padding: 30px;
+        background: var(--gradient-card);
+        border-radius: 18px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .qr-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(
+          to right,
+          var(--primary-pink),
+          var(--light-pink)
+        );
+      }
+
+      .qr-placeholder {
+        width: 220px;
+        height: 220px;
+        margin: 0 auto 25px;
+        background: white;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-gray);
+        font-size: 14px;
+        border: 2px dashed var(--medium-gray);
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .qr-placeholder::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 182, 193, 0.05) 0%,
+          rgba(255, 105, 180, 0.02) 100%
+        );
+      }
+
+      .qr-placeholder i {
+        font-size: 50px;
+        margin-bottom: 15px;
+        color: var(--light-pink);
+      }
+
+      .qr-instructions {
+        color: var(--text-gray);
+        font-size: 15px;
+        margin-bottom: 25px;
+        line-height: 1.6;
+      }
+
+      /* Generate QR Button */
+      .generate-qr-btn {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+        font-family: "Montserrat", sans-serif;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .generate-qr-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .generate-qr-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+      }
+
+      .generate-qr-btn:hover::before {
+        left: 100%;
+      }
+
+      .generate-qr-btn:disabled {
+        background: var(--medium-gray);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Save QR Button */
+      .save-qr-btn {
+        background: linear-gradient(135deg, #ff8fab, var(--primary-pink));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+        font-family: "Montserrat", sans-serif;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        display: none;
+        /* Hidden by default */
+        position: relative;
+        overflow: hidden;
+      }
+
+      .save-qr-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .save-qr-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+      }
+
+      .save-qr-btn:hover::before {
+        left: 100%;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 25px;
+        width: 100%;
+        max-width: 420px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px) scale(0.95);
+        transition: all 0.4s;
+        border: 1px solid rgba(255, 182, 193, 0.2);
+      }
+
+      .modal-overlay.active .modal {
+        transform: translateY(0) scale(1);
+      }
+
+      .modal-header {
+        padding: 25px 30px;
+        border-bottom: 1px solid var(--medium-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #fff9fc 0%, #ffffff 100%);
+        border-radius: 25px 25px 0 0;
+      }
+
+      .modal-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .close-modal {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .close-modal:hover {
+        color: var(--dark-gray);
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .modal-body {
+        padding: 30px;
+        text-align: center;
+      }
+
+      .qr-code {
+        width: 220px;
+        height: 220px;
+        margin: 0 auto 25px;
+        background: white;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--medium-gray);
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .qr-code img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .payment-details {
+        margin-top: 25px;
+        padding: 20px;
+        background: var(--light-gray);
+        border-radius: 12px;
+        text-align: left;
+        border-left: 4px solid var(--primary-pink);
+      }
+
+      .payment-details p {
+        margin-bottom: 10px;
+        font-size: 15px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .payment-details p:last-child {
+        margin-bottom: 0;
+      }
+
+      .detail-label {
+        font-weight: 600;
+        color: var(--dark-gray);
+      }
+
+      .modal-footer {
+        padding: 25px 30px;
+        border-top: 1px solid var(--medium-gray);
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        background: #f9f9f9;
+        border-radius: 0 0 25px 25px;
+      }
+
+      .btn {
+        padding: 14px 28px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        font-family: "Montserrat", sans-serif;
+        font-size: 16px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+      }
+
+      .btn-secondary {
+        background: var(--light-gray);
+        color: var(--dark-gray);
+        border: 1px solid var(--medium-gray);
+      }
+
+      .btn-secondary:hover {
+        background: var(--medium-gray);
+        transform: translateY(-2px);
+      }
+
+      /* Thank You Modal Styles */
+      .thank-you-modal .modal {
+        max-width: 380px;
+      }
+
+      .thank-you-modal .modal-body {
+        padding: 40px 30px;
+      }
+
+      .thank-you-icon {
+        font-size: 80px;
+        color: var(--primary-pink);
+        margin-bottom: 20px;
+        animation: bounce 1s ease infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
         }
 
-        :root {
-            --primary-pink: #ff69b4;
-            --light-pink: #ffb6c1;
-            --dark-pink: #ff1493;
-            --gold: #d4af37;
-            --light-gold: #f7e8c4;
-            --soft-white: #fefefe;
-            --light-gray: #f5f5f5;
-            --medium-gray: #e0e0e0;
-            --text-gray: #888;
-            --dark-gray: #555;
-            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --gradient-bg: linear-gradient(135deg, #ffffff 0%, #fff5f9 30%, #ffe6f2 70%, #ffd1dc 100%);
-            --gradient-header: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 249, 252, 0.95) 100%);
-            --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 249, 252, 0.95) 100%);
+        40% {
+          transform: translateY(-10px);
         }
 
-        body {
-            background: var(--gradient-bg);
-            min-height: 100vh;
-            font-family: 'Montserrat', sans-serif;
-            overflow-x: hidden;
-            position: relative;
-            background-attachment: fixed;
+        60% {
+          transform: translateY(-5px);
         }
+      }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(255, 105, 180, 0.1) 0%, transparent 50%);
-            z-index: -1;
-        }
+      .thank-you-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        margin-bottom: 15px;
+        font-family: "Cormorant Garamond", serif;
+      }
 
-        /* Header Styles */
+      .thank-you-message {
+        color: var(--text-gray);
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 25px;
+      }
+
+      .order-confirmation {
+        background: var(--light-gray);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--primary-pink);
+      }
+
+      .order-confirmation p {
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .order-confirmation p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Important Notice Styles - Pink Theme */
+      .important-notice {
+        background: linear-gradient(135deg, #fff0f5, #ffe4ec);
+        border: 1px solid var(--primary-pink);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(255, 107, 107, 0.1);
+      }
+
+      .important-notice:hover {
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.15);
+        transform: translateY(-1px);
+      }
+
+      .important-notice.collapsed {
+        padding: 12px 15px;
+      }
+
+      .notice-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 0;
+        font-weight: 600;
+        color: var(--primary-pink);
+      }
+
+      .notice-header i.fa-exclamation-circle {
+        font-size: 16px;
+      }
+
+      .notice-header .toggle-icon {
+        font-size: 14px;
+        color: var(--primary-pink);
+        transition: transform 0.3s ease;
+      }
+
+      .important-notice.expanded .toggle-icon {
+        transform: rotate(180deg);
+      }
+
+      .notice-content {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 107, 107, 0.2);
+      }
+
+      .important-notice.collapsed .notice-content {
+        display: none;
+      }
+
+      .notice-content p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #d63384;
+        line-height: 1.4;
+      }
+
+      .notice-content strong {
+        color: var(--dark-pink);
+      }
+
+      /* Make the emojis smaller */
+      .notice-content p {
+        font-size: 13px;
+      }
+
+      .notice-content p::before {
+        margin-right: 6px;
+      }
+      /* Responsive Design */
+      @media (max-width: 480px) {
         .header {
-            background: var(--gradient-header);
-            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.1);
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 182, 193, 0.2);
-        }
-
-        .back-button {
-            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
-            font-size: 18px;
-        }
-
-        .back-button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
-        }
-
-        .brand-header {
-            text-align: center;
-            flex-grow: 1;
-            padding: 0 20px;
+          padding: 12px 15px;
         }
 
         .brand-name {
-            color: var(--primary-pink);
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            font-family: 'Cormorant Garamond', serif;
-            margin-bottom: 2px;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+          font-size: 22px;
         }
 
         .brand-tagline {
-            color: var(--text-gray);
-            font-size: 12px;
-            letter-spacing: 1px;
-            font-weight: 300;
+          font-size: 11px;
         }
 
-        /* Page Content */
+        .back-button {
+          width: 40px;
+          height: 40px;
+          font-size: 16px;
+        }
+
         .page-content {
-            padding: 30px 25px;
-            min-height: 60vh;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--dark-gray);
-            margin-bottom: 25px;
-            font-family: 'Cormorant Garamond', serif;
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(to right, var(--primary-pink), var(--light-pink));
-            border-radius: 3px;
-        }
-
-        /* Order Items */
-        .order-items {
-            margin-bottom: 25px;
-        }
-
-        .order-item {
-            display: flex;
-            background: var(--gradient-card);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 18px;
-            box-shadow: var(--card-shadow);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 182, 193, 0.2);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .order-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .order-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--primary-pink), var(--light-pink));
-        }
-
-        .item-image {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 18px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .item-image i {
-            font-size: 32px;
-            color: var(--primary-pink);
-        }
-
-        .item-details {
-            flex: 1;
-        }
-
-        .item-name {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--dark-gray);
-            font-size: 16px;
-        }
-
-        .item-specs {
-            font-size: 14px;
-            color: var(--text-gray);
-            margin-bottom: 8px;
-        }
-
-        .item-price {
-            color: var(--primary-pink);
-            font-weight: 700;
-            margin-bottom: 12px;
-            font-size: 18px;
-        }
-
-        .item-quantity {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 182, 193, 0.15);
-            padding: 5px 12px;
-            border-radius: 20px;
-            width: fit-content;
-            font-size: 14px;
-            color: var(--dark-gray);
-        }
-
-        /* Order Summary */
-        .order-summary {
-            background: var(--gradient-card);
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: var(--card-shadow);
-            margin-top: 25px;
-            border: 1px solid rgba(255, 182, 193, 0.2);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .order-summary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(to right, var(--primary-pink), var(--light-pink));
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
-        }
-
-        .price-label {
-            color: var(--text-gray);
-        }
-
-        .price-value {
-            font-weight: 500;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--medium-gray);
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--dark-gray);
-        }
-
-        /* QR Code Section */
-        .qr-section {
-            text-align: center;
-            margin-top: 35px;
-            padding: 30px;
-            background: var(--gradient-card);
-            border-radius: 18px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255, 182, 193, 0.2);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .qr-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(to right, var(--primary-pink), var(--light-pink));
+          padding: 20px;
         }
 
         .qr-placeholder {
-            width: 220px;
-            height: 220px;
-            margin: 0 auto 25px;
-            background: white;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-gray);
-            font-size: 14px;
-            border: 2px dashed var(--medium-gray);
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .qr-placeholder::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255, 182, 193, 0.05) 0%, rgba(255, 105, 180, 0.02) 100%);
-        }
-
-        .qr-placeholder i {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: var(--light-pink);
-        }
-
-        .qr-instructions {
-            color: var(--text-gray);
-            font-size: 15px;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        /* Generate QR Button */
-        .generate-qr-btn {
-            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .generate-qr-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .generate-qr-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
-        }
-
-        .generate-qr-btn:hover::before {
-            left: 100%;
-        }
-
-        .generate-qr-btn:disabled {
-            background: var(--medium-gray);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Save QR Button */
-        .save-qr-btn {
-            background: linear-gradient(135deg, #ff8fab, var(--primary-pink));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
-            display: none;
-            /* Hidden by default */
-            position: relative;
-            overflow: hidden;
-        }
-
-        .save-qr-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .save-qr-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
-        }
-
-        .save-qr-btn:hover::before {
-            left: 100%;
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            background: white;
-            border-radius: 25px;
-            width: 100%;
-            max-width: 420px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            transform: translateY(20px) scale(0.95);
-            transition: all 0.4s;
-            border: 1px solid rgba(255, 182, 193, 0.2);
-        }
-
-        .modal-overlay.active .modal {
-            transform: translateY(0) scale(1);
-        }
-
-        .modal-header {
-            padding: 25px 30px;
-            border-bottom: 1px solid var(--medium-gray);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #fff9fc 0%, #ffffff 100%);
-            border-radius: 25px 25px 0 0;
-        }
-
-        .modal-title {
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--dark-gray);
-            font-family: 'Cormorant Garamond', serif;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--text-gray);
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close-modal:hover {
-            color: var(--dark-gray);
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .modal-body {
-            padding: 30px;
-            text-align: center;
+          width: 200px;
+          height: 200px;
         }
 
         .qr-code {
-            width: 220px;
-            height: 220px;
-            margin: 0 auto 25px;
-            background: white;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--medium-gray);
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+          width: 200px;
+          height: 200px;
         }
 
-        .qr-code img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .modal {
+          max-width: 95%;
         }
 
-        .payment-details {
-            margin-top: 25px;
-            padding: 20px;
-            background: var(--light-gray);
-            border-radius: 12px;
-            text-align: left;
-            border-left: 4px solid var(--primary-pink);
-        }
-
-        .payment-details p {
-            margin-bottom: 10px;
-            font-size: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .payment-details p:last-child {
-            margin-bottom: 0;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: var(--dark-gray);
-        }
-
-        .modal-footer {
-            padding: 25px 30px;
-            border-top: 1px solid var(--medium-gray);
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            background: #f9f9f9;
-            border-radius: 0 0 25px 25px;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-            color: white;
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--light-gray);
-            color: var(--dark-gray);
-            border: 1px solid var(--medium-gray);
-        }
-
-        .btn-secondary:hover {
-            background: var(--medium-gray);
-            transform: translateY(-2px);
-        }
-
-        /* Thank You Modal Styles */
         .thank-you-modal .modal {
-            max-width: 380px;
+          max-width: 90%;
         }
-
-        .thank-you-modal .modal-body {
-            padding: 40px 30px;
-        }
-
-        .thank-you-icon {
-            font-size: 80px;
-            color: var(--primary-pink);
-            margin-bottom: 20px;
-            animation: bounce 1s ease infinite;
-        }
-
-        @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0);
-            }
-
-            40% {
-                transform: translateY(-10px);
-            }
-
-            60% {
-                transform: translateY(-5px);
-            }
-        }
-
-        .thank-you-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--dark-gray);
-            margin-bottom: 15px;
-            font-family: 'Cormorant Garamond', serif;
-        }
-
-        .thank-you-message {
-            color: var(--text-gray);
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .order-confirmation {
-            background: var(--light-gray);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--primary-pink);
-        }
-
-        .order-confirmation p {
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .order-confirmation p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .header {
-                padding: 12px 15px;
-            }
-
-            .brand-name {
-                font-size: 22px;
-            }
-
-            .brand-tagline {
-                font-size: 11px;
-            }
-
-            .back-button {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-
-            .page-content {
-                padding: 20px;
-            }
-
-            .qr-placeholder {
-                width: 200px;
-                height: 200px;
-            }
-
-            .qr-code {
-                width: 200px;
-                height: 200px;
-            }
-
-            .modal {
-                max-width: 95%;
-            }
-
-            .thank-you-modal .modal {
-                max-width: 90%;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Header -->
     <header class="header">
-        <button class="back-button" id="backButton">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-        <div class="brand-header">
-            <h1 class="brand-name">Blessence</h1>
-            <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
-        </div>
-        <!-- Empty div to maintain layout balance -->
-        <div style="width: 44px;"></div>
+      <button class="back-button" id="backButton">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="brand-header">
+        <h1 class="brand-name">Blessence</h1>
+        <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
+      </div>
+      <!-- Empty div to maintain layout balance -->
+      <div style="width: 44px"></div>
     </header>
 
     <!-- Page Content -->
     <main>
-        <!-- Cart/QR Page -->
-        <section id="cart" class="page-content">
-            <h2 class="section-title">Order Summary</h2>
+      <!-- Cart/QR Page -->
+      <section id="cart" class="page-content">
+        <h2 class="section-title">Order Summary</h2>
 
-            <!-- Order Items -->
-            <div class="order-items" id="orderItems">
-                <!-- Order items will be dynamically added here -->
-            </div>
+        <!-- Order Items -->
+        <div class="order-items" id="orderItems">
+          <!-- Order items will be dynamically added here -->
+        </div>
 
-            <!-- Order Summary -->
-            <div class="order-summary">
-                <div class="total-row">
-                    <span>Total Amount:</span>
-                    <span id="total">₱0.00</span>
-                </div>
-            </div>
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <div class="total-row">
+            <span>Total Amount:</span>
+            <span id="total">₱0.00</span>
+          </div>
+        </div>
 
-            <!-- QR Code Section -->
-            <div class="qr-section">
-                <div class="qr-placeholder" id="qrPlaceholder">
-                    <i class="fas fa-qrcode"></i>
-                    <div>QR Code will appear here</div>
-                </div>
-                <p class="qr-instructions">Click the button below to generate your payment QR code. Once generated, scan
-                    it with your mobile payment app to complete your purchase.</p>
-                <button class="generate-qr-btn" id="generateQrBtn">
-                    <i class="fas fa-qrcode"></i> Generate QR Code
-                </button>
-                <button class="save-qr-btn" id="saveQrBtn">
-                    <i class="fas fa-download"></i> Save QR Code
-                </button>
-            </div>
-        </section>
+        <!-- QR Code Section -->
+        <div class="qr-section">
+          <div class="qr-placeholder" id="qrPlaceholder">
+            <i class="fas fa-qrcode"></i>
+            <div>QR Code will appear here</div>
+          </div>
+          <p class="qr-instructions">
+            Click the button below to generate your payment QR code. Once
+            generated, scan it with your mobile payment app to complete your
+            purchase.
+          </p>
+          <button class="generate-qr-btn" id="generateQrBtn">
+            <i class="fas fa-qrcode"></i> Generate QR Code
+          </button>
+          <button class="save-qr-btn" id="saveQrBtn">
+            <i class="fas fa-download"></i> Save QR Code
+          </button>
+        </div>
+      </section>
     </main>
 
     <!-- QR Modal -->
     <div class="modal-overlay" id="qrModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Scan to Pay</h3>
-                <button class="close-modal" id="closeModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="qr-code" id="modalQrCode">
-                    <!-- QR Code will be displayed here -->
-                </div>
-                <p>Scan this QR code with your mobile payment app to complete your payment</p>
-                <div class="payment-details">
-                    <p><span class="detail-label">Amount:</span> <span id="paymentAmount">₱0.00</span></p>
-                    <p><span class="detail-label">Reference:</span> <span id="paymentReference">BB-2023-001</span></p>
-                    <p><span class="detail-label">Merchant:</span> Beauty & Blessed</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="saveModalBtn">
-                    <i class="fas fa-download"></i> Save QR
-                </button>
-                <button class="btn btn-primary" id="doneBtn">Done</button>
-            </div>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Scan to Pay</h3>
+          <button class="close-modal" id="closeModal">&times;</button>
         </div>
+        <div class="modal-body">
+          <div class="qr-code" id="modalQrCode">
+            <!-- QR Code will be displayed here -->
+          </div>
+          <p>
+            Scan this QR code with your mobile payment app to complete your
+            payment
+          </p>
+          <div class="payment-details">
+            <p>
+              <span class="detail-label">Amount:</span>
+              <span id="paymentAmount">₱0.00</span>
+            </p>
+            <p>
+              <span class="detail-label">Reference:</span>
+              <span id="paymentReference">BB-2023-001</span>
+            </p>
+            <p><span class="detail-label">Merchant:</span> Beauty & Blessed</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="saveModalBtn">
+            <i class="fas fa-download"></i> Save QR
+          </button>
+          <button class="btn btn-primary" id="doneBtn">Done</button>
+        </div>
+      </div>
     </div>
 
     <!-- Thank You Modal -->
     <div class="modal-overlay thank-you-modal" id="thankYouModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Order Confirmation</h3>
-                <button class="close-modal" id="closeThankYouModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="thank-you-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h2 class="thank-you-title">Thank You for Your Order!</h2>
-                <p class="thank-you-message">Your order has been successfully placed and is being processed. We
-                    appreciate your business!</p>
-
-                <div class="order-confirmation">
-                    <p><strong>Order Reference:</strong> <span id="orderRefNumber">BB-2023-001</span></p>
-                    <p><strong>Total Amount:</strong> <span id="confirmationTotal">₱0.00</span></p>
-                    <p>Kindly show the QR Code to the store to claim your order.</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="goHomeBtn">
-                    <i class="fas fa-home"></i> Back to Home
-                </button>
-            </div>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Order Confirmation</h3>
+          <button class="close-modal" id="closeThankYouModal">&times;</button>
         </div>
+        <div class="modal-body">
+          <div class="thank-you-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2 class="thank-you-title">Thank You for Your Order!</h2>
+          <p class="thank-you-message">
+            Your order has been successfully placed and is being processed.
+          </p>
+
+          <div class="order-confirmation">
+            <p>
+              <strong>Order Reference:</strong>
+              <span id="orderRefNumber">BB-2023-001</span>
+            </p>
+            <p>
+              <strong>Total Amount:</strong>
+              <span id="confirmationTotal">₱0.00</span>
+            </p>
+            <p>Kindly show the QR Code to the store to claim your order.</p>
+
+            <!-- Important Notice Section -->
+            <div class="important-notice collapsed" id="importantNotice">
+              <div class="notice-header">
+                <div class="notice-title">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Order Expiry Notice</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+              </div>
+              <div class="notice-content">
+                <p>
+                  ⏰ <strong>Claim within 7 days</strong> - Unclaimed orders
+                  will be cancelled
+                </p>
+                <p>
+                  🛍️ <strong>First-come, first-served</strong> - Items secured
+                  upon payment
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" id="goHomeBtn">
+            <i class="fas fa-home"></i> Back to Home
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>
-// Replace the entire <script> section in checkout.html with this:
+      // Replace the entire <script> section in checkout.html with this:
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Get order details from localStorage
-    const orderDetails = JSON.parse(localStorage.getItem('checkoutOrder') || '{}');
-    
-    if (!orderDetails.order_id) {
-        alert('No order found. Redirecting to home...');
-        window.location.href = 'home.html';
-        return;
-    }
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get order details from localStorage
+        const orderDetails = JSON.parse(
+          localStorage.getItem("checkoutOrder") || "{}"
+        );
 
-    // DOM elements
-    const orderItemsEl = document.getElementById('orderItems');
-    const totalEl = document.getElementById('total');
-    const generateQrBtn = document.getElementById('generateQrBtn');
-    const saveQrBtn = document.getElementById('saveQrBtn');
-    const qrPlaceholder = document.getElementById('qrPlaceholder');
-    const qrModal = document.getElementById('qrModal');
-    const closeModal = document.getElementById('closeModal');
-    const doneBtn = document.getElementById('doneBtn');
-    const saveModalBtn = document.getElementById('saveModalBtn');
-    const modalQrCode = document.getElementById('modalQrCode');
-    const paymentAmount = document.getElementById('paymentAmount');
-    const paymentReference = document.getElementById('paymentReference');
-    const thankYouModal = document.getElementById('thankYouModal');
-    const closeThankYouModal = document.getElementById('closeThankYouModal');
-    const goHomeBtn = document.getElementById('goHomeBtn');
-    const orderRefNumber = document.getElementById('orderRefNumber');
-    const confirmationTotal = document.getElementById('confirmationTotal');
+        if (!orderDetails.order_id) {
+          alert("No order found. Redirecting to home...");
+          window.location.href = "home.html";
+          return;
+        }
+        const importantNotice = document.getElementById("importantNotice");
 
-    // Format price
-    const formatPrice = price => '₱' + Number(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        if (importantNotice) {
+          importantNotice.addEventListener("click", function () {
+            this.classList.toggle("collapsed");
+            this.classList.toggle("expanded");
+          });
+        }
 
-    // Display order summary
-    function displayOrderSummary() {
-        console.log('📋 Fetching order details for order_id:', orderDetails.order_id);
-        orderItemsEl.innerHTML = '<p style="text-align:center; color: var(--text-gray);">Loading order details...</p>';
-        
-        // Fetch order details from backend
-        fetch(`../php/get_order.php?order_id=${orderDetails.order_id}`, {
-            credentials: 'same-origin'
-        })
-        .then(res => {
-            console.log('📡 Response status:', res.status);
-            return res.json();
-        })
-        .then(data => {
-            console.log('📦 Received data:', data);
-            
-            if (!data.success) {
-                console.error('❌ API returned error:', data.message);
-                orderItemsEl.innerHTML = `<p style="text-align:center; color: var(--text-gray);">Failed to load order: ${data.message || 'Unknown error'}</p>`;
+        // DOM elements
+        const orderItemsEl = document.getElementById("orderItems");
+        const totalEl = document.getElementById("total");
+        const generateQrBtn = document.getElementById("generateQrBtn");
+        const saveQrBtn = document.getElementById("saveQrBtn");
+        const qrPlaceholder = document.getElementById("qrPlaceholder");
+        const qrModal = document.getElementById("qrModal");
+        const closeModal = document.getElementById("closeModal");
+        const doneBtn = document.getElementById("doneBtn");
+        const saveModalBtn = document.getElementById("saveModalBtn");
+        const modalQrCode = document.getElementById("modalQrCode");
+        const paymentAmount = document.getElementById("paymentAmount");
+        const paymentReference = document.getElementById("paymentReference");
+        const thankYouModal = document.getElementById("thankYouModal");
+        const closeThankYouModal =
+          document.getElementById("closeThankYouModal");
+        const goHomeBtn = document.getElementById("goHomeBtn");
+        const orderRefNumber = document.getElementById("orderRefNumber");
+        const confirmationTotal = document.getElementById("confirmationTotal");
+
+        // Format price
+        const formatPrice = (price) =>
+          "₱" +
+          Number(price)
+            .toFixed(2)
+            .replace(/\d(?=(\d{3})+\.)/g, "$&,");
+
+        // Display order summary
+        function displayOrderSummary() {
+          console.log(
+            "📋 Fetching order details for order_id:",
+            orderDetails.order_id
+          );
+          orderItemsEl.innerHTML =
+            '<p style="text-align:center; color: var(--text-gray);">Loading order details...</p>';
+
+          // Fetch order details from backend
+          fetch(`../php/get_order.php?order_id=${orderDetails.order_id}`, {
+            credentials: "same-origin",
+          })
+            .then((res) => {
+              console.log("📡 Response status:", res.status);
+              return res.json();
+            })
+            .then((data) => {
+              console.log("📦 Received data:", data);
+
+              if (!data.success) {
+                console.error("❌ API returned error:", data.message);
+                orderItemsEl.innerHTML = `<p style="text-align:center; color: var(--text-gray);">Failed to load order: ${
+                  data.message || "Unknown error"
+                }</p>`;
                 return;
-            }
-            
-            if (!data.items || data.items.length === 0) {
-                console.warn('⚠️ No items found in order');
-                orderItemsEl.innerHTML = '<p style="text-align:center; color: var(--text-gray);">No items found in this order.</p>';
+              }
+
+              if (!data.items || data.items.length === 0) {
+                console.warn("⚠️ No items found in order");
+                orderItemsEl.innerHTML =
+                  '<p style="text-align:center; color: var(--text-gray);">No items found in this order.</p>';
                 return;
-            }
-            
-            console.log('✅ Loading', data.items.length, 'items');
-            orderItemsEl.innerHTML = '';
-            
-            data.items.forEach(item => {
+              }
+
+              console.log("✅ Loading", data.items.length, "items");
+              orderItemsEl.innerHTML = "";
+
+              data.items.forEach((item) => {
                 const itemHTML = `
                     <div class="order-item">
                         <div class="item-image">
@@ -915,8 +1120,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="item-details">
                             <div class="item-name">${item.name}</div>
-                            <div class="item-specs">Shade: ${item.ShadeOrVariant || 'N/A'}</div>
-                            <div class="item-price">${formatPrice(item.price)}</div>
+                            <div class="item-specs">Shade: ${
+                              item.ShadeOrVariant || "N/A"
+                            }</div>
+                            <div class="item-price">${formatPrice(
+                              item.price
+                            )}</div>
                             <div class="item-quantity">
                                 <i class="fas fa-shopping-bag"></i>
                                 <span>Quantity: ${item.quantity}</span>
@@ -925,171 +1134,184 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 orderItemsEl.innerHTML += itemHTML;
-            });
-            
-            // Use data from backend for totals
-            totalEl.textContent = formatPrice(data.order.total_price);
-            paymentAmount.textContent = formatPrice(data.order.total_price);
-            
-            // Show order ID in payment reference
-            paymentReference.textContent = `#${data.order.order_id}`;
-            orderRefNumber.textContent = data.order.qr_code || `BB-${String(data.order.order_id).padStart(6, '0')}`;
-            confirmationTotal.textContent = formatPrice(data.order.total_price);
-            
-            console.log('✅ Order display complete');
-        })
-        .catch(err => {
-            console.error('❌ Fetch error:', err);
-            orderItemsEl.innerHTML = `<p style="text-align:center; color: var(--text-gray);">Error loading order: ${err.message}</p>`;
-        });
-    }
+              });
 
-    // Generate REAL scannable QR Code using only order_id
-    function generateQRCode() {
-        console.log('🎨 Generating QR code for order ID:', orderDetails.order_id);
-        
-        // Use order ID as the QR data
-        const qrData = String(orderDetails.order_id);
-        
-        // Create container for QR code
-        const qrContainer = document.createElement('div');
-        qrContainer.style.padding = '10px';
-        qrContainer.style.background = 'white';
-        qrContainer.style.display = 'inline-block';
-        
-        // Generate QR code using QRCode.js library
-        try {
+              // Use data from backend for totals
+              totalEl.textContent = formatPrice(data.order.total_price);
+              paymentAmount.textContent = formatPrice(data.order.total_price);
+
+              // Show order ID in payment reference
+              paymentReference.textContent = `#${data.order.order_id}`;
+              orderRefNumber.textContent =
+                data.order.qr_code ||
+                `BB-${String(data.order.order_id).padStart(6, "0")}`;
+              confirmationTotal.textContent = formatPrice(
+                data.order.total_price
+              );
+
+              console.log("✅ Order display complete");
+            })
+            .catch((err) => {
+              console.error("❌ Fetch error:", err);
+              orderItemsEl.innerHTML = `<p style="text-align:center; color: var(--text-gray);">Error loading order: ${err.message}</p>`;
+            });
+        }
+
+        // Generate REAL scannable QR Code using only order_id
+        function generateQRCode() {
+          console.log(
+            "🎨 Generating QR code for order ID:",
+            orderDetails.order_id
+          );
+
+          // Use order ID as the QR data
+          const qrData = String(orderDetails.order_id);
+
+          // Create container for QR code
+          const qrContainer = document.createElement("div");
+          qrContainer.style.padding = "10px";
+          qrContainer.style.background = "white";
+          qrContainer.style.display = "inline-block";
+
+          // Generate QR code using QRCode.js library
+          try {
             // Clear previous QR codes
-            qrPlaceholder.innerHTML = '';
-            modalQrCode.innerHTML = '';
-            
+            qrPlaceholder.innerHTML = "";
+            modalQrCode.innerHTML = "";
+
             // Create QR code for placeholder
-            const qrPlaceholderDiv = document.createElement('div');
-            qrPlaceholderDiv.id = 'qr-placeholder-canvas';
+            const qrPlaceholderDiv = document.createElement("div");
+            qrPlaceholderDiv.id = "qr-placeholder-canvas";
             qrPlaceholder.appendChild(qrPlaceholderDiv);
-            
+
             new QRCode(qrPlaceholderDiv, {
-                text: qrData,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
+              text: qrData,
+              width: 200,
+              height: 200,
+              colorDark: "#000000",
+              colorLight: "#ffffff",
+              correctLevel: QRCode.CorrectLevel.H,
             });
-            
+
             // Create QR code for modal
-            const qrModalDiv = document.createElement('div');
-            qrModalDiv.id = 'qr-modal-canvas';
+            const qrModalDiv = document.createElement("div");
+            qrModalDiv.id = "qr-modal-canvas";
             modalQrCode.appendChild(qrModalDiv);
-            
+
             new QRCode(qrModalDiv, {
-                text: qrData,
-                width: 220,
-                height: 220,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
+              text: qrData,
+              width: 220,
+              height: 220,
+              colorDark: "#000000",
+              colorLight: "#ffffff",
+              correctLevel: QRCode.CorrectLevel.H,
             });
-            
+
             // Add order ID label below QR code
-            const label = document.createElement('div');
-            label.style.textAlign = 'center';
-            label.style.marginTop = '10px';
-            label.style.fontWeight = 'bold';
-            label.style.color = '#ff69b4';
+            const label = document.createElement("div");
+            label.style.textAlign = "center";
+            label.style.marginTop = "10px";
+            label.style.fontWeight = "bold";
+            label.style.color = "#ff69b4";
             label.textContent = `Order #${orderDetails.order_id}`;
             qrPlaceholder.appendChild(label);
-            
-            generateQrBtn.innerHTML = '<i class="fas fa-check"></i> QR Code Generated';
+
+            generateQrBtn.innerHTML =
+              '<i class="fas fa-check"></i> QR Code Generated';
             generateQrBtn.disabled = true;
-            saveQrBtn.style.display = 'flex';
-            
-            qrModal.classList.add('active');
-            
-            console.log('✅ QR code generated successfully');
-            
-        } catch (error) {
-            console.error('❌ QR generation error:', error);
-            alert('Error generating QR code. Please refresh the page.');
-        }
-    }
-    
-    // Remove the helper functions as they're no longer needed
+            saveQrBtn.style.display = "flex";
 
-    // Save QR Code - updated to work with QRCode.js
-    function saveQRCode() {
-        try {
+            qrModal.classList.add("active");
+
+            console.log("✅ QR code generated successfully");
+          } catch (error) {
+            console.error("❌ QR generation error:", error);
+            alert("Error generating QR code. Please refresh the page.");
+          }
+        }
+
+        // Remove the helper functions as they're no longer needed
+
+        // Save QR Code - updated to work with QRCode.js
+        function saveQRCode() {
+          try {
             // Get the canvas from QRCode.js
-            const canvas = modalQrCode.querySelector('canvas');
+            const canvas = modalQrCode.querySelector("canvas");
             if (!canvas) {
-                alert('QR code not found. Please generate it first.');
-                return;
+              alert("QR code not found. Please generate it first.");
+              return;
             }
-            
+
             // Convert to blob and download
-            canvas.toBlob(function(blob) {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = `beauty-blessed-order-${orderDetails.order_id}.png`;
-                link.href = url;
-                link.click();
-                URL.revokeObjectURL(url);
-                alert('QR Code saved successfully!');
+            canvas.toBlob(function (blob) {
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.download = `beauty-blessed-order-${orderDetails.order_id}.png`;
+              link.href = url;
+              link.click();
+              URL.revokeObjectURL(url);
+              alert("QR Code saved successfully!");
             });
-            
-        } catch (error) {
-            console.error('Error saving QR code:', error);
-            alert('Error saving QR code. Please try again.');
+          } catch (error) {
+            console.error("Error saving QR code:", error);
+            alert("Error saving QR code. Please try again.");
+          }
         }
-    }
 
-    async function showThankYouModal() {
-    console.log('🎉 Order placed successfully, keeping as pending:', orderDetails.order_id);
-    
-    // DON'T call complete_order.php here - order stays as 'pending'
-    // The order will only be completed when the shop scans the QR code
-    
-    // Show thank you modal
-    thankYouModal.classList.add('active');
-    
-    // Clear checkout order after showing confirmation
-    localStorage.removeItem('checkoutOrder');
-    
-    console.log('✅ Order remains as "pending" until picked up');
-}
+        async function showThankYouModal() {
+          console.log(
+            "🎉 Order placed successfully, keeping as pending:",
+            orderDetails.order_id
+          );
 
+          // Show thank you modal
+          thankYouModal.classList.add("active");
 
-    function closeQRModal() { qrModal.classList.remove('active'); }
-    function closeThankYouModalFunc() { 
-        thankYouModal.classList.remove('active');
-        window.location.href = 'home.html';
-    }
-    function goToHome() { window.location.href = 'home.html'; }
+          // Clear checkout order after showing confirmation
+          localStorage.removeItem("checkoutOrder");
 
-    // Event listeners
-    generateQrBtn.addEventListener('click', generateQRCode);
-    saveQrBtn.addEventListener('click', saveQRCode);
-    saveModalBtn.addEventListener('click', saveQRCode);
-    closeModal.addEventListener('click', closeQRModal);
-    doneBtn.addEventListener('click', () => {
-        // closeQRModal();
-        showThankYouModal();
-    });
+          console.log('✅ Order remains as "pending" until picked up');
+        }
 
-    closeThankYouModal.addEventListener('click', closeThankYouModalFunc);
-    goHomeBtn.addEventListener('click', goToHome);
+        function closeQRModal() {
+          qrModal.classList.remove("active");
+        }
+        function closeThankYouModalFunc() {
+          thankYouModal.classList.remove("active");
+          window.location.href = "home.html";
+        }
+        function goToHome() {
+          window.location.href = "home.html";
+        }
 
-    qrModal.addEventListener('click', e => { if (e.target === qrModal) closeQRModal(); });
-    thankYouModal.addEventListener('click', e => { if (e.target === thankYouModal) closeThankYouModalFunc(); });
+        // Event listeners
+        generateQrBtn.addEventListener("click", generateQRCode);
+        saveQrBtn.addEventListener("click", saveQRCode);
+        saveModalBtn.addEventListener("click", saveQRCode);
+        closeModal.addEventListener("click", closeQRModal);
+        doneBtn.addEventListener("click", () => {
+          // closeQRModal();
+          showThankYouModal();
+        });
 
-    // Back button triggers Thank You modal
-    document.getElementById('backButton').addEventListener('click', showThankYouModal);
+        closeThankYouModal.addEventListener("click", closeThankYouModalFunc);
+        goHomeBtn.addEventListener("click", goToHome);
 
-    // Initialize
-    displayOrderSummary();
-});
-</script>
+        qrModal.addEventListener("click", (e) => {
+          if (e.target === qrModal) closeQRModal();
+        });
+        thankYouModal.addEventListener("click", (e) => {
+          if (e.target === thankYouModal) closeThankYouModalFunc();
+        });
 
-</body>
+        // Back button triggers Thank You modal
+        document
+          .getElementById("backButton")
+          .addEventListener("click", showThankYouModal);
 
+        // Initialize
+        displayOrderSummary();
+      });
+    </script>
+  </body>
 </html>

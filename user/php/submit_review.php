@@ -8,12 +8,18 @@ ini_set('log_errors', 1);
 
 header('Content-Type: application/json');
 
+// ✅ ADDED: Set timezone at the very top
+date_default_timezone_set('Asia/Manila');
+
 // Auto-switch between Docker and XAMPP
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+
+// ✅ ADDED: Set database timezone
+$conn->query("SET time_zone = '+08:00'");
 
 // Include activity logger
 require_once __DIR__ . '/activity_logger.php';
@@ -66,6 +72,9 @@ try {
 
     $conn->begin_transaction();
 
+    // ✅ ADDED: Get current datetime for consistent timing
+    $currentDateTime = date('Y-m-d H:i:s');
+
     // Get product name for logging
     $productNameStmt = $conn->prepare('SELECT Name FROM products WHERE ProductID = ?');
     $productNameStmt->bind_param('s', $productId);
@@ -107,10 +116,10 @@ try {
         }
         $updateStmt->close();
 
-        // Also update productfeedback if it exists
+        // ✅ FIXED: Use PHP date for productfeedback update
         $updateFeedbackStmt = $conn->prepare('
             UPDATE productfeedback 
-            SET UserRating = ?, RecommendationFeedback = ?, Comment = ?, order_id = ?, CreatedAt = NOW() 
+            SET UserRating = ?, RecommendationFeedback = ?, Comment = ?, order_id = ?, CreatedAt = ? 
             WHERE ProductID = ? AND UserID = ? AND order_id = ?
         ');
 
@@ -120,7 +129,7 @@ try {
                 $recommendationFeedback .= ' - ' . substr($recommendationComment, 0, 150);
             }
 
-            $updateFeedbackStmt->bind_param('dsssisi', $recommendationRating, $recommendationFeedback, $recommendationComment, $orderId, $productId, $userId, $existingOrderId);
+            $updateFeedbackStmt->bind_param('dsssisis', $recommendationRating, $recommendationFeedback, $recommendationComment, $orderId, $currentDateTime, $productId, $userId, $existingOrderId);
             $updateFeedbackStmt->execute();
             $updateFeedbackStmt->close();
         }
@@ -148,7 +157,7 @@ try {
         $ratingId = $stmt->insert_id;
         $stmt->close();
 
-        // 2. Insert into productfeedback table
+        // 2. ✅ FIXED: Insert into productfeedback table with PHP date
         $userRating = (float) $recommendationRating;
 
         $recommendationFeedback = "Rating: {$recommendationRating}/5 stars";
@@ -156,12 +165,12 @@ try {
             $recommendationFeedback .= ' - ' . substr($recommendationComment, 0, 150);
         }
 
-        $feedbackStmt = $conn->prepare('INSERT INTO productfeedback (ProductID, UserID, UserRating, RecommendationFeedback, Comment, order_id, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, NOW())');
+        $feedbackStmt = $conn->prepare('INSERT INTO productfeedback (ProductID, UserID, UserRating, RecommendationFeedback, Comment, order_id, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)');
         if (!$feedbackStmt) {
             throw new Exception('Prepare failed: ' . $conn->error);
         }
 
-        $feedbackStmt->bind_param('siissi', $productId, $userId, $userRating, $recommendationFeedback, $recommendationComment, $orderId);
+        $feedbackStmt->bind_param('siissis', $productId, $userId, $userRating, $recommendationFeedback, $recommendationComment, $orderId, $currentDateTime);
         if (!$feedbackStmt->execute()) {
             throw new Exception('Execute failed: ' . $feedbackStmt->error);
         }
@@ -179,6 +188,7 @@ try {
     }
 
     // ✅ UPDATE PRODUCT'S AVERAGE RATING (for both new and updated reviews)
+    // Note: Using MySQL NOW() for UpdatedAt since it's just an internal timestamp
     $updateProductStmt = $conn->prepare('
         UPDATE products 
         SET 
@@ -217,7 +227,8 @@ try {
     sendResponse(true, $message, [
         'new_average_rating' => $newAverageRating,
         'product_id' => $productId,
-        'action' => $action
+        'action' => $action,
+        'created_at' => $currentDateTime // ✅ Return the timestamp to client
     ]);
 } catch (Exception $e) {
     // Rollback if transaction was started

@@ -78,29 +78,89 @@ function isAdmin() {
   return currentUser && currentUser.role === 'admin';
 }
 
-// Enhanced logout function - Redirect to home page (index.php)
-async function logout() {
-  if (confirm("Are you sure you want to sign out?")) {
-      try {
-          // Clear server session
-          await fetch('../php/logout.php', {
-              method: 'POST',
-              headers: {
-                  'Cache-Control': 'no-cache'
-              }
-          });
-      } catch (error) {
-          console.error('Logout request failed:', error);
-      } finally {
-          // Always clear client data and redirect to HOME
-          localStorage.clear();
-          sessionStorage.clear();
-          
-          // IMMEDIATE redirect - don't wait for anything
-          window.location.replace('../../index.php?logout=true&t=' + Date.now());
-      }
+function logout() {
+  console.log('Custom logout function called - opening modal');
+  openLogoutModal();
+}
+
+
+function openLogoutModal() {
+  console.log('Opening logout modal');
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    console.log('Modal should be visible now');
+  } else {
+    console.error('Logout modal not found!');
   }
 }
+// Close logout confirmation modal
+function closeLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+    
+    // Reset loading state if any
+    const confirmBtn = document.getElementById('confirmLogoutBtn');
+    if (confirmBtn) {
+      confirmBtn.classList.remove('loading');
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '<i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i> Yes, Sign Out';
+    }
+  }
+}
+
+// Confirm and execute logout
+async function confirmLogout() {
+  const confirmBtn = document.getElementById('confirmLogoutBtn');
+  
+  // Show loading state
+  if (confirmBtn) {
+    confirmBtn.classList.add('loading');
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = 'Signing out...';
+  }
+  
+  try {
+    // Clear server session
+    await fetch('../php/logout.php', {
+      method: 'POST',
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    });
+  } catch (error) {
+    console.error('Logout request failed:', error);
+  } finally {
+    // Always clear client data and redirect to HOME
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // IMMEDIATE redirect - don't wait for anything
+    window.location.replace('../../index.php?logout=true&t=' + Date.now());
+  }
+}
+
+// Close modal when clicking outside
+document.addEventListener('DOMContentLoaded', function() {
+  const logoutModal = document.getElementById('logoutModal');
+  if (logoutModal) {
+    logoutModal.addEventListener('click', function(e) {
+      if (e.target === logoutModal) {
+        closeLogoutModal();
+      }
+    });
+  }
+  
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeLogoutModal();
+    }
+  });
+});
 function setupPageProtection() {
   // Check auth when page becomes visible (including back/forward navigation)
   document.addEventListener('visibilitychange', function() {
