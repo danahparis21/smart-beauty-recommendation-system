@@ -668,9 +668,215 @@
         border-radius: 8px;
         margin: 10px 20px;
       }
+      /* Modal Overlay Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal Styles */
+.modal {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-overlay.active .modal {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--dark-gray);
+    font-family: "Cormorant Garamond", serif;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-gray);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.close-modal:hover {
+    color: var(--primary-pink);
+    background: #f8f9fa;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Modal Button Styles */
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 20px 0 0 0;
+    border-top: 1px solid var(--light-gray);
+    margin-top: 20px;
+}
+
+.cancel-btn {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 2px solid #e9ecef;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.cancel-btn:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: #495057;
+    transform: translateY(-1px);
+}
+
+.save-btn {
+    background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.save-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--dark-pink), #ff5252);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.save-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Loading state for buttons */
+.save-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.save-btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-right-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Delete modal specific styles */
+#deleteModal .modal {
+    max-width: 400px;
+    text-align: center;
+}
+
+#deleteModal .modal-body {
+    padding: 10px 0;
+}
+#checkoutModal .modal {
+    max-width: 450px;
+    text-align: center;
+}
+
+#checkoutModal .modal-body {
+    padding: 10px 0;
+}
+
+/* Pink checkout button (uses your existing pink variables) */
+.save-btn[style*="background: var(--primary-pink)"] {
+    background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink)) !important;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3) !important;
+}
+
+.save-btn[style*="background: var(--primary-pink)"]:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--dark-pink), #ff5252) !important;
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4) !important;
+}
+
+/* Pink info box */
+#checkoutModal .modal-body [style*="background: #fff0f5"] {
+    background: linear-gradient(135deg, #fff0f5, #ffe4ec) !important;
+    border-left: 4px solid var(--primary-pink) !important;
+}
+
     </style>
   </head>
 
+  
   <body>
     <!-- Toast / Notification -->
     <div
@@ -844,7 +1050,81 @@
       </div>
     </nav>
 
+    <!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Remove Item</h3>
+      <button class="close-modal" onclick="closeDeleteModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div style="text-align: center; padding: 20px 0;">
+        <div style="font-size: 48px; color: #ff6b6b; margin-bottom: 15px;">
+          <i class="fas fa-trash"></i>
+        </div>
+        <h4 style="margin: 0 0 10px 0; color: var(--dark-gray);" id="deleteModalTitle">
+          Remove this item?
+        </h4>
+        <p style="color: var(--text-gray); margin: 0; font-size: 14px;" id="deleteModalMessage">
+          This item will be removed from your cart.
+        </p>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeDeleteModal()">
+        Keep Item
+      </button>
+      <button class="save-btn" style="background: #ff6b6b;" onclick="confirmDelete()" id="confirmDeleteBtn">
+        <i class="fas fa-trash" style="margin-right: 5px;"></i>
+        Yes, Remove
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout Confirmation Modal -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirm Checkout</h3>
+      <button class="close-modal" onclick="closeCheckoutModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div style="text-align: center; padding: 20px 0;">
+        <div style="font-size: 48px; color: var(--primary-pink); margin-bottom: 15px;">
+          <i class="fas fa-shopping-bag"></i>
+        </div>
+        <h4 style="margin: 0 0 10px 0; color: var(--dark-gray);" id="checkoutModalTitle">
+          Proceed to Checkout?
+        </h4>
+        <p style="color: var(--text-gray); margin: 0; font-size: 14px;" id="checkoutModalMessage">
+          You're about to checkout <span id="checkoutItemCount">0</span> item(s).
+        </p>
+       
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeCheckoutModal()">
+        Continue Shopping
+      </button>
+      <button class="save-btn" style="background: var(--primary-pink);" onclick="confirmCheckout()" id="confirmCheckoutBtn">
+        <i class="fas fa-check" style="margin-right: 5px;"></i>
+        Yes, Checkout
+      </button>
+    </div>
+  </div>
+</div>
+
     <script>
+      
       /* ------------------------------------------------------------
   COMPLETE CART.HTML SCRIPT - REPLACE ENTIRE <script> SECTION
   ------------------------------------------------------------ */
@@ -854,136 +1134,238 @@
       const API = "../php/cart.php";
 
       document.addEventListener("DOMContentLoaded", async () => {
-        // Add page protection FIRST
-        if (typeof setupPageProtection === "function") {
-          setupPageProtection();
+    // Add page protection FIRST
+    if (typeof setupPageProtection === "function") {
+        setupPageProtection();
+    }
+
+    console.log("🚀 Cart page loaded");
+
+    await updateUserGreeting();
+    if (!currentUser) {
+        console.log("❌ No user logged in");
+        return;
+    }
+
+    await loadCartFromServer();
+
+    // Initialize search functionality
+    initSearch();
+
+    // Setup select all checkbox
+    const selectAllCheckbox = document.getElementById("select-all");
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener("change", toggleSelectAll);
+    }
+
+    // ✅ CORRECTED: Delete modal event listeners
+    const deleteModal = document.getElementById('deleteModal');
+    if (deleteModal) {
+        // Click outside to close
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) {
+                closeDeleteModal();
+            }
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && deleteModal.classList.contains('active')) {
+                closeDeleteModal();
+            }
+        }); // ✅ ADDED: This closing parenthesis was missing
+    }
+
+    initCheckoutModal();
+    // Setup checkout button
+    setupCheckoutButton();
+}); 
+
+
+function setupCheckoutButton() {
+    const checkoutBtn = document.getElementById("checkout-btn");
+
+    if (!checkoutBtn) {
+        console.error("❌ Checkout button not found in DOM!");
+        return;
+    }
+
+    console.log("✅ Checkout button found, attaching listener");
+
+    // Remove any existing listeners
+    const newBtn = checkoutBtn.cloneNode(true);
+    checkoutBtn.parentNode.replaceChild(newBtn, checkoutBtn);
+
+    // Add fresh listener
+    newBtn.addEventListener("click", handleCheckout);
+}
+
+      let currentCheckoutItems = [];
+
+// Open checkout confirmation modal
+function handleCheckout(e) {
+    console.log("🛒 Checkout button clicked!");
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const selectedItems = cart.filter((i) => i.selected);
+
+    console.log("📦 Selected items:", selectedItems);
+
+    if (selectedItems.length === 0) {
+        showToast("⚠️ Please select at least one item to check out.");
+        return;
+    }
+
+    currentCheckoutItems = selectedItems;
+    
+    // Update modal content
+    document.getElementById('checkoutItemCount').textContent = selectedItems.length;
+    document.getElementById('checkoutModalTitle').textContent = `Checkout ${selectedItems.length} Item(s)?`;
+    document.getElementById('checkoutModalMessage').textContent = `You're about to checkout ${selectedItems.length} selected item(s) with a total of ${formatPrice(calculateSelectedTotal())}.`;
+    
+    openCheckoutModal();
+}
+
+// Open checkout confirmation modal
+function openCheckoutModal() {
+    const modal = document.getElementById('checkoutModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Close checkout confirmation modal
+function closeCheckoutModal() {
+    const modal = document.getElementById('checkoutModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        
+        // Reset loading state
+        const confirmBtn = document.getElementById('confirmCheckoutBtn');
+        if (confirmBtn) {
+            confirmBtn.classList.remove('loading');
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-check" style="margin-right: 5px;"></i> Yes, Checkout';
         }
+        
+        currentCheckoutItems = [];
+    }
+}
 
-        console.log("🚀 Cart page loaded");
+// Calculate total for selected items
+function calculateSelectedTotal() {
+    const selectedItems = cart.filter((i) => i.selected);
+    return selectedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+}
 
-        await updateUserGreeting();
-        if (!currentUser) {
-          console.log("❌ No user logged in");
-          return;
-        }
+// Confirm and execute checkout
+async function confirmCheckout() {
+    const confirmBtn = document.getElementById('confirmCheckoutBtn');
+    const btn = document.getElementById('checkout-btn');
+    
+    // Show loading state
+    if (confirmBtn) {
+        confirmBtn.classList.add('loading');
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = 'Processing...';
+    }
 
-        await loadCartFromServer();
-
-        // Initialize search functionality
-        initSearch();
-
-        // Setup select all checkbox
-        const selectAllCheckbox = document.getElementById("select-all");
-        if (selectAllCheckbox) {
-          selectAllCheckbox.addEventListener("change", toggleSelectAll);
-        }
-
-        // Setup checkout button
-        setupCheckoutButton();
-      });
-
-      // CHECKOUT BUTTON SETUP - SEPARATE FUNCTION
-      function setupCheckoutButton() {
-        const checkoutBtn = document.getElementById("checkout-btn");
-
-        if (!checkoutBtn) {
-          console.error("❌ Checkout button not found in DOM!");
-          return;
-        }
-
-        console.log("✅ Checkout button found, attaching listener");
-
-        // Remove any existing listeners
-        const newBtn = checkoutBtn.cloneNode(true);
-        checkoutBtn.parentNode.replaceChild(newBtn, checkoutBtn);
-
-        // Add fresh listener
-        newBtn.addEventListener("click", handleCheckout);
-      }
-
-      // ✅ SIMPLIFIED CHECKOUT HANDLER
-      async function handleCheckout(e) {
-        console.log("🛒 Checkout button clicked!");
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        const btn = e.target.closest("button");
-        const selectedItems = cart.filter((i) => i.selected);
-
-        console.log("📦 Selected items:", selectedItems);
-
-        if (selectedItems.length === 0) {
-          showToast("⚠️ Please select at least one item to check out.");
-          return;
-        }
-
-        // Disable button while processing
+    // Also disable the main checkout button
+    if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-        try {
-          // CREATE ORDER IN DATABASE FIRST
-          const orderData = {
-            items: selectedItems.map((i) => ({
-              id: i.id,
-              quantity: i.quantity,
+    }
+    
+    try {
+        // CREATE ORDER IN DATABASE FIRST
+        const orderData = {
+            items: currentCheckoutItems.map((i) => ({
+                id: i.id,
+                quantity: i.quantity,
             })),
-          };
+        };
 
-          console.log("📤 Sending checkout request:", orderData);
+        console.log("📤 Sending checkout request:", orderData);
 
-          const response = await fetch("../php/checkout.php", {
+        const response = await fetch("../php/checkout.php", {
             method: "POST",
             credentials: "same-origin",
             headers: {
-              "Content-Type": "application/json",
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(orderData),
-          });
+        });
 
-          console.log("📡 Response status:", response.status);
+        console.log("📡 Response status:", response.status);
 
-          const result = await response.json();
-          console.log("📦 Checkout result:", result);
+        const result = await response.json();
+        console.log("📦 Checkout result:", result);
 
-          if (!result.success) {
+        if (!result.success) {
             throw new Error(result.message || "Checkout failed");
-          }
+        }
 
-          // ✅ NO NEED TO MANUALLY UPDATE STATUS - checkout.php handles it
-          // The items will automatically be marked as 'checked_out' in the database
-
-          // Save order details for checkout page
-          const checkoutOrder = {
+        // Save order details for checkout page
+        const checkoutOrder = {
             order_id: result.order.order_id,
             qr_code: result.order.qr_code,
             total_amount: result.order.total_amount,
             order_date: result.order.order_date,
             items_count: result.order.items_count,
-          };
+        };
 
-          console.log("💾 Saving to localStorage:", checkoutOrder);
-          localStorage.setItem("checkoutOrder", JSON.stringify(checkoutOrder));
+        console.log("💾 Saving to localStorage:", checkoutOrder);
+        localStorage.setItem("checkoutOrder", JSON.stringify(checkoutOrder));
 
-          // Show success toast
-          showToast(
-            "✅ Order placed successfully! Proceeding to checkout...",
-            2000
-          );
+        // Show success toast
+        showToast("✅ Order placed successfully! Proceeding to checkout...", 2000);
 
-          // Redirect after short delay
-          setTimeout(() => {
+        // Close modal
+        closeCheckoutModal();
+
+        // Redirect after short delay
+        setTimeout(() => {
             console.log("🔄 Redirecting to checkout.html");
             window.location.href = "checkout.html";
-          }, 1500);
-        } catch (err) {
-          console.error("❌ Checkout error:", err);
-          showToast("Error: " + err.message);
-          btn.disabled = false;
-          btn.innerHTML = "Check Out";
+        }, 1500);
+    } catch (err) {
+        console.error("❌ Checkout error:", err);
+        showToast("Error: " + err.message);
+        
+        // Reset button states on error
+        closeCheckoutModal();
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = "Check Out";
         }
-      }
+    }
+}
+
+// Add checkout modal event listeners
+function initCheckoutModal() {
+    const checkoutModal = document.getElementById('checkoutModal');
+    if (checkoutModal) {
+        // Click outside to close
+        checkoutModal.addEventListener('click', function(e) {
+            if (e.target === checkoutModal) {
+                closeCheckoutModal();
+            }
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && checkoutModal.classList.contains('active')) {
+                closeCheckoutModal();
+            }
+        });
+    }
+}
+
+
       /* ------------------- Backend calls ------------------- */
 
       async function apiGetCart() {
@@ -1182,26 +1564,21 @@
         }
       }
 
-      async function removeFromCartHandler(productId) {
-        if (
-          !confirm("Are you sure you want to remove this item from your cart?")
-        )
-          return;
-        try {
-          const res = await apiRemoveFromCart(String(productId));
-          if (res.success) {
-            await loadCartFromServer();
-            showToast(res.message || "Removed from cart 🗑️");
-            const c = await apiGetCount();
-            if (c && c.success) updateFloatingCountValue(c.cartCount);
-          } else {
-            showToast(res.message || "Failed to remove item");
-          }
-        } catch (err) {
-          console.error(err);
-          showToast("Error removing item");
-        }
-      }
+
+      let currentDeleteAction = null;
+let currentProductId = null;
+
+
+function removeFromCartHandler(productId) {
+  currentDeleteAction = 'single';
+  currentProductId = productId;
+  
+  // Update modal content for single item
+  document.getElementById('deleteModalTitle').textContent = 'Remove this item?';
+  document.getElementById('deleteModalMessage').textContent = 'This item will be removed from your cart.';
+  
+  openDeleteModal();
+}
 
       async function changeQuantity(productId, newQty) {
         if (newQty < 1) return;
@@ -1473,70 +1850,146 @@
       }
 
       // BULK DELETE FUNCTIONALITY
-      async function deleteSelectedItems() {
-        const selectedItems = cart.filter((item) => item.selected);
+      function deleteSelectedItems() {
+  const selectedItems = cart.filter((item) => item.selected);
 
-        if (selectedItems.length === 0) {
-          showToast("⚠️ Please select items to delete.");
-          return;
-        }
+  if (selectedItems.length === 0) {
+    showToast("⚠️ Please select items to delete.");
+    return;
+  }
 
-        if (
-          !confirm(
-            `Are you sure you want to delete ${selectedItems.length} selected item(s)?`
-          )
-        ) {
-          return;
-        }
+  currentDeleteAction = 'multiple';
+  
+  // Update modal content for multiple items
+  document.getElementById('deleteModalTitle').textContent = `Remove ${selectedItems.length} item(s)?`;
+  document.getElementById('deleteModalMessage').textContent = `Are you sure you want to remove ${selectedItems.length} selected item(s) from your cart?`;
+  
+  openDeleteModal();
+}
 
-        try {
-          // Show loading state
-          const deleteBtn = document.getElementById("delete-selected-btn");
-          const originalText = deleteBtn.innerHTML;
-          deleteBtn.innerHTML =
-            '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-          deleteBtn.disabled = true;
+function openDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
 
-          // Delete each selected item
-          const deletePromises = selectedItems.map((item) =>
-            apiRemoveFromCart(String(item.id))
-          );
+// Close delete confirmation modal
+function closeDeleteModal() {
+  const modal = document.getElementById('deleteModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    
+    // Reset loading state
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmBtn) {
+      confirmBtn.classList.remove('loading');
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '<i class="fas fa-trash" style="margin-right: 5px;"></i> Yes, Remove';
+    }
+    
+    currentDeleteAction = null;
+    currentProductId = null;
+  }
+}
 
-          // Wait for all delete operations to complete
-          const results = await Promise.allSettled(deletePromises);
+// Confirm and execute deletion
+async function confirmDelete() {
+  const confirmBtn = document.getElementById('confirmDeleteBtn');
+  
+  // Show loading state
+  if (confirmBtn) {
+    confirmBtn.classList.add('loading');
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = 'Removing...';
+  }
+  
+  try {
+    if (currentDeleteAction === 'single') {
+      await deleteSingleItem();
+    } else if (currentDeleteAction === 'multiple') {
+      await deleteMultipleItems();
+    }
+  } catch (error) {
+    console.error('Error during deletion:', error);
+    showToast('Error removing items. Please try again.');
+    closeDeleteModal();
+  }
+}
 
-          // Check if any deletions failed
-          const failedDeletes = results.filter(
-            (result) =>
-              result.status === "rejected" ||
-              (result.status === "fulfilled" && !result.value.success)
-          );
+async function deleteSingleItem() {
+  try {
+    const res = await apiRemoveFromCart(String(currentProductId));
+    if (res.success) {
+      await loadCartFromServer();
+      showToast(res.message || "Removed from cart 🗑️");
+      const c = await apiGetCount();
+      if (c && c.success) updateFloatingCountValue(c.cartCount);
+    } else {
+      showToast(res.message || "Failed to remove item");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Error removing item");
+  } finally {
+    closeDeleteModal();
+  }
+}
 
-          if (failedDeletes.length > 0) {
-            console.error("Some items failed to delete:", failedDeletes);
-            showToast("Some items could not be deleted. Please try again.");
-          } else {
-            showToast(
-              `✅ Successfully deleted ${selectedItems.length} item(s)`
-            );
-          }
+// Delete multiple items
+async function deleteMultipleItems() {
+  const selectedItems = cart.filter((item) => item.selected);
+  
+  try {
+    // Show loading state
+    const deleteBtn = document.getElementById("delete-selected-btn");
+    const originalText = deleteBtn.innerHTML;
+    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+    deleteBtn.disabled = true;
 
-          // Reload cart from server
-          await loadCartFromServer();
+    // Delete each selected item
+    const deletePromises = selectedItems.map((item) =>
+      apiRemoveFromCart(String(item.id))
+    );
 
-          // Reset button state
-          deleteBtn.innerHTML = originalText;
-          deleteBtn.disabled = true;
-        } catch (error) {
-          console.error("Error deleting selected items:", error);
-          showToast("Error deleting items. Please try again.");
+    // Wait for all delete operations to complete
+    const results = await Promise.allSettled(deletePromises);
 
-          // Reset button state on error
-          const deleteBtn = document.getElementById("delete-selected-btn");
-          deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Selected';
-          deleteBtn.disabled = false;
-        }
-      }
+    // Check if any deletions failed
+    const failedDeletes = results.filter(
+      (result) =>
+        result.status === "rejected" ||
+        (result.status === "fulfilled" && !result.value.success)
+    );
+
+    if (failedDeletes.length > 0) {
+      console.error("Some items failed to delete:", failedDeletes);
+      showToast("Some items could not be deleted. Please try again.");
+    } else {
+      showToast(`✅ Successfully deleted ${selectedItems.length} item(s)`);
+    }
+
+    // Reload cart from server
+    await loadCartFromServer();
+
+    // Reset button state
+    deleteBtn.innerHTML = originalText;
+    deleteBtn.disabled = true;
+  } catch (error) {
+    console.error("Error deleting selected items:", error);
+    showToast("Error deleting items. Please try again.");
+
+    // Reset button state on error
+    const deleteBtn = document.getElementById("delete-selected-btn");
+    deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Selected';
+    deleteBtn.disabled = false;
+  } finally {
+    closeDeleteModal();
+  }
+}
+
 
       /* ------------------- Helpers ------------------- */
 

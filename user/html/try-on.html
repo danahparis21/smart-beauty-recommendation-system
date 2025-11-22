@@ -864,9 +864,7 @@
         font-size: 0.8em;
         color: #6b7280;
       }
-     
 
-      
       /* Cart total popup - Compact & Elegant */
       .cart-total-popup {
         position: absolute;
@@ -1041,39 +1039,43 @@
         border-top: 1px solid var(--border-color);
       }
       /* Unified Notification Box Styles - Based on productdetail.html */
-.notification-box {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-    color: white;
-    padding: 15px 25px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
-    z-index: 9999;
-    font-weight: 500;
-    transform: translateX(400px);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    max-width: 300px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+      .notification-box {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+        z-index: 9999;
+        font-weight: 500;
+        transform: translateX(400px);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-.notification-box.show {
-    transform: translateX(0);
-    opacity: 1;
-}
+      .notification-box.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
 
-@media (max-width: 480px) {
-    .notification-box {
-        right: 10px;
-        left: 10px;
-        max-width: none;
-        top: 70px;
-    }
-}
+      @media (max-width: 480px) {
+        .notification-box {
+          right: 10px;
+          left: 10px;
+          max-width: none;
+          top: 70px;
+        }
+      }
       /* Action Buttons Container */
       .action-buttons-container {
         background: var(--white);
@@ -1216,7 +1218,6 @@
         box-shadow: none !important;
       }
 
-     
       /* Mobile responsiveness for action buttons */
       @media (max-width: 768px) {
         .action-buttons {
@@ -2060,36 +2061,46 @@
         <h1 class="brand-name">Blessence</h1>
         <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
-      
+
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
-        
+
         <!-- NOTIFICATION SECTION START -->
         <div class="notification-container">
-            <button class="notif-btn" id="notif-btn">
-                <i class="fas fa-bell"></i>
-                <span class="notif-badge" id="notif-badge">0</span>
-            </button>
-            
-            <div class="notif-dropdown" id="notif-dropdown">
-                <div class="notif-header">
-                    <span>Notifications</span>
-                    <i class="fas fa-check-double" style="font-size: 12px; cursor: pointer; color: #999;" title="Mark all as read"></i>
-                </div>
-                <div class="notif-list" id="notif-list">
-                    <!-- Notifications will be injected here -->
-                    <div class="notif-empty">Loading...</div>
-                </div>
+          <button class="notif-btn" id="notif-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notif-badge" id="notif-badge">0</span>
+          </button>
+
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <i
+                class="fas fa-check-double"
+                style="font-size: 12px; cursor: pointer; color: #999"
+                title="Mark all as read"
+              ></i>
             </div>
+            <div class="notif-list" id="notif-list">
+              <!-- Notifications will be injected here -->
+              <div class="notif-empty">Loading...</div>
+            </div>
+          </div>
         </div>
         <!-- NOTIFICATION SECTION END -->
 
-        <button class="profile-btn" onclick="window.location.href='user_profile.html'">
+        <button
+          class="profile-btn"
+          onclick="window.location.href='user_profile.html'"
+        >
           <i class="fas fa-user"></i>
         </button>
       </div>
 
-      <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
+      <button
+        class="mobile-profile-btn"
+        onclick="window.location.href='user_profile.html'"
+      >
         <i class="fas fa-user"></i>
       </button>
     </header>
@@ -2291,354 +2302,7 @@
         // Now you can use currentUser anywhere in your page
         console.log("User ID:", currentUser.id);
         console.log("Username:", currentUser.username);
-      });
-      async function updateCartCount() {
-        try {
-          const response = await fetch("../php/get-cart-count.php");
-          const data = await response.json();
 
-          if (data.success) {
-            const cartCounts = document.querySelectorAll(".nav-cart-count");
-            cartCounts.forEach((count) => {
-              count.textContent = data.count;
-              if (data.count > 0) {
-                count.classList.add("show"); // Use class instead of inline style
-              } else {
-                count.classList.remove("show");
-              }
-            });
-          }
-        } catch (error) {
-          console.log("Cart count update failed, setting to 0");
-          const cartCounts = document.querySelectorAll(".nav-cart-count");
-          cartCounts.forEach((count) => {
-            count.textContent = "0";
-            count.classList.remove("show");
-          });
-        }
-      }
-    // Unified Notification Function - Use this on ALL pages
-function showNotification(message, type = "success") {
-    // Check if notification box exists, if not create it
-    let notificationBox = document.getElementById("notification-box");
-    
-    if (!notificationBox) {
-        // Create the notification box if it doesn't exist
-        notificationBox = document.createElement('div');
-        notificationBox.id = 'notification-box';
-        notificationBox.className = 'notification-box';
-        document.body.appendChild(notificationBox);
-    }
-
-    // Set message and icon based on type
-    let iconClass, background;
-    
-    switch(type) {
-        case "success":
-            iconClass = "fas fa-check-circle";
-            background = "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
-            break;
-        case "error":
-            iconClass = "fas fa-exclamation-circle";
-            background = "linear-gradient(135deg, #ef4444, #dc2626)";
-            break;
-        case "info":
-            iconClass = "fas fa-info-circle";
-            background = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
-            break;
-        case "warning":
-            iconClass = "fas fa-exclamation-triangle";
-            background = "linear-gradient(135deg, #f59e0b, #d97706)";
-            break;
-        default:
-            iconClass = "fas fa-check-circle";
-            background = "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
-    }
-    
-    notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
-    notificationBox.style.background = background;
-
-    // Show notification
-    notificationBox.classList.add("show");
-
-    // Hide after 3 seconds
-    setTimeout(() => {
-        notificationBox.classList.remove("show");
-    }, 3000);
-}
-      function showCartTotal(totalAmount) {
-        // Remove existing popups if any
-        const existingPopups = document.querySelectorAll(".cart-total-popup");
-        existingPopups.forEach((popup) => popup.remove());
-
-        // Get both desktop and mobile cart nav items
-        const desktopCartNav = document.querySelector(
-          '.desktop-nav .nav-item[data-page="cart"]'
-        );
-        const mobileCartNav = document.querySelector(
-          '.mobile-nav .nav-item[data-page="cart"]'
-        );
-
-        // Create popup for desktop
-        if (desktopCartNav) {
-          const desktopPopup = document.createElement("div");
-          desktopPopup.className = "cart-total-popup";
-          desktopPopup.innerHTML = `
-      <div class="cart-total-label">Cart Total</div>
-      <div class="cart-total-amount">₱${formatNumberWithCommas(
-        parseFloat(totalAmount).toFixed(2)
-      )}</div>
-      <small>Click cart to view items</small>
-    `;
-
-          desktopCartNav.appendChild(desktopPopup);
-          setTimeout(() => desktopPopup.classList.add("show"), 10);
-
-          // Auto hide after 3 seconds
-          setTimeout(() => {
-            desktopPopup.classList.remove("show");
-            setTimeout(() => {
-              if (desktopPopup.parentNode) {
-                desktopPopup.remove();
-              }
-            }, 300);
-          }, 3000);
-        }
-
-        // Create popup for mobile
-        if (mobileCartNav) {
-          const mobilePopup = document.createElement("div");
-          mobilePopup.className = "cart-total-popup";
-          mobilePopup.innerHTML = `
-      <div class="cart-total-label">Cart Total</div>
-      <div class="cart-total-amount">₱${formatNumberWithCommas(
-        parseFloat(totalAmount).toFixed(2)
-      )}</div>
-      <small>Tap cart to view items</small>
-    `;
-
-          mobileCartNav.appendChild(mobilePopup);
-          setTimeout(() => mobilePopup.classList.add("show"), 10);
-
-          // Auto hide after 3 seconds
-          setTimeout(() => {
-            mobilePopup.classList.remove("show");
-            setTimeout(() => {
-              if (mobilePopup.parentNode) {
-                mobilePopup.remove();
-              }
-            }, 300);
-          }, 3000);
-        }
-      }
-
-      async function addToCart(productId, button) {
-        try {
-          // Use the variant product ID from currentSelectedShade, not the parent product ID
-          const variantProductId = currentSelectedShade?.productId;
-
-          if (!variantProductId) {
-            showNotification("Please select a shade first", "error");
-            return;
-          }
-
-          const response = await fetch("../php/cart.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: `action=add&product_id=${encodeURIComponent(
-              variantProductId
-            )}&quantity=1`,
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-            updateCartCount();
-            showNotification("Product added to cart! 🛒");
-
-            if (result.totalAmount) {
-              showCartTotal(result.totalAmount);
-            }
-
-            // Visual feedback
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check"></i> Added!';
-            button.style.background = "var(--success-color)";
-
-            setTimeout(() => {
-              button.innerHTML = originalText;
-              button.style.background = "";
-            }, 2000);
-          } else {
-            showNotification(
-              result.message || "Failed to add to cart",
-              "error"
-            );
-          }
-        } catch (error) {
-          console.error("Error adding to cart:", error);
-          showNotification("Error adding to cart. Please try again.", "error");
-        }
-      }
-
-      // View product details
-      function viewProductDetails(productId) {
-        window.location.href = `productdetail.html?productId=${productId}`;
-      }
-
-      async function analyzeLipstickCompatibility(
-        imageData,
-        lipstickColor,
-        productId = null
-      ) {
-        try {
-          console.log("🎨 Starting lipstick compatibility analysis...");
-          console.log("Lipstick color:", lipstickColor);
-          console.log("Product ID:", productId);
-          console.log(
-            "Image data length:",
-            imageData ? imageData.length : "No image data"
-          );
-
-          // Prepare payload
-          const payload = {
-            image: imageData,
-            lipstick_color: lipstickColor,
-          };
-
-          // Add product_id if available
-          if (productId) {
-            payload.product_id = productId;
-            console.log("📦 Product ID added to payload:", productId);
-          } else {
-            console.log(
-              "⚠️ No product ID provided - using algorithmic approach"
-            );
-          }
-
-          const response = await fetch(
-            "http://localhost:5000/analyze-lipstick",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(payload),
-            }
-          );
-
-          console.log("📡 Response status:", response.status);
-          console.log("📡 Response ok:", response.ok);
-
-          if (!response.ok) {
-            console.error(
-              "❌ HTTP error:",
-              response.status,
-              response.statusText
-            );
-            const errorText = await response.text();
-            console.error("❌ Error response:", errorText);
-            return null;
-          }
-
-          const result = await response.json();
-          console.log("✅ Analysis result:", result);
-
-          if (result.success) {
-            console.log(
-              "🎯 Compatibility score:",
-              result.color_compatibility.compatibility_score + "%"
-            );
-            console.log("🔍 Match source:", result.match_source);
-            return result;
-          } else {
-            console.error("❌ Analysis failed:", result.message);
-            return null;
-          }
-        } catch (error) {
-          console.error("💥 Analysis error:", error);
-          console.error("Error details:", {
-            name: error.name,
-            message: error.message,
-          });
-          return null;
-        }
-      }
-
-      function displayCompatibilityResult(analysis) {
-        // Create or update compatibility display
-        let compatibilityDiv = document.getElementById("compatibility-result");
-        if (!compatibilityDiv) {
-          compatibilityDiv = document.createElement("div");
-          compatibilityDiv.id = "compatibility-result";
-          document.querySelector(".camera-view").appendChild(compatibilityDiv);
-        }
-
-        const compatibility = analysis.color_compatibility;
-        const skinAnalysis = analysis.skin_analysis;
-        const matchSource = analysis.match_source || "algorithm";
-
-        let matchClass = "";
-        switch (compatibility.match_level) {
-          case "excellent":
-            matchClass = "excellent-match";
-            break;
-          case "good":
-            matchClass = "good-match";
-            break;
-          case "decent":
-            matchClass = "decent-match";
-            break;
-          default:
-            matchClass = "poor-match";
-        }
-
-        compatibilityDiv.className = matchClass;
-
-        // Elegant source badge
-        let sourceBadge = "";
-        if (matchSource === "database") {
-          sourceBadge =
-            '<div class="source-badge" style="color: #d42f6e; font-weight: 600;">Verified Match</div>';
-        } else {
-          sourceBadge =
-            '<div class="source-badge" style="color: #e75480;">Color Analysis</div>';
-        }
-
-        compatibilityDiv.innerHTML = `
-        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
-        <div class="compatibility-header">
-            <h4>${compatibility.compatibility_score}% Match</h4>
-            ${sourceBadge}
-        </div>
-        <div class="match-bar">
-            <div class="match-fill" style="width: ${compatibility.compatibility_score}%"></div>
-        </div>
-        <div class="skin-info">
-            <p><strong>Tone:</strong> <span>${skinAnalysis.tone}</span></p>
-            <p><strong>Undertone:</strong> <span>${skinAnalysis.undertone}</span></p>
-        </div>
-        <div class="recommendation">
-            <p>${compatibility.recommendation}</p>
-        </div>
-    `;
-
-        // Auto-hide after 8 seconds
-        setTimeout(() => {
-          if (compatibilityDiv.parentNode) {
-            compatibilityDiv.style.opacity = "0";
-            setTimeout(() => {
-              if (compatibilityDiv.parentNode) {
-                compatibilityDiv.remove();
-              }
-            }, 500);
-          }
-        }, 8000);
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
         const fileInput = document.getElementById("file-input");
         const uploadBtn = document.getElementById("upload-btn");
         const cameraBtn = document.getElementById("camera-btn");
@@ -2648,6 +2312,9 @@ function showNotification(message, type = "success") {
         const ctx = canvas.getContext("2d");
         const shadeOptions = document.querySelectorAll(".shade-option");
         console.log("🎨 Found shade options:", shadeOptions.length);
+
+        let hasProcessedImage = false;
+        let currentImageSource = null;
 
         // Test if shade buttons are clickable
         shadeOptions.forEach((shade, index) => {
@@ -2712,6 +2379,12 @@ function showNotification(message, type = "success") {
             placeholder.style.display = "none";
 
             processImageWithFaceMesh(uploadedImage);
+
+            hasProcessedImage = true;
+            currentImageSource = "upload";
+            console.log("🔄 Restored image - state updated!");
+            console.log("hasProcessedImage:", hasProcessedImage);
+            console.log("currentImageSource:", currentImageSource);
           };
 
           uploadedImage.src = lastUploadedImage;
@@ -2726,18 +2399,15 @@ function showNotification(message, type = "success") {
             const reader = new FileReader();
 
             reader.onload = function (event) {
-              // 1. --- ADD THIS NEW RESET BLOCK HERE ---
-              // Clear previous face detection state to ensure fresh processing
+              // Reset state
               canvas._lastLandmarks = null;
               if (faceMesh) {
-                faceMesh = null; // Forces a re-initialization on the next processImageWithFaceMesh call
+                faceMesh = null;
               }
-              // 2. ------------------------------------
 
-              // Store the image in localStorage
+              // Store and process image
               localStorage.setItem("lastUploadedImage", event.target.result);
 
-              // Process the image immediately without page reload
               uploadedImage.onload = function () {
                 const container = uploadedImage.parentElement;
                 const containerWidth = container.clientWidth;
@@ -2778,6 +2448,12 @@ function showNotification(message, type = "success") {
                 placeholder.style.display = "none";
 
                 processImageWithFaceMesh(uploadedImage);
+
+                hasProcessedImage = true;
+                currentImageSource = "upload";
+                console.log("📁 File uploaded - state updated!");
+                console.log("hasProcessedImage:", hasProcessedImage);
+                console.log("currentImageSource:", currentImageSource);
               };
 
               uploadedImage.src = event.target.result;
@@ -2787,14 +2463,36 @@ function showNotification(message, type = "success") {
           }
         });
 
-        // // Fix the shade selection event listener - add this inside your DOMContentLoaded function
-        // shadeOptions.forEach((shade) => {
-        //   shade.addEventListener("click", async function () {
+        shadeOptions.forEach((shade) => {
+          shade.addEventListener("click", async function () {
+            // Check if we have a processed image
+            if (!hasProcessedImage || !currentImageSource) {
+              showPhotoRequiredMessage();
+              return;
+            }
 
-        //   });
-        // });
-        // Replace the camera button event listener with this:
+            // Remove active class from all shades
+            shadeOptions.forEach((s) => s.classList.remove("active"));
+            // Add active class to clicked shade
+            this.classList.add("active");
+
+            currentShade = this.getAttribute("data-color");
+            console.log("Selected shade:", currentShade);
+
+            // Re-apply lipstick to current image
+            if (canvas._lastLandmarks || canvas._displayInfo) {
+              applyLipstickToCurrentImage();
+            }
+          });
+        });
         cameraBtn.addEventListener("click", function () {
+          // RESET STATE WHEN OPENING CAMERA - this is the key fix!
+          hasProcessedImage = false;
+          currentImageSource = null;
+          console.log("📷 Camera opened - state reset!");
+          console.log("hasProcessedImage:", hasProcessedImage);
+          console.log("currentImageSource:", currentImageSource);
+
           if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             startCamera();
           } else {
@@ -2892,11 +2590,8 @@ function showNotification(message, type = "success") {
           const captureCanvas = document.createElement("canvas");
           const captureCtx = captureCanvas.getContext("2d");
 
-          // Set canvas to video dimensions
           captureCanvas.width = video.videoWidth;
           captureCanvas.height = video.videoHeight;
-
-          // Draw current video frame to canvas
           captureCtx.drawImage(
             video,
             0,
@@ -2905,13 +2600,9 @@ function showNotification(message, type = "success") {
             captureCanvas.height
           );
 
-          // Convert to data URL and process like uploaded image
           const imageData = captureCanvas.toDataURL("image/png");
-
-          // Stop camera
           stopCamera();
 
-          // Process the captured photo
           uploadedImage.onload = function () {
             const container = uploadedImage.parentElement;
             const containerWidth = container.clientWidth;
@@ -2952,6 +2643,12 @@ function showNotification(message, type = "success") {
             placeholder.style.display = "none";
 
             processImageWithFaceMesh(uploadedImage);
+
+            hasProcessedImage = true;
+            currentImageSource = "camera";
+            console.log("📸 Photo captured - state updated!");
+            console.log("hasProcessedImage:", hasProcessedImage);
+            console.log("currentImageSource:", currentImageSource);
           };
 
           uploadedImage.src = imageData;
@@ -3285,8 +2982,60 @@ function showNotification(message, type = "success") {
           );
           ctx.fill();
         }
+        function showPhotoRequiredMessage() {
+          // Create or show message
+          let message = document.getElementById("photo-required-message");
+          if (!message) {
+            message = document.createElement("div");
+            message.id = "photo-required-message";
+            message.className = "photo-required-message";
+            message.innerHTML = `
+      <i class="fas fa-camera"></i>
+      <span>Please take a photo or upload an image first to try on lipstick</span>
+    `;
+            message.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      max-width: 80%;
+    `;
 
-        // Process uploaded image with FaceMesh
+            document.querySelector(".camera-view").appendChild(message);
+
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+              message.style.display = "none";
+            }, 3000);
+          } else {
+            message.style.display = "flex";
+
+            // Reset the hide timer
+            clearTimeout(message._hideTimer);
+            message._hideTimer = setTimeout(() => {
+              message.style.display = "none";
+            }, 3000);
+          }
+        }
+
+        // Call this when image processing completes successfully
+        function onImageProcessedSuccessfully() {
+          hasProcessedImage = true;
+          // Enable action buttons
+          document.getElementById("details-btn").disabled = false;
+          document.getElementById("add-to-cart-btn").disabled = false;
+        }
+
         function processImageWithFaceMesh(image) {
           if (!faceMesh) {
             initializeFaceMesh();
@@ -3302,6 +3051,8 @@ function showNotification(message, type = "success") {
             .send({ image: image })
             .then(() => {
               console.log("FaceMesh processing completed");
+              // ADD THIS LINE:
+              onImageProcessedSuccessfully();
             })
             .catch((err) => {
               console.error("FaceMesh processing error:", err);
@@ -3309,6 +3060,8 @@ function showNotification(message, type = "success") {
               applyFallbackLipstick();
               loading.style.display = "none";
               isProcessing = false;
+              // ADD THIS LINE FOR FALLBACK CASES TOO:
+              onImageProcessedSuccessfully();
             });
         }
         let currentProduct = null;
@@ -3404,8 +3157,13 @@ function showNotification(message, type = "success") {
       </div>
     `;
 
-            // Add click handler to both product items
             const clickHandler = function () {
+              // Check if we have a processed image
+              if (!hasProcessedImage || !currentImageSource) {
+                showPhotoRequiredMessage();
+                return; // Stop here if no photo
+              }
+
               const parentId = this.getAttribute("data-product-id");
               currentProduct = products.find((p) => p.id === parentId);
               updateShadeOptions(currentProduct.shades);
@@ -3460,6 +3218,12 @@ function showNotification(message, type = "success") {
             shadeOption.appendChild(tooltip);
 
             shadeOption.addEventListener("click", async function () {
+              // Check if we have a processed image
+              if (!hasProcessedImage || !currentImageSource) {
+                showPhotoRequiredMessage();
+                return; // Stop here if no photo
+              }
+
               console.log("🖱️ Shade clicked:", this.getAttribute("data-color"));
 
               // Remove active class from all shades
@@ -3468,14 +3232,14 @@ function showNotification(message, type = "success") {
                 .forEach((s) => s.classList.remove("active"));
               this.classList.add("active");
 
-              const clickedShade = this.getAttribute("data-color"); // Renamed to avoid confusion
+              const clickedShade = this.getAttribute("data-color");
               const productId = this.getAttribute("data-product-id");
 
               console.log("🎨 Current shade set to:", clickedShade);
               console.log("📦 Product ID:", productId);
 
-              // ✅ FIX: Update the global currentShade variable
-              currentShade = clickedShade; // THIS IS THE KEY LINE!
+              // Update the global currentShade variable
+              currentShade = clickedShade;
 
               // Set current selected shade
               currentSelectedShade = {
@@ -3497,7 +3261,7 @@ function showNotification(message, type = "success") {
                   // PASS THE PRODUCT ID HERE
                   const analysis = await analyzeLipstickCompatibility(
                     imageData,
-                    clickedShade, // Use the clicked shade
+                    clickedShade,
                     productId
                   );
 
@@ -3511,7 +3275,7 @@ function showNotification(message, type = "success") {
                   console.log("❌ No image data in localStorage");
                 }
 
-                // ✅ Now this will use the updated currentShade
+                // Apply lipstick with the updated currentShade
                 applyLipstickToCurrentImage();
               } else {
                 console.log("❌ Canvas not ready - no image uploaded yet");
@@ -3648,7 +3412,7 @@ function showNotification(message, type = "success") {
           allProducts = sampleProducts;
           displayProducts(sampleProducts);
         }
-       
+
         // Cart total popup function
         function showCartTotal(totalAmount) {
           // Remove existing popups if any
@@ -3798,7 +3562,368 @@ function showNotification(message, type = "success") {
         initializeFaceMesh();
         updateCartCount();
         initializeActionButtons();
+        const style = document.createElement("style");
+        style.textContent = `
+  .photo-required-message {
+    animation: fadeInOut 3s ease-in-out;
+  }
+  
+  @keyframes fadeInOut {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+`;
+        document.head.appendChild(style);
       });
+      async function updateCartCount() {
+        try {
+          const response = await fetch("../php/get-cart-count.php");
+          const data = await response.json();
+
+          if (data.success) {
+            const cartCounts = document.querySelectorAll(".nav-cart-count");
+            cartCounts.forEach((count) => {
+              count.textContent = data.count;
+              if (data.count > 0) {
+                count.classList.add("show"); // Use class instead of inline style
+              } else {
+                count.classList.remove("show");
+              }
+            });
+          }
+        } catch (error) {
+          console.log("Cart count update failed, setting to 0");
+          const cartCounts = document.querySelectorAll(".nav-cart-count");
+          cartCounts.forEach((count) => {
+            count.textContent = "0";
+            count.classList.remove("show");
+          });
+        }
+      }
+      // Unified Notification Function - Use this on ALL pages
+      function showNotification(message, type = "success") {
+        // Check if notification box exists, if not create it
+        let notificationBox = document.getElementById("notification-box");
+
+        if (!notificationBox) {
+          // Create the notification box if it doesn't exist
+          notificationBox = document.createElement("div");
+          notificationBox.id = "notification-box";
+          notificationBox.className = "notification-box";
+          document.body.appendChild(notificationBox);
+        }
+
+        // Set message and icon based on type
+        let iconClass, background;
+
+        switch (type) {
+          case "success":
+            iconClass = "fas fa-check-circle";
+            background =
+              "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
+            break;
+          case "error":
+            iconClass = "fas fa-exclamation-circle";
+            background = "linear-gradient(135deg, #ef4444, #dc2626)";
+            break;
+          case "info":
+            iconClass = "fas fa-info-circle";
+            background = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
+            break;
+          case "warning":
+            iconClass = "fas fa-exclamation-triangle";
+            background = "linear-gradient(135deg, #f59e0b, #d97706)";
+            break;
+          default:
+            iconClass = "fas fa-check-circle";
+            background =
+              "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
+        }
+
+        notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
+        notificationBox.style.background = background;
+
+        // Show notification
+        notificationBox.classList.add("show");
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          notificationBox.classList.remove("show");
+        }, 3000);
+      }
+      function showCartTotal(totalAmount) {
+        // Remove existing popups if any
+        const existingPopups = document.querySelectorAll(".cart-total-popup");
+        existingPopups.forEach((popup) => popup.remove());
+
+        // Get both desktop and mobile cart nav items
+        const desktopCartNav = document.querySelector(
+          '.desktop-nav .nav-item[data-page="cart"]'
+        );
+        const mobileCartNav = document.querySelector(
+          '.mobile-nav .nav-item[data-page="cart"]'
+        );
+
+        // Create popup for desktop
+        if (desktopCartNav) {
+          const desktopPopup = document.createElement("div");
+          desktopPopup.className = "cart-total-popup";
+          desktopPopup.innerHTML = `
+      <div class="cart-total-label">Cart Total</div>
+      <div class="cart-total-amount">₱${formatNumberWithCommas(
+        parseFloat(totalAmount).toFixed(2)
+      )}</div>
+      <small>Click cart to view items</small>
+    `;
+
+          desktopCartNav.appendChild(desktopPopup);
+          setTimeout(() => desktopPopup.classList.add("show"), 10);
+
+          // Auto hide after 3 seconds
+          setTimeout(() => {
+            desktopPopup.classList.remove("show");
+            setTimeout(() => {
+              if (desktopPopup.parentNode) {
+                desktopPopup.remove();
+              }
+            }, 300);
+          }, 3000);
+        }
+
+        // Create popup for mobile
+        if (mobileCartNav) {
+          const mobilePopup = document.createElement("div");
+          mobilePopup.className = "cart-total-popup";
+          mobilePopup.innerHTML = `
+      <div class="cart-total-label">Cart Total</div>
+      <div class="cart-total-amount">₱${formatNumberWithCommas(
+        parseFloat(totalAmount).toFixed(2)
+      )}</div>
+      <small>Tap cart to view items</small>
+    `;
+
+          mobileCartNav.appendChild(mobilePopup);
+          setTimeout(() => mobilePopup.classList.add("show"), 10);
+
+          // Auto hide after 3 seconds
+          setTimeout(() => {
+            mobilePopup.classList.remove("show");
+            setTimeout(() => {
+              if (mobilePopup.parentNode) {
+                mobilePopup.remove();
+              }
+            }, 300);
+          }, 3000);
+        }
+      }
+
+      async function addToCart(productId, button) {
+        try {
+          // Use the variant product ID from currentSelectedShade, not the parent product ID
+          const variantProductId = currentSelectedShade?.productId;
+
+          if (!variantProductId) {
+            showNotification("Please select a shade first", "error");
+            return;
+          }
+
+          const response = await fetch("../php/cart.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `action=add&product_id=${encodeURIComponent(
+              variantProductId
+            )}&quantity=1`,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            updateCartCount();
+            showNotification("Product added to cart! 🛒");
+
+            if (result.totalAmount) {
+              showCartTotal(result.totalAmount);
+            }
+
+            // Visual feedback
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i> Added!';
+            button.style.background = "var(--success-color)";
+
+            setTimeout(() => {
+              button.innerHTML = originalText;
+              button.style.background = "";
+            }, 2000);
+          } else {
+            showNotification(
+              result.message || "Failed to add to cart",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error adding to cart:", error);
+          showNotification("Error adding to cart. Please try again.", "error");
+        }
+      }
+
+      // View product details
+      function viewProductDetails(productId) {
+        window.location.href = `productdetail.html?productId=${productId}`;
+      }
+
+      async function analyzeLipstickCompatibility(
+        imageData,
+        lipstickColor,
+        productId = null
+      ) {
+        try {
+          console.log("🎨 Starting lipstick compatibility analysis...");
+          console.log("Lipstick color:", lipstickColor);
+          console.log("Product ID:", productId);
+          console.log(
+            "Image data length:",
+            imageData ? imageData.length : "No image data"
+          );
+
+          // Prepare payload
+          const payload = {
+            image: imageData,
+            lipstick_color: lipstickColor,
+          };
+
+          // Add product_id if available
+          if (productId) {
+            payload.product_id = productId;
+            console.log("📦 Product ID added to payload:", productId);
+          } else {
+            console.log(
+              "⚠️ No product ID provided - using algorithmic approach"
+            );
+          }
+
+          const response = await fetch(
+            "http://localhost:5000/analyze-lipstick",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            }
+          );
+
+          console.log("📡 Response status:", response.status);
+          console.log("📡 Response ok:", response.ok);
+
+          if (!response.ok) {
+            console.error(
+              "❌ HTTP error:",
+              response.status,
+              response.statusText
+            );
+            const errorText = await response.text();
+            console.error("❌ Error response:", errorText);
+            return null;
+          }
+
+          const result = await response.json();
+          console.log("✅ Analysis result:", result);
+
+          if (result.success) {
+            console.log(
+              "🎯 Compatibility score:",
+              result.color_compatibility.compatibility_score + "%"
+            );
+            console.log("🔍 Match source:", result.match_source);
+            return result;
+          } else {
+            console.error("❌ Analysis failed:", result.message);
+            return null;
+          }
+        } catch (error) {
+          console.error("💥 Analysis error:", error);
+          console.error("Error details:", {
+            name: error.name,
+            message: error.message,
+          });
+          return null;
+        }
+      }
+
+      function displayCompatibilityResult(analysis) {
+        // Create or update compatibility display
+        let compatibilityDiv = document.getElementById("compatibility-result");
+        if (!compatibilityDiv) {
+          compatibilityDiv = document.createElement("div");
+          compatibilityDiv.id = "compatibility-result";
+          document.querySelector(".camera-view").appendChild(compatibilityDiv);
+        }
+
+        const compatibility = analysis.color_compatibility;
+        const skinAnalysis = analysis.skin_analysis;
+        const matchSource = analysis.match_source || "algorithm";
+
+        let matchClass = "";
+        switch (compatibility.match_level) {
+          case "excellent":
+            matchClass = "excellent-match";
+            break;
+          case "good":
+            matchClass = "good-match";
+            break;
+          case "decent":
+            matchClass = "decent-match";
+            break;
+          default:
+            matchClass = "poor-match";
+        }
+
+        compatibilityDiv.className = matchClass;
+
+        // Elegant source badge
+        let sourceBadge = "";
+        if (matchSource === "database") {
+          sourceBadge =
+            '<div class="source-badge" style="color: #d42f6e; font-weight: 600;">Verified Match</div>';
+        } else {
+          sourceBadge =
+            '<div class="source-badge" style="color: #e75480;">Color Analysis</div>';
+        }
+
+        compatibilityDiv.innerHTML = `
+        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+        <div class="compatibility-header">
+            <h4>${compatibility.compatibility_score}% Match</h4>
+            ${sourceBadge}
+        </div>
+        <div class="match-bar">
+            <div class="match-fill" style="width: ${compatibility.compatibility_score}%"></div>
+        </div>
+        <div class="skin-info">
+            <p><strong>Tone:</strong> <span>${skinAnalysis.tone}</span></p>
+            <p><strong>Undertone:</strong> <span>${skinAnalysis.undertone}</span></p>
+        </div>
+        <div class="recommendation">
+            <p>${compatibility.recommendation}</p>
+        </div>
+    `;
+
+        // Auto-hide after 8 seconds
+        setTimeout(() => {
+          if (compatibilityDiv.parentNode) {
+            compatibilityDiv.style.opacity = "0";
+            setTimeout(() => {
+              if (compatibilityDiv.parentNode) {
+                compatibilityDiv.remove();
+              }
+            }, 500);
+          }
+        }, 8000);
+      }
     </script>
   </body>
 </html>
