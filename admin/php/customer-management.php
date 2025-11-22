@@ -31,7 +31,7 @@ try {
 
     $sql = "
         SELECT 
-            u.UserID, u.username, u.first_name, u.last_name, u.Email, u.CreatedAt,
+            u.UserID, u.username, u.first_name, u.last_name, u.Email, u.CreatedAt,u.profile_photo,
             COUNT(DISTINCT o.order_id) as total_orders,
             COALESCE(SUM(o.total_price),0) as total_spent,
             MAX(o.order_date) as last_order_date,
@@ -64,6 +64,7 @@ try {
             'username' => $row['username'],
             'display_name' => $fullName ?: $row['username'],
             'email' => $row['Email'],
+            'profile_photo' => $row['profile_photo'],
             'join_date' => (new DateTime($row['CreatedAt']))->format('M d, Y'),
             'status' => $status,
             'total_orders' => $row['total_orders'],
