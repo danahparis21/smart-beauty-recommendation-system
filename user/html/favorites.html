@@ -15,6 +15,9 @@
       rel="stylesheet"
     />
     <script src="../js/user-session.js"></script>
+    <script src="../js/notifications.js"></script>
+    <script src="../js/user-profile-picture.js"></script>
+    <script src="../js/load-profile-notification.js"></script>
 
     <style>
       .nav-item {
@@ -342,13 +345,13 @@
 
       @media (min-width: 1024px) {
         .products-container {
-          max-width: 1200px;
+          max-width: 12000px;
           margin: 0 auto;
           padding-top: 40px;
         }
 
         .products-grid {
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(5, 1fr);
           gap: 30px;
         }
 
@@ -605,19 +608,36 @@
         <h1 class="brand-name">Blessence</h1>
         <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
+      
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
-        <button
-          class="profile-btn"
-          onclick="window.location.href='user_profile.html'"
-        >
+        
+        <!-- NOTIFICATION SECTION START -->
+        <div class="notification-container">
+            <button class="notif-btn" id="notif-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge" id="notif-badge">0</span>
+            </button>
+            
+            <div class="notif-dropdown" id="notif-dropdown">
+                <div class="notif-header">
+                    <span>Notifications</span>
+                    <i class="fas fa-check-double" style="font-size: 12px; cursor: pointer; color: #999;" title="Mark all as read"></i>
+                </div>
+                <div class="notif-list" id="notif-list">
+                    <!-- Notifications will be injected here -->
+                    <div class="notif-empty">Loading...</div>
+                </div>
+            </div>
+        </div>
+        <!-- NOTIFICATION SECTION END -->
+
+        <button class="profile-btn" onclick="window.location.href='user_profile.html'">
           <i class="fas fa-user"></i>
         </button>
       </div>
-      <button
-        class="mobile-profile-btn"
-        onclick="window.location.href='user_profile.html'"
-      >
+
+      <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
         <i class="fas fa-user"></i>
       </button>
     </header>
@@ -705,16 +725,6 @@
       let currentButton = null;
       let currentProductId = null;
       let currentUserId = null;
-
-      // --- Notification ---
-      function showNotification(message) {
-        const notificationBox = document.getElementById("notification-box");
-        if (notificationBox) {
-          notificationBox.textContent = message;
-          notificationBox.classList.add("show");
-          setTimeout(() => notificationBox.classList.remove("show"), 3000);
-        }
-      }
 
       // --- Get User Session ---
       async function getUserSession() {
@@ -1264,6 +1274,7 @@
           console.error("Error fetching cart total:", error);
         }
       }
+
     </script>
   </body>
 </html>
