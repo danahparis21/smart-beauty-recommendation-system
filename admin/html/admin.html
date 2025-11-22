@@ -15,7 +15,6 @@
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <script src="../../admin/styles/logout.js"></script>
 
   <!-- SweetAlert2 CSS & JS -->
@@ -23,7 +22,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
   <style>
-    /* Full Screen Reveal Effect */
+    /* --- EXISTING STYLES RETAINED --- */
     .fullscreen-reveal {
       position: fixed;
       top: 50%;
@@ -32,11 +31,7 @@
       width: 100px;
       height: 100px;
       border-radius: 50%;
-      background: linear-gradient(135deg,
-          #ffffff 0%,
-          #fff5f9 30%,
-          #ffe6f2 70%,
-          #ffd1dc 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #fff5f9 30%, #ffe6f2 70%, #ffd1dc 100%);
       z-index: 9999;
       display: none;
       justify-content: center;
@@ -82,7 +77,6 @@
       transition: opacity 0.5s ease;
     }
 
-
     .fullscreen-reveal.expanding .fullscreen-reveal-content {
       opacity: 1;
       transform: scale(1);
@@ -101,7 +95,6 @@
       z-index: 1;
     }
 
-    /* Cashier Mode Entry Screen */
     .cashier-mode-entry {
       position: fixed;
       top: 0;
@@ -212,22 +205,6 @@
       }
     }
 
-    /* Make cashier mode link press-friendly on mobile */
-    @media (max-width: 991px) {
-      .cashier-mode-link {
-        position: relative;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border-radius: 8px;
-      }
-
-      .cashier-mode-link.pressing {
-        background: rgba(228, 151, 170, 0.15) !important;
-        transform: scale(0.95);
-      }
-    }
-
-    /* Base Styles for Cards & Buttons */
     .stats-buttons {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -313,19 +290,18 @@
       background: linear-gradient(135deg, #c36c82 0%, #b05a70 100%);
     }
 
-    .qr-code {
+    .favorites-count{
       background: linear-gradient(135deg, #b05a70 0%, #9d4e5f 100%);
     }
 
-    /* Chart Container */
     .chart-container {
       background: white;
       border-radius: 20px;
-      padding: 40px 30px 30px 30px;
+      padding: 20px 30px 30px 30px;
       margin-bottom: 25px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       border: 1px solid rgba(228, 151, 170, 0.1);
-      height: 500px;
+      height: 530px;
       position: relative;
       overflow: hidden;
       display: flex;
@@ -361,7 +337,6 @@
       margin: 0;
     }
 
-    /* Right Panel */
     .right-panel {
       background: white;
       border-radius: 20px;
@@ -401,7 +376,6 @@
       font-size: 1.1rem;
     }
 
-    /* Placeholder boxes */
     .placeholder-box {
       border: 2px dashed #ffffff;
       border-radius: 12px;
@@ -410,14 +384,9 @@
       color: #ffffff;
       background: white;
       font-style: italic;
-      background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
       transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
-    }
-
-    .placeholder-box {
-      background: white !important;
     }
 
     .placeholder-box::before {
@@ -445,14 +414,6 @@
       box-shadow: 0 8px 16px rgba(228, 151, 170, 0.15);
     }
 
-    .placeholder-box i,
-    .placeholder-box div,
-    .placeholder-box small {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Button group styling */
     .btn-group {
       display: flex;
       gap: 6px;
@@ -504,7 +465,6 @@
       box-shadow: 0 4px 12px rgba(228, 151, 170, 0.3);
     }
 
-    /* Page header */
     .page-header {
       margin-bottom: 30px;
       padding-bottom: 20px;
@@ -525,7 +485,6 @@
       margin: 0;
     }
 
-    /* Main content padding (desktop) */
     main {
       padding: 35px !important;
       margin-left: 16.666667%;
@@ -533,7 +492,6 @@
       transition: margin-left 0.3s ease;
     }
 
-    /* Scrollbar styling */
     .right-panel::-webkit-scrollbar {
       width: 6px;
     }
@@ -552,7 +510,6 @@
       background: var(--secondary-pink);
     }
 
-    /* Dynamic content styles */
     .product-item {
       transition: all 0.3s ease;
       border: 1px solid rgba(228, 151, 170, 0.1);
@@ -599,7 +556,6 @@
       background: var(--secondary-pink) !important;
     }
 
-    /* Animation for page load */
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -621,30 +577,6 @@
       to {
         opacity: 1;
         transform: translateY(0);
-      }
-    }
-
-    @keyframes slideInRight {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    @keyframes slideOutRight {
-      from {
-        transform: translateX(0);
-        opacity: 1;
-      }
-
-      to {
-        transform: translateX(100%);
-        opacity: 0;
       }
     }
 
@@ -685,70 +617,193 @@
       animation: fadeIn 0.5s ease forwards;
     }
 
-    /* Responsive Design */
-    @media (min-width: 1400px) {
-      .stats-buttons {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .stat-btn {
-        padding: 32px 28px;
-      }
-
-      .stat-value {
-        font-size: 2.5rem;
-      }
-
-      .chart-container {
-        padding: 35px;
-      }
-
-      .right-panel {
-        padding: 35px;
-      }
+    .cashier-tap-counter {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(228, 151, 170, 0.9);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      display: none;
     }
 
-    @media (min-width: 1200px) and (max-width: 1399px) {
-      .stats-buttons {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .page-title {
-        font-size: 1.8rem;
-      }
+    .cashier-tap-counter.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
     }
 
-    @media (min-width: 992px) and (max-width: 1199px) {
-      .stats-buttons {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .stat-btn {
-        padding: 24px 20px;
-      }
-
-      .stat-value {
-        font-size: 2rem;
-      }
-
-      .stat-btn i {
-        font-size: 2.2rem;
-      }
-
-      .chart-container {
-        padding: 25px;
-      }
-
-      .right-panel {
-        padding: 25px;
-      }
-
-      .page-title {
-        font-size: 1.6rem;
-      }
+    .cashier-mode-link {
+      color: inherit !important;
     }
 
+    .analytics-card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(228, 151, 170, 0.1);
+      height: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .analytics-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .small-chart-container {
+      height: 300px;
+      position: relative;
+      width: 100%;
+    }
+
+    /* --- NEW STYLES FOR PROFILE PICS & REVIEWS --- */
+    .view-all-link {
+      font-size: 0.85rem;
+      color: var(--primary-pink);
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .view-all-link:hover {
+      color: var(--dark-pink);
+      text-decoration: underline;
+    }
+
+    .customer-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary-pink);
+      margin-right: 1rem;
+    }
+
+    /* --- MODAL & DROPDOWN STYLES (PRIORITIZED) --- */
+    .modal-dialog-scrollable .modal-content {
+      overflow: visible !important;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(228, 151, 170, 0.2);
+      background-color: #fff5f9;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      flex-wrap: wrap;
+      padding: 1rem 1.5rem;
+      position: relative;
+      overflow: visible !important;
+      z-index: 1056;
+    }
+
+    .modal-title {
+      color: var(--dark-pink);
+      font-weight: 700;
+      margin-right: auto;
+    }
+
+    .modal-header .btn-close {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .custom-dropdown-btn {
+      background-color: white;
+      border: 1px solid rgba(228, 151, 170, 0.5);
+      border-radius: 50px;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      color: var(--dark-pink);
+      font-weight: 600;
+      min-width: 160px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .custom-dropdown-btn:hover,
+    .custom-dropdown-btn[aria-expanded="true"] {
+      background-color: #fff0f5;
+      border-color: var(--primary-pink);
+      color: var(--dark-pink);
+      box-shadow: 0 4px 12px rgba(228, 151, 170, 0.2);
+    }
+
+    .custom-dropdown-btn::after {
+      margin-left: 10px;
+      color: var(--primary-pink);
+    }
+
+    .custom-dropdown-menu {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      padding: 8px;
+      background: white;
+      min-width: 180px;
+      margin-top: 10px !important;
+      animation: fadeIn 0.2s ease;
+      z-index: 9999 !important;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .custom-dropdown-menu::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .custom-dropdown-menu::-webkit-scrollbar-thumb {
+      background-color: #e497aa;
+      border-radius: 10px;
+    }
+
+    .custom-dropdown-item {
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .custom-dropdown-item:hover {
+      background-color: #fff0f5;
+      color: var(--dark-pink);
+      transform: translateX(5px);
+    }
+
+    .custom-dropdown-item.active {
+      background-color: var(--primary-pink);
+      color: white;
+    }
+
+    /* --- RESPONSIVE STYLES (PRIORITIZED) --- */
     @media (max-width: 991px) {
+      .stats-buttons {
+        grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+        gap: 15px;
+      }
       main {
         margin-left: 0 !important;
         width: 100% !important;
@@ -790,361 +845,60 @@
         display: block;
       }
 
-      .stats-buttons {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+      .cashier-mode-link {
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 8px;
       }
 
-      .stat-btn {
-        padding: 20px 18px;
+      .cashier-mode-link.pressing {
+        background: rgba(228, 151, 170, 0.15) !important;
+        transform: scale(0.95);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .modal-header {
+        padding: 15px;
+        padding-right: 40px;
       }
 
-      .stat-value {
-        font-size: 1.8rem;
-      }
 
-      .stat-btn i {
-        font-size: 2rem;
-      }
-
-      .chart-container {
-        height: 570px;
-        padding: 20px 15px 15px 15px;
-      }
-
-      .chart-container canvas {
-        height: 85% !important;
-      }
-
-      .right-panel {
-        padding: 20px;
-      }
-
-      .chart-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-
-      .btn-group {
+      .filter-controls {
         width: 100%;
-        justify-content: space-between;
-      }
-
-      .btn-group .btn {
-        flex: 1;
-        padding: 6px 10px;
-        font-size: 0.75rem;
-      }
-
-      .page-title {
-        font-size: 1.5rem;
-      }
-
-      main {
-        padding: 25px !important;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .stats-buttons {
-        gap: 12px;
-      }
-
-      .stat-btn {
-        padding: 18px 16px;
-      }
-
-      .stat-value {
-        font-size: 1.6rem;
-      }
-
-      .stat-btn i {
-        font-size: 1.8rem;
-        margin-bottom: 10px;
-      }
-
-      .stat-label {
-        font-size: 0.85rem;
-      }
-
-      .chart-container {
-        height: 570px;
-        padding: 12px 10px;
-      }
-
-      .right-panel {
-        padding: 18px;
-      }
-
-      .chart-header h5 {
-        font-size: 1.1rem;
-      }
-
-      .btn-group {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 5px;
-      }
-
-      .btn-group .btn {
-        padding: 8px 8px;
-        font-size: 0.7rem;
-      }
-
-      .page-title {
-        font-size: 1.4rem;
-      }
-
-      .page-header p {
-        font-size: 0.9rem;
-      }
-
-      main {
-        padding: 20px !important;
-      }
-
-      .panel-section h6 {
-        font-size: 1rem;
-      }
-
-      .placeholder-box {
-        padding: 24px 18px;
-      }
-    }
-
-    @media (max-width: 575px) {
-      .chart-container {
-        height: 480px !important;
-        padding: 15px 12px !important;
-        margin-bottom: 20px;
-        min-height: 420px;
-      }
-
-      .chart-container canvas {
-        height: 320px !important;
-        min-height: 300px !important;
-        max-height: 320px !important;
-        flex: none !important;
-      }
-
-      .chart-header {
-        margin-bottom: 10px !important;
-        padding: 0 !important;
-        height: auto !important;
-      }
-
-      .btn-group {
-        margin-bottom: 5px;
-        height: auto !important;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
-      }
-
-      .sidebar .nav-link {
-        padding: 10px 12px;
-        font-size: 0.85rem;
-        margin: 5px 10px;
-      }
-
-      .sidebar .nav-link i {
-        font-size: 1rem;
-        margin-right: 10px;
-      }
-
-      .logo-container {
-        padding: 18px 12px;
-      }
-
-      .logo {
-        max-width: 100px;
-      }
-
-      .stats-buttons {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-
-      .stat-btn {
-        padding: 16px 14px;
-        min-height: 110px;
         flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
       }
 
-      .stat-btn i {
-        font-size: 1.8rem;
-        margin-bottom: 10px;
-        margin-right: 0;
+      .dropdown,
+      .custom-dropdown-btn {
+        width: 100%;
       }
 
-      .stat-value {
-        font-size: 1.6rem;
-      }
-
-      .stat-label {
-        font-size: 0.8rem;
-      }
-
-      .chart-container,
-      .right-panel {
-        padding: 16px;
-        border-radius: 16px;
-      }
-
-      .chart-header {
-        margin-bottom: 20px;
-      }
-
-      .chart-header h5 {
-        font-size: 1rem;
-        margin-bottom: 12px;
-      }
-
-      .btn-group .btn {
-        padding: 10px 8px;
-        font-size: 0.75rem;
-        text-align: center;
-      }
-
-      .page-title {
-        font-size: 1.3rem;
-      }
-
-      .page-header {
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-      }
-
-      .page-header p {
-        font-size: 0.85rem;
-      }
-
-      main {
-        padding: 15px !important;
-        /* Dynamic padding-top handled by JS */
-      }
-
-      .placeholder-box i {
-        font-size: 1.5rem !important;
-      }
-
-      .placeholder-box div {
-        font-size: 0.9rem !important;
-      }
-
-      .placeholder-box small {
-        font-size: 0.75rem !important;
+      .custom-dropdown-menu {
+        width: 100%;
       }
     }
 
-    @media (max-width: 375px) {
-      .page-title {
-        font-size: 1.2rem;
-      }
-
-      .stat-value {
-        font-size: 1.6rem;
-      }
-
-      .stat-btn i {
-        font-size: 1.8rem;
-      }
-
-      .btn-group .btn {
-        font-size: 0.7rem;
-        padding: 8px 6px;
-      }
-
-      main {
-        padding: 12px !important;
-      }
-    }
-
-    /* Cashier mode tap counter */
-    .cashier-tap-counter {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(228, 151, 170, 0.9);
-      color: white;
-      padding: 10px 15px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 1000;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      transition: all 0.3s ease;
-      display: none;
-    }
-
-    .cashier-tap-counter.show {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .cashier-tap-counter.hide {
-      animation: fadeOut 0.3s ease;
-    }
-
-    @keyframes fadeOut {
-      from {
-        opacity: 1;
-      }
-
-      to {
-        opacity: 0;
-        display: none;
-      }
-    }
-
-    /* Remove blue color from cashier mode link */
-    .cashier-mode-link {
-      color: inherit !important;
-    }
-
-    .cashier-mode-link:link,
-    .cashier-mode-link:visited,
-    .cashier-mode-link:hover,
-    .cashier-mode-link:active,
-    .cashier-mode-link:focus {
-      color: inherit !important;
-    }
-
-    /* Ensure it matches the other nav links */
-    .sidebar .nav-link {
-      color: inherit !important;
-    }
-
-    .sidebar .nav-link:link,
-    .sidebar .nav-link:visited,
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link:active,
-    .sidebar .nav-link:focus {
-      color: inherit !important;
-    }
-
-    /* Helper for new charts */
-    .small-chart-container {
-      height: 300px;
+    .animation-fix {
       position: relative;
-      width: 100%;
+      min-height: 200px;
     }
 
-    /* Analytics card styling */
-    .analytics-card {
-      background: white;
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(228, 151, 170, 0.1);
-      height: 100%;
-      transition: transform 0.3s ease;
+    .small-chart-container {
+      min-height: 250px;
     }
 
-    .analytics-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    @media (max-width: 768px) {
+      .chart-container {
+        min-height: 300px;
+      }
+
+      .small-chart-container {
+        min-height: 200px;
+      }
     }
   </style>
 </head>
@@ -1254,7 +1008,7 @@
               <canvas id="salesChart"></canvas>
             </div>
 
-            <!-- NEW: Advanced Analytics Charts -->
+            <!-- Analytics Charts -->
             <div class="row mt-4 mb-4">
               <div class="col-md-6 mb-3">
                 <div class="analytics-card">
@@ -1306,7 +1060,7 @@
                 </div>
               </div>
             </div>
-          </div> <!-- end of col-md-8 -->
+          </div>
 
           <!-- Right Panel -->
           <div class="col-md-4">
@@ -1322,7 +1076,6 @@
                 </div>
               </div>
 
-              <!-- NEW: Order Status Summary -->
               <div class="panel-section mt-4">
                 <h6><i class="fas fa-clipboard-list"></i> Order Status</h6>
                 <div class="small-chart-container" style="height: 200px;">
@@ -1331,7 +1084,13 @@
               </div>
 
               <div class="panel-section">
-                <h6><i class="fas fa-star"></i> Store Ratings</h6>
+                <!-- Updated Header with View All -->
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3"
+                  style="border-color: #f0f0f0 !important;">
+                  <h6 style="border: none; margin: 0; padding: 0;"><i class="fas fa-star"></i> Store Ratings</h6>
+                  <span class="view-all-link" id="viewAllReviewsBtn">View All</span>
+                </div>
+
                 <div class="ratings-container">
                   <div class="placeholder-box">
                     <i class="fas fa-star fa-2x mb-3" style="color: var(--primary-pink);"></i>
@@ -1342,9 +1101,71 @@
               </div>
 
             </div>
-          </div> <!-- end of col-md-4 -->
-        </div> <!-- end of row -->
+          </div>
+        </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Reviews Modal -->
+  <div class="modal fade" id="reviewsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-comments me-2"></i>All Store Reviews</h5>
+
+          <div class="filter-controls">
+
+            <!-- Rating Filter Dropdown -->
+            <div class="dropdown">
+              <!-- ADDED data-bs-boundary="viewport" HERE -->
+              <button class="btn custom-dropdown-btn dropdown-toggle" type="button" id="ratingDropdownBtn"
+                data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                All Ratings
+              </button>
+              <ul class="dropdown-menu custom-dropdown-menu" aria-labelledby="ratingDropdownBtn">
+                <li><a class="dropdown-item custom-dropdown-item active" data-value="all"
+                    onclick="selectFilter('rating', 'all', 'All Ratings', this)">All Ratings</a></li>
+                <li><a class="dropdown-item custom-dropdown-item" data-value="5"
+                    onclick="selectFilter('rating', '5', '★★★★★ (5 Stars)', this)">★★★★★ (5 Stars)</a></li>
+                <li><a class="dropdown-item custom-dropdown-item" data-value="4"
+                    onclick="selectFilter('rating', '4', '★★★★☆ (4 Stars)', this)">★★★★☆ (4 Stars)</a></li>
+                <li><a class="dropdown-item custom-dropdown-item" data-value="3"
+                    onclick="selectFilter('rating', '3', '★★★☆☆ (3 Stars)', this)">★★★☆☆ (3 Stars)</a></li>
+                <li><a class="dropdown-item custom-dropdown-item" data-value="2"
+                    onclick="selectFilter('rating', '2', '★★☆☆☆ (2 Stars)', this)">★★☆☆☆ (2 Stars)</a></li>
+                <li><a class="dropdown-item custom-dropdown-item" data-value="1"
+                    onclick="selectFilter('rating', '1', '★☆☆☆☆ (1 Star)', this)">★☆☆☆☆ (1 Star)</a></li>
+              </ul>
+              <input type="hidden" id="reviewFilter" value="all">
+            </div>
+
+            <!-- Sort Filter Dropdown -->
+            <div class="dropdown">
+              <!-- ADDED data-bs-boundary="viewport" HERE -->
+              <button class="btn custom-dropdown-btn dropdown-toggle" type="button" id="sortDropdownBtn"
+                data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                Newest First
+              </button>
+              <ul class="dropdown-menu custom-dropdown-menu" aria-labelledby="sortDropdownBtn">
+                <li><a class="dropdown-item custom-dropdown-item active" data-value="newest"
+                    onclick="selectFilter('sort', 'newest', 'Newest First', this)">Newest First</a></li>
+                <li><a class="dropdown-item custom-dropdown-item" data-value="oldest"
+                    onclick="selectFilter('sort', 'oldest', 'Oldest First', this)">Oldest First</a></li>
+              </ul>
+              <input type="hidden" id="reviewSort" value="newest">
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="modal-body" id="modalReviewsBody">
+          <div class="text-center py-5">
+            <div class="spinner-border text-pink" role="status"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1352,9 +1173,7 @@
   <div class="reveal-overlay" id="revealOverlay"></div>
   <div class="fullscreen-reveal" id="fullscreenReveal">
     <div class="reveal-progress" id="revealProgress"></div>
-    <div class="fullscreen-reveal-content">
-      <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
-    </div>
+    <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
   </div>
 
   <div class="cashier-mode-entry" id="cashierModeEntry">
@@ -1376,7 +1195,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // --- Mobile Sidebar Logic ---
+      // ... [Previous sidebar and mobile logic kept the same] ...
       const hamburgerBtn = document.getElementById('hamburgerBtn');
       const sidebar = document.getElementById('sidebar');
       const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -1408,15 +1227,107 @@
       window.addEventListener('load', adjustContentForMobileHeader);
       window.addEventListener('resize', adjustContentForMobileHeader);
 
-      // --- Global Variables for Chart Instances ---
+      // --- Chart Instances ---
       let categoryChartInstance = null;
       let demographicsChartInstance = null;
       let orderStatusChartInstance = null;
       let salesChartInstance = null;
 
-      // --- Render Functions for All Charts ---
+      // --- MODAL LOGIC FOR VIEW ALL REVIEWS ---
+      const viewAllBtn = document.getElementById('viewAllReviewsBtn');
+      const reviewsModal = new bootstrap.Modal(document.getElementById('reviewsModal'));
+      const reviewFilter = document.getElementById('reviewFilter');
+      const reviewSort = document.getElementById('reviewSort');
+      const modalBody = document.getElementById('modalReviewsBody');
+
+      const fetchReviews = async () => {
+        const filter = reviewFilter.value;
+        const sort = reviewSort.value;
+
+        modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-secondary" role="status"></div><p class="mt-2 text-muted">Loading reviews...</p></div>';
+        // --- NEW: Handle Custom Dropdown Selection ---
+        window.selectFilter = function (type, value, text, element) {
+          // 1. Update the hidden input value
+          const inputId = type === 'rating' ? 'reviewFilter' : 'reviewSort';
+          const input = document.getElementById(inputId);
+          if (input) input.value = value;
+
+          // 2. Update the Button Text
+          const btnId = type === 'rating' ? 'ratingDropdownBtn' : 'sortDropdownBtn';
+          const btn = document.getElementById(btnId);
+          if (btn) btn.textContent = text;
+
+          // 3. Update Active State styling
+          const menu = element.closest('.dropdown-menu');
+          menu.querySelectorAll('.custom-dropdown-item').forEach(item => item.classList.remove('active'));
+          element.classList.add('active');
+
+          // 4. Trigger Fetch
+          fetchReviews();
+        };
+        try {
+          // Fetch just the reviews, not the whole dashboard
+          const response = await fetch(`../php/admin.php?action=get_reviews&rating=${filter}&sort=${sort}`);
+          const result = await response.json();
+
+          if (result.success && result.reviews.length > 0) {
+            let html = '';
+            result.reviews.forEach(review => {
+              const date = new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+              const stars = '<i class="fas fa-star text-warning"></i>'.repeat(review.rating) + '<i class="far fa-star text-warning"></i>'.repeat(5 - review.rating);
+              const name = review.username || 'Anonymous';
+              const imgSrc = review.user_image && review.user_image !== '' ? `../images/${review.user_image}` : null;
+
+              // Image or Initial
+              let avatarHtml = '';
+              if (imgSrc) {
+                avatarHtml = `<img src="${imgSrc}" alt="User" style="width:40px; height:40px; border-radius:50%; object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">`;
+              }
+              // Fallback initial
+              avatarHtml += `<div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white fw-bold ${imgSrc ? 'd-none' : ''}" style="width:40px; height:40px; min-width:40px;">${name.charAt(0).toUpperCase()}</div>`;
+
+              html += `
+                    <div class="customer-item p-3 mb-3 border-bottom">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                ${avatarHtml}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 text-dark fw-bold">${name}</h6>
+                                    <small class="text-muted">${date}</small>
+                                </div>
+                                <div class="mb-2 mt-1 small">${stars}</div>
+                                <p class="mb-0 text-secondary" style="font-size:0.9rem;">${review.comment || '<i>No comment provided.</i>'}</p>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            modalBody.innerHTML = html;
+          } else {
+            modalBody.innerHTML = `<div class="text-center py-5"><i class="far fa-comment-dots fa-3x text-muted mb-3"></i><p class="text-muted">No reviews found for this filter.</p></div>`;
+          }
+        } catch (error) {
+          console.error('Error fetching reviews:', error);
+          modalBody.innerHTML = '<div class="text-center text-danger py-4">Failed to load reviews.</div>';
+        }
+      };
+
+      if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', () => {
+          reviewsModal.show();
+          fetchReviews();
+        });
+      }
+
+      if (reviewFilter) reviewFilter.addEventListener('change', fetchReviews);
+      if (reviewSort) reviewSort.addEventListener('change', fetchReviews);
+
+
+      // --- Update Functions ---
 
       const updateStats = (stats) => {
+        // ... [Kept same] ...
         const els = {
           'orders_today': document.querySelector('.orders-today .stat-value'),
           'orders_week': document.querySelector('.this-week .stat-value'),
@@ -1469,7 +1380,6 @@
           return `<div class="d-flex align-items-center mb-2"><span style="width:20px">${s}</span><i class="fas fa-star text-warning me-2" style="font-size:0.8rem"></i><div class="progress flex-grow-1 me-2" style="height:8px"><div class="progress-bar" style="width:${pct}%; background-color:var(--primary-pink)"></div></div><small class="text-muted" style="width:30px">${c}</small></div>`;
         }).join('');
 
-        // Recent reviews section
         let recentReviewsHTML = '';
         if (ratings.recent_reviews && ratings.recent_reviews.length > 0) {
           recentReviewsHTML = '<div class="mt-4"><h6 class="mb-3" style="font-size:0.95rem; color:var(--dark-pink); font-weight:600;">Recent Reviews</h6>';
@@ -1500,6 +1410,7 @@
       };
 
       const updateAIInsights = (insights) => {
+        // ... [Kept same] ...
         const container = document.querySelector('.ai-insights-container');
         if (!insights || !insights.length) {
           container.innerHTML = `<div class="placeholder-box"><i class="fas fa-robot fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No insights yet</div></div>`;
@@ -1508,412 +1419,173 @@
         container.innerHTML = insights.map(i => `<div class="insight-item p-3 mb-2" style="background:white; border-radius:10px; border-left:4px solid var(--primary-pink)"><div class="d-flex align-items-start"><i class="fas fa-lightbulb mt-1 me-2" style="color:var(--primary-pink)"></i><small style="color:#333">${i}</small></div></div>`).join('');
       };
 
+      // --- UPDATED: Display Profile Picture ---
       const updateTopCustomers = (customers) => {
         const container = document.querySelector('.top-customers-container');
         if (!customers || !customers.length) {
           container.innerHTML = `<div class="placeholder-box"><i class="fas fa-users fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No data</div></div>`;
           return;
         }
+
         container.innerHTML = customers.map(c => {
           const name = (c.first_name && c.last_name) ? `${c.first_name} ${c.last_name}` : (c.username || 'Unknown');
+
+          let imageHtml = '';
+          // Check for profile_photo (not user_image)
+          if (c.profile_photo && c.profile_photo.trim() !== '' && c.profile_photo !== 'default.png') {
+            imageHtml = `<img src="../../uploads/profiles/${c.profile_photo}" alt="${name}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:1rem;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+            imageHtml += `<div class="me-3" style="width:40px; height:40px; background:var(--primary-pink); border-radius:50%; display:none; align-items:center; justify-content:center; color:white; font-weight:bold">${name.charAt(0).toUpperCase()}</div>`;
+          } else {
+            imageHtml = `<div class="me-3" style="width:40px; height:40px; background:var(--primary-pink); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold">${name.charAt(0).toUpperCase()}</div>`;
+          }
+
           return `<div class="customer-item d-flex align-items-center justify-content-between p-3 mb-2" style="background:white; border-radius:10px;">
-            <div class="d-flex align-items-center"><div class="me-3" style="width:40px; height:40px; background:var(--primary-pink); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold">${name.charAt(0).toUpperCase()}</div><div><div class="fw-bold" style="color:var(--dark-pink)">${name}</div><small class="text-muted">${c.total_orders} orders</small></div></div>
-            <div class="text-end"><div class="fw-bold" style="color:var(--dark-pink)">₱${parseFloat(c.total_spent || 0).toFixed(2)}</div></div>
-        </div>`;
+              <div class="d-flex align-items-center">
+                  ${imageHtml}
+                  <div><div class="fw-bold" style="color:var(--dark-pink)">${name}</div><small class="text-muted">${c.total_orders} orders</small></div>
+              </div>
+              <div class="text-end"><div class="fw-bold" style="color:var(--dark-pink)">₱${parseFloat(c.total_spent || 0).toFixed(2)}</div></div>
+          </div>`;
         }).join('');
       };
 
-      // Fixed render functions with animation stability
+      // --- Render Charts Functions (Kept same as optimized versions in previous step) ---
       const renderCategoryChart = (data) => {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         if (categoryChartInstance) categoryChartInstance.destroy();
-
-        let labels = [], values = [];
-        if (data && data.length > 0) {
-          labels = data.map(d => d.Category);
-          values = data.map(d => d.total_items_sold);
-        } else {
-          labels = ['No Data'];
-          values = [1];
-        }
-
+        let labels = (data && data.length) ? data.map(d => d.Category) : ['No Data'];
+        let values = (data && data.length) ? data.map(d => d.total_items_sold) : [1];
         const colors = ['#e497aa', '#db8299', '#c36c82', '#b05a70', '#9d4e5f', '#8a4250'];
-
         categoryChartInstance = new Chart(ctx, {
           type: 'doughnut',
-          data: {
-            labels: labels,
-            datasets: [{
-              data: values,
-              backgroundColor: (data && data.length) ? colors : ['#f0f0f0'],
-              borderWidth: 2,
-              borderColor: '#ffffff'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { 
-                position: window.innerWidth < 768 ? 'bottom' : 'right',
-              }
-            },
-            animation: {
-              duration: 1000,
-              easing: 'easeOutQuart',
-              animateScale: true,
-              animateRotate: true
-            },
-            responsiveAnimationDuration: 0
-          }
+          data: { labels: labels, datasets: [{ data: values, backgroundColor: (data && data.length) ? colors : ['#f0f0f0'], borderWidth: 2, borderColor: '#ffffff' }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: window.innerWidth < 768 ? 'bottom' : 'right', } } }
         });
       };
 
       const renderDemographicsChart = (data) => {
         const ctx = document.getElementById('demographicsChart').getContext('2d');
         if (demographicsChartInstance) demographicsChartInstance.destroy();
-
-        let labels = [], values = [];
-        if (data && data.length > 0) {
-          labels = data.map(d => d.skin_type.charAt(0).toUpperCase() + d.skin_type.slice(1));
-          values = data.map(d => d.count);
-        } else {
-          labels = ['No Data'];
-          values = [1];
-        }
-
+        let labels = (data && data.length) ? data.map(d => d.skin_type.charAt(0).toUpperCase() + d.skin_type.slice(1)) : ['No Data'];
+        let values = (data && data.length) ? data.map(d => d.count) : [1];
         demographicsChartInstance = new Chart(ctx, {
           type: 'polarArea',
-          data: {
-            labels: labels,
-            datasets: [{
-              data: values,
-              backgroundColor: [
-                'rgba(228, 151, 170, 0.8)',
-                'rgba(219, 130, 153, 0.8)',
-                'rgba(195, 108, 130, 0.8)',
-                'rgba(176, 90, 112, 0.8)',
-                'rgba(157, 78, 95, 0.8)'
-              ]
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { 
-              r: { 
-                ticks: { 
-                  backdropColor: 'transparent',
-                } 
-              } 
-            },
-            plugins: { 
-              legend: { 
-                position: 'bottom',
-              } 
-            },
-            animation: {
-              duration: 1200,
-              easing: 'easeOutQuart',
-              animateScale: true,
-              animateRotate: true
-            },
-            responsiveAnimationDuration: 0
-          }
+          data: { labels: labels, datasets: [{ data: values, backgroundColor: ['rgba(228, 151, 170, 0.8)', 'rgba(219, 130, 153, 0.8)', 'rgba(195, 108, 130, 0.8)', 'rgba(176, 90, 112, 0.8)', 'rgba(157, 78, 95, 0.8)'] }] },
+          options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { backdropColor: 'transparent', } } }, plugins: { legend: { position: 'bottom', } } }
         });
       };
 
       const renderOrderStatusChart = (data) => {
         const ctx = document.getElementById('orderStatusChart').getContext('2d');
         if (orderStatusChartInstance) orderStatusChartInstance.destroy();
-
         let labels = [], values = [], bgColors = [];
-
         if (data && data.length > 0) {
           labels = data.map(d => d.status.toUpperCase());
           values = data.map(d => d.count);
-          const statusColors = {
-            'COMPLETED': '#28a745',
-            'PENDING': '#ffc107',
-            'CANCELLED': '#dc3545',
-            'PROCESSING': '#17a2b8'
-          };
+          const statusColors = { 'COMPLETED': '#28a745', 'PENDING': '#ffc107', 'CANCELLED': '#dc3545', 'PROCESSING': '#17a2b8' };
           bgColors = labels.map(l => statusColors[l] || '#6c757d');
-        } else {
-          labels = ['No Data'];
-          values = [1];
-          bgColors = ['#f0f0f0'];
-        }
-
+        } else { labels = ['No Data']; values = [1]; bgColors = ['#f0f0f0']; }
         orderStatusChartInstance = new Chart(ctx, {
           type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Orders',
-              data: values,
-              backgroundColor: bgColors,
-              borderRadius: 5
-            }]
-          },
-          options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { 
-              legend: { display: false } 
-            },
-            scales: { 
-              x: { 
-                grid: { display: false },
-                beginAtZero: true
-              }
-            },
-            animation: {
-              duration: 800,
-              easing: 'easeOutQuart',
-              animations: {
-                x: {
-                  from: 0,
-                  duration: 800
-                }
-              }
-            },
-            responsiveAnimationDuration: 0
-          }
+          data: { labels: labels, datasets: [{ label: 'Orders', data: values, backgroundColor: bgColors, borderRadius: 5 }] },
+          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, beginAtZero: true } } }
         });
       };
 
       const renderSalesChart = (chartData) => {
         const ctx = document.getElementById('salesChart').getContext('2d');
         if (salesChartInstance) salesChartInstance.destroy();
-
         let labels = [], salesData = [], ordersData = [];
-
         if (chartData && chartData.length > 0) {
           labels = chartData.map(item => item.display_date || item.date);
           salesData = chartData.map(item => parseFloat(item.sales) || 0);
           ordersData = chartData.map(item => parseInt(item.orders) || 0);
-        } else {
-          labels = ["No Data"];
-          salesData = [0];
-          ordersData = [0];
-        }
-
-        // Create gradient
+        } else { labels = ["No Data"]; salesData = [0]; ordersData = [0]; }
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
         gradient.addColorStop(0, 'rgba(228, 151, 170, 0.3)');
         gradient.addColorStop(1, 'rgba(228, 151, 170, 0.05)');
-
         salesChartInstance = new Chart(ctx, {
           type: 'line',
           data: {
             labels: labels,
             datasets: [
-              {
-                label: 'Sales (₱)',
-                data: salesData,
-                borderColor: '#e497aa',
-                backgroundColor: gradient,
-                tension: 0.4,
-                fill: true,
-                yAxisID: 'y',
-                borderWidth: 3,
-                pointRadius: 3,
-                pointHoverRadius: 6
-              },
-              {
-                label: 'Orders',
-                data: ordersData,
-                borderColor: '#db8299',
-                backgroundColor: 'rgba(219, 130, 153, 0.1)',
-                tension: 0.4,
-                fill: false,
-                yAxisID: 'y1',
-                borderWidth: 2,
-                borderDash: [5, 5],
-                pointRadius: 2,
-                pointHoverRadius: 5
-              }
+              { label: 'Sales (₱)', data: salesData, borderColor: '#e497aa', backgroundColor: gradient, tension: 0.4, fill: true, yAxisID: 'y', borderWidth: 3, pointRadius: 3, pointHoverRadius: 6 },
+              { label: 'Orders', data: ordersData, borderColor: '#db8299', backgroundColor: 'rgba(219, 130, 153, 0.1)', tension: 0.4, fill: false, yAxisID: 'y1', borderWidth: 2, borderDash: [5, 5], pointRadius: 2, pointHoverRadius: 5 }
             ]
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            scales: {
-              y: {
-                position: 'left',
-                beginAtZero: true,
-                ticks: {
-                  callback: (val) => '₱' + val.toLocaleString()
-                }
-              },
-              y1: {
-                position: 'right',
-                beginAtZero: true,
-                grid: { drawOnChartArea: false }
-              },
-              x: { grid: { display: false } }
-            },
-            plugins: { 
-              legend: { position: 'top' } 
-            },
-            animation: {
-              duration: 1000,
-              easing: 'easeOutQuart',
-              animations: {
-                y: {
-                  from: 0,
-                  duration: 1000
-                }
-              }
-            },
-            responsiveAnimationDuration: 0
-          }
+          options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { position: 'left', beginAtZero: true, ticks: { callback: (val) => '₱' + val.toLocaleString() } }, y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }, x: { grid: { display: false } } }, plugins: { legend: { position: 'top' } } }
         });
       };
 
-      // Add CSS fixes for animation stability
-      const animationFixCSS = `
-        .chart-container {
-          position: relative;
-          min-height: 200px;
-        }
-        
-        .small-chart-container {
-          min-height: 250px;
-        }
-        
-        @media (max-width: 768px) {
-          .chart-container {
-            min-height: 300px;
-          }
-          .small-chart-container {
-            min-height: 200px;
-          }
-        }
-      `;
-
-      // Inject the CSS fix
+      const animationFixCSS = `.chart-container { position: relative; min-height: 200px; } .small-chart-container { min-height: 250px; } @media (max-width: 768px) { .chart-container { min-height: 300px; } .small-chart-container { min-height: 200px; } }`;
       const style = document.createElement('style');
       style.textContent = animationFixCSS;
       document.head.appendChild(style);
 
-      // --- SINGLE DashboardManager Class (No Duplicates) ---
       class DashboardManager {
         constructor() {
           this.currentPeriod = 'All Time';
           this.isLoading = false;
           this.init();
         }
-
         init() {
           this.bindEvents();
           this.fetchAndRefreshDashboard(this.currentPeriod);
         }
-
         bindEvents() {
           document.querySelectorAll('.btn-group .btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
               const period = e.target.dataset.period;
               if (period !== this.currentPeriod && !this.isLoading) {
                 this.currentPeriod = period;
-                document.querySelectorAll('.btn-group .btn').forEach(b => 
-                  b.classList.toggle('active', b.dataset.period === period)
-                );
+                document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.toggle('active', b.dataset.period === period));
                 this.fetchAndRefreshDashboard(period);
               }
             });
           });
-
-          // Fix for window resize - debounce to prevent multiple redraws
           let resizeTimeout;
           window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-              this.handleResize();
-            }, 250);
+            resizeTimeout = setTimeout(() => { this.handleResize(); }, 250);
           });
         }
-
         handleResize() {
-          // Only redraw charts if they exist
-          if (salesChartInstance || categoryChartInstance || 
-              demographicsChartInstance || orderStatusChartInstance) {
+          if (salesChartInstance || categoryChartInstance || demographicsChartInstance || orderStatusChartInstance) {
             this.fetchAndRefreshDashboard(this.currentPeriod, true);
           }
         }
-
         async fetchAndRefreshDashboard(period, isResize = false) {
           if (this.isLoading) return;
-
           this.isLoading = true;
-
           try {
             const response = await fetch(`../php/admin.php?period=${encodeURIComponent(period)}`);
             const result = await response.json();
-
             if (result.success) {
-              // Small delay to ensure DOM is ready for animations
-              setTimeout(() => {
-                this.refreshAllComponents(result.data);
-              }, isResize ? 100 : 50);
-            } else {
-              console.error("Failed to fetch dashboard data:", result.message);
-              this.showErrorState();
+              setTimeout(() => { this.refreshAllComponents(result.data); }, isResize ? 100 : 50);
             }
-          } catch (error) {
-            console.error("Error fetching dashboard data:", error);
-            this.showErrorState();
-          } finally {
-            this.isLoading = false;
-          }
+          } catch (error) { console.error("Error fetching dashboard data:", error); } finally { this.isLoading = false; }
         }
-
         refreshAllComponents(data) {
-          // Ensure charts have proper container sizes before rendering
           this.ensureChartContainers();
-          
-          // Update all charts
           renderSalesChart(data.chart_data);
           renderCategoryChart(data.category_sales);
           renderDemographicsChart(data.customer_demographics);
           renderOrderStatusChart(data.order_status_dist);
-
-          // Update other components
           updateStats(data.stats);
           updateBestSellers(data.best_sellers);
           updateStoreRatings(data.ratings);
           updateAIInsights(data.ai_insights);
           updateTopCustomers(data.top_customers);
         }
-
         ensureChartContainers() {
-          // Force chart containers to have proper dimensions
           const chartContainers = document.querySelectorAll('.chart-container, .small-chart-container');
-          chartContainers.forEach(container => {
-            if (container.offsetHeight === 0) {
-              container.style.minHeight = '200px';
-            }
-          });
-        }
-
-        showErrorState() {
-          console.error("Failed to load dashboard data");
+          chartContainers.forEach(container => { if (container.offsetHeight === 0) { container.style.minHeight = '200px'; } });
         }
       }
 
-      // Initialize the dashboard
       const dashboardManager = new DashboardManager();
-      window.dashboardManager = dashboardManager; // Make it globally accessible
-
-      // Auto-refresh every 5 minutes
-      setInterval(() => {
-        const activeBtn = document.querySelector('.btn-group .btn.active');
-        const currentPeriod = activeBtn ? activeBtn.dataset.period : 'All Time';
-        // You can add auto-refresh logic here if needed
-      }, 300000);
+      window.dashboardManager = dashboardManager;
+      setInterval(() => { const activeBtn = document.querySelector('.btn-group .btn.active'); }, 300000);
     });
   </script>
 </body>

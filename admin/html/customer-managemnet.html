@@ -24,6 +24,30 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
   <style>
+    /* Profile Picture Styles */
+.customer-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-pink);
+  margin-bottom: 15px;
+}
+
+.customer-avatar-fallback {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  border: 3px solid var(--primary-pink);
+}
     /* Define CSS Variables based on your design */
     :root {
       --primary-pink: #e497aa;
@@ -1339,103 +1363,115 @@
 
     // --- EXISTING FUNCTION: loadCustomerData ---
     function loadCustomerData(filter = 'all', search = '') {
-      fetch(`../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(search)}`)
-        .then(response => response.json())
-        .then(data => {
-          const contentArea = document.querySelector('.scrollable-content');
+  fetch(`../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(search)}`)
+    .then(response => response.json())
+    .then(data => {
+      const contentArea = document.querySelector('.scrollable-content');
 
-          if (data.success) {
-            // Update stats
-            if(data.stats) {
-                document.querySelector('.total-customers .stat-value').textContent = data.stats.total_customers;
-                document.querySelector('.new-this-month .stat-value').textContent = data.stats.new_this_month;
-                document.querySelector('.active-customers .stat-value').textContent = data.stats.active_customers;
-                document.querySelector('.feedback-received .stat-value').textContent = data.stats.feedback_received;
+      if (data.success) {
+        // Update stats
+        if(data.stats) {
+            document.querySelector('.total-customers .stat-value').textContent = data.stats.total_customers;
+            document.querySelector('.new-this-month .stat-value').textContent = data.stats.new_this_month;
+            document.querySelector('.active-customers .stat-value').textContent = data.stats.active_customers;
+            document.querySelector('.feedback-received .stat-value').textContent = data.stats.feedback_received;
+        }
+
+        // Populate all customers
+        if (data.customers.length > 0) {
+          let customersHTML = '<div class="customers-grid">';
+
+          data.customers.forEach(c => {
+            let statusClass = 'status-active';
+            if (c.status.toLowerCase().includes('inactive')) {
+              statusClass = 'status-inactive';
+            } else if (c.status.toLowerCase().includes('new')) {
+              statusClass = 'status-new';
             }
+            const starRatingHTML = generateStarRating(c.avg_rating, c.has_feedback);
 
-            // Populate all customers
-            if (data.customers.length > 0) {
-              let customersHTML = '<div class="customers-grid">';
-
-              data.customers.forEach(c => {
-                let statusClass = 'status-active';
-                if (c.status.toLowerCase().includes('inactive')) {
-                  statusClass = 'status-inactive';
-                } else if (c.status.toLowerCase().includes('new')) {
-                  statusClass = 'status-new';
-                }
-                const starRatingHTML = generateStarRating(c.avg_rating, c.has_feedback);
-
-                customersHTML += `
-              <div class="customer-card">
-                <div class="customer-header">
-                  <div>
-                    <div class="customer-name">${c.display_name}</div>
-                    <div class="customer-username">${c.username}</div>
-                  </div>
-                  <div class="customer-status ${statusClass}">${c.status}</div>
-                </div>
-                <div class="customer-details">
-                  <div class="customer-detail">
-                    <i class="fas fa-envelope"></i>
-                    <span>${c.email}</span>
-                  </div>
-                  <div class="customer-detail">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Joined: ${c.join_date}</span>
-                  </div>
-                  <div class="customer-detail">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>${c.total_orders} orders</span>
-                  </div>
-                  <div class="customer-detail">
-                    <i class="fas fa-star"></i>
-                    <span>${starRatingHTML}</span>
-                  </div>
-                </div>
-                <div class="customer-stats">
-                  <div class="stat-item">
-                    <div class="stat-number">${c.total_orders}</div>
-                    <div class="stat-label">Orders</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-number">₱${c.total_spent}</div>
-                    <div class="stat-label">Total Spent</div>
-                  </div>
-                  <div class="stat-item">
-                    <div class="stat-number">${c.rating_count}</div>
-                    <div class="stat-label">Ratings</div>
-                  </div>
-                </div>
-              </div>
-            `;
-              });
-
-              customersHTML += '</div>';
-
-              // Add pagination if needed
-              if (data.total_pages > 1) {
-                customersHTML += generatePagination(data.current_page, data.total_pages);
-              }
-
-              contentArea.innerHTML = customersHTML;
+            // ✅ Generate Profile Picture or Fallback
+            let avatarHTML = '';
+            if (c.profile_photo && c.profile_photo.trim() !== '' && c.profile_photo !== 'default.png') {
+              avatarHTML = `<img src="../../uploads/profiles/${c.profile_photo}" alt="${c.display_name}" class="customer-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+              avatarHTML += `<div class="customer-avatar-fallback" style="display:none;">${c.display_name.charAt(0).toUpperCase()}</div>`;
             } else {
-              contentArea.innerHTML = `
-            <div class="empty-state">
-              <i class="fas fa-users"></i>
-              <h4>No Customers Found</h4>
-              <p>No results match your current filter or search.</p>
-            </div>`;
+              avatarHTML = `<div class="customer-avatar-fallback">${c.display_name.charAt(0).toUpperCase()}</div>`;
             }
-          } else {
-            console.error('Server error:', data.error);
-            contentArea.innerHTML = `<div class="empty-state"><h4>Server Error</h4></div>`;
+
+            customersHTML += `
+          <div class="customer-card">
+            <div class="text-center">
+              ${avatarHTML}
+            </div>
+            <div class="customer-header">
+              <div>
+                <div class="customer-name">${c.display_name}</div>
+                <div class="customer-username">${c.username}</div>
+              </div>
+              <div class="customer-status ${statusClass}">${c.status}</div>
+            </div>
+            <div class="customer-details">
+              <div class="customer-detail">
+                <i class="fas fa-envelope"></i>
+                <span>${c.email}</span>
+              </div>
+              <div class="customer-detail">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Joined: ${c.join_date}</span>
+              </div>
+              <div class="customer-detail">
+                <i class="fas fa-shopping-bag"></i>
+                <span>${c.total_orders} orders</span>
+              </div>
+              <div class="customer-detail">
+                <i class="fas fa-star"></i>
+                <span>${starRatingHTML}</span>
+              </div>
+            </div>
+            <div class="customer-stats">
+              <div class="stat-item">
+                <div class="stat-number">${c.total_orders}</div>
+                <div class="stat-label">Orders</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">₱${c.total_spent}</div>
+                <div class="stat-label">Total Spent</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">${c.rating_count}</div>
+                <div class="stat-label">Ratings</div>
+              </div>
+            </div>
+          </div>
+        `;
+          });
+
+          customersHTML += '</div>';
+
+          // Add pagination if needed
+          if (data.total_pages > 1) {
+            customersHTML += generatePagination(data.current_page, data.total_pages);
           }
-        })
-        .catch(err => {
-          console.error('Fetch error:', err);
-        });
-    }
+
+          contentArea.innerHTML = customersHTML;
+        } else {
+          contentArea.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-users"></i>
+          <h4>No Customers Found</h4>
+          <p>No results match your current filter or search.</p>
+        </div>`;
+        }
+      } else {
+        console.error('Server error:', data.error);
+        contentArea.innerHTML = `<div class="empty-state"><h4>Server Error</h4></div>`;
+      }
+    })
+    .catch(err => {
+      console.error('Fetch error:', err);
+    });
+}
 
     function generateStarRating(rating, hasFeedback) {
       if (!hasFeedback || rating === 0) {
