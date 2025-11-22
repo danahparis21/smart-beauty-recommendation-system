@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Favorites | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -608,36 +608,46 @@
         <h1 class="brand-name">Blessence</h1>
         <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
-      
+
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
-        
+
         <!-- NOTIFICATION SECTION START -->
         <div class="notification-container">
-            <button class="notif-btn" id="notif-btn">
-                <i class="fas fa-bell"></i>
-                <span class="notif-badge" id="notif-badge">0</span>
-            </button>
-            
-            <div class="notif-dropdown" id="notif-dropdown">
-                <div class="notif-header">
-                    <span>Notifications</span>
-                    <i class="fas fa-check-double" style="font-size: 12px; cursor: pointer; color: #999;" title="Mark all as read"></i>
-                </div>
-                <div class="notif-list" id="notif-list">
-                    <!-- Notifications will be injected here -->
-                    <div class="notif-empty">Loading...</div>
-                </div>
+          <button class="notif-btn" id="notif-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notif-badge" id="notif-badge">0</span>
+          </button>
+
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <i
+                class="fas fa-check-double"
+                style="font-size: 12px; cursor: pointer; color: #999"
+                title="Mark all as read"
+              ></i>
             </div>
+            <div class="notif-list" id="notif-list">
+              <!-- Notifications will be injected here -->
+              <div class="notif-empty">Loading...</div>
+            </div>
+          </div>
         </div>
         <!-- NOTIFICATION SECTION END -->
 
-        <button class="profile-btn" onclick="window.location.href='user_profile.html'">
+        <button
+          class="profile-btn"
+          onclick="window.location.href='user_profile.html'"
+        >
           <i class="fas fa-user"></i>
         </button>
       </div>
 
-      <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
+      <button
+        class="mobile-profile-btn"
+        onclick="window.location.href='user_profile.html'"
+      >
         <i class="fas fa-user"></i>
       </button>
     </header>
@@ -753,8 +763,6 @@
           .trim();
       };
 
-      // --- Create Product Card ---
-      // --- Create Product Card ---
       function createProductCard(product) {
         const card = document.createElement("div");
         card.className = "product-card";
@@ -776,58 +784,76 @@
             ? `<div class="stock-alert">Only ${product.stockQuantity} left!</div>`
             : "";
 
+        // ✅ ADDED: Dynamic star rating calculation (same as home.html)
+        const averageRating = parseFloat(product.average_rating) || 0;
+        const generateStarHTML = (rating) => {
+          const fullStars = Math.floor(rating);
+          const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+          const emptyStars = 5 - fullStars - halfStar;
+          let starsHTML = "";
+          for (let i = 0; i < fullStars; i++)
+            starsHTML += '<i class="fas fa-star"></i>';
+          if (halfStar) starsHTML += '<i class="fas fa-star-half-alt"></i>';
+          for (let i = 0; i < emptyStars; i++)
+            starsHTML += '<i class="far fa-star"></i>';
+          return starsHTML;
+        };
+
+        const ratingsHTML = `
+        <div class="product-ratings">
+            <div class="stars">${generateStarHTML(averageRating)}</div>
+            <span class="rating-count">${averageRating.toFixed(1)}</span>
+        </div>
+    `;
+
         const variantListHTML =
           (product.variants || []).length > 0
             ? `<div class="variant-colors">
-        ${product.variants
-          .map((variant, index) => {
-            const hex = variant.hexCode || "#CCCCCC";
-            return `<div class="color-circle ${index === 0 ? "active" : ""}" 
-                       style="background-color: ${hex}; border: 2px solid white;"
-                       data-variant-id="${variant.id}" 
-                       data-variant-image="${
-                         variant.image || LOCAL_FALLBACK_IMAGE
-                       }" 
-                       title="${cleanProductName(variant.name)}"></div>`;
-          })
-          .join("")}
-      </div>`
+            ${product.variants
+              .map((variant, index) => {
+                const hex = variant.hexCode || "#CCCCCC";
+                return `<div class="color-circle ${
+                  index === 0 ? "active" : ""
+                }" 
+                           style="background-color: ${hex}; border: 2px solid white;"
+                           data-variant-id="${variant.id}" 
+                           data-variant-image="${
+                             variant.image || LOCAL_FALLBACK_IMAGE
+                           }" 
+                           title="${cleanProductName(variant.name)}"></div>`;
+              })
+              .join("")}
+          </div>`
             : "";
 
         card.innerHTML = `
-    <div class="product-image-container">
-      ${stockAlert}
-      <img src="${previewImage}" alt="${cleanProductName(
+        <div class="product-image-container">
+            ${stockAlert}
+            <img src="${previewImage}" alt="${cleanProductName(
           product.name
         )}" class="product-image"
-           data-default="${defaultImage}" data-preview="${previewImage}"
-           onerror="this.onerror=null; this.src='${LOCAL_FALLBACK_IMAGE}'; this.classList.add('no-image-placeholder')">
-    </div>
-    <div class="product-info">
-      <div class="product-name">${cleanProductName(product.name)}</div>
-      <div class="product-price">${priceDisplay}</div>
-      <div class="product-ratings">
-        <div class="stars">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-          <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                 data-default="${defaultImage}" data-preview="${previewImage}"
+                 onerror="this.onerror=null; this.src='${LOCAL_FALLBACK_IMAGE}'; this.classList.add('no-image-placeholder')">
         </div>
-        <span class="rating-count">(0)</span>
-      </div>
-      ${variantListHTML}
-      <div class="product-actions">
-        <button class="like-btn liked" onclick="event.stopPropagation(); toggleFavorite('${
-          product.id
-        }', this)">
-          <i class="fas fa-heart"></i>
-        </button>
-        <button class="add-to-cart-btn" onclick="event.stopPropagation(); window.location.href='productdetail.html?productId=${
-          product.id
-        }'">
-          <i class="fas fa-shopping-cart"></i>Add to Cart
-        </button>
-      </div>
-    </div>
-  `;
+        <div class="product-info">
+            <div class="product-name">${cleanProductName(product.name)}</div>
+            <div class="product-price">${priceDisplay}</div>
+            ${ratingsHTML} <!-- ✅ CHANGED: Now uses dynamic ratings -->
+            ${variantListHTML}
+            <div class="product-actions">
+                <button class="like-btn liked" onclick="event.stopPropagation(); toggleFavorite('${
+                  product.id
+                }', this)">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button class="add-to-cart-btn" onclick="event.stopPropagation(); window.location.href='productdetail.html?productId=${
+                  product.id
+                }'">
+                    <i class="fas fa-shopping-cart"></i>Add to Cart
+                </button>
+            </div>
+        </div>
+    `;
 
         // Card click redirects to detail page
         card.addEventListener("click", (e) => {
@@ -861,7 +887,6 @@
 
         return card;
       }
-
       // --- Toggle Favorite ---
       async function toggleFavorite(productId, button) {
         currentButton = button;
@@ -1274,7 +1299,6 @@
           console.error("Error fetching cart total:", error);
         }
       }
-
     </script>
   </body>
 </html>

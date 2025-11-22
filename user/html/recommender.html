@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Recommender | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
     <link rel="stylesheet" href="../styles/styles.css" />
     <link
       rel="stylesheet"
@@ -632,7 +632,7 @@
         transition: all 0.3s ease;
         overflow: hidden;
         border: 1px solid #f8f8f8;
-        height: fit-content;
+        height: 500px; /* Fixed height for all cards */
       }
 
       .recommendations-grid .product-card:hover {
@@ -667,6 +667,7 @@
 
       .recommendations-grid .product-info {
         padding: 20px;
+        flex: 1; /* Take remaining space */
       }
 
       .recommendations-grid .product-name {
@@ -2135,11 +2136,24 @@
         gap: 8px;
         margin: 12px 0;
         padding: 8px 0;
+        min-height: 24px;
+        width: 140px; /* Fixed container width */
+        margin-left: auto;
+        margin-right: auto;
       }
 
       .stars {
         display: flex;
         gap: 2px;
+        flex-shrink: 0;
+      }
+
+      .rating-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+        min-width: 60px; /* Enough for "No ratings yet" */
+        text-align: center;
       }
 
       .stars i {
@@ -2150,12 +2164,6 @@
 
       .stars i.active {
         color: #fbbf24; /* Gold color for filled stars */
-      }
-
-      .rating-text {
-        font-size: 12px;
-        font-weight: 600;
-        color: #6b7280;
       }
 
       .user-rating.no-ratings .stars i {
@@ -2924,55 +2932,63 @@
       .cart-notification.error .notification-content i {
         color: #ef4444;
       }
-       .notification-box {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
-            z-index: 9999;
-            font-weight: 500;
-            transform: translateX(400px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            max-width: 300px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+      .notification-box {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+        z-index: 9999;
+        font-weight: 500;
+        transform: translateX(400px);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-        .notification-box.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
+      .notification-box.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
 
-        .notification-box.success {
-            background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-        }
+      .notification-box.success {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+      }
 
-        .notification-box.error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
+      .notification-box.error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+      }
 
-        .notification-box.info {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        }
+      .notification-box.info {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      }
 
-        .notification-box.warning {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
+      .notification-box.warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+      }
 
-        @media (max-width: 480px) {
-            .notification-box {
-                right: 10px;
-                left: 10px;
-                max-width: none;
-                top: 70px;
-            }
+      @media (max-width: 480px) {
+        .notification-box {
+          right: 10px;
+          left: 10px;
+          max-width: none;
+          top: 70px;
         }
+      }
 
       /* Cart total popup - Compact & Elegant */
       .cart-total-popup {
@@ -3120,29 +3136,387 @@
         border: 1px solid #fcd34d;
       }
       /* For separate shade line */
-.product-shade {
-    font-size: 0.85em;
-    color: #6b7280;
-    margin: 2px 0;
-    font-style: italic;
-}
+      .product-shade {
+        font-size: 0.85em;
+        color: #6b7280;
+        margin: 2px 0;
+        font-style: italic;
+      }
 
-/* For color dots */
-.shade-dot {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 6px;
-    border: 1px solid #e5e7eb;
-}
+      /* For color dots */
+      .shade-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 6px;
+        border: 1px solid #e5e7eb;
+      }
 
-/* For subtle shade text */
-.shade-subtle {
-    font-size: 0.9em;
-    color: #6b7280;
-    font-weight: normal;
-}
+      /* For subtle shade text */
+      .shade-subtle {
+        font-size: 0.9em;
+        color: #6b7280;
+        font-weight: normal;
+      }
+
+      /* ===== INTRO ACTIONS ===== */
+      .intro-actions {
+        margin: 2rem 0;
+      }
+
+      /* ===== QUICK SCAN STYLES ===== */
+      .quick-scan-section {
+        margin: 30px 0;
+        text-align: center;
+      }
+
+      .scan-option {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+      }
+
+      .scan-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+      }
+
+      .scan-option h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.5em;
+      }
+
+      .scan-option p {
+        margin: 0 0 20px 0;
+        opacity: 0.9;
+      }
+
+      .scan-divider {
+        position: relative;
+        margin: 20px 0;
+      }
+
+      .scan-divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e0e0e0;
+      }
+
+      .scan-divider span {
+        background: white;
+        padding: 0 15px;
+        color: #666;
+        font-weight: 500;
+      }
+
+      /* ===== MODAL OVERLAY ===== */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white; /* ← ADD THIS LINE */
+        border-radius: 12px;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); /* Optional: Add shadow for better appearance */
+      }
+
+      /* Camera Modal */
+      .camera-modal {
+        max-width: 500px;
+        padding: 0;
+        overflow: hidden;
+        background: white; /* ← ADD THIS TOO FOR EXTRA SAFETY */
+      }
+
+      .camera-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white; /* ← Ensure header has white background */
+      }
+
+      .camera-header h3 {
+        margin: 0;
+      }
+
+      .camera-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        background: #000; /* Camera area stays black */
+      }
+
+      .camera-controls {
+        padding: 20px;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #eee;
+        background: white; /* ← Ensure controls have white background */
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.2em;
+        cursor: pointer;
+        color: #666;
+      }
+
+      .camera-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        background: #000;
+      }
+
+      #camera-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .face-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .face-guide {
+        width: 200px;
+        height: 250px;
+        border: 3px solid rgba(255, 255, 255, 0.8);
+        border-radius: 40%;
+        background: transparent;
+      }
+
+      .camera-controls {
+        padding: 20px;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #eee;
+      }
+
+      .scan-tips {
+        padding: 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #eee;
+      }
+
+      .scan-tips h4 {
+        margin: 0 0 10px 0;
+        color: #333;
+      }
+
+      .scan-tips ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .scan-tips li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9em;
+        color: #666;
+      }
+
+      .scan-tips i {
+        color: var(--primary-pink);
+      }
+
+      /* Scan Results Modal */
+      .scan-results-modal {
+        max-width: 500px;
+      }
+
+      .scan-header {
+        text-align: center;
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .scan-header .success {
+        font-size: 3em;
+        color: #4caf50;
+        margin-bottom: 10px;
+      }
+
+      .scan-results {
+        padding: 20px;
+      }
+
+      .result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .result-label {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .result-value {
+        text-align: right;
+        color: #666;
+      }
+
+      .concern-tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: var(--primary-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin: 0.1rem;
+      }
+
+      .scan-actions {
+        padding: 20px;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #eee;
+      }
+
+      .scan-note {
+        padding: 0 20px 20px;
+        text-align: center;
+        color: #666;
+      }
+      /* ===== HORIZONTAL INTRO ACTIONS ===== */
+      .intro-actions-horizontal {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+      }
+
+      /* Start Quiz Button Styles */
+      .nav-btn.primary {
+        background: linear-gradient(135deg, #ff6b9d 0%, #ff4b8b 100%);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+      }
+
+      .nav-btn.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+      }
+
+      /* Quick Scan Compact Button */
+      .scan-btn-compact {
+        background: linear-gradient(135deg, #ff9ac8 0%, #ff7eb3 100%);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(255, 154, 200, 0.3);
+      }
+
+      .scan-btn-compact:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 154, 200, 0.4);
+        background: linear-gradient(135deg, #ff8abf 0%, #ff6ba8 100%);
+      }
+
+      /* Divider */
+      .scan-divider {
+        position: relative;
+        margin: 0 1rem;
+      }
+
+      .scan-divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e0e0e0;
+      }
+
+      .scan-divider span {
+        background: white;
+        padding: 0 15px;
+        color: #666;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      /* Remove the old quick scan section styles */
+      .quick-scan-section {
+        display: none;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .intro-actions-horizontal {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .scan-divider {
+          margin: 0.5rem 0;
+        }
+
+        .scan-divider::before {
+          left: 20%;
+          right: 20%;
+        }
+      }
     </style>
   </head>
 
@@ -3153,36 +3527,46 @@
         <h1 class="brand-name">Blessence</h1>
         <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
-      
+
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
-        
+
         <!-- NOTIFICATION SECTION START -->
         <div class="notification-container">
-            <button class="notif-btn" id="notif-btn">
-                <i class="fas fa-bell"></i>
-                <span class="notif-badge" id="notif-badge">0</span>
-            </button>
-            
-            <div class="notif-dropdown" id="notif-dropdown">
-                <div class="notif-header">
-                    <span>Notifications</span>
-                    <i class="fas fa-check-double" style="font-size: 12px; cursor: pointer; color: #999;" title="Mark all as read"></i>
-                </div>
-                <div class="notif-list" id="notif-list">
-                    <!-- Notifications will be injected here -->
-                    <div class="notif-empty">Loading...</div>
-                </div>
+          <button class="notif-btn" id="notif-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notif-badge" id="notif-badge">0</span>
+          </button>
+
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <i
+                class="fas fa-check-double"
+                style="font-size: 12px; cursor: pointer; color: #999"
+                title="Mark all as read"
+              ></i>
             </div>
+            <div class="notif-list" id="notif-list">
+              <!-- Notifications will be injected here -->
+              <div class="notif-empty">Loading...</div>
+            </div>
+          </div>
         </div>
         <!-- NOTIFICATION SECTION END -->
 
-        <button class="profile-btn" onclick="window.location.href='user_profile.html'">
+        <button
+          class="profile-btn"
+          onclick="window.location.href='user_profile.html'"
+        >
           <i class="fas fa-user"></i>
         </button>
       </div>
 
-      <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
+      <button
+        class="mobile-profile-btn"
+        onclick="window.location.href='user_profile.html'"
+      >
         <i class="fas fa-user"></i>
       </button>
     </header>
@@ -3238,7 +3622,6 @@
       </div>
     </div>
 
-    <!-- Recommender Content -->
     <main class="recommender-main">
       <div class="quiz-container">
         <div class="quiz-step active" id="step-intro">
@@ -3260,11 +3643,118 @@
               />
             </div>
 
-            <button class="nav-btn primary" onclick="startQuizWithCheck()">
-              Start Quiz
-            </button>
+            <div class="intro-actions-horizontal">
+              <button class="nav-btn primary" onclick="startQuizWithCheck()">
+                Start Quiz
+              </button>
+
+              <div class="scan-divider">
+                <span>or</span>
+              </div>
+
+              <div class="quick-scan-compact">
+                <button
+                  class="nav-btn secondary scan-btn-compact"
+                  onclick="startFaceScan()"
+                >
+                  <i class="fas fa-camera"></i> Quick Face Scan
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Camera Modal -->
+        <div class="modal-overlay" id="camera-modal">
+          <div class="modal-content camera-modal">
+            <div class="camera-header">
+              <h3>Face Scan</h3>
+              <button class="close-btn" onclick="closeCamera()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div class="camera-container">
+              <video id="camera-video" autoplay playsinline></video>
+              <canvas id="camera-canvas" style="display: none"></canvas>
+              <div class="face-overlay" id="face-overlay">
+                <div class="face-guide"></div>
+              </div>
+            </div>
+
+            <div class="camera-controls">
+              <button class="nav-btn secondary" onclick="closeCamera()">
+                Cancel
+              </button>
+              <button
+                class="nav-btn primary"
+                id="capture-btn"
+                onclick="captureFace()"
+              >
+                <i class="fas fa-camera"></i> Capture
+              </button>
+            </div>
+
+            <div class="scan-tips">
+              <h4>Tips for best results:</h4>
+              <ul>
+                <li><i class="fas fa-check"></i> Good lighting</li>
+                <li><i class="fas fa-check"></i> Front-facing camera</li>
+                <li><i class="fas fa-check"></i> Remove glasses</li>
+                <li><i class="fas fa-check"></i> Neutral expression</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scan Results Modal -->
+        <div class="modal-overlay" id="scan-results-modal">
+          <div class="modal-content scan-results-modal">
+            <div class="scan-header">
+              <i class="fas fa-check-circle success"></i>
+              <h3>Scan Complete!</h3>
+            </div>
+
+            <div class="scan-results" id="scan-results">
+              <div class="result-item">
+                <span class="result-label">Skin Type:</span>
+                <span class="result-value" id="scan-skin-type"
+                  >Detecting...</span
+                >
+              </div>
+              <div class="result-item">
+                <span class="result-label">Skin Tone:</span>
+                <span class="result-value" id="scan-skin-tone"
+                  >Detecting...</span
+                >
+              </div>
+              <div class="result-item">
+                <span class="result-label">Undertone:</span>
+                <span class="result-value" id="scan-undertone"
+                  >Detecting...</span
+                >
+              </div>
+              <div class="result-item">
+                <span class="result-label">Concerns:</span>
+                <div class="result-value" id="scan-concerns">Detecting...</div>
+              </div>
+            </div>
+
+            <div class="scan-actions">
+              <button class="nav-btn secondary" onclick="editScanResults()">
+                <i class="fas fa-edit"></i> Edit Results
+              </button>
+              <button class="nav-btn primary" onclick="useScanResults()">
+                <i class="fas fa-check"></i> Use These Preferences
+              </button>
+            </div>
+
+            <div class="scan-note">
+              <small>You can always edit these preferences in the quiz</small>
+            </div>
+          </div>
+        </div>
+
         <!-- Step 1: Skin Type -->
         <div class="quiz-step" id="step-1">
           <div class="quiz-header">
@@ -3711,6 +4201,96 @@
             </div>
           </div>
         </div>
+        <!-- Camera Modal -->
+        <div class="modal-overlay" id="camera-modal">
+          <div class="modal-content camera-modal">
+            <div class="camera-header">
+              <h3>Face Scan</h3>
+              <button class="close-btn" onclick="closeCamera()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div class="camera-container">
+              <video id="camera-video" autoplay playsinline></video>
+              <canvas id="camera-canvas" style="display: none"></canvas>
+              <div class="face-overlay" id="face-overlay">
+                <div class="face-guide"></div>
+              </div>
+            </div>
+
+            <div class="camera-controls">
+              <button class="nav-btn secondary" onclick="closeCamera()">
+                Cancel
+              </button>
+              <button
+                class="nav-btn primary"
+                id="capture-btn"
+                onclick="captureFace()"
+              >
+                <i class="fas fa-camera"></i> Capture
+              </button>
+            </div>
+
+            <div class="scan-tips">
+              <h4>Tips for best results:</h4>
+              <ul>
+                <li><i class="fas fa-check"></i> Good lighting</li>
+                <li><i class="fas fa-check"></i> Front-facing camera</li>
+                <li><i class="fas fa-check"></i> Remove glasses</li>
+                <li><i class="fas fa-check"></i> Neutral expression</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scan Results Modal -->
+        <div class="modal-overlay" id="scan-results-modal">
+          <div class="modal-content scan-results-modal">
+            <div class="scan-header">
+              <i class="fas fa-check-circle success"></i>
+              <h3>Scan Complete!</h3>
+            </div>
+
+            <div class="scan-results" id="scan-results">
+              <div class="result-item">
+                <span class="result-label">Skin Type:</span>
+                <span class="result-value" id="scan-skin-type"
+                  >Detecting...</span
+                >
+              </div>
+              <div class="result-item">
+                <span class="result-label">Skin Tone:</span>
+                <span class="result-value" id="scan-skin-tone"
+                  >Detecting...</span
+                >
+              </div>
+              <div class="result-item">
+                <span class="result-label">Undertone:</span>
+                <span class="result-value" id="scan-undertone"
+                  >Detecting...</span
+                >
+              </div>
+              <div class="result-item">
+                <span class="result-label">Concerns:</span>
+                <div class="result-value" id="scan-concerns">Detecting...</div>
+              </div>
+            </div>
+
+            <div class="scan-actions">
+              <button class="nav-btn secondary" onclick="editScanResults()">
+                <i class="fas fa-edit"></i> Edit Results
+              </button>
+              <button class="nav-btn primary" onclick="useScanResults()">
+                <i class="fas fa-check"></i> Use These Preferences
+              </button>
+            </div>
+
+            <div class="scan-note">
+              <small>You can always edit these preferences in the quiz</small>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -3835,19 +4415,19 @@
     </div>
 
     <script>
-     document.addEventListener("DOMContentLoaded", async function () {
-    // Add page protection FIRST
-    if (typeof setupPageProtection === 'function') {
-        setupPageProtection();
-    }
-    
-    // Initialize user session
-    await updateUserGreeting();
+      document.addEventListener("DOMContentLoaded", async function () {
+        // Add page protection FIRST
+        if (typeof setupPageProtection === "function") {
+          setupPageProtection();
+        }
 
-    if (!currentUser) return;
+        // Initialize user session
+        await updateUserGreeting();
 
-    console.log("User ID:", currentUser.id);
-    console.log("Username:", currentUser.username);
+        if (!currentUser) return;
+
+        console.log("User ID:", currentUser.id);
+        console.log("Username:", currentUser.username);
 
         // Check if user already has preferences
         await checkExistingPreferences();
@@ -3978,11 +4558,211 @@
 
         document.getElementById("existing-prefs-modal").classList.add("active");
       }
-      // Start quiz with preference check
+
+      // Face Scanning Functions
+      let cameraStream = null;
+
+      function startFaceScan() {
+        console.log("Starting face scan...");
+        // Open camera modal directly
+        document.getElementById("camera-modal").classList.add("active");
+        initializeCamera();
+      }
+      async function initializeCamera() {
+        try {
+          console.log("Requesting camera access...");
+
+          cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: "user",
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+          });
+
+          console.log("Camera access granted");
+
+          const video = document.getElementById("camera-video");
+          video.srcObject = cameraStream;
+
+          // Wait for video to be ready
+          video.onloadedmetadata = () => {
+            console.log("Video is ready to play");
+            // Enable capture button once video is ready
+            document.getElementById("capture-btn").disabled = false;
+          };
+
+          video.onerror = (error) => {
+            console.error("Video error:", error);
+          };
+        } catch (error) {
+          console.error("Camera error:", error);
+          alert("Unable to access camera. Please check permissions.");
+          closeCamera();
+        }
+      }
+
+      function closeCamera() {
+        // Stop camera stream
+        if (cameraStream) {
+          cameraStream.getTracks().forEach((track) => track.stop());
+          cameraStream = null;
+        }
+
+        // Close modal
+        document.getElementById("camera-modal").classList.remove("active");
+      }
+
+      function captureFace() {
+        const video = document.getElementById("camera-video");
+        const canvas = document.getElementById("camera-canvas");
+        const context = canvas.getContext("2d");
+
+        // Set canvas size to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Capture frame
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Get image data
+        const imageData = canvas.toDataURL("image/jpeg");
+
+        // Close camera
+        closeCamera();
+
+        // Show loading in results modal
+        document.getElementById("scan-results-modal").classList.add("active");
+
+        // Send to backend for analysis
+        analyzeFace(imageData);
+      }
+
+      async function analyzeFace(imageData) {
+        try {
+          console.log("Sending face analysis request...");
+
+          const response = await fetch("../php/analyze-face.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              image: imageData,
+            }),
+          });
+
+          // Check if response is OK
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const text = await response.text();
+          console.log("Raw response:", text);
+
+          // Try to parse JSON
+          let result;
+          try {
+            result = JSON.parse(text);
+          } catch (parseError) {
+            console.error("JSON parse error:", parseError);
+            throw new Error("Invalid response from server");
+          }
+
+          if (result.success) {
+            console.log("Face analysis successful:", result.analysis);
+            displayScanResults(result.analysis);
+          } else {
+            console.error("Face analysis failed:", result.error);
+            throw new Error(result.error || "Face analysis failed");
+          }
+        } catch (error) {
+          console.error("Face analysis error:", error);
+          // Fallback to default values with error message
+          alert("Scan completed with default values (demo mode)");
+          displayScanResults(getDefaultScanResults());
+        }
+      }
+
+      function getDefaultScanResults() {
+        return {
+          skinType: "Normal",
+          skinTone: "Medium",
+          undertone: "Neutral",
+          concerns: [],
+        };
+      }
+
+      function displayScanResults(analysis) {
+        document.getElementById("scan-skin-type").textContent =
+          analysis.skinType || "Normal";
+        document.getElementById("scan-skin-tone").textContent =
+          analysis.skinTone || "Medium";
+        document.getElementById("scan-undertone").textContent =
+          analysis.undertone || "Neutral";
+
+        const concernsElement = document.getElementById("scan-concerns");
+        if (analysis.concerns && analysis.concerns.length > 0) {
+          concernsElement.innerHTML = analysis.concerns
+            .map((concern) => `<span class="concern-tag">${concern}</span>`)
+            .join("");
+        } else {
+          concernsElement.textContent = "None detected";
+        }
+      }
+
+      function useScanResults() {
+        try {
+          console.log("useScanResults function called");
+
+          // Get the values safely
+          const skinTypeElem = document.getElementById("scan-skin-type");
+          const skinToneElem = document.getElementById("scan-skin-tone");
+          const undertoneElem = document.getElementById("scan-undertone");
+          const concernTags = document.querySelectorAll(
+            "#scan-concerns .concern-tag"
+          );
+
+          if (!skinTypeElem || !skinToneElem || !undertoneElem) {
+            throw new Error("Required elements not found");
+          }
+
+          const scanResults = {
+            skinType: skinTypeElem.textContent.trim(),
+            skinTone: skinToneElem.textContent.trim(),
+            undertone: undertoneElem.textContent.trim(),
+            concerns: Array.from(concernTags).map((tag) =>
+              tag.textContent.trim()
+            ),
+            finish: "Natural",
+          };
+
+          console.log("Saving scan results:", scanResults);
+          savePreferences(scanResults);
+        } catch (error) {
+          console.error("Error in useScanResults:", error);
+          alert("Error processing scan results: " + error.message);
+        }
+      }
+
+      function editScanResults() {
+        // Close scan results and start manual quiz
+        document
+          .getElementById("scan-results-modal")
+          .classList.remove("active");
+        startQuizWithCheck();
+      }
+
       function startQuizWithCheck() {
-        if (hasExistingPreferences) {
+        // Check if we're bypassing the preferences check for this start over
+        const bypassCheck =
+          sessionStorage.getItem("bypassPreferencesCheck") === "true";
+
+        if (hasExistingPreferences && !bypassCheck) {
           showExistingPrefsModal();
         } else {
+          // Clear the bypass flag so it doesn't affect future quiz starts
+          sessionStorage.removeItem("bypassPreferencesCheck");
           nextStep(1); // Start quiz normally
         }
       }
@@ -4004,9 +4784,19 @@
         }
       }
 
-      // Modal functions
       function showExistingPrefsModal() {
-        document.getElementById("existing-prefs-modal").classList.add("active");
+        const modal = document.getElementById("existing-prefs-modal");
+        const startOverBtn = document.getElementById("start-over-btn");
+
+        // Set up the start over button
+        if (startOverBtn) {
+          startOverBtn.onclick = function () {
+            resetQuizAndRestart();
+            closeModal();
+          };
+        }
+
+        modal.classList.add("active");
       }
 
       function closeExistingPrefsModal() {
@@ -4249,52 +5039,56 @@
       }
       // Update your existing displayRecommendations function
       function displayRecommendations(recommendations) {
-    const container = document.getElementById("recommended-products");
+        const container = document.getElementById("recommended-products");
 
-    console.log("🎯 Displaying recommendations:", recommendations?.length);
+        console.log("🎯 Displaying recommendations:", recommendations?.length);
 
-    if (!recommendations || !Array.isArray(recommendations) || recommendations.length === 0) {
-        container.innerHTML = `
+        if (
+          !recommendations ||
+          !Array.isArray(recommendations) ||
+          recommendations.length === 0
+        ) {
+          container.innerHTML = `
             <div class="no-results">
                 <i class="fas fa-search"></i>
                 <h3>No Perfect Matches Found</h3>
                 <p>We're still building our product database. Check back soon!</p>
             </div>
         `;
-        return;
-    }
+          return;
+        }
 
-    // Store all recommendations globally for pagination
-    window.allRecommendations = recommendations;
-    
-    // ✅ STORE ORIGINAL PYTHON-SORTED RECOMMENDATIONS
-    window.originalPythonSorted = [...recommendations]; // Keep the original order from Python
-    
-    window.currentPage = 1;
-    window.productsPerPage = 20;
+        // Store all recommendations globally for pagination
+        window.allRecommendations = recommendations;
 
-    // Store product data for sorting
-    if (!window.productData) window.productData = {};
-    recommendations.forEach((product) => {
-        window.productData[product.id] = product;
-    });
+        // ✅ STORE ORIGINAL PYTHON-SORTED RECOMMENDATIONS
+        window.originalPythonSorted = [...recommendations]; // Keep the original order from Python
 
-    // Show first page
-    showPage(1);
+        window.currentPage = 1;
+        window.productsPerPage = 20;
 
-    // Set default sort to "relevance"
-    const sortSelect = document.getElementById("sort-by-filter");
-    if (sortSelect) {
-        sortSelect.value = "relevance";
-    }
+        // Store product data for sorting
+        if (!window.productData) window.productData = {};
+        recommendations.forEach((product) => {
+          window.productData[product.id] = product;
+        });
 
-    // Load categories and setup filters
-    loadCategoriesIntoFilter().then(() => {
-        setupFilters();
-        updateResultsCount(recommendations.length);
-    });
-    loadUserRatings();
-}
+        // Show first page
+        showPage(1);
+
+        // Set default sort to "relevance"
+        const sortSelect = document.getElementById("sort-by-filter");
+        if (sortSelect) {
+          sortSelect.value = "relevance";
+        }
+
+        // Load categories and setup filters
+        loadCategoriesIntoFilter().then(() => {
+          setupFilters();
+          updateResultsCount(recommendations.length);
+        });
+        loadUserRatings();
+      }
 
       function showPage(page) {
         const container = document.getElementById("recommended-products");
@@ -4664,157 +5458,187 @@
         }
       }
       function generateProductCard(product) {
-    const cleanName = product.Name
-        ? product.Name.replace(/Parent Record:/gi, "")
-            .replace(/Product Record:/gi, "")
-            .replace(/:/g, "")
-            .trim()
-        : "Unnamed Product";
+        const cleanName = product.Name
+          ? product.Name.replace(/Parent Record:/gi, "")
+              .replace(/Product Record:/gi, "")
+              .replace(/:/g, "")
+              .trim()
+          : "Unnamed Product";
 
-    // NEW: Get shade/variant name
-    const shadeName = product.ShadeOrVariant ? product.ShadeOrVariant.trim() : '';
-    
-    // NEW: Combine product name and shade (if available)
-    const displayName = shadeName ? `${cleanName} • ${shadeName}` : cleanName;
+        // NEW: Get shade/variant name
+        const shadeName = product.ShadeOrVariant
+          ? product.ShadeOrVariant.trim()
+          : "";
 
-    const matchType = product.Match_Type || "NORMAL MATCH";
-    const ratingQuality = product.Rating_Quality || "UNRATED";
-    const price = product.Price
-        ? parseFloat(product.Price).toFixed(2)
-        : "0.00";
-    const category = product.Category || "Uncategorized";
-    const attributeMatches = product.Attribute_Matches || {};
+        // NEW: Combine product name and shade (if available)
+        const displayName = shadeName
+          ? `${cleanName} • ${shadeName}`
+          : cleanName;
 
-    // Get PRODUCT rating (from products table), not recommendation rating
-    const productRating = product.productrating || product.ProductRating || 0;
+        const matchType = product.Match_Type || "NORMAL MATCH";
+        const ratingQuality = product.Rating_Quality || "UNRATED";
+        const price = product.Price
+          ? parseFloat(product.Price).toFixed(2)
+          : "0.00";
+        const category = product.Category || "Uncategorized";
+        const attributeMatches = product.Attribute_Matches || {};
 
-    let imagePath = "/admin/uploads/product_images/no-image.png";
-    if (product.image && product.image !== "null") {
-        let cleanImagePath = product.image;
-        cleanImagePath = cleanImagePath.replace(
+        // Get PRODUCT rating (from products table), not recommendation rating
+        const productRating =
+          product.productrating || product.ProductRating || 0;
+
+        let imagePath = "/admin/uploads/product_images/no-image.png";
+        if (product.image && product.image !== "null") {
+          let cleanImagePath = product.image;
+          cleanImagePath = cleanImagePath.replace(
             /^\.\.\\?\/uploads\\?\/product_images\\?\//,
             ""
+          );
+          cleanImagePath = cleanImagePath.replace(/\\\//g, "");
+          imagePath = `/admin/uploads/product_images/${cleanImagePath}`;
+        }
+
+        const attributeHTML = generateAttributeMatchesHTML(
+          attributeMatches,
+          product.id
         );
-        cleanImagePath = cleanImagePath.replace(/\\\//g, "");
-        imagePath = `/admin/uploads/product_images/${cleanImagePath}`;
-    }
 
-    const attributeHTML = generateAttributeMatchesHTML(
-        attributeMatches,
-        product.id
-    );
+        if (!window.productData) window.productData = {};
+        window.productData[product.id] = product;
 
-    if (!window.productData) window.productData = {};
-    window.productData[product.id] = product;
+        // Build PRODUCT rating HTML (from products table)
+        let productRatingHTML = "";
+        if (productRating && productRating > 0) {
+          const fullStars = Math.floor(productRating);
+          const hasHalfStar = productRating % 1 >= 0.5;
 
-    // Build PRODUCT rating HTML (from products table)
-    let productRatingHTML = "";
-    if (productRating && productRating > 0) {
-        const fullStars = Math.floor(productRating);
-        const hasHalfStar = productRating % 1 >= 0.5;
-
-        productRatingHTML = `
-            <div class="user-rating">
-                <div class="stars">
-                    ${Array.from({ length: 5 }, (_, i) => {
-                        if (i < fullStars) {
-                            return '<i class="fas fa-star active"></i>';
-                        } else if (i === fullStars && hasHalfStar) {
-                            return '<i class="fas fa-star-half-alt active"></i>';
-                        } else {
-                            return '<i class="far fa-star"></i>';
-                        }
-                    }).join("")}
-                </div>
-                <span class="rating-text">${parseFloat(productRating).toFixed(1)}</span>
+          productRatingHTML = `
+        <div class="user-rating">
+            <div class="stars">
+                ${Array.from({ length: 5 }, (_, i) => {
+                  if (i < fullStars) {
+                    return '<i class="fas fa-star active"></i>';
+                  } else if (i === fullStars && hasHalfStar) {
+                    return '<i class="fas fa-star-half-alt active"></i>';
+                  } else {
+                    return '<i class="far fa-star"></i>';
+                  }
+                }).join("")}
             </div>
-        `;
-    } else {
-        productRatingHTML = `
-            <div class="user-rating no-ratings">
-                <div class="stars">
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                </div>
-                <span class="rating-text">No ratings yet</span>
+            <span class="rating-text">${parseFloat(productRating).toFixed(
+              1
+            )}</span>
+        </div>
+    `;
+        } else {
+          productRatingHTML = `
+        <div class="user-rating no-ratings">
+            <div class="stars">
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
             </div>
-        `;
-    }
+            <span class="rating-text">No ratings</span> 
+        </div>
+    `;
+        }
+        // SIMPLIFIED: Only show "You liked this" for good recommendation matches
+        const existingFeedback = product.user_feedback;
+        const hasUserFeedback =
+          existingFeedback &&
+          existingFeedback.RecommendationFeedback !== undefined;
 
-    // SIMPLIFIED: Only show "You liked this" for good recommendation matches
-    const existingFeedback = product.user_feedback;
-    const hasUserFeedback = existingFeedback && existingFeedback.RecommendationFeedback !== undefined;
+        // In generateProductCard function
+        let feedbackIndicator = "";
 
-    // In generateProductCard function
-    let feedbackIndicator = "";
+        // Get collaborative data - handle different formats
+        let collaborativeData = product.collaborative_data || {};
+        if (
+          Array.isArray(collaborativeData) &&
+          collaborativeData.length === 0
+        ) {
+          collaborativeData = {};
+        } else if (
+          Array.isArray(collaborativeData) &&
+          collaborativeData.length > 0
+        ) {
+          collaborativeData = collaborativeData[0];
+        }
 
-    // Get collaborative data - handle different formats
-    let collaborativeData = product.collaborative_data || {};
-    if (Array.isArray(collaborativeData) && collaborativeData.length === 0) {
-        collaborativeData = {};
-    } else if (Array.isArray(collaborativeData) && collaborativeData.length > 0) {
-        collaborativeData = collaborativeData[0];
-    }
+        // 1. Personal feedback (highest priority) - ONLY show for "Good" ratings
+        if (hasUserFeedback) {
+          const userRating = existingFeedback.RecommendationFeedback;
 
-    // 1. Personal feedback (highest priority) - ONLY show for "Good" ratings
-    if (hasUserFeedback) {
-        const userRating = existingFeedback.RecommendationFeedback;
-
-        // ONLY show for "Good" ratings (remove okay/poor indicators)
-        if (userRating === "Good" || userRating === 1) {
+          // ONLY show for "Good" ratings (remove okay/poor indicators)
+          if (userRating === "Good" || userRating === 1) {
             feedbackIndicator = `
                 <div class="feedback-indicator personal">
                     <i class="fas fa-heart"></i>
                     <small>You liked this</small>
                 </div>
             `;
+          }
+          // Remove the else-if for "Okay" and "Poor" ratings
         }
-        // Remove the else-if for "Okay" and "Poor" ratings
-    }
 
-    // 2. Similar users liked it (medium priority) - ONLY if no personal rating
-    else if (collaborativeData.similar_users_liked && collaborativeData.similar_users_liked >= 70) {
-        feedbackIndicator = `
+        // 2. Similar users liked it (medium priority) - ONLY if no personal rating
+        else if (
+          collaborativeData.similar_users_liked &&
+          collaborativeData.similar_users_liked >= 70
+        ) {
+          feedbackIndicator = `
             <div class="feedback-indicator similar-users">
                 <i class="fas fa-users"></i>
                 <small>${collaborativeData.similar_users_liked}% of users like you loved this!</small>
             </div>
         `;
-    } else if (collaborativeData.similar_users_liked && collaborativeData.similar_users_liked >= 50) {
-        feedbackIndicator = `
+        } else if (
+          collaborativeData.similar_users_liked &&
+          collaborativeData.similar_users_liked >= 50
+        ) {
+          feedbackIndicator = `
             <div class="feedback-indicator similar-users">
                 <i class="fas fa-users"></i>
                 <small>${collaborativeData.similar_users_liked}% of similar users liked this</small>
             </div>
         `;
-    }
-    // 3. Global popularity (fallback when no similar users) - ONLY if no personal rating
-    else if (collaborativeData.global_popularity && collaborativeData.global_popularity >= 80) {
-        feedbackIndicator = `
+        }
+        // 3. Global popularity (fallback when no similar users) - ONLY if no personal rating
+        else if (
+          collaborativeData.global_popularity &&
+          collaborativeData.global_popularity >= 80
+        ) {
+          feedbackIndicator = `
             <div class="feedback-indicator global-popular">
                 <i class="fas fa-star"></i>
                 <small>${collaborativeData.global_popularity}% of all users loved this</small>
             </div>
         `;
-    } else if (collaborativeData.global_popularity && collaborativeData.global_popularity >= 60) {
-        feedbackIndicator = `
+        } else if (
+          collaborativeData.global_popularity &&
+          collaborativeData.global_popularity >= 60
+        ) {
+          feedbackIndicator = `
             <div class="feedback-indicator global-popular">
                 <i class="fas fa-star"></i>
                 <small>Popular choice (${collaborativeData.global_popularity}% liked)</small>
             </div>
         `;
-    }
+        }
 
-    return `
+        return `
         <div class="product-card" data-product-id="${product.id}">
             <!-- Match Quality Badge -->
-            <div class="match-badge ${getMatchBadgeClass(matchType)}">${matchType}</div>
+            <div class="match-badge ${getMatchBadgeClass(
+              matchType
+            )}">${matchType}</div>
             
             <!-- Rating Quality Badge -->
-            <div class="rating-badge ${getRatingBadgeClass(ratingQuality)}">${ratingQuality}</div>
+            <div class="rating-badge ${getRatingBadgeClass(
+              ratingQuality
+            )}">${ratingQuality}</div>
             
             <div class="product-image-container">
                 <img src="${imagePath}" alt="${displayName}" class="product-image"
@@ -4836,17 +5660,21 @@
                 ${productRatingHTML}
                 
                 <div class="product-actions">
-                    <button class="btn-primary add-to-cart-btn" onclick="addRecommendedToCart('${product.id}', event)">
+                    <button class="btn-primary add-to-cart-btn" onclick="addRecommendedToCart('${
+                      product.id
+                    }', event)">
                         <i class="fas fa-shopping-cart"></i>
                     </button>
-                    <button class="btn-secondary view-details-btn" onclick="viewProductDetails('${product.id}')">
+                    <button class="btn-secondary view-details-btn" onclick="viewProductDetails('${
+                      product.id
+                    }')">
                         <i class="fas fa-eye"></i> Details
                     </button>
                 </div>
             </div>
         </div>
     `;
-}
+      }
       function generateAttributeMatchesHTML(attributeMatches, productId) {
         if (!attributeMatches || Object.keys(attributeMatches).length === 0) {
           return "";
@@ -5178,82 +6006,98 @@
       }
 
       function applyFilters() {
-    console.log("Applying filters to ALL products...");
+        console.log("Applying filters to ALL products...");
 
-    const selectedCategory = document.getElementById("category-filter")?.value || "all";
-    const selectedMatchType = document.getElementById("match-type-filter")?.value || "all";
-    const selectedSort = document.getElementById("sort-by-filter")?.value || "relevance";
+        const selectedCategory =
+          document.getElementById("category-filter")?.value || "all";
+        const selectedMatchType =
+          document.getElementById("match-type-filter")?.value || "all";
+        const selectedSort =
+          document.getElementById("sort-by-filter")?.value || "relevance";
 
-    console.log("Filter criteria:", { selectedCategory, selectedMatchType, selectedSort });
+        console.log("Filter criteria:", {
+          selectedCategory,
+          selectedMatchType,
+          selectedSort,
+        });
 
-    // Store filter state globally so pagination respects it
-    window.currentFilters = {
-        category: selectedCategory,
-        matchType: selectedMatchType,
-        sort: selectedSort,
-    };
+        // Store filter state globally so pagination respects it
+        window.currentFilters = {
+          category: selectedCategory,
+          matchType: selectedMatchType,
+          sort: selectedSort,
+        };
 
-    // Apply filters to ALL recommendations
-    const filteredRecommendations = window.allRecommendations.filter((product) => {
-        let shouldInclude = true;
+        // Apply filters to ALL recommendations
+        const filteredRecommendations = window.allRecommendations.filter(
+          (product) => {
+            let shouldInclude = true;
 
-        // Category filter
-        if (selectedCategory !== "all" && selectedCategory !== "All") {
-            const productCategory = product.Category || "";
-            if (productCategory !== selectedCategory) {
+            // Category filter
+            if (selectedCategory !== "all" && selectedCategory !== "All") {
+              const productCategory = product.Category || "";
+              if (productCategory !== selectedCategory) {
                 shouldInclude = false;
+              }
             }
-        }
 
-        // Match type filter
-        if (selectedMatchType !== "all") {
-            const productMatchType = product.Match_Type || "";
-            if (!productMatchType.includes(selectedMatchType)) {
+            // Match type filter
+            if (selectedMatchType !== "all") {
+              const productMatchType = product.Match_Type || "";
+              if (!productMatchType.includes(selectedMatchType)) {
                 shouldInclude = false;
+              }
             }
-        }
 
-        return shouldInclude;
-    });
+            return shouldInclude;
+          }
+        );
 
-    console.log(`Filtered from ${window.allRecommendations.length} to ${filteredRecommendations.length} products`);
+        console.log(
+          `Filtered from ${window.allRecommendations.length} to ${filteredRecommendations.length} products`
+        );
 
-    // Apply sorting to the filtered results
-    let sortedRecommendations;
-    
-    if (selectedSort === "relevance") {
-        // ✅ RESTORE ORIGINAL PYTHON SORTING for "Relevance"
-        // First, filter the original Python-sorted array to maintain order
-        const originalProductIds = window.originalPythonSorted.map(p => p.id);
-        const idToProductMap = {};
-        filteredRecommendations.forEach(product => {
+        // Apply sorting to the filtered results
+        let sortedRecommendations;
+
+        if (selectedSort === "relevance") {
+          // ✅ RESTORE ORIGINAL PYTHON SORTING for "Relevance"
+          // First, filter the original Python-sorted array to maintain order
+          const originalProductIds = window.originalPythonSorted.map(
+            (p) => p.id
+          );
+          const idToProductMap = {};
+          filteredRecommendations.forEach((product) => {
             idToProductMap[product.id] = product;
-        });
-        
-        // Recreate the original order with filtered products
-        sortedRecommendations = [];
-        originalProductIds.forEach(id => {
+          });
+
+          // Recreate the original order with filtered products
+          sortedRecommendations = [];
+          originalProductIds.forEach((id) => {
             if (idToProductMap[id]) {
-                sortedRecommendations.push(idToProductMap[id]);
+              sortedRecommendations.push(idToProductMap[id]);
             }
-        });
-    } else {
-        // Use JavaScript sorting for other options
-        sortedRecommendations = sortAllProducts(filteredRecommendations, selectedSort);
-    }
+          });
+        } else {
+          // Use JavaScript sorting for other options
+          sortedRecommendations = sortAllProducts(
+            filteredRecommendations,
+            selectedSort
+          );
+        }
 
-    // Update the global recommendations with filtered+sorted results
-    window.filteredRecommendations = sortedRecommendations;
+        // Update the global recommendations with filtered+sorted results
+        window.filteredRecommendations = sortedRecommendations;
 
-    // Reset to page 1 with the new filtered results
-    window.currentPage = 1;
+        // Reset to page 1 with the new filtered results
+        window.currentPage = 1;
 
-    // Show the first page of filtered results
-    showPage(1);
+        // Show the first page of filtered results
+        showPage(1);
 
-    // Update results count
-    updateResultsCount(sortedRecommendations.length);
-}
+        // Update results count
+        updateResultsCount(sortedRecommendations.length);
+      }
       // Function to update the Add All to Cart count
       function updateAddAllCount(count) {
         const addAllCount = document.getElementById("add-all-count");
@@ -5484,172 +6328,174 @@
         updateAddAllCount(initialCount);
       }
 
-    // New function to sort ALL products (not just visible ones)
-function sortAllProducts(products, sortBy) {
-  console.log(`Sorting ${products.length} products by:`, sortBy);
+      // New function to sort ALL products (not just visible ones)
+      function sortAllProducts(products, sortBy) {
+        console.log(`Sorting ${products.length} products by:`, sortBy);
 
-  return products.sort((a, b) => {
-    try {
-      switch (sortBy) {
-        case "relevance":
-          return sortByRelevance(a, b);
+        return products.sort((a, b) => {
+          try {
+            switch (sortBy) {
+              case "relevance":
+                return sortByRelevance(a, b);
 
-        case "price-low":
-          return (a.Price || 0) - (b.Price || 0);
+              case "price-low":
+                return (a.Price || 0) - (b.Price || 0);
 
-        case "price-high":
-          return (b.Price || 0) - (a.Price || 0);
+              case "price-high":
+                return (b.Price || 0) - (a.Price || 0);
 
-        case "rating":
-          return sortByRating(a, b);
+              case "rating":
+                return sortByRating(a, b);
 
-        case "matches":
-          return (b.Initial_Fit_Score || 0) - (a.Initial_Fit_Score || 0);
+              case "matches":
+                return (b.Initial_Fit_Score || 0) - (a.Initial_Fit_Score || 0);
 
-        default:
-          return 0;
+              default:
+                return 0;
+            }
+          } catch (error) {
+            console.error("❌ Error sorting:", error);
+            return 0;
+          }
+        });
       }
-    } catch (error) {
-      console.error("❌ Error sorting:", error);
-      return 0;
-    }
-  });
-}
 
-// FIXED: Smart relevance sorting that properly demotes Poor ratings
-function sortByRelevance(a, b) {
-  // 0. PRIORITY: HEAVY PENALTY for Poor ratings (they should go to bottom)
-  const feedbackPriority = {
-    'Good': 100,    // Highest priority - user liked it
-    'None': 50,     // No feedback yet - neutral  
-    'Okay': 25,     // User was meh about it
-    'Poor': 0       // User disliked it - HEAVY PENALTY
-  };
+      // FIXED: Smart relevance sorting that properly demotes Poor ratings
+      function sortByRelevance(a, b) {
+        // 0. PRIORITY: HEAVY PENALTY for Poor ratings (they should go to bottom)
+        const feedbackPriority = {
+          Good: 100, // Highest priority - user liked it
+          None: 50, // No feedback yet - neutral
+          Okay: 25, // User was meh about it
+          Poor: 0, // User disliked it - HEAVY PENALTY
+        };
 
-  const feedbackA = a.user_feedback?.RecommendationFeedback || 'None';
-  const feedbackB = b.user_feedback?.RecommendationFeedback || 'None';
-  
-  const feedbackScoreA = feedbackPriority[feedbackA] || 50;
-  const feedbackScoreB = feedbackPriority[feedbackB] || 50;
+        const feedbackA = a.user_feedback?.RecommendationFeedback || "None";
+        const feedbackB = b.user_feedback?.RecommendationFeedback || "None";
 
-  // If one is Poor and the other isn't, Poor always loses
-  if (feedbackA === 'Poor' && feedbackB !== 'Poor') return 1;
-  if (feedbackB === 'Poor' && feedbackA !== 'Poor') return -1;
-  
-  // If both are Poor, use other factors
-  if (feedbackA === 'Poor' && feedbackB === 'Poor') {
-    // Among Poor products, still sort by quality
-    const compositeA = a.Composite_Score || 0;
-    const compositeB = b.Composite_Score || 0;
-    return compositeB - compositeA;
-  }
+        const feedbackScoreA = feedbackPriority[feedbackA] || 50;
+        const feedbackScoreB = feedbackPriority[feedbackB] || 50;
 
-  // For non-Poor products, use the normal scoring
-  if (feedbackScoreB !== feedbackScoreA) {
-    return feedbackScoreB - feedbackScoreA;
-  }
+        // If one is Poor and the other isn't, Poor always loses
+        if (feedbackA === "Poor" && feedbackB !== "Poor") return 1;
+        if (feedbackB === "Poor" && feedbackA !== "Poor") return -1;
 
-  // 2. Match quality (Perfect > Close > Normal > Low)
-  const matchPriority = {
-    'PERFECT MATCH': 4,
-    'CLOSE MATCH': 3, 
-    'NORMAL MATCH': 2,
-    'LOW RATING MATCH': 1
-  };
+        // If both are Poor, use other factors
+        if (feedbackA === "Poor" && feedbackB === "Poor") {
+          // Among Poor products, still sort by quality
+          const compositeA = a.Composite_Score || 0;
+          const compositeB = b.Composite_Score || 0;
+          return compositeB - compositeA;
+        }
 
-  const matchScoreA = matchPriority[a.Match_Type] || 0;
-  const matchScoreB = matchPriority[b.Match_Type] || 0;
+        // For non-Poor products, use the normal scoring
+        if (feedbackScoreB !== feedbackScoreA) {
+          return feedbackScoreB - feedbackScoreA;
+        }
 
-  if (matchScoreB !== matchScoreA) {
-    return matchScoreB - matchScoreA;
-  }
+        // 2. Match quality (Perfect > Close > Normal > Low)
+        const matchPriority = {
+          "PERFECT MATCH": 4,
+          "CLOSE MATCH": 3,
+          "NORMAL MATCH": 2,
+          "LOW RATING MATCH": 1,
+        };
 
-  // 3. Composite score from ML (main relevance metric)
-  const compositeA = a.Composite_Score || 0;
-  const compositeB = b.Composite_Score || 0;
+        const matchScoreA = matchPriority[a.Match_Type] || 0;
+        const matchScoreB = matchPriority[b.Match_Type] || 0;
 
-  if (compositeB !== compositeA) {
-    return compositeB - compositeA;
-  }
+        if (matchScoreB !== matchScoreA) {
+          return matchScoreB - matchScoreA;
+        }
 
-  // 4. Actual product ratings (rated products over unrated)
-  const ratingA = a.product_rating || 0;
-  const ratingB = b.product_rating || 0;
+        // 3. Composite score from ML (main relevance metric)
+        const compositeA = a.Composite_Score || 0;
+        const compositeB = b.Composite_Score || 0;
 
-  // Bonus for products with actual ratings vs unrated
-  const hasRatingA = ratingA > 0 ? 1 : 0;
-  const hasRatingB = ratingB > 0 ? 1 : 0;
+        if (compositeB !== compositeA) {
+          return compositeB - compositeA;
+        }
 
-  if (hasRatingB !== hasRatingA) {
-    return hasRatingB - hasRatingA;
-  }
+        // 4. Actual product ratings (rated products over unrated)
+        const ratingA = a.product_rating || 0;
+        const ratingB = b.product_rating || 0;
 
-  return ratingB - ratingA;
-}
+        // Bonus for products with actual ratings vs unrated
+        const hasRatingA = ratingA > 0 ? 1 : 0;
+        const hasRatingB = ratingB > 0 ? 1 : 0;
 
-function handleRecommendations(recommendations) {
-    // Store ALL recommendations
-    window.allRecommendations = recommendations;
-    
-    // Store ORIGINAL relevance-sorted recommendations (for "back to relevance")
-    window.originalRelevanceSorted = [...recommendations].sort(sortByRelevance);
-    
-    // Apply initial sorting (relevance by default)
-    window.filteredRecommendations = [...window.originalRelevanceSorted];
-    
-    showPage(1);
-}
+        if (hasRatingB !== hasRatingA) {
+          return hasRatingB - hasRatingA;
+        }
 
-// FIXED: Use ONLY product_rating for rating sorting
-function sortByRating(a, b) {
-  // 1. ACTUAL PRODUCT RATINGS (Most Important - use product_rating ONLY)
-  const ratingA = a.product_rating || 0;  // Use the new product_rating field
-  const ratingB = b.product_rating || 0;
+        return ratingB - ratingA;
+      }
 
-  // Prioritize products with ANY rating over completely unrated products
-  const hasRatingA = (ratingA > 0) ? 1 : 0;
-  const hasRatingB = (ratingB > 0) ? 1 : 0;
+      function handleRecommendations(recommendations) {
+        // Store ALL recommendations
+        window.allRecommendations = recommendations;
 
-  if (hasRatingB !== hasRatingA) {
-    return hasRatingB - hasRatingA; // Rated products first
-  }
+        // Store ORIGINAL relevance-sorted recommendations (for "back to relevance")
+        window.originalRelevanceSorted = [...recommendations].sort(
+          sortByRelevance
+        );
 
-  // If both have ratings, sort by rating value
-  if (ratingB !== ratingA) {
-    return ratingB - ratingA; // Higher ratings first
-  }
+        // Apply initial sorting (relevance by default)
+        window.filteredRecommendations = [...window.originalRelevanceSorted];
 
-  // 2. User feedback as secondary (Good > None > Okay > Poor)
-  const feedbackPriority = {
-    'Good': 4,
-    'None': 3, 
-    'Okay': 2,
-    'Poor': 1
-  };
+        showPage(1);
+      }
 
-  const feedbackA = a.user_feedback?.RecommendationFeedback || 'None';
-  const feedbackB = b.user_feedback?.RecommendationFeedback || 'None';
-  
-  const feedbackScoreA = feedbackPriority[feedbackA] || 3;
-  const feedbackScoreB = feedbackPriority[feedbackB] || 3;
+      // FIXED: Use ONLY product_rating for rating sorting
+      function sortByRating(a, b) {
+        // 1. ACTUAL PRODUCT RATINGS (Most Important - use product_rating ONLY)
+        const ratingA = a.product_rating || 0; // Use the new product_rating field
+        const ratingB = b.product_rating || 0;
 
-  if (feedbackScoreB !== feedbackScoreA) {
-    return feedbackScoreB - feedbackScoreA;
-  }
+        // Prioritize products with ANY rating over completely unrated products
+        const hasRatingA = ratingA > 0 ? 1 : 0;
+        const hasRatingB = ratingB > 0 ? 1 : 0;
 
-  // 3. Match quality as final tiebreaker
-  const matchPriority = {
-    'PERFECT MATCH': 4,
-    'CLOSE MATCH': 3,
-    'NORMAL MATCH': 2, 
-    'LOW RATING MATCH': 1
-  };
+        if (hasRatingB !== hasRatingA) {
+          return hasRatingB - hasRatingA; // Rated products first
+        }
 
-  const matchScoreA = matchPriority[a.Match_Type] || 0;
-  const matchScoreB = matchPriority[b.Match_Type] || 0;
+        // If both have ratings, sort by rating value
+        if (ratingB !== ratingA) {
+          return ratingB - ratingA; // Higher ratings first
+        }
 
-  return matchScoreB - matchScoreA;
-}
+        // 2. User feedback as secondary (Good > None > Okay > Poor)
+        const feedbackPriority = {
+          Good: 4,
+          None: 3,
+          Okay: 2,
+          Poor: 1,
+        };
+
+        const feedbackA = a.user_feedback?.RecommendationFeedback || "None";
+        const feedbackB = b.user_feedback?.RecommendationFeedback || "None";
+
+        const feedbackScoreA = feedbackPriority[feedbackA] || 3;
+        const feedbackScoreB = feedbackPriority[feedbackB] || 3;
+
+        if (feedbackScoreB !== feedbackScoreA) {
+          return feedbackScoreB - feedbackScoreA;
+        }
+
+        // 3. Match quality as final tiebreaker
+        const matchPriority = {
+          "PERFECT MATCH": 4,
+          "CLOSE MATCH": 3,
+          "NORMAL MATCH": 2,
+          "LOW RATING MATCH": 1,
+        };
+
+        const matchScoreA = matchPriority[a.Match_Type] || 0;
+        const matchScoreB = matchPriority[b.Match_Type] || 0;
+
+        return matchScoreB - matchScoreA;
+      }
 
       function resetFilters() {
         const categoryFilter = document.getElementById("category-filter");
@@ -5948,55 +6794,57 @@ function sortByRating(a, b) {
         }
       }
 
-   // Unified Notification Function - Use this on ALL pages
-function showNotification(message, type = "success") {
-    // Check if notification box exists, if not create it
-    let notificationBox = document.getElementById("notification-box");
-    
-    if (!notificationBox) {
-        // Create the notification box if it doesn't exist
-        notificationBox = document.createElement('div');
-        notificationBox.id = 'notification-box';
-        notificationBox.className = 'notification-box';
-        document.body.appendChild(notificationBox);
-    }
+      // Unified Notification Function - Use this on ALL pages
+      function showNotification(message, type = "success") {
+        // Check if notification box exists, if not create it
+        let notificationBox = document.getElementById("notification-box");
 
-    // Set message and icon based on type
-    let iconClass, background;
-    
-    switch(type) {
-        case "success":
+        if (!notificationBox) {
+          // Create the notification box if it doesn't exist
+          notificationBox = document.createElement("div");
+          notificationBox.id = "notification-box";
+          notificationBox.className = "notification-box";
+          document.body.appendChild(notificationBox);
+        }
+
+        // Set message and icon based on type
+        let iconClass, background;
+
+        switch (type) {
+          case "success":
             iconClass = "fas fa-check-circle";
-            background = "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
+            background =
+              "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
             break;
-        case "error":
+          case "error":
             iconClass = "fas fa-exclamation-circle";
             background = "linear-gradient(135deg, #ef4444, #dc2626)";
             break;
-        case "info":
+          case "info":
             iconClass = "fas fa-info-circle";
             background = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
             break;
-        case "warning":
+          case "warning":
             iconClass = "fas fa-exclamation-triangle";
             background = "linear-gradient(135deg, #f59e0b, #d97706)";
             break;
-        default:
+          default:
             iconClass = "fas fa-check-circle";
-            background = "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
-    }
-    
-    notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
-    notificationBox.style.background = background;
+            background =
+              "linear-gradient(135deg, var(--primary-pink), var(--dark-pink))";
+        }
 
-    // Show notification
-    notificationBox.classList.add("show");
+        notificationBox.innerHTML = `<i class="${iconClass}"></i> ${message}`;
+        notificationBox.style.background = background;
 
-    // Hide after 3 seconds
-    setTimeout(() => {
-        notificationBox.classList.remove("show");
-    }, 3000);
-}
+        // Show notification
+        notificationBox.classList.add("show");
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          notificationBox.classList.remove("show");
+        }, 3000);
+      }
 
       function showCartTotal(totalAmount) {
         // Remove existing popups if any
@@ -6017,7 +6865,9 @@ function showNotification(message, type = "success") {
           desktopPopup.className = "cart-total-popup";
           desktopPopup.innerHTML = `
             <div class="cart-total-label">Cart Total</div>
-            <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(totalAmount).toFixed(2))}</div>
+            <div class="cart-total-amount">₱${formatNumberWithCommas(
+              parseFloat(totalAmount).toFixed(2)
+            )}</div>
             <small>Click cart to view items</small>
         `;
 
@@ -6035,7 +6885,9 @@ function showNotification(message, type = "success") {
           mobilePopup.className = "cart-total-popup";
           mobilePopup.innerHTML = `
             <div class="cart-total-label">Cart Total</div>
-            <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(totalAmount).toFixed(2))}</div>
+            <div class="cart-total-amount">₱${formatNumberWithCommas(
+              parseFloat(totalAmount).toFixed(2)
+            )}</div>
             <small>Tap cart to view items</small>
         `;
 
@@ -6060,8 +6912,6 @@ function showNotification(message, type = "success") {
           });
         }, 3000);
       }
-
-    
 
       function viewProductDetails(productId) {
         window.location.href = `productdetail.html?productId=${productId}`;
@@ -6146,9 +6996,9 @@ function showNotification(message, type = "success") {
       function prevStep() {
         if (currentStep > 1) {
           nextStep(currentStep - 1);
-        } else {
-          // Go back to intro when on step 1
-          nextStep(0);
+        } else if (currentStep === 1) {
+          // Show exit confirmation modal instead of going directly to intro
+          showExitModal();
         }
       }
 
@@ -6293,11 +7143,37 @@ function showNotification(message, type = "success") {
         });
       });
 
-      // Exit confirmation
       function showExitModal() {
-        document.getElementById("exit-modal").classList.add("active");
-      }
+        const modal = document.getElementById("exit-modal");
+        const modalTitle = modal.querySelector("h3");
+        const modalMessage = modal.querySelector("p");
+        const confirmBtn = modal.querySelector(".modal-btn.primary");
 
+        if (currentStep === 1) {
+          // Custom message for going back to intro from Step 1
+          modalTitle.textContent = "Start Over?";
+          modalMessage.textContent =
+            "Do you want to go back to the beginning and retake the quiz?";
+          confirmBtn.textContent = "Yes, Start Over";
+          confirmBtn.onclick = confirmStartOver;
+        } else {
+          // Default message for exiting quiz via navigation
+          modalTitle.textContent = "Are you sure you want to exit?";
+          modalMessage.textContent = "Your quiz progress will not be saved.";
+          confirmBtn.textContent = "Yes, Exit";
+          confirmBtn.onclick = confirmExit;
+        }
+
+        modal.classList.add("active");
+      }
+      function confirmStartOver() {
+        // Temporarily bypass the existing preferences check for this session
+        sessionStorage.setItem("bypassPreferencesCheck", "true");
+
+        // Go back to intro page and allow quiz to start
+        nextStep(0);
+        closeExitModal();
+      }
       function closeExitModal() {
         document.getElementById("exit-modal").classList.remove("active");
       }
@@ -6483,7 +7359,9 @@ function showNotification(message, type = "success") {
               desktopPopup.className = "cart-total-popup";
               desktopPopup.innerHTML = `
                     <div class="cart-total-label">Cart Total</div>
-                    <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(result.totalAmount).toFixed(2))}</div>
+                    <div class="cart-total-amount">₱${formatNumberWithCommas(
+                      parseFloat(result.totalAmount).toFixed(2)
+                    )}</div>
                     
                 `;
 
@@ -6509,7 +7387,9 @@ function showNotification(message, type = "success") {
               mobilePopup.className = "cart-total-popup";
               mobilePopup.innerHTML = `
                     <div class="cart-total-label">Cart Total</div>
-                    <div class="cart-total-amount">₱${formatNumberWithCommas(parseFloat(result.totalAmount).toFixed(2))}</div>
+                    <div class="cart-total-amount">₱${formatNumberWithCommas(
+                      parseFloat(result.totalAmount).toFixed(2)
+                    )}</div>
                     
                 `;
 
