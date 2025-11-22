@@ -18,8 +18,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
     <!-- Add this BEFORE your page-specific scripts -->
     <script src="../js/user-session.js"></script>
+    <script src="../js/notifications.js"></script>
+    <script src="../js/user-profile-picture.js"></script>
+    <script src="../js/load-profile-notification.js"></script>
+
     <style>
       :root {
         --primary-pink: #ff7eb9;
@@ -2055,19 +2060,36 @@
         <h1 class="brand-name">Blessence</h1>
         <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
+      
       <div class="user-section">
-        <span class="user-greeting" id="user-greeting">Hi, Maria!</span>
-        <button
-          class="profile-btn"
-          onclick="window.location.href='user_profile.html'"
-        >
+        <span class="user-greeting" id="user-greeting">Hi, User!</span>
+        
+        <!-- NOTIFICATION SECTION START -->
+        <div class="notification-container">
+            <button class="notif-btn" id="notif-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notif-badge" id="notif-badge">0</span>
+            </button>
+            
+            <div class="notif-dropdown" id="notif-dropdown">
+                <div class="notif-header">
+                    <span>Notifications</span>
+                    <i class="fas fa-check-double" style="font-size: 12px; cursor: pointer; color: #999;" title="Mark all as read"></i>
+                </div>
+                <div class="notif-list" id="notif-list">
+                    <!-- Notifications will be injected here -->
+                    <div class="notif-empty">Loading...</div>
+                </div>
+            </div>
+        </div>
+        <!-- NOTIFICATION SECTION END -->
+
+        <button class="profile-btn" onclick="window.location.href='user_profile.html'">
           <i class="fas fa-user"></i>
         </button>
       </div>
-      <button
-        class="mobile-profile-btn"
-        onclick="window.location.href='user_profile.html'"
-      >
+
+      <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
         <i class="fas fa-user"></i>
       </button>
     </header>
