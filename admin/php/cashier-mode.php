@@ -21,7 +21,6 @@ class CashierMode
     }
 
     // Get all available products for sale (including variants)
-   // Get all available products for sale (including variants)
     public function getProducts()
     {
         $query = "
@@ -106,12 +105,15 @@ class CashierMode
         ];
     }
 
-    // Process a sale
+    // Process a sale - now handles both manual and QR code orders
     public function processSale($saleData)
     {
         $this->conn->begin_transaction();
 
         try {
+            $paymentMethod = $saleData['payment_method'] ?? 'manual';
+            $orderId = $saleData['order_id'] ?? null;
+
             // Validate all items have sufficient stock
             foreach ($saleData['items'] as $item) {
                 $productId = $this->conn->real_escape_string($item['product_id']);
@@ -130,101 +132,196 @@ class CashierMode
                 }
             }
 
-            // Create order record (using a temporary user ID for cashier sales)
-            $tempUserId = 1; // Default admin user for cashier sales
-            $totalPrice = 0;
-            
-            foreach ($saleData['items'] as $item) {
-                $totalPrice += floatval($item['price']) * intval($item['quantity']);
+            if ($paymentMethod === 'qr' && $orderId) {
+                // Handle QR code order - update existing order status
+                return $this->processQrOrder($orderId, $saleData);
+            } else {
+                // Handle manual sale - create new order
+                return $this->processManualSale($saleData);
             }
-
-            $orderQuery = "INSERT INTO orders (user_id, total_price, status, order_date) 
-                          VALUES (?, ?, 'completed', NOW())";
-            $stmt = $this->conn->prepare($orderQuery);
-            $stmt->bind_param("id", $tempUserId, $totalPrice);
-            
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to create order: " . $stmt->error);
-            }
-            
-            $orderId = $stmt->insert_id;
-            $stmt->close();
-
-            // Add order items and update stock
-            foreach ($saleData['items'] as $item) {
-                $productId = $this->conn->real_escape_string($item['product_id']);
-                $quantity = intval($item['quantity']);
-                $price = floatval($item['price']);
-                
-                // Add order item
-                $orderItemQuery = "INSERT INTO orderitems (order_id, product_id, quantity, price) 
-                                  VALUES (?, ?, ?, ?)";
-                $stmt = $this->conn->prepare($orderItemQuery);
-                $stmt->bind_param("isid", $orderId, $productId, $quantity, $price);
-                
-                if (!$stmt->execute()) {
-                    throw new Exception("Failed to add order item: " . $stmt->error);
-                }
-                $stmt->close();
-                
-                // Update product stock
-                $updateStockQuery = "UPDATE products 
-                                   SET Stocks = Stocks - ? 
-                                   WHERE ProductID = ? AND Stocks >= ?";
-                $stmt = $this->conn->prepare($updateStockQuery);
-                $stmt->bind_param("isi", $quantity, $productId, $quantity);
-                
-                if (!$stmt->execute()) {
-                    throw new Exception("Failed to update stock: " . $stmt->error);
-                }
-                $stmt->close();
-                
-                // Update product status if stock becomes low or out
-                $updateStatusQuery = "
-                    UPDATE products 
-                    SET Status = CASE 
-                        WHEN Stocks <= 0 THEN 'No Stock'
-                        WHEN Stocks <= 5 THEN 'Low Stock' 
-                        ELSE 'Available'
-                    END
-                    WHERE ProductID = ?
-                ";
-                $stmt = $this->conn->prepare($updateStatusQuery);
-                $stmt->bind_param("s", $productId);
-                
-                if (!$stmt->execute()) {
-                    throw new Exception("Failed to update product status: " . $stmt->error);
-                }
-                $stmt->close();
-            }
-
-            // Log activity
-            $activityQuery = "
-                INSERT INTO activitylog (actor_type, actor_id, action, details) 
-                VALUES ('admin', ?, 'Cashier sale processed', ?)
-            ";
-            $activityDetails = "Processed sale with order ID: $orderId, Total: ₱" . number_format($totalPrice, 2);
-            $stmt = $this->conn->prepare($activityQuery);
-            $stmt->bind_param("is", $tempUserId, $activityDetails);
-            
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to log activity: " . $stmt->error);
-            }
-            $stmt->close();
-
-            $this->conn->commit();
-
-            return [
-                'success' => true,
-                'order_id' => $orderId,
-                'total' => $totalPrice,
-                'message' => 'Sale completed successfully'
-            ];
 
         } catch (Exception $e) {
             $this->conn->rollback();
             throw $e;
         }
+    }
+
+    // Process manual sale (create new order)
+    private function processManualSale($saleData)
+    {
+        $tempUserId = 1; // Default admin user for cashier sales
+        $totalPrice = 0;
+        
+        foreach ($saleData['items'] as $item) {
+            $totalPrice += floatval($item['price']) * intval($item['quantity']);
+        }
+
+        // Create order record
+        $orderQuery = "INSERT INTO orders (user_id, total_price, status, order_date, payment_method) 
+                      VALUES (?, ?, 'completed', NOW(), 'manual')";
+        $stmt = $this->conn->prepare($orderQuery);
+        $stmt->bind_param("id", $tempUserId, $totalPrice);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to create order: " . $stmt->error);
+        }
+        
+        $orderId = $stmt->insert_id;
+        $stmt->close();
+
+        // Add order items and update stock
+        $this->addOrderItemsAndUpdateStock($orderId, $saleData['items']);
+
+        // Log activity
+        $activityQuery = "
+            INSERT INTO activitylog (actor_type, actor_id, action, details) 
+            VALUES ('admin', ?, 'Manual sale processed', ?)
+        ";
+        $activityDetails = "Processed manual sale with order ID: $orderId, Total: ₱" . number_format($totalPrice, 2);
+        $stmt = $this->conn->prepare($activityQuery);
+        $stmt->bind_param("is", $tempUserId, $activityDetails);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to log activity: " . $stmt->error);
+        }
+        $stmt->close();
+
+        $this->conn->commit();
+
+        return [
+            'success' => true,
+            'order_id' => $orderId,
+            'total' => $totalPrice,
+            'payment_method' => 'manual',
+            'message' => 'Manual sale completed successfully'
+        ];
+    }
+
+    // Process QR code order (update existing order)
+    private function processQrOrder($orderId, $saleData)
+    {
+        // Verify the order exists and is not already completed
+        $verifyQuery = "SELECT status FROM orders WHERE order_id = ?";
+        $stmt = $this->conn->prepare($verifyQuery);
+        $stmt->bind_param("i", $orderId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Order not found: $orderId");
+        }
+        
+        $order = $result->fetch_assoc();
+        if ($order['status'] === 'completed') {
+            throw new Exception("Order #$orderId is already completed");
+        }
+        $stmt->close();
+
+        // Update order status to completed
+        $updateQuery = "UPDATE orders SET status = 'completed', payment_method = 'qr' WHERE order_id = ?";
+        $stmt = $this->conn->prepare($updateQuery);
+        $stmt->bind_param("i", $orderId);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update order status: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Update product stock for QR order items
+        $this->updateStockForItems($saleData['items']);
+
+        // Log activity
+        $tempUserId = 1; // Default admin user
+        $activityQuery = "
+            INSERT INTO activitylog (actor_type, actor_id, action, details) 
+            VALUES ('admin', ?, 'QR order completed', ?)
+        ";
+        $activityDetails = "Completed QR order ID: $orderId via cashier mode";
+        $stmt = $this->conn->prepare($activityQuery);
+        $stmt->bind_param("is", $tempUserId, $activityDetails);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to log activity: " . $stmt->error);
+        }
+        $stmt->close();
+
+        $this->conn->commit();
+
+        return [
+            'success' => true,
+            'order_id' => $orderId,
+            'payment_method' => 'qr',
+            'message' => 'QR order completed successfully'
+        ];
+    }
+
+    // Add order items and update stock (for manual sales)
+    private function addOrderItemsAndUpdateStock($orderId, $items)
+    {
+        foreach ($items as $item) {
+            $productId = $this->conn->real_escape_string($item['product_id']);
+            $quantity = intval($item['quantity']);
+            $price = floatval($item['price']);
+            
+            // Add order item
+            $orderItemQuery = "INSERT INTO orderitems (order_id, product_id, quantity, price) 
+                              VALUES (?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($orderItemQuery);
+            $stmt->bind_param("isid", $orderId, $productId, $quantity, $price);
+            
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to add order item: " . $stmt->error);
+            }
+            $stmt->close();
+            
+            // Update product stock
+            $this->updateProductStock($productId, $quantity);
+        }
+    }
+
+    // Update stock for items (for QR orders)
+    private function updateStockForItems($items)
+    {
+        foreach ($items as $item) {
+            $productId = $this->conn->real_escape_string($item['product_id']);
+            $quantity = intval($item['quantity']);
+            
+            $this->updateProductStock($productId, $quantity);
+        }
+    }
+
+    // Update product stock and status
+    private function updateProductStock($productId, $quantity)
+    {
+        // Update product stock
+        $updateStockQuery = "UPDATE products 
+                           SET Stocks = Stocks - ? 
+                           WHERE ProductID = ? AND Stocks >= ?";
+        $stmt = $this->conn->prepare($updateStockQuery);
+        $stmt->bind_param("isi", $quantity, $productId, $quantity);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update stock: " . $stmt->error);
+        }
+        $stmt->close();
+        
+        // Update product status if stock becomes low or out
+        $updateStatusQuery = "
+            UPDATE products 
+            SET Status = CASE 
+                WHEN Stocks <= 0 THEN 'No Stock'
+                WHEN Stocks <= 5 THEN 'Low Stock' 
+                ELSE 'Available'
+            END
+            WHERE ProductID = ?
+        ";
+        $stmt = $this->conn->prepare($updateStatusQuery);
+        $stmt->bind_param("s", $productId);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update product status: " . $stmt->error);
+        }
+        $stmt->close();
     }
 }
 
