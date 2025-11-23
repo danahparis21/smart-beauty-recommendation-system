@@ -20,6 +20,250 @@
     <script src="../js/user-profile-picture.js"></script>
 
     <style>
+      :root {
+        --primary-pink: #ec4899;
+        --dark-pink: #db2777;
+        --light-pink: #fbcfe8;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Search & Filter Container */
+      .search-container {
+        padding: 15px 20px;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 100;
+      }
+
+      .search-bar {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        border-radius: 25px;
+        padding: 10px 20px;
+        box-shadow: var(--card-shadow);
+        transition: box-shadow 0.3s ease;
+      }
+
+      .search-bar:focus-within {
+        box-shadow: 0 0 0 2px var(--light-pink);
+      }
+
+      .search-bar i {
+        color: var(--text-gray, #888);
+        margin-right: 10px;
+      }
+
+      .search-bar input {
+        border: none;
+        background: transparent;
+        outline: none;
+        width: 100%;
+        font-size: 16px;
+        font-family: "Montserrat", sans-serif;
+        color: #333;
+      }
+
+      /* Filter Button Styles */
+      .filter-wrapper {
+        position: relative;
+      }
+
+      .filter-btn {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        box-shadow: var(--card-shadow);
+        color: var(--text-gray, #555);
+        font-family: "Montserrat", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        height: 44px;
+        white-space: nowrap;
+        position: relative;
+      }
+
+      .filter-btn:hover, .filter-btn.active {
+        color: var(--primary-pink);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(236, 72, 153, 0.15);
+      }
+
+      .filter-badge {
+        background: var(--primary-pink);
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        animation: bounceIn 0.3s ease;
+      }
+
+      .filter-badge.show {
+        display: flex;
+      }
+
+      @keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+
+      .filter-dropdown {
+        position: absolute;
+        top: 110%;
+        right: 0;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        width: 200px;
+        padding: 8px 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        z-index: 2100;
+        overflow: hidden;
+      }
+
+      .filter-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .filter-option {
+        padding: 10px 20px;
+        font-size: 13px;
+        color: #444;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .filter-option:hover {
+        background-color: #fff0f7;
+        color: var(--primary-pink);
+      }
+
+      .filter-option.selected {
+        background-color: #fff0f7;
+        color: var(--primary-pink);
+        font-weight: 600;
+      }
+
+      .filter-option.selected::after {
+        content: '✓';
+        font-weight: bold;
+        margin-left: 8px;
+      }
+      
+      .filter-option.remove-filter {
+        border-top: 1px solid #eee;
+        color: #ef4444;
+        margin-top: 5px;
+      }
+      .filter-option.remove-filter:hover {
+        background-color: #fef2f2;
+      }
+
+      /* Active Filters Display */
+      .active-filters-container {
+        padding: 10px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        min-height: 40px;
+        transition: all 0.3s ease;
+      }
+
+      .active-filters-container:empty {
+        display: none;
+      }
+
+      .filter-tag {
+        background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-family: "Montserrat", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        animation: slideIn 0.3s ease;
+        box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .filter-tag i {
+        cursor: pointer;
+        font-size: 10px;
+        padding: 2px;
+        transition: transform 0.2s;
+      }
+
+      .filter-tag i:hover {
+        transform: scale(1.3);
+      }
+
+      .clear-all-filters {
+        background: #ef4444;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-family: "Montserrat", sans-serif;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+
+      .clear-all-filters:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
       /* ================= Z-INDEX FIX ================= */
       .header {
         position: relative;
@@ -51,8 +295,8 @@
       /* Categories */
       .categories {
         padding: 12px 18px; overflow-x: auto; white-space: nowrap;
-        background: rgba(255, 255, 255, 0.7); box-shadow: 0 5px 15px rgba(255, 105, 180, 0.1);
-        position: relative; backdrop-filter: blur(10px); border: 1px solid rgba(255, 182, 193, 0.2);
+        background: transparent;
+        position: relative; backdrop-filter: blur(10px);
       }
       .categories::-webkit-scrollbar { height: 4px; }
       .categories::-webkit-scrollbar-track { background: rgba(255, 182, 193, 0.15); border-radius: 10px; }
@@ -62,10 +306,14 @@
       .category-btn {
         display: inline-flex; align-items: center; padding: 8px 16px;
         background: rgba(255, 255, 255, 0.9); border: none; border-radius: 20px;
-        font-size: 14px; font-weight: 500; color: var(--dark-gray);
+        font-size: 14px; font-weight: 500; color: #ea9ec4;
         cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         position: relative; overflow: hidden; white-space: nowrap;
         backdrop-filter: blur(5px); border: 1px solid rgba(255, 182, 193, 0.2);
+        flex: 1;               
+        min-width: 140px;      
+        text-align: center; 
+        justify-content: center;
       }
       .category-btn:before {
         content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
@@ -83,12 +331,14 @@
         .categories { padding: 10px 15px; border-radius: 16px; }
         .category-btn { padding: 7px 14px; font-size: 13px; border-radius: 18px; }
         .category-btn i { margin-right: 5px; font-size: 13px; }
+        .filter-btn span { display: none; }
+        .filter-btn { padding: 10px; }
       }
 
       /* Products Grid */
       .products-container { padding: 20px; max-width: 1200px; margin: 0 auto; text-align: center; }
       .section-title {
-        font-size: 28px; font-weight: 600; color: var(--dark-gray); margin-bottom: 30px;
+        font-size: 28px; font-weight: 600; color: var(--dark-gray, #333); margin-bottom: 30px;
         font-family: "Cormorant Garamond", serif; position: relative; padding-bottom: 10px; text-align: center;
       }
       .section-title::after {
@@ -141,6 +391,17 @@
       .stock-alert {
         position: absolute; top: 10px; right: 10px; background: #dc2626; color: white;
         padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10;
+      }
+
+      /* Results Counter */
+      .results-counter {
+        text-align: left;
+        padding: 10px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        font-family: "Montserrat", sans-serif;
+        font-size: 14px;
+        color: #666;
       }
 
       /* Responsive Design */
@@ -214,25 +475,22 @@
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
         
-        <!-- NOTIFICATION SECTION START -->
+        <!-- NOTIFICATION SECTION -->
         <div class="notification-container">
             <button class="notif-btn" id="notif-btn">
                 <i class="fas fa-bell"></i>
                 <span class="notif-badge" id="notif-badge">0</span>
             </button>
-            
             <div class="notif-dropdown" id="notif-dropdown">
                 <div class="notif-header">
                     <span>Notifications</span>
                     <i class="fas fa-check-double" style="font-size: 12px; cursor: pointer; color: #999;" title="Mark all as read"></i>
                 </div>
                 <div class="notif-list" id="notif-list">
-                    <!-- Notifications will be injected here -->
                     <div class="notif-empty">Loading...</div>
                 </div>
             </div>
         </div>
-        <!-- NOTIFICATION SECTION END -->
 
         <button class="profile-btn" onclick="window.location.href='user_profile.html'">
           <i class="fas fa-user"></i>
@@ -270,24 +528,45 @@
       </a>
     </nav>
 
-    <!-- Search Bar -->
+    <!-- Search Bar and Filter -->
     <div class="search-container">
       <div class="search-bar">
         <i class="fas fa-search"></i>
-        <input type="text" placeholder="Search for products..." />
+        <input type="text" id="search-input" placeholder="Search for products..." />
+      </div>
+      
+      <div class="filter-wrapper">
+        <button class="filter-btn" id="filter-toggle">
+            <i class="fas fa-filter"></i>
+            <span>Sort</span>
+            <span class="filter-badge" id="filter-badge">0</span>
+        </button>
+        <div class="filter-dropdown" id="filter-options">
+            <div class="filter-option" data-sort="az">A-Z Name</div>
+            <div class="filter-option" data-sort="za">Z-A Name</div>
+            <div class="filter-option" data-sort="price_asc">Lowest Price</div>
+            <div class="filter-option" data-sort="price_desc">Highest Price</div>
+            <div class="filter-option" data-sort="rating_desc">Highest Rating</div>
+            <div class="filter-option remove-filter" data-sort="none">Remove Sort</div>
+        </div>
       </div>
     </div>
+
+    <!-- Active Filters Display -->
+    <div class="active-filters-container" id="active-filters"></div>
 
     <!-- Categories -->
     <div class="categories overflow-x-auto whitespace-nowrap">
       <div id="categories-container" class="inline-flex space-x-3 pb-2"></div>
     </div>
 
+    <!-- Results Counter -->
+    <div class="results-counter" id="results-counter"></div>
+
     <!-- Page Content -->
     <main>
       <section id="home" class="page-content active">
         <div class="products-container">
-          <h2 class="section-title">Featured Products</h2>
           <div class="products-grid" id="products-grid">
             <p style="text-align: center; color: var(--light-text)">Loading products...</p>
           </div>
@@ -320,16 +599,187 @@
       // --- GLOBAL STATE ---
       let products = [];
       let cart = [];
+      let selectedCategories = []; // Array to hold multiple categories
+      let currentSort = null;
+      let currentSearchTerm = '';
+
       const normalizeCategory = (cat) => (cat || "").toLowerCase();
 
+      // --- ACTIVE FILTERS DISPLAY ---
+      function updateActiveFiltersDisplay() {
+        const container = document.getElementById('active-filters');
+        const filterBadge = document.getElementById('filter-badge');
+        if (!container) return;
+
+        container.innerHTML = '';
+        let filterCount = 0;
+
+        // Display selected categories
+        selectedCategories.forEach(cat => {
+          filterCount++;
+          const tag = document.createElement('div');
+          tag.className = 'filter-tag';
+          tag.innerHTML = `
+            <i class="fas fa-tag"></i>
+            <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+            <i class="fas fa-times" onclick="removeCategory('${cat}')"></i>
+          `;
+          container.appendChild(tag);
+        });
+
+        // Display current sort
+        if (currentSort) {
+          filterCount++;
+          const sortLabels = {
+            'az': 'A-Z',
+            'za': 'Z-A',
+            'price_asc': 'Price: Low to High',
+            'price_desc': 'Price: High to Low',
+            'rating_desc': 'Top Rated'
+          };
+          const tag = document.createElement('div');
+          tag.className = 'filter-tag';
+          tag.innerHTML = `
+            <i class="fas fa-sort"></i>
+            <span>${sortLabels[currentSort]}</span>
+            <i class="fas fa-times" onclick="removeSort()"></i>
+          `;
+          container.appendChild(tag);
+        }
+
+        // Display search term
+        if (currentSearchTerm) {
+          filterCount++;
+          const tag = document.createElement('div');
+          tag.className = 'filter-tag';
+          tag.innerHTML = `
+            <i class="fas fa-search"></i>
+            <span>"${currentSearchTerm}"</span>
+            <i class="fas fa-times" onclick="clearSearch()"></i>
+          `;
+          container.appendChild(tag);
+        }
+
+        // Clear all button
+        if (filterCount > 0) {
+          const clearBtn = document.createElement('button');
+          clearBtn.className = 'clear-all-filters';
+          clearBtn.innerHTML = '<i class="fas fa-times-circle"></i> Clear All';
+          clearBtn.onclick = clearAllFilters;
+          container.appendChild(clearBtn);
+        }
+
+        // Update badge
+        if (filterBadge) {
+          filterBadge.textContent = filterCount;
+          if (filterCount > 0) {
+            filterBadge.classList.add('show');
+          } else {
+            filterBadge.classList.remove('show');
+          }
+        }
+      }
+
+      // --- FILTER REMOVAL FUNCTIONS ---
+      function removeCategory(category) {
+        selectedCategories = selectedCategories.filter(c => c !== category);
+        updateCategoryButtons();
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function removeSort() {
+        currentSort = null;
+        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function clearSearch() {
+        currentSearchTerm = '';
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.value = '';
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function clearAllFilters() {
+        selectedCategories = [];
+        currentSort = null;
+        currentSearchTerm = '';
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.value = '';
+        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        updateCategoryButtons();
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
       // --- RENDERING & HELPER FUNCTIONS ---
-      function renderProducts(filteredProducts = products) {
+
+      // Unified Filter Function
+      function applyFilters() {
+        let result = [...products];
+
+        // 1. Filter by Categories (multiple selection)
+        if (selectedCategories.length > 0) {
+          result = result.filter(p => 
+            selectedCategories.includes(normalizeCategory(p.category))
+          );
+        }
+
+        // 2. Filter by Search Term
+        if (currentSearchTerm) {
+          result = result.filter(p => {
+            const term = currentSearchTerm.toLowerCase();
+            const inName = (p.name || '').toLowerCase().includes(term);
+            const inCat = (p.category || '').toLowerCase().includes(term);
+            const inVariants = p.variants && p.variants.some(v => v.name.toLowerCase().includes(term));
+            return inName || inCat || inVariants;
+          });
+        }
+
+        // 3. Apply Sort
+        if (currentSort) {
+          result.sort((a, b) => {
+            switch(currentSort) {
+              case 'az': 
+                return a.name.localeCompare(b.name);
+              case 'za': 
+                return b.name.localeCompare(a.name);
+              case 'price_asc': 
+                return parseFloat(a.price) - parseFloat(b.price);
+              case 'price_desc': 
+                return parseFloat(b.price) - parseFloat(a.price);
+              case 'rating_desc': 
+                return (parseFloat(b.average_rating) || 0) - (parseFloat(a.average_rating) || 0);
+              default: return 0;
+            }
+          });
+        }
+
+        updateResultsCounter(result.length);
+        renderFilteredProducts(result);
+      }
+
+      function updateResultsCounter(count) {
+        const counter = document.getElementById('results-counter');
+        if (!counter) return;
+        
+        if (count === products.length) {
+          counter.textContent = `Showing all ${count} products`;
+        } else {
+          counter.textContent = `Found ${count} of ${products.length} products`;
+        }
+      }
+
+      function renderFilteredProducts(filteredProducts) {
         const productsGrid = document.getElementById("products-grid");
         if (!productsGrid) return;
         productsGrid.innerHTML = "";
 
         if (filteredProducts.length === 0) {
-          productsGrid.innerHTML = '<p class="text-center p-5 text-gray-500 col-span-full">No results found.</p>';
+          productsGrid.innerHTML = '<p class="text-center p-5 text-gray-500 col-span-full" style="grid-column: 1/-1; padding: 20px;">No results found. Try adjusting your filters.</p>';
           return;
         }
         filteredProducts.forEach((product) => {
@@ -340,8 +790,8 @@
 
       function createProductCard(product) {
         const cleanProductName = (name) => {
-            if (!name) return "";
-            return name.toString().replace(/Product Record/gi, "").replace(/Parent Record/gi, "").replace(/:\s*/g, "").replace(/\s+/g, " ").trim();
+          if (!name) return "";
+          return name.toString().replace(/Product Record/gi, "").replace(/Parent Record/gi, "").replace(/:\s*/g, "").replace(/\s+/g, " ").trim();
         };
         const displayName = cleanProductName(product.name);
         const card = document.createElement("div");
@@ -357,113 +807,113 @@
         const defaultImage = product.image || previewImage || LOCAL_FALLBACK_IMAGE;
 
         const stockAlert = product.stockQuantity && product.stockQuantity <= 5
-            ? `<div class="stock-alert">Only ${product.stockQuantity} left!</div>` : "";
+          ? `<div class="stock-alert">Only ${product.stockQuantity} left!</div>` : "";
 
         const averageRating = parseFloat(product.average_rating) || 0;
         const generateStarHTML = (rating) => {
-            const fullStars = Math.floor(rating);
-            const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-            const emptyStars = 5 - fullStars - halfStar;
-            let starsHTML = '';
-            for (let i = 0; i < fullStars; i++) starsHTML += '<i class="fas fa-star"></i>';
-            if (halfStar) starsHTML += '<i class="fas fa-star-half-alt"></i>';
-            for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="far fa-star"></i>';
-            return starsHTML;
+          const fullStars = Math.floor(rating);
+          const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+          const emptyStars = 5 - fullStars - halfStar;
+          let starsHTML = '';
+          for (let i = 0; i < fullStars; i++) starsHTML += '<i class="fas fa-star"></i>';
+          if (halfStar) starsHTML += '<i class="fas fa-star-half-alt"></i>';
+          for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="far fa-star"></i>';
+          return starsHTML;
         };
 
         const ratingsHTML = `
-            <div class="product-ratings">
-                <div class="stars">${generateStarHTML(averageRating)}</div>
-                <span class="rating-count">${averageRating.toFixed(1)}</span>
-            </div>
+          <div class="product-ratings">
+            <div class="stars">${generateStarHTML(averageRating)}</div>
+            <span class="rating-count">${averageRating.toFixed(1)}</span>
+          </div>
         `;
 
         let variantListHTML = "";
         if (product.variants && product.variants.length > 0) {
-            variantListHTML = `
-                <div class="variant-colors">
-                    ${product.variants.map((variant, index) => {
-                        const hexCode = variant.hexCode || "#CCCCCC";
-                        const cleanVariantName = cleanProductName(variant.name);
-                        return `<div class="color-circle ${index === 0 ? "active" : ""}" style="background-color: ${hexCode}; border: 2px solid white;" data-variant-id="${variant.id}" data-variant-image="${variant.image || LOCAL_FALLBACK_IMAGE}" title="${cleanVariantName}"></div>`;
-                    }).join("")}
-                </div>
-            `;
+          variantListHTML = `
+            <div class="variant-colors">
+              ${product.variants.map((variant, index) => {
+                const hexCode = variant.hexCode || "#CCCCCC";
+                const cleanVariantName = cleanProductName(variant.name);
+                return `<div class="color-circle ${index === 0 ? "active" : ""}" style="background-color: ${hexCode}; border: 2px solid white;" data-variant-id="${variant.id}" data-variant-image="${variant.image || LOCAL_FALLBACK_IMAGE}" title="${cleanVariantName}"></div>`;
+              }).join("")}
+            </div>
+          `;
         }
 
         card.innerHTML = `
-            <div class="product-image-container">
-                ${stockAlert}
-                <img src="${previewImage}" alt="${displayName}" class="product-image" data-default="${defaultImage}" data-preview="${previewImage}" onerror="this.onerror=null; this.src='${LOCAL_FALLBACK_IMAGE}'; this.classList.add('no-image-placeholder')">
+          <div class="product-image-container">
+            ${stockAlert}
+            <img src="${previewImage}" alt="${displayName}" class="product-image" data-default="${defaultImage}" data-preview="${previewImage}" onerror="this.onerror=null; this.src='${LOCAL_FALLBACK_IMAGE}'; this.classList.add('no-image-placeholder')">
+          </div>
+          <div class="product-info">
+            <div class="product-name">${displayName}</div>
+            <div class="product-price">${priceDisplay}</div>
+            ${ratingsHTML}
+            ${variantListHTML}
+            <div class="product-actions">
+              <button class="like-btn p-2 rounded-full transition-colors duration-200 ${product.liked ? "liked" : ""}" onclick="event.stopPropagation(); toggleLike('${product.id}')">
+                <i class="${product.liked ? "fas" : "far"} fa-heart"></i>
+              </button>
+              <button class="add-to-cart-btn" onclick="event.stopPropagation(); window.location.href='productdetail.html?productId=${product.id}'">
+                <i class="fas fa-shopping-cart"></i>Add to Cart
+              </button>
             </div>
-            <div class="product-info">
-                <div class="product-name">${displayName}</div>
-                <div class="product-price">${priceDisplay}</div>
-                ${ratingsHTML}
-                ${variantListHTML}
-                <div class="product-actions">
-                    <button class="like-btn p-2 rounded-full transition-colors duration-200 ${product.liked ? "liked" : ""}" onclick="event.stopPropagation(); toggleLike('${product.id}')">
-                        <i class="${product.liked ? "fas" : "far"} fa-heart"></i>
-                    </button>
-                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); window.location.href='productdetail.html?productId=${product.id}'">
-                        <i class="fas fa-shopping-cart"></i>Add to Cart
-                    </button>
-                </div>
-            </div>
+          </div>
         `;
 
         card.addEventListener("click", (e) => {
-            if (e.target.closest(".like-btn") || e.target.closest(".add-to-cart-btn") || e.target.closest(".color-circle")) return;
-            window.location.href = `productdetail.html?productId=${product.id}`;
+          if (e.target.closest(".like-btn") || e.target.closest(".add-to-cart-btn") || e.target.closest(".color-circle")) return;
+          window.location.href = `productdetail.html?productId=${product.id}`;
         });
-        // ... existing hover/click logic for images ...
+        
         const img = card.querySelector(".product-image");
         const productImageDiv = card.querySelector(".product-image-container");
         const colorCircles = card.querySelectorAll(".color-circle");
 
         if (colorCircles.length > 0) {
-            colorCircles.forEach((circle) => {
-                circle.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    colorCircles.forEach((c) => c.classList.remove("active"));
-                    circle.classList.add("active");
-                    const variantImage = circle.dataset.variantImage;
-                    if (variantImage && variantImage !== LOCAL_FALLBACK_IMAGE) {
-                        img.src = variantImage;
-                        img.dataset.default = variantImage;
-                        img.classList.remove("no-image-placeholder");
-                        img.style.objectFit = "cover";
-                    }
-                });
+          colorCircles.forEach((circle) => {
+            circle.addEventListener("click", (e) => {
+              e.stopPropagation();
+              colorCircles.forEach((c) => c.classList.remove("active"));
+              circle.classList.add("active");
+              const variantImage = circle.dataset.variantImage;
+              if (variantImage && variantImage !== LOCAL_FALLBACK_IMAGE) {
+                img.src = variantImage;
+                img.dataset.default = variantImage;
+                img.classList.remove("no-image-placeholder");
+                img.style.objectFit = "cover";
+              }
             });
+          });
         }
 
         if (productImageDiv && img) {
-            productImageDiv.addEventListener("mouseenter", () => {
-                const preview = img.dataset.preview;
-                if (preview && preview !== img.src) {
-                    img.classList.add("fade-out");
-                    setTimeout(() => {
-                        img.src = preview;
-                        img.classList.remove("fade-out");
-                        img.classList.add("fade-in");
-                        setTimeout(() => { img.classList.remove("fade-in"); }, 400);
-                    }, 200);
-                }
-            });
+          productImageDiv.addEventListener("mouseenter", () => {
+            const preview = img.dataset.preview;
+            if (preview && preview !== img.src) {
+              img.classList.add("fade-out");
+              setTimeout(() => {
+                img.src = preview;
+                img.classList.remove("fade-out");
+                img.classList.add("fade-in");
+                setTimeout(() => { img.classList.remove("fade-in"); }, 400);
+              }, 200);
+            }
+          });
 
-            productImageDiv.addEventListener("mouseleave", () => {
-                const defaultImg = img.dataset.default;
-                if (defaultImg && defaultImg !== img.src) {
-                    img.classList.add("fade-out");
-                    setTimeout(() => {
-                        img.src = defaultImg;
-                        img.classList.remove("fade-out");
-                        img.classList.add("fade-in");
-                        setTimeout(() => { img.classList.remove("fade-in"); }, 400);
-                    }, 200);
-                }
-            });
+          productImageDiv.addEventListener("mouseleave", () => {
+            const defaultImg = img.dataset.default;
+            if (defaultImg && defaultImg !== img.src) {
+              img.classList.add("fade-out");
+              setTimeout(() => {
+                img.src = defaultImg;
+                img.classList.remove("fade-out");
+                img.classList.add("fade-in");
+                setTimeout(() => { img.classList.remove("fade-in"); }, 400);
+              }, 200);
+            }
+          });
         }
         return card;
       }
@@ -472,7 +922,8 @@
         const product = products.find((p) => p.id === productId || p.parentID === productId);
         if (!product) return;
         product.liked = !product.liked;
-        renderProducts();
+        applyFilters(); 
+        
         try {
           const response = await fetch("../php/favorites-handler.php", {
             method: "POST",
@@ -482,14 +933,16 @@
           const result = await response.json();
           if (!result.success) {
             product.liked = !product.liked;
-            renderProducts();
+            applyFilters();
             showNotification("Failed to update favorites.");
             return;
           }
           if (result.action === "liked") showNotification("Added to Favorites ❤️");
           else if (result.action === "unliked") showNotification("Removed from Favorites 💔");
         } catch (err) {
-          product.liked = !product.liked; renderProducts(); showNotification("Error updating favorites.");
+          product.liked = !product.liked; 
+          applyFilters(); 
+          showNotification("Error updating favorites.");
         }
       }
 
@@ -509,38 +962,116 @@
         if (newPage) newPage.classList.add("active");
         document.querySelectorAll(".nav-item").forEach((item) => { item.classList.remove("active"); });
         document.querySelectorAll(`.nav-item[data-page="${page}"]`).forEach((item) => { item.classList.add("active"); });
-        if (page === "favorites") renderFavorites();
       }
 
-      function handleCategoryFilter(category) {
-        document.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"));
-        const categoryBtn = document.querySelector(`.category-btn[data-category="${category.toLowerCase()}"]`);
-        if (categoryBtn) categoryBtn.classList.add("active");
-        if (category.toLowerCase() === "all") renderProducts();
-        else {
-          const filteredProducts = products.filter((p) => p.category === category.toLowerCase());
-          renderProducts(filteredProducts);
+      // --- CATEGORY FILTER (MULTI-SELECT) ---
+      function handleCategoryClick(category) {
+        const normalizedCat = normalizeCategory(category);
+        
+        if (normalizedCat === 'all') {
+          // Reset all categories
+          selectedCategories = [];
+        } else {
+          // Toggle category selection
+          const index = selectedCategories.indexOf(normalizedCat);
+          if (index > -1) {
+            selectedCategories.splice(index, 1);
+          } else {
+            selectedCategories.push(normalizedCat);
+          }
         }
+        
+        updateCategoryButtons();
+        updateActiveFiltersDisplay();
+        applyFilters();
       }
 
+      function updateCategoryButtons() {
+        document.querySelectorAll(".category-btn").forEach((btn) => {
+          const cat = btn.getAttribute("data-category");
+          if (cat === 'all') {
+            // "All" button is active only when no categories are selected
+            if (selectedCategories.length === 0) {
+              btn.classList.add("active");
+            } else {
+              btn.classList.remove("active");
+            }
+          } else {
+            // Other buttons are active if they're in the selectedCategories array
+            if (selectedCategories.includes(cat)) {
+              btn.classList.add("active");
+            } else {
+              btn.classList.remove("active");
+            }
+          }
+        });
+      }
+
+      // --- SORT FILTER ---
+      function initFilterDropdown() {
+        const btn = document.getElementById('filter-toggle');
+        const dropdown = document.getElementById('filter-options');
+        const options = document.querySelectorAll('.filter-option');
+
+        if(!btn || !dropdown) return;
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdown.classList.toggle('show');
+          btn.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+            btn.classList.remove('active');
+          }
+        });
+
+        options.forEach(option => {
+          option.addEventListener('click', () => {
+            const sortType = option.getAttribute('data-sort');
+            
+            if (sortType === 'none') {
+              currentSort = null;
+              options.forEach(o => o.classList.remove('selected'));
+            } else {
+              currentSort = sortType;
+              options.forEach(o => o.classList.remove('selected'));
+              option.classList.add('selected');
+            }
+
+            dropdown.classList.remove('show');
+            btn.classList.remove('active');
+            
+            updateActiveFiltersDisplay();
+            applyFilters();
+          });
+        });
+      }
+
+      // --- SEARCH ---
       function initSearch() {
-        const searchInput = document.querySelector(".search-bar input");
+        const searchInput = document.getElementById("search-input");
         const searchIcon = document.querySelector(".search-bar .fa-search");
         if (!searchInput) return;
+
         const performSearch = () => {
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            if (!searchTerm) { renderProducts(); return; }
-            const filteredProducts = products.filter((product) => {
-                if (product.name.toLowerCase().includes(searchTerm)) return true;
-                if (product.category.toLowerCase().includes(searchTerm)) return true;
-                if (product.variants && product.variants.some((variant) => variant.name.toLowerCase().includes(searchTerm))) return true;
-                return false;
-            });
-            renderProducts(filteredProducts);
+          currentSearchTerm = searchInput.value.trim();
+          updateActiveFiltersDisplay();
+          applyFilters();
         };
-        searchInput.addEventListener("input", performSearch);
-        searchIcon.addEventListener("click", performSearch);
-        searchInput.addEventListener("keypress", (e) => { if (e.key === "Enter") performSearch(); });
+
+        let debounceTimer;
+        searchInput.addEventListener("input", () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(performSearch, 300);
+        });
+        
+        if(searchIcon) searchIcon.addEventListener("click", performSearch);
+        searchInput.addEventListener("keypress", (e) => { 
+          if (e.key === "Enter") performSearch(); 
+        });
       }
 
       async function updateCartCount() {
@@ -551,12 +1082,14 @@
           cartCounts.forEach((count) => {
             if(count.id === 'notif-badge') return;
             if (data.success) {
-                count.textContent = data.count;
-                if (data.count > 0) count.classList.add("show");
-                else count.classList.remove("show");
+              count.textContent = data.count;
+              if (data.count > 0) count.classList.add("show");
+              else count.classList.remove("show");
             }
           });
-        } catch (error) { console.log("Cart count update failed"); }
+        } catch (error) { 
+          console.log("Cart count update failed"); 
+        }
       }
 
       async function updateUserGreeting() {
@@ -574,6 +1107,7 @@
         
         setupNotifications();
         fetchNotifications();
+        initFilterDropdown();
 
         const categoriesContainer = document.getElementById("categories-container");
         fetch("../php/categories.php")
@@ -581,20 +1115,37 @@
           .then((data) => {
             if (data.success && categoriesContainer) {
               categoriesContainer.innerHTML = "";
+              
+              // All Button
               const allBtn = document.createElement("button");
-              allBtn.className = "category-btn bg-pink-500 text-white active px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md";
-              allBtn.textContent = "All";
+              allBtn.className = "category-btn active";
+              allBtn.innerHTML = '<i class="fas fa-th"></i> All';
               allBtn.setAttribute("data-category", "all");
               categoriesContainer.appendChild(allBtn);
-              allBtn.addEventListener("click", () => handleCategoryFilter("All"));
+              allBtn.addEventListener("click", () => handleCategoryClick("all"));
+
+              // Category Icons Map
+              const categoryIcons = {
+                'lips': 'fa-kiss-wink-heart',
+                'eyes': 'fa-eye',
+                'face': 'fa-smile',
+                'cheeks': 'fa-grin-hearts',
+                'nails': 'fa-hand-sparkles',
+                'tools': 'fa-tools',
+                'skincare': 'fa-spa',
+                'brushes': 'fa-paint-brush'
+              };
+
+              // Other Categories
               data.categories.filter((c) => normalizeCategory(c) !== "all").forEach((cat) => {
-                  const btn = document.createElement("button");
-                  btn.className = "category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors duration-200 ml-2";
-                  btn.textContent = cat;
-                  btn.setAttribute("data-category", normalizeCategory(cat));
-                  categoriesContainer.appendChild(btn);
-                  btn.addEventListener("click", () => handleCategoryFilter(cat));
-                });
+                const btn = document.createElement("button");
+                btn.className = "category-btn";
+                const iconClass = categoryIcons[normalizeCategory(cat)] || 'fa-star';
+                btn.innerHTML = `<i class="fas ${iconClass}"></i> ${cat}`;
+                btn.setAttribute("data-category", normalizeCategory(cat));
+                categoriesContainer.appendChild(btn);
+                btn.addEventListener("click", () => handleCategoryClick(cat));
+              });
             }
           })
           .catch((err) => console.error("Category Fetch Error:", err));
@@ -604,7 +1155,7 @@
           .then((data) => {
             if (data.success) {
               products = data.products;
-              renderProducts();
+              applyFilters();
             } else showNotification("Failed to load products.");
           })
           .catch((err) => showNotification("Error fetching products from server."));
@@ -619,13 +1170,13 @@
         const desktopCartNav = document.querySelector('.desktop-nav .nav-item[data-page="cart"]');
         const mobileCartNav = document.querySelector('.mobile-nav .nav-item[data-page="cart"]');
         if (desktopCartNav) {
-            desktopCartNav.addEventListener("mouseenter", () => { showCartTotalOnHover(); });
+          desktopCartNav.addEventListener("mouseenter", () => { showCartTotalOnHover(); });
         }
         if (mobileCartNav) {
-            let touchTimer;
-            mobileCartNav.addEventListener("touchstart", () => { touchTimer = setTimeout(() => showCartTotalOnHover(), 500); });
-            mobileCartNav.addEventListener("touchend", () => clearTimeout(touchTimer));
-            mobileCartNav.addEventListener("click", function (e) { if (!e.target.closest("a")) showCartTotalOnHover(); });
+          let touchTimer;
+          mobileCartNav.addEventListener("touchstart", () => { touchTimer = setTimeout(() => showCartTotalOnHover(), 500); });
+          mobileCartNav.addEventListener("touchend", () => clearTimeout(touchTimer));
+          mobileCartNav.addEventListener("click", function (e) { if (!e.target.closest("a")) showCartTotalOnHover(); });
         }
       }
 
@@ -639,18 +1190,18 @@
             const desktopCartNav = document.querySelector('.desktop-nav .nav-item[data-page="cart"]');
             const mobileCartNav = document.querySelector('.mobile-nav .nav-item[data-page="cart"]');
             const createPopup = (nav) => {
-                const popup = document.createElement("div");
-                popup.className = "cart-total-popup";
-                popup.innerHTML = `<div class="cart-total-label">Cart Total</div><div class="cart-total-amount">₱${parseFloat(result.totalAmount).toFixed(2)}</div>`;
-                nav.appendChild(popup);
-                setTimeout(() => popup.classList.add("show"), 10);
-                return popup;
+              const popup = document.createElement("div");
+              popup.className = "cart-total-popup";
+              popup.innerHTML = `<div class="cart-total-label">Cart Total</div><div class="cart-total-amount">₱${parseFloat(result.totalAmount).toFixed(2)}</div>`;
+              nav.appendChild(popup);
+              setTimeout(() => popup.classList.add("show"), 10);
+              return popup;
             };
             if (desktopCartNav) {
               const popup = createPopup(desktopCartNav);
               desktopCartNav.addEventListener("mouseleave", () => {
-                  popup.classList.remove("show");
-                  setTimeout(() => { if (popup.parentNode) popup.remove(); }, 300);
+                popup.classList.remove("show");
+                setTimeout(() => { if (popup.parentNode) popup.remove(); }, 300);
               }, { once: true });
             }
             if (mobileCartNav) {
@@ -661,10 +1212,10 @@
               }, 3000);
             }
           }
-        } catch (error) { console.error("Error fetching cart total:", error); }
+        } catch (error) { 
+          console.error("Error fetching cart total:", error); 
+        }
       }
-      
-
     </script>
   </body>
 </html>
