@@ -34,10 +34,21 @@ try {
         exit;
     }
 
+    // NEW: Get user's feedback for ALL products BEFORE calling Python
+    $user_feedback = getUserFeedback($user_id, $conn);
+    
+    // Add user feedback to each product for Python processing
+    foreach ($products as &$product) {
+        $product_id = $product['id'];
+        if (isset($user_feedback[$product_id])) {
+            $product['user_feedback'] = $user_feedback[$product_id];
+        }
+    }
+
     // NEW: Get collaborative data for current user
     $collaborative_data = getCollaborativeData($user_id, $conn);
     
-    // Prepare data for Python ML
+    // Prepare data for Python ML - NOW INCLUDES USER FEEDBACK
     $ml_data = [
         'user_input' => [
             'Skin_Type' => $input['skinType'] ?? 'Normal',
@@ -46,9 +57,9 @@ try {
             'Skin_Concerns' => $input['concerns'] ?? [],
             'Preference' => $input['finish'] ?? 'Dewy'
         ],
-        'products' => $products,
-        'collaborative_data' => $collaborative_data, // NEW: Pass collaborative data
-        'current_user_id' => $user_id // NEW: Pass user ID for ML processing
+        'products' => $products, // NOW includes user_feedback for each product
+        'collaborative_data' => $collaborative_data,
+        'current_user_id' => $user_id
     ];
 
     // Save to temporary file
@@ -64,7 +75,7 @@ try {
     }
 
     $command = 'python3 ' . escapeshellarg($python_script) . ' ' . escapeshellarg($temp_file) . ' 2>/dev/null';
-     $output = shell_exec($command);
+    $output = shell_exec($command);
 
     // Clean up
     unlink($temp_file);
@@ -100,6 +111,33 @@ try {
         'fallback' => true,
         'recommendations' => getFallbackRecommendations($conn, $input, $user_id)
     ]);
+}
+
+// NEW: Function to get user feedback for ALL products
+function getUserFeedback($user_id, $conn) {
+    $feedback_query = "
+        SELECT ProductID, UserRating, RecommendationFeedback, CreatedAt 
+        FROM productfeedback 
+        WHERE UserID = ?
+    ";
+    
+    $feedback_stmt = $conn->prepare($feedback_query);
+    $feedback_stmt->bind_param("i", $user_id);
+    $feedback_stmt->execute();
+    $feedback_result = $feedback_stmt->get_result();
+    $user_feedback = $feedback_result->fetch_all(MYSQLI_ASSOC);
+    
+    // Convert to associative array for easy lookup
+    $feedback_lookup = [];
+    foreach ($user_feedback as $feedback) {
+        $feedback_lookup[$feedback['ProductID']] = [
+            'UserRating' => floatval($feedback['UserRating']),
+            'RecommendationFeedback' => $feedback['RecommendationFeedback'],
+            'CreatedAt' => $feedback['CreatedAt']
+        ];
+    }
+    
+    return $feedback_lookup;
 }
 
 // NEW: Function to get collaborative data
@@ -234,30 +272,8 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
     $result = $stmt->get_result();
     $product_details = $result->fetch_all(MYSQLI_ASSOC);
 
-    // NEW: Get user's personal feedback for these products
-    $feedback_query = "
-        SELECT ProductID, UserRating, RecommendationFeedback, CreatedAt 
-        FROM productfeedback 
-        WHERE UserID = ? AND ProductID IN ($placeholders)
-    ";
-    
-    $feedback_stmt = $conn->prepare($feedback_query);
-    $feedback_types = 'i' . $types;
-    $feedback_params = array_merge([$user_id], $product_ids);
-    $feedback_stmt->bind_param($feedback_types, ...$feedback_params);
-    $feedback_stmt->execute();
-    $feedback_result = $feedback_stmt->get_result();
-    $user_feedback = $feedback_result->fetch_all(MYSQLI_ASSOC);
-    
-    // Convert to associative array for easy lookup
-    $feedback_lookup = [];
-    foreach ($user_feedback as $feedback) {
-        $feedback_lookup[$feedback['ProductID']] = [
-            'UserRating' => $feedback['UserRating'],
-            'RecommendationFeedback' => $feedback['RecommendationFeedback'],
-            'CreatedAt' => $feedback['CreatedAt']
-        ];
-    }
+    // NEW: Get user's personal feedback for these products (for frontend display)
+    $user_feedback = getUserFeedback($user_id, $conn);
 
     // NEW: Get collaborative data for these specific products
     $collaborative_data = getCollaborativeData($user_id, $conn);
@@ -286,9 +302,9 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
                 continue; // Skip unavailable products
             }
             
-            // Add user feedback if exists
-            if (isset($feedback_lookup[$rec['id']])) {
-                $rec['user_feedback'] = $feedback_lookup[$rec['id']];
+            // Add user feedback if exists (for frontend display)
+            if (isset($user_feedback[$rec['id']])) {
+                $rec['user_feedback'] = $user_feedback[$rec['id']];
             }
             
             // Add collaborative data if exists
@@ -344,34 +360,7 @@ function getFallbackRecommendations($conn, $input, $user_id)
     $products = $result->fetch_all(MYSQLI_ASSOC);
 
     // NEW: Get user feedback for fallback products
-    if (!empty($products)) {
-        $product_ids = array_column($products, 'id');
-        $placeholders = str_repeat('?,', count($product_ids) - 1) . '?';
-        
-        $feedback_query = "
-            SELECT ProductID, UserRating, RecommendationFeedback, CreatedAt 
-            FROM productfeedback 
-            WHERE UserID = ? AND ProductID IN ($placeholders)
-        ";
-        
-        $feedback_stmt = $conn->prepare($feedback_query);
-        $types = str_repeat('s', count($product_ids));
-        $feedback_types = 'i' . $types;
-        $feedback_params = array_merge([$user_id], $product_ids);
-        $feedback_stmt->bind_param($feedback_types, ...$feedback_params);
-        $feedback_stmt->execute();
-        $feedback_result = $feedback_stmt->get_result();
-        $user_feedback = $feedback_result->fetch_all(MYSQLI_ASSOC);
-        
-        $feedback_lookup = [];
-        foreach ($user_feedback as $feedback) {
-            $feedback_lookup[$feedback['ProductID']] = [
-                'UserRating' => $feedback['UserRating'],
-                'RecommendationFeedback' => $feedback['RecommendationFeedback'],
-                'CreatedAt' => $feedback['CreatedAt']
-            ];
-        }
-    }
+    $user_feedback = getUserFeedback($user_id, $conn);
 
     // Add mock ML data for fallback + real user feedback
     foreach ($products as &$product) {
@@ -380,8 +369,8 @@ function getFallbackRecommendations($conn, $input, $user_id)
         $product['Initial_Fit_Score'] = rand(5, 10) / 10;  // 0.5-1.0
         
         // Add real user feedback if exists
-        if (isset($feedback_lookup[$product['id']])) {
-            $product['user_feedback'] = $feedback_lookup[$product['id']];
+        if (isset($user_feedback[$product['id']])) {
+            $product['user_feedback'] = $user_feedback[$product['id']];
         }
     }
 
