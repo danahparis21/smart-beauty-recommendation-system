@@ -66,6 +66,347 @@ face_mesh = mp_face_mesh.FaceMesh(
     min_tracking_confidence=0.5
 )
 
+# NEW: Skin type and concerns analysis functions
+def analyze_skin_type(image, landmarks, h, w):
+    """Analyze skin type based on texture, oiliness, and regional characteristics"""
+    try:
+        # Define facial regions for analysis
+        t_zone_points = [168, 197, 5, 4, 75, 97, 2, 326, 327]  # Forehead, nose, chin
+        cheek_points = [117, 118, 119, 100, 47, 126, 209, 49, 50, 346, 347, 348]  # Cheeks
+        
+        # Extract regions
+        t_zone_pixels = extract_region_pixels(image, landmarks, t_zone_points, h, w)
+        cheek_pixels = extract_region_pixels(image, landmarks, cheek_points, h, w)
+        
+        if len(t_zone_pixels) == 0 or len(cheek_pixels) == 0:
+            return "Normal"  # Default fallback
+        
+        # Analyze oiliness (brightness and saturation in HSV)
+        t_zone_hsv = cv2.cvtColor(np.array([t_zone_pixels]), cv2.COLOR_BGR2HSV)[0]
+        cheek_hsv = cv2.cvtColor(np.array([cheek_pixels]), cv2.COLOR_BGR2HSV)[0]
+        
+        t_zone_brightness = np.mean(t_zone_hsv[:, 2])
+        cheek_brightness = np.mean(cheek_hsv[:, 2])
+        t_zone_saturation = np.mean(t_zone_hsv[:, 1])
+        
+        # Analyze texture (pore size estimation via variance)
+        t_zone_variance = np.var(t_zone_hsv[:, 2])  # Brightness variance indicates texture
+        cheek_variance = np.var(cheek_hsv[:, 2])
+        
+        # Analyze redness (for sensitive skin)
+        t_zone_rgb = np.mean(t_zone_pixels, axis=0)
+        cheek_rgb = np.mean(cheek_pixels, axis=0)
+        redness_tzone = t_zone_rgb[2] / max(t_zone_rgb[1], 1)  # R/G ratio
+        redness_cheek = cheek_rgb[2] / max(cheek_rgb[1], 1)
+        
+        print(f"🔍 Skin Type Analysis:")
+        print(f"   T-zone brightness: {t_zone_brightness:.1f}, Cheek brightness: {cheek_brightness:.1f}")
+        print(f"   T-zone saturation: {t_zone_saturation:.1f}")
+        print(f"   T-zone redness: {redness_tzone:.2f}, Cheek redness: {redness_cheek:.2f}")
+        
+        # Decision logic for skin type
+        oiliness_diff = t_zone_brightness - cheek_brightness
+        high_redness = redness_tzone > 1.3 or redness_cheek > 1.3
+        
+        if oiliness_diff > 25 and t_zone_saturation < 50:
+            return "Combination"
+        elif t_zone_brightness > 180 and t_zone_saturation < 60:
+            return "Oily"
+        elif cheek_brightness < 120 and t_zone_saturation > 80:
+            return "Dry"
+        elif high_redness or (redness_tzone > 1.25 and redness_cheek > 1.25):
+            return "Sensitive"
+        else:
+            return "Normal"
+            
+    except Exception as e:
+        print(f"❌ Skin type analysis error: {e}")
+        return "Normal"  # Default fallback
+
+def detect_skin_concerns(image, landmarks, h, w):
+    """Detect common skin concerns"""
+    concerns = []
+    
+    try:
+        # Analyze entire face region for concerns
+        face_pixels = extract_face_region_pixels(image, landmarks, h, w)
+        
+        if len(face_pixels) == 0:
+            return []
+        
+        face_hsv = cv2.cvtColor(np.array([face_pixels]), cv2.COLOR_BGR2HSV)[0]
+        face_rgb = np.array(face_pixels)
+        
+        # 1. Detect acne (red inflamed areas with texture)
+        acne_detected = detect_acne_patterns(image, landmarks, h, w)
+        if acne_detected:
+            concerns.append("acne")
+            print("   ✅ Acne detected")
+        
+        # 2. Detect dark spots (localized dark areas)
+        dark_spots_detected = detect_dark_spots(face_hsv, face_rgb)
+        if dark_spots_detected:
+            concerns.append("dark-spots")
+            print("   ✅ Dark spots detected")
+        
+        # 3. Detect aging signs (texture analysis)
+        aging_detected = detect_aging_signs(image, landmarks, h, w)
+        if aging_detected:
+            concerns.append("aging")
+            print("   ✅ Aging signs detected")
+        
+        # 4. Detect dryness (flaky texture patterns)
+        dryness_detected = detect_dryness(face_hsv, face_rgb)
+        if dryness_detected:
+            concerns.append("dryness")
+            print("   ✅ Dryness detected")
+        
+        if not concerns:
+            print("   ✅ No major concerns detected")
+            
+    except Exception as e:
+        print(f"❌ Skin concerns detection error: {e}")
+    
+    return concerns
+
+def extract_region_pixels(image, landmarks, point_indices, h, w):
+    """Extract pixels from specific facial regions"""
+    pixels = []
+    for point_idx in point_indices:
+        landmark = landmarks.landmark[point_idx]
+        x = int(landmark.x * w)
+        y = int(landmark.y * h)
+        
+        # Sample area around each point
+        for dx in [-3, -1, 0, 1, 3]:
+            for dy in [-3, -1, 0, 1, 3]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < w and 0 <= ny < h:
+                    pixels.append(image[ny, nx])
+    
+    return pixels
+
+def extract_face_region_pixels(image, landmarks, h, w):
+    """Extract pixels from the entire face region"""
+    pixels = []
+    # Use a subset of face landmarks for efficiency
+    face_points = list(range(0, 100)) + list(range(200, 300))  # Reduced set for performance
+    
+    for point_idx in face_points[:50]:  # Further reduce for speed
+        try:
+            landmark = landmarks.landmark[point_idx]
+            x = int(landmark.x * w)
+            y = int(landmark.y * h)
+            
+            if 0 <= x < w and 0 <= y < h:
+                pixels.append(image[y, x])
+        except:
+            continue
+    
+    return pixels
+
+def detect_acne_patterns(image, landmarks, h, w):
+    """Detect acne through redness and texture patterns"""
+    try:
+        # Focus on common acne areas: cheeks, forehead, chin
+        acne_points = [117, 118, 119, 100, 47, 126, 209, 49, 50, 346, 347, 348, 168, 197, 5, 4]
+        acne_pixels = extract_region_pixels(image, landmarks, acne_points, h, w)
+        
+        if len(acne_pixels) == 0:
+            return False
+        
+        acne_rgb = np.array(acne_pixels)
+        redness_scores = acne_rgb[:, 2] / np.maximum(acne_rgb[:, 1], 1)  # R/G ratio
+        
+        # Count significantly red areas
+        high_redness_count = np.sum(redness_scores > 1.4)
+        redness_ratio = high_redness_count / len(redness_scores)
+        
+        return redness_ratio > 0.15  # If more than 15% of sampled areas are very red
+        
+    except:
+        return False
+
+def detect_dark_spots(face_hsv, face_rgb):
+    """Detect dark spots through brightness analysis"""
+    try:
+        # Dark spots have lower brightness but similar hue
+        brightness = face_hsv[:, 2]
+        dark_threshold = np.percentile(brightness, 20)  # Bottom 20% brightness
+        dark_spots_ratio = np.sum(brightness < dark_threshold) / len(brightness)
+        
+        return dark_spots_ratio > 0.25  # Significant dark areas
+        
+    except:
+        return False
+
+def detect_aging_signs(image, landmarks, h, w):
+    """Detect aging signs through texture analysis"""
+    try:
+        # Focus on areas prone to wrinkles: forehead, eye area
+        aging_points = [168, 197, 6, 7, 8, 9, 151, 152, 153, 154, 155, 156, 33, 133, 362, 263]
+        aging_pixels = extract_region_pixels(image, landmarks, aging_points, h, w)
+        
+        if len(aging_pixels) == 0:
+            return False
+        
+        aging_hsv = cv2.cvtColor(np.array([aging_pixels]), cv2.COLOR_BGR2HSV)[0]
+        
+        # Wrinkles create more texture variation
+        brightness_variance = np.var(aging_hsv[:, 2])
+        saturation_variance = np.var(aging_hsv[:, 1])
+        
+        # Higher variance indicates more texture (potential wrinkles)
+        return (brightness_variance > 800 or saturation_variance > 500)
+        
+    except:
+        return False
+
+def detect_dryness(face_hsv, face_rgb):
+    """Detect dryness through color and texture analysis"""
+    try:
+        # Dry skin often has higher saturation and specific texture
+        avg_saturation = np.mean(face_hsv[:, 1])
+        avg_brightness = np.mean(face_hsv[:, 2])
+        
+        # Dry skin tends to have higher saturation and medium-low brightness
+        return avg_saturation > 70 and 100 < avg_brightness < 160
+        
+    except:
+        return False
+
+# ENHANCED: Updated skin analysis function
+def analyze_skin_complete(image):
+    """Complete skin analysis including type, tone, undertone, and concerns"""
+    
+    # Apply lighting correction (your existing code)
+    max_b = np.max(image[:, :, 0])
+    max_g = np.max(image[:, :, 1])
+    max_r = np.max(image[:, :, 2])
+    
+    gain_b = 255.0 / max_b
+    gain_g = 255.0 / max_g
+    gain_r = 255.0 / max_r
+    
+    image_corrected = image.astype(np.float32)
+    image_corrected[:, :, 0] = np.clip(image_corrected[:, :, 0] * gain_b, 0, 255)
+    image_corrected[:, :, 1] = np.clip(image_corrected[:, :, 1] * gain_g, 0, 255)
+    image_corrected[:, :, 2] = np.clip(image_corrected[:, :, 2] * gain_r, 0, 255)
+    image_corrected = image_corrected.astype(np.uint8)
+    
+    try:
+        rgb_image = cv2.cvtColor(image_corrected, cv2.COLOR_BGR2RGB)
+        
+        # MediaPipe processing with retry (your existing code)
+        max_retries = 2
+        results = None
+        
+        for attempt in range(max_retries):
+            try:
+                results = face_mesh.process(rgb_image)
+                break
+            except Exception as mp_error:
+                if "timestamp mismatch" in str(mp_error) and attempt < max_retries - 1:
+                    time.sleep(0.1)
+                    continue
+                else:
+                    print(f"❌ MediaPipe error: {mp_error}")
+                    return None
+        
+        if results is None or not results.multi_face_landmarks:
+            print("❌ No face detected")
+            return None
+        
+        landmarks = results.multi_face_landmarks[0]
+        h, w = image.shape[:2]
+        
+        # Get existing tone/undertone analysis
+        basic_analysis = analyze_skin_tone_undertone(image)
+        if not basic_analysis:
+            return None
+        
+        # NEW: Enhanced analysis
+        skin_type = analyze_skin_type(image_corrected, landmarks, h, w)
+        concerns = detect_skin_concerns(image_corrected, landmarks, h, w)
+        
+        print(f"🎯 Complete Skin Analysis:")
+        print(f"   Skin Type: {skin_type}")
+        print(f"   Concerns: {concerns if concerns else 'None'}")
+        
+        # Combine all results
+        complete_analysis = {
+            **basic_analysis,
+            'skin_type': skin_type,
+            'concerns': concerns,
+            'analysis_type': 'complete'
+        }
+        
+        return complete_analysis
+        
+    except Exception as e:
+        print(f"💥 Complete skin analysis error: {e}")
+        return None
+
+# NEW ENDPOINT for complete skin analysis
+@app.route('/analyze-skin-complete', methods=['POST', 'OPTIONS'])
+def analyze_skin_complete_endpoint():
+    """Endpoint for complete skin analysis (for recommender system)"""
+    try:
+        if request.method == 'OPTIONS':
+            return '', 200
+
+        print("📨 Received complete skin analysis request")
+        data = request.get_json()
+
+        if not data:
+            return jsonify({'error': 'No JSON data received'}), 400
+
+        image_data = data.get('image')
+        
+        if not image_data:
+            return jsonify({'error': 'No image data provided'}), 400
+
+        # Decode base64 image
+        try:
+            if ',' in image_data:
+                image_data = image_data.split(',')[1]
+
+            image_bytes = base64.b64decode(image_data)
+            np_arr = np.frombuffer(image_bytes, np.uint8)
+            image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+            if image is None:
+                return jsonify({'error': 'Invalid image data'}), 400
+
+            print(f"✅ Image decoded: {image.shape}")
+
+        except Exception as e:
+            return jsonify({'error': f'Image decoding failed: {str(e)}'}), 400
+
+        # Perform complete skin analysis
+        print("🔍 Performing complete skin analysis...")
+        skin_analysis = analyze_skin_complete(image)
+
+        if not skin_analysis:
+            return jsonify({
+                'success': False,
+                'message': 'Could not detect face clearly. Please upload a front-facing photo with good lighting.'
+            })
+
+        print(f"✅ Complete analysis: {skin_analysis['skin_type']} skin, {skin_analysis['tone']} tone, {skin_analysis['undertone']} undertone")
+        print(f"✅ Concerns detected: {len(skin_analysis['concerns'])}")
+
+        return jsonify({
+            'success': True,
+            'skin_analysis': skin_analysis
+        })
+
+    except Exception as e:
+        print(f"💥 Complete analysis error: {e}")
+        import traceback
+        print(f"💥 Stack trace: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 def analyze_skin_tone_undertone(image):
     """Analyze skin tone and undertone from facial image - RELIABLE VERSION (with AWB)"""
     

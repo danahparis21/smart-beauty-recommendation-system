@@ -632,9 +632,12 @@
         transition: all 0.3s ease;
         overflow: hidden;
         border: 1px solid #f8f8f8;
-        height: 500px; /* Fixed height for all cards */
+        /* Flexible but constrained height */
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        height: 500px;
       }
-
       .recommendations-grid .product-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
@@ -666,8 +669,10 @@
       }
 
       .recommendations-grid .product-info {
-        padding: 20px;
-        flex: 1; /* Take remaining space */
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        flex: 1; /* Take up all available space */
       }
 
       .recommendations-grid .product-name {
@@ -676,13 +681,15 @@
         margin: 0 0 8px 0;
         color: #2d3748;
         line-height: 1.3;
-        height: 2.6em;
+        /* Remove fixed height and use flexible approach */
+        min-height: 2.6em;
+        max-height: 3.9em; /* Allow up to 3 lines if needed */
         overflow: hidden;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3; /* Allow 3 lines instead of 2 */
         -webkit-box-orient: vertical;
+        flex-shrink: 0; /* Don't shrink the name */
       }
-
       .recommendations-grid .product-category {
         color: #718096;
         font-size: 0.8em;
@@ -738,9 +745,9 @@
       .recommendations-grid .product-actions {
         display: flex;
         gap: 8px;
-        margin-top: 12px;
+        margin-top: auto; /* This pushes it to the bottom! */
+        padding-top: 10px; /* Add some spacing from content above */
       }
-
       .recommendations-grid .btn-primary,
       .recommendations-grid .btn-secondary {
         flex: 1;
@@ -955,6 +962,9 @@
           gap: 12px;
           padding: 0 5px;
         }
+        .recommendations-grid .product-card {
+          height: 380px; /* Even shorter for tiny screens */
+        }
 
         .recommendations-grid .product-image-container {
           height: 150px;
@@ -1004,11 +1014,12 @@
         }
 
         .recommendations-grid .product-card {
-          min-height: auto;
+          max-height: 420px;
+          min-height: 350px;
         }
 
         .recommendations-grid .product-image-container {
-          height: 140px;
+          height: 120px; /* Adjust image height accordingly */
         }
 
         .recommendations-grid .product-info {
@@ -1099,6 +1110,9 @@
 
         .recommendations-grid .product-image-container {
           height: 180px;
+        }
+        .recommendations-grid .product-card {
+          height: 460px; /* Slightly shorter than desktop */
         }
       }
 
@@ -2131,15 +2145,14 @@
       /* ===== USER RATINGS ===== */
       .user-rating {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin: 12px 0;
-        padding: 8px 0;
-        min-height: 24px;
-        width: 140px; /* Fixed container width */
-        margin-left: auto;
-        margin-right: auto;
+        align-items: center; /* Vertical center */
+        justify-content: center; /* Horizontal center */
+        gap: 4px;
+        margin: 4px 0;
+        padding: 2px 0;
+        min-height: 16px;
+        width: auto;
+        text-align: center; /* Extra assurance for text */
       }
 
       .stars {
@@ -2149,11 +2162,10 @@
       }
 
       .rating-text {
-        font-size: 12px;
-        font-weight: 600;
+        font-size: 11px; /* Slightly smaller */
+        font-weight: 500; /* Lighter weight */
         color: #6b7280;
-        min-width: 60px; /* Enough for "No ratings yet" */
-        text-align: center;
+        min-width: auto; /* Remove fixed width */
       }
 
       .stars i {
@@ -2183,16 +2195,16 @@
       /* Responsive */
       @media (max-width: 768px) {
         .user-rating {
-          margin: 10px 0;
-          padding: 6px 0;
+          margin: 1px 0;
+          gap: 2px;
         }
 
         .stars i {
-          font-size: 11px;
+          font-size: 8px;
         }
 
         .rating-text {
-          font-size: 11px;
+          font-size: 9px;
         }
       }
       /* Discreet pink scrollbar that appears on hover */
@@ -4431,11 +4443,17 @@
 
         // Check if user already has preferences
         await checkExistingPreferences();
+        const isRetakingQuiz =
+          sessionStorage.getItem("retakingQuiz") === "true";
 
         // If user has existing preferences, automatically load their results
-        if (hasExistingPreferences && currentPreferences) {
+        if (hasExistingPreferences && currentPreferences && !isRetakingQuiz) {
           console.log("User has existing preferences, auto-loading results...");
           await loadExistingUserResults();
+        } else {
+          // Clear the retake flag and show intro
+          sessionStorage.removeItem("retakingQuiz");
+          resetToIntro();
         }
 
         // Continue with other initializations
@@ -4559,11 +4577,107 @@
         document.getElementById("existing-prefs-modal").classList.add("active");
       }
 
-      // Face Scanning Functions
       let cameraStream = null;
+
+      function cleanupScanSummaries() {
+        // Remove any existing scan summaries from ALL possible locations
+        const existingSummaries = document.querySelectorAll(".scan-summary");
+        existingSummaries.forEach((summary) => {
+          console.log("Removing existing scan summary");
+          summary.remove();
+        });
+
+        // Also clean up any summaries that might be in step 5
+        const step5 = document.getElementById("step-5");
+        if (step5) {
+          const step5Summaries = step5.querySelectorAll(".scan-summary");
+          step5Summaries.forEach((summary) => summary.remove());
+        }
+      }
 
       function startFaceScan() {
         console.log("Starting face scan...");
+
+        // Clean up ANY existing scan summaries before starting new scan
+        cleanupScanSummaries();
+
+        // Open camera modal directly
+        document.getElementById("camera-modal").classList.add("active");
+        initializeCamera();
+      }
+
+      function skipToProductFinishStep(scanResults) {
+        console.log("Skipping to product finish step...");
+
+        // Clean up again to be safe
+        cleanupScanSummaries();
+
+        // Hide all steps
+        document.querySelectorAll(".quiz-step").forEach((step) => {
+          step.classList.remove("active");
+        });
+
+        // Show Step 5 directly
+        document.getElementById("step-5").classList.add("active");
+
+        // Update the progress bar to show all previous steps are completed
+        const progressFill = document.querySelector("#step-5 .progress-fill");
+        if (progressFill) {
+          progressFill.style.width = "100%";
+        }
+
+        // Update the header to indicate we're using scan results
+        const header = document.querySelector("#step-5 .quiz-header h2");
+        if (header) {
+          header.innerHTML = "Almost Done! Choose Your Preferred Finish";
+        }
+
+        const subheader = document.querySelector("#step-5 .quiz-header p");
+        if (subheader) {
+          subheader.innerHTML =
+            "Your skin analysis is complete. Just tell us your preferred product finish.";
+        }
+
+        // Add a small summary of scan results
+        addScanSummaryToStep5(scanResults);
+      }
+      function addScanSummaryToStep5() {
+        // Remove any existing scan summaries first
+        const existingSummaries = document.querySelectorAll(".scan-summary");
+        existingSummaries.forEach((summary) => summary.remove());
+
+        // Create a summary element showing the scan results
+        const summaryHtml = `
+        <div class="scan-summary" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--primary-pink);">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-dark); font-size: 0.9rem;">Your Scan Results:</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem;">
+                <div><strong>Skin Type:</strong> ${quizData.skinType}</div>
+                <div><strong>Skin Tone:</strong> ${quizData.skinTone}</div>
+                <div><strong>Undertone:</strong> ${quizData.undertone}</div>
+                <div><strong>Concerns:</strong> ${
+                  quizData.concerns && quizData.concerns.length > 0
+                    ? quizData.concerns
+                        .map((c) => c.replace("-", " "))
+                        .join(", ")
+                    : "None"
+                }</div>
+            </div>
+        </div>
+    `;
+
+        // Insert the summary before the options grid
+        const optionsGrid = document.querySelector("#step-5 .options-grid");
+        if (optionsGrid) {
+          optionsGrid.insertAdjacentHTML("beforebegin", summaryHtml);
+        }
+      }
+
+      function startFaceScan() {
+        console.log("Starting face scan...");
+
+        // Clean up ANY existing scan summaries before starting new scan
+        cleanupScanSummaries();
+
         // Open camera modal directly
         document.getElementById("camera-modal").classList.add("active");
         initializeCamera();
@@ -4618,72 +4732,122 @@
         const canvas = document.getElementById("camera-canvas");
         const context = canvas.getContext("2d");
 
-        // Set canvas size to match video
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
-        // Capture frame
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Get image data
         const imageData = canvas.toDataURL("image/jpeg");
-
-        // Close camera
         closeCamera();
 
         // Show loading in results modal
         document.getElementById("scan-results-modal").classList.add("active");
+        showScanLoadingState();
 
         // Send to backend for analysis
         analyzeFace(imageData);
       }
-
-      async function analyzeFace(imageData) {
-        try {
-          console.log("Sending face analysis request...");
-
-          const response = await fetch("../php/analyze-face.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              image: imageData,
-            }),
-          });
-
-          // Check if response is OK
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const text = await response.text();
-          console.log("Raw response:", text);
-
-          // Try to parse JSON
-          let result;
-          try {
-            result = JSON.parse(text);
-          } catch (parseError) {
-            console.error("JSON parse error:", parseError);
-            throw new Error("Invalid response from server");
-          }
-
-          if (result.success) {
-            console.log("Face analysis successful:", result.analysis);
-            displayScanResults(result.analysis);
-          } else {
-            console.error("Face analysis failed:", result.error);
-            throw new Error(result.error || "Face analysis failed");
-          }
-        } catch (error) {
-          console.error("Face analysis error:", error);
-          // Fallback to default values with error message
-          alert("Scan completed with default values (demo mode)");
-          displayScanResults(getDefaultScanResults());
-        }
+      function showScanLoadingState() {
+        document.getElementById("scan-skin-type").textContent = "Analyzing...";
+        document.getElementById("scan-skin-tone").textContent = "Analyzing...";
+        document.getElementById("scan-undertone").textContent = "Analyzing...";
+        document.getElementById("scan-concerns").innerHTML =
+          '<span style="color: #666;">Analyzing...</span>';
       }
 
+      async function analyzeFace(imageData) {
+    try {
+        console.log("Sending face analysis request to Python...");
+
+        const response = await fetch("http://localhost:5000/analyze-skin-complete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                image: imageData,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        console.log("Raw Python response:", text);
+
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+            console.error("JSON parse error:", parseError);
+            throw new Error("Invalid response from Python server");
+        }
+
+        if (result.success) {
+            console.log("Complete skin analysis successful:", result.skin_analysis);
+            
+            // Map Python response to your expected format
+            const mappedResults = {
+                skinType: result.skin_analysis.skin_type,
+                skinTone: result.skin_analysis.tone,
+                undertone: result.skin_analysis.undertone,
+                concerns: result.skin_analysis.concerns
+            };
+            
+            displayScanResults(mappedResults);
+        } else {
+            console.error("Python analysis failed:", result.error);
+            throw new Error(result.error || "Skin analysis failed");
+        }
+    } catch (error) {
+        console.error("Python analysis error:", error);
+        // Fallback to PHP analysis if Python fails
+        console.log("🔄 Falling back to PHP analysis...");
+        analyzeFaceWithPHP(imageData);
+    }
+}
+
+// Keep your existing PHP fallback
+async function analyzeFaceWithPHP(imageData) {
+    try {
+        const response = await fetch("../php/analyze-face.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                image: imageData,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        console.log("Raw PHP response:", text);
+
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+            console.error("JSON parse error:", parseError);
+            throw new Error("Invalid response from server");
+        }
+
+        if (result.success) {
+            console.log("PHP analysis successful:", result.analysis);
+            displayScanResults(result.analysis);
+        } else {
+            console.error("PHP analysis failed:", result.error);
+            throw new Error(result.error || "Face analysis failed");
+        }
+    } catch (error) {
+        console.error("PHP analysis error:", error);
+        // Final fallback to default values
+        displayScanResults(getDefaultScanResults());
+    }
+}
       function getDefaultScanResults() {
         return {
           skinType: "Normal",
@@ -4694,59 +4858,184 @@
       }
 
       function displayScanResults(analysis) {
-        document.getElementById("scan-skin-type").textContent =
-          analysis.skinType || "Normal";
-        document.getElementById("scan-skin-tone").textContent =
-          analysis.skinTone || "Medium";
-        document.getElementById("scan-undertone").textContent =
-          analysis.undertone || "Neutral";
+    // Validate and map the results to our allowed values
+    const validatedResults = validateScanResults(analysis);
 
-        const concernsElement = document.getElementById("scan-concerns");
-        if (analysis.concerns && analysis.concerns.length > 0) {
-          concernsElement.innerHTML = analysis.concerns
+    document.getElementById("scan-skin-type").textContent = validatedResults.skinType;
+    document.getElementById("scan-skin-tone").textContent = validatedResults.skinTone;
+    document.getElementById("scan-undertone").textContent = validatedResults.undertone;
+
+    const concernsElement = document.getElementById("scan-concerns");
+    if (validatedResults.concerns && validatedResults.concerns.length > 0) {
+        concernsElement.innerHTML = validatedResults.concerns
             .map((concern) => `<span class="concern-tag">${concern}</span>`)
             .join("");
-        } else {
-          concernsElement.textContent = "None detected";
+    } else {
+        concernsElement.innerHTML = '<span style="color: #666;">None detected</span>';
+    }
+    
+    console.log("🎯 Displaying validated results:", validatedResults);
+}
+function validateScanResults(analysis) {
+    // Allowed values for each category
+    const allowedSkinTypes = ["Normal", "Oily", "Dry", "Combination", "Sensitive"];
+    const allowedSkinTones = ["Fair", "Medium", "Tan", "Deep"];
+    const allowedUndertones = ["Warm", "Cool", "Neutral"];
+    const allowedConcerns = ["acne", "dryness", "dark-spots", "aging"];
+
+    // Validate and correct skin type
+    let skinType = analysis.skinType || "Normal";
+    if (!allowedSkinTypes.includes(skinType)) {
+        skinType = "Normal"; // Default fallback
+    }
+
+    // Validate and correct skin tone
+    let skinTone = analysis.skinTone || "Medium";
+    if (!allowedSkinTones.includes(skinTone)) {
+        if (skinTone === "Light") skinTone = "Fair";
+        else if (skinTone === "Olive") skinTone = "Medium";
+        else skinTone = "Medium";
+    }
+
+    // Validate and correct undertone
+    let undertone = analysis.undertone || "Neutral";
+    if (!allowedUndertones.includes(undertone)) {
+        undertone = "Neutral";
+    }
+
+    // Validate concerns
+    let concerns = analysis.concerns || [];
+    concerns = concerns.filter((concern) => allowedConcerns.includes(concern));
+
+    return {
+        skinType,
+        skinTone,
+        undertone,
+        concerns,
+    };
+}
+
+function useScanResults() {
+    try {
+        console.log("useScanResults function called");
+        closeCamera();
+
+        // Get the validated scan results and update quizData
+        quizData.skinType = document.getElementById("scan-skin-type").textContent.trim();
+        quizData.skinTone = document.getElementById("scan-skin-tone").textContent.trim();
+        quizData.undertone = document.getElementById("scan-undertone").textContent.trim();
+        quizData.concerns = Array.from(document.querySelectorAll("#scan-concerns .concern-tag"))
+            .map(tag => tag.textContent.trim().toLowerCase().replace(" ", "-"));
+        quizData.finish = ""; // Will be set in step 5
+
+        console.log("Updated quizData with scan results:", quizData);
+
+        document.getElementById("scan-results-modal").classList.remove("active");
+        skipToProductFinishStep();
+    } catch (error) {
+        console.error("Error in useScanResults:", error);
+        // Proceed silently since data will save anyway
+        document.getElementById("scan-results-modal").classList.remove("active");
+        skipToProductFinishStep();
+    }
+}
+      function closeCamera() {
+        console.log("Closing camera...");
+
+        // Stop camera stream
+        if (cameraStream) {
+          cameraStream.getTracks().forEach((track) => {
+            console.log("Stopping track:", track.kind);
+            track.stop();
+          });
+          cameraStream = null;
         }
+
+        // Clear video source
+        const video = document.getElementById("camera-video");
+        if (video) {
+          video.srcObject = null;
+        }
+
+        // Close modal
+        document.getElementById("camera-modal").classList.remove("active");
+
+        console.log("Camera closed successfully");
+      }
+      // Close camera when page is unloaded (user leaves)
+      window.addEventListener("beforeunload", function () {
+        closeCamera();
+      });
+
+      function skipToProductFinishStep() {
+        // Hide all steps
+        document.querySelectorAll(".quiz-step").forEach((step) => {
+          step.classList.remove("active");
+        });
+
+        // Show Step 5 directly
+        document.getElementById("step-5").classList.add("active");
+
+        // Update the progress bar to show all previous steps are completed
+        const progressFill = document.querySelector("#step-5 .progress-fill");
+        if (progressFill) {
+          progressFill.style.width = "100%";
+        }
+
+        // Update the header to indicate we're using scan results
+        const header = document.querySelector("#step-5 .quiz-header h2");
+        if (header) {
+          header.innerHTML = "Almost Done! Choose Your Preferred Finish";
+        }
+
+        const subheader = document.querySelector("#step-5 .quiz-header p");
+        if (subheader) {
+          subheader.innerHTML =
+            "Your skin analysis is complete. Just tell us your preferred product finish.";
+        }
+
+        // Add a small summary of scan results
+        addScanSummaryToStep5();
       }
 
-      function useScanResults() {
-        try {
-          console.log("useScanResults function called");
+      function addScanSummaryToStep5(scanResults) {
+        console.log("Adding scan summary to step 5");
 
-          // Get the values safely
-          const skinTypeElem = document.getElementById("scan-skin-type");
-          const skinToneElem = document.getElementById("scan-skin-tone");
-          const undertoneElem = document.getElementById("scan-undertone");
-          const concernTags = document.querySelectorAll(
-            "#scan-concerns .concern-tag"
-          );
+        // Final cleanup check
+        cleanupScanSummaries();
 
-          if (!skinTypeElem || !skinToneElem || !undertoneElem) {
-            throw new Error("Required elements not found");
-          }
+        // Create a summary element showing the scan results
+        const summaryHtml = `
+        <div class="scan-summary" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--primary-pink);">
+            <h4 style="margin: 0 0 10px 0; color: var(--text-dark); font-size: 0.9rem;">Your Scan Results:</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem;">
+                <div><strong>Skin Type:</strong> ${scanResults.skinType}</div>
+                <div><strong>Skin Tone:</strong> ${scanResults.skinTone}</div>
+                <div><strong>Undertone:</strong> ${scanResults.undertone}</div>
+                <div><strong>Concerns:</strong> ${
+                  scanResults.concerns.length > 0
+                    ? scanResults.concerns
+                        .map((c) => c.replace("-", " "))
+                        .join(", ")
+                    : "None"
+                }</div>
+            </div>
+        </div>
+    `;
 
-          const scanResults = {
-            skinType: skinTypeElem.textContent.trim(),
-            skinTone: skinToneElem.textContent.trim(),
-            undertone: undertoneElem.textContent.trim(),
-            concerns: Array.from(concernTags).map((tag) =>
-              tag.textContent.trim()
-            ),
-            finish: "Natural",
-          };
-
-          console.log("Saving scan results:", scanResults);
-          savePreferences(scanResults);
-        } catch (error) {
-          console.error("Error in useScanResults:", error);
-          alert("Error processing scan results: " + error.message);
+        // Insert the summary before the options grid
+        const optionsGrid = document.querySelector("#step-5 .options-grid");
+        if (optionsGrid) {
+          console.log("Inserting scan summary before options grid");
+          optionsGrid.insertAdjacentHTML("beforebegin", summaryHtml);
         }
       }
 
       function editScanResults() {
-        // Close scan results and start manual quiz
+        // Make sure camera is turned off
+        closeCamera();
+
+        // Close scan results and start manual quiz without pre-filling
         document
           .getElementById("scan-results-modal")
           .classList.remove("active");
@@ -4754,19 +5043,20 @@
       }
 
       function startQuizWithCheck() {
-        // Check if we're bypassing the preferences check for this start over
+        // Check both possible flags
         const bypassCheck =
-          sessionStorage.getItem("bypassPreferencesCheck") === "true";
+          sessionStorage.getItem("bypassPreferencesCheck") === "true" ||
+          sessionStorage.getItem("retakingQuiz") === "true";
 
         if (hasExistingPreferences && !bypassCheck) {
           showExistingPrefsModal();
         } else {
-          // Clear the bypass flag so it doesn't affect future quiz starts
+          // Clear both flags
           sessionStorage.removeItem("bypassPreferencesCheck");
+          sessionStorage.removeItem("retakingQuiz");
           nextStep(1); // Start quiz normally
         }
       }
-
       function showStep(stepId) {
         // Hide all steps
         document.querySelectorAll(".quiz-step").forEach((step) => {
@@ -4868,6 +5158,10 @@
         document
           .getElementById("current-prefs-modal")
           .classList.remove("active");
+        // Make sure we're showing results, not quiz
+        if (hasExistingPreferences && currentPreferences) {
+          loadExistingUserResults();
+        }
       }
 
       function showReplaceConfirmation() {
@@ -4973,40 +5267,31 @@
           const result = await response.json();
 
           if (result.success && result.ratings) {
-            console.log("Loaded user ratings:", result.ratings);
+            console.log("📊 Loaded user ratings:", result.ratings);
 
-            // Merge ratings into product data
+            // Merge ratings into product data - KEEP AS TEXT
             result.ratings.forEach((rating) => {
-              // FIX: Use ProductID (from PHP) to find the product
               const productId = rating.ProductID;
 
               if (window.productData && window.productData[productId]) {
-                // FIX: Convert RecommendationFeedback string to numeric value
-                let numericRating;
-                if (rating.RecommendationFeedback === "Good") {
-                  numericRating = 1;
-                } else if (rating.RecommendationFeedback === "Okay") {
-                  numericRating = 0.5;
-                } else if (rating.RecommendationFeedback === "Poor") {
-                  numericRating = 0;
-                } else {
-                  // Fallback: try to parse as number
-                  numericRating =
-                    parseFloat(rating.RecommendationFeedback) || 0;
-                }
-
+                // CRITICAL FIX: Store RecommendationFeedback as TEXT, not numeric
                 window.productData[productId].user_feedback = {
                   UserRating: rating.UserRating,
-                  RecommendationFeedback: numericRating, // This should be 1, 0.5, or 0
+                  RecommendationFeedback: rating.RecommendationFeedback, // Keep as TEXT "Good"/"Okay"/"Poor"
                   CreatedAt: rating.CreatedAt,
                 };
 
-                console.log(`Set feedback for ${productId}:`, numericRating);
+                console.log(
+                  `✅ Set feedback for ${productId}:`,
+                  rating.RecommendationFeedback
+                );
               }
             });
 
             // Refresh ALL feedback buttons after loading ratings
             refreshAllFeedbackButtons();
+            console.log("🔍 Debug after loading ratings:");
+            debugFeedbackState();
 
             // Also refresh the display if needed
             if (window.currentPage) {
@@ -5018,25 +5303,36 @@
         }
       }
 
+      // FIXED: Refresh all buttons with TEXT feedback
       function refreshAllFeedbackButtons() {
         if (!window.productData) return;
 
-        console.log("Refreshing all feedback buttons...");
+        console.log("🔄 Refreshing all feedback buttons");
 
-        // Get all unique product IDs that have feedback buttons
-        const allFeedbackButtons = document.querySelectorAll(".feedback-btn");
-        const processedProducts = new Set();
-
-        allFeedbackButtons.forEach((btn) => {
-          const productId = btn.getAttribute("data-product-id");
-          if (productId && !processedProducts.has(productId)) {
-            processedProducts.add(productId);
-            refreshFeedbackButtons(productId);
+        Object.keys(window.productData).forEach((productId) => {
+          const product = window.productData[productId];
+          if (product.user_feedback) {
+            updateFeedbackButtons(
+              productId,
+              product.user_feedback.RecommendationFeedback
+            );
           }
         });
-
-        console.log(`Refreshed buttons for ${processedProducts.size} products`);
       }
+      function debugFeedbackState() {
+        if (!window.productData) return;
+
+        console.log("🔍 CURRENT FEEDBACK STATE:");
+        Object.keys(window.productData).forEach((productId) => {
+          const product = window.productData[productId];
+          if (product.user_feedback) {
+            console.log(
+              `   ${productId}: ${product.user_feedback.RecommendationFeedback} (Rating: ${product.user_feedback.UserRating})`
+            );
+          }
+        });
+      }
+
       // Update your existing displayRecommendations function
       function displayRecommendations(recommendations) {
         const container = document.getElementById("recommended-products");
@@ -5872,11 +6168,18 @@
           if (e.target.closest(".feedback-btn")) {
             const button = e.target.closest(".feedback-btn");
             const productId = button.getAttribute("data-product-id");
-            const rating = parseInt(button.getAttribute("data-rating"));
+            const rating = button.getAttribute("data-feedback"); // CHANGED: data-feedback instead of data-rating
             const productName =
               window.productData && window.productData[productId]
                 ? window.productData[productId].Name
                 : "Unknown Product";
+
+            console.log("🎯 Button Clicked:", {
+              productId,
+              rating,
+              productName,
+              buttonHTML: button.outerHTML,
+            });
 
             submitProductFeedback(productId, rating, productName);
           }
@@ -7017,6 +7320,14 @@
 
         progressFill.style.width = `${progressPercentages[currentStep] || 0}%`;
       }
+      function resetToIntro() {
+        // Show intro step regardless of existing preferences
+        document.querySelectorAll(".quiz-step").forEach((step) => {
+          step.classList.remove("active");
+        });
+        document.getElementById("step-intro").classList.add("active");
+        currentStep = 0;
+      }
 
       function restartQuiz() {
         // Check if user has existing preferences
@@ -7028,9 +7339,10 @@
           resetQuizAndRestart();
         }
       }
-
-      // New function to handle the actual quiz reset
       function resetQuizAndRestart() {
+        // Set a flag to indicate we're in retake quiz mode
+        sessionStorage.setItem("retakingQuiz", "true");
+
         quizData = {
           skinType: "",
           skinTone: "",
@@ -7052,12 +7364,18 @@
           checkbox.checked = false;
         });
 
-        // Reset next buttons
-        document.querySelectorAll(".nav-btn.primary").forEach((btn) => {
-          btn.disabled = true;
-        });
+        console.log(
+          "Start Quiz button disabled:",
+          document.querySelector(
+            '.nav-btn.primary[onclick*="startQuizWithCheck"]'
+          ).disabled
+        );
+        // // Reset next buttons
+        // document.querySelectorAll(".nav-btn.primary").forEach((btn) => {
+        //   btn.disabled = true;
+        // });
 
-        nextStep(1);
+        resetToIntro(); // Go to intro step
       }
 
       // Option selection
@@ -7215,6 +7533,34 @@
           }
         }, 1500);
       }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Product finish selection (Step 5) - update quizData instead of quizState
+        document
+          .querySelectorAll("#step-5 .option-card[data-value]")
+          .forEach((card) => {
+            card.addEventListener("click", function () {
+              // Remove active class from all cards in step 5
+              document.querySelectorAll("#step-5 .option-card").forEach((c) => {
+                c.classList.remove("active");
+              });
+
+              // Add active class to clicked card
+              this.classList.add("active");
+
+              // Update quizData.finish (your existing data structure)
+              quizData.finish = this.getAttribute("data-value");
+
+              console.log("Selected finish:", quizData.finish);
+
+              // Enable the Get Results button
+              const step5Next = document.getElementById("step5-next");
+              if (step5Next) {
+                step5Next.disabled = false;
+              }
+            });
+          });
+      });
 
       function initFloatingProduct() {
         const productImages = [
@@ -7412,38 +7758,70 @@
 
       async function submitProductFeedback(productId, rating, productName) {
         try {
-          // Convert rating to number properly
-          const numericRating = parseFloat(rating);
-          console.log("Submitting feedback:", {
+          // FIXED: Consistent rating conversion
+          let numericRating;
+          let feedbackText;
+
+          console.log(
+            "📝 Original rating received:",
+            rating,
+            "Type:",
+            typeof rating
+          );
+
+          // Handle both string and number inputs consistently
+          if (rating === "good" || rating === 1 || rating === "1") {
+            numericRating = 1;
+            feedbackText = "Good";
+          } else if (rating === "okay" || rating === 0.5 || rating === "0.5") {
+            numericRating = 0.5;
+            feedbackText = "Okay";
+          } else if (rating === "poor" || rating === 0 || rating === "0") {
+            numericRating = 0;
+            feedbackText = "Poor";
+          } else {
+            // Fallback - parse as number
+            numericRating = parseFloat(rating);
+            if (isNaN(numericRating)) {
+              numericRating = 0.5; // Default to Okay
+            }
+            feedbackText =
+              numericRating >= 0.7
+                ? "Good"
+                : numericRating >= 0.3
+                ? "Okay"
+                : "Poor";
+          }
+
+          console.log("📝 Submitting feedback:", {
             productId,
-            rating: numericRating,
+            numericRating,
+            feedbackText,
             productName,
           });
 
-          // Get ALL feedback buttons for this product (across all cards/floating cards)
           const buttons = document.querySelectorAll(
             `.feedback-btn[data-product-id="${productId}"]`
           );
 
-          // Show loading state on ALL buttons
+          // Show loading state
           buttons.forEach((btn) => {
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             btn.disabled = true;
           });
 
+          // FIXED: Send consistent data to PHP
           const response = await fetch("../php/feedback.php", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `action=save_product_feedback&product_id=${productId}&user_rating=${numericRating}&product_name=${encodeURIComponent(
               productName
             )}`,
+            // REMOVED: recommendation_feedback parameter - let PHP handle the conversion
           });
 
-          if (!response.ok) {
+          if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-          }
 
           const text = await response.text();
           console.log("Raw response:", text);
@@ -7459,78 +7837,94 @@
           console.log("Parsed response:", result);
 
           if (result.success) {
-            // CRITICAL FIX: Update product data with the correct numeric rating
+            // Store the feedback as TEXT (consistent with database)
             if (window.productData && window.productData[productId]) {
-              // Convert the PHP response to numeric rating
-              let numericRating;
-              if (result.recommendation_feedback === "Good") {
-                numericRating = 1;
-              } else if (result.recommendation_feedback === "Okay") {
-                numericRating = 0.5;
-              } else if (result.recommendation_feedback === "Poor") {
-                numericRating = 0;
-              } else {
-                numericRating = parseFloat(rating); // Fallback to original rating
-              }
-
               window.productData[productId].user_feedback = {
                 UserRating: result.user_rating,
-                RecommendationFeedback: numericRating,
+                RecommendationFeedback: result.recommendation_feedback, // Store as TEXT
                 CreatedAt: new Date().toISOString(),
               };
-
-              console.log("Updated product data with feedback:", numericRating);
+              console.log(
+                "✅ Updated product data with feedback:",
+                result.recommendation_feedback
+              );
             }
 
-            // THEN update ALL buttons for this product
-            updateFeedbackButtons(productId, numericRating);
+            // Update UI with TEXT feedback
+            updateFeedbackButtons(productId, result.recommendation_feedback);
 
-            // Show success notification
-            if (typeof showNotification === "function") {
-              showNotification("Rating saved successfully! ✓", "success");
+            // REMOVED: Auto-refresh - keep logs visible
+            showNotification("Rating saved successfully! ✓", "success");
+            console.log("🔍 Debug after feedback submission:");
+            debugFeedbackState();
+
+            // Optional: Re-sort without refresh for immediate UI update
+            if (window.currentSort === "relevance") {
+              sortAllProducts("relevance");
+              showPage(window.currentPage);
             }
           } else {
             throw new Error(result.message || "Unknown error from server");
           }
         } catch (error) {
           console.error("Feedback submission error:", error);
-
-          // Show error notification
-          if (typeof showNotification === "function") {
-            showNotification(
-              "Failed to save rating: " + error.message,
-              "error"
-            );
-          } else {
-            alert("Failed to save rating: " + error.message);
-          }
-
-          // Reset ALL buttons to their correct state
+          showNotification("Failed to save rating: " + error.message, "error");
           resetFeedbackButtonsToDefault(productId);
         }
       }
 
-      // NEW: Centralized function to update ALL feedback buttons for a product
-      function updateFeedbackButtons(productId, activeRating) {
+      // FIXED: Update the mapping in updateFeedbackButtons function
+      function updateFeedbackButtons(productId, activeFeedback) {
         const buttons = document.querySelectorAll(
           `.feedback-btn[data-product-id="${productId}"]`
         );
 
         buttons.forEach((btn) => {
           btn.disabled = false;
-          const btnRating = parseFloat(btn.getAttribute("data-feedback"));
+          const btnFeedback = btn.getAttribute("data-feedback");
 
           // Remove active class from all buttons first
           btn.classList.remove("active");
 
-          // Add active class only to the button matching the active rating
-          if (btnRating === activeRating) {
+          // FIXED: Map numeric data attributes to text feedback
+          const buttonToFeedbackMap = {
+            1: "Good", // data-feedback="1" → "Good"
+            0.5: "Okay", // data-feedback="0.5" → "Okay"
+            0: "Poor", // data-feedback="0" → "Poor"
+          };
+
+          const buttonFeedbackText = buttonToFeedbackMap[btnFeedback];
+
+          console.log(
+            `🔄 Button: ${btnFeedback} -> ${buttonFeedbackText}, Active: ${activeFeedback}`
+          );
+
+          // Add active class only to the button matching the active feedback
+          if (buttonFeedbackText === activeFeedback) {
             btn.classList.add("active");
+            console.log(`✅ Activated ${btnFeedback} button for ${productId}`);
           }
 
-          // Set correct text and styling
           updateButtonContent(btn);
         });
+      }
+
+      function resortAndDisplayProducts() {
+        if (!window.allRecommendations || !window.productData) return;
+
+        console.log("🔄 Re-sorting products after feedback update");
+
+        // Get current sort method
+        const sortSelect = document.getElementById("sort-by-filter");
+        const currentSort = sortSelect ? sortSelect.value : "relevance";
+
+        // Apply the current sort method
+        sortAllProducts(currentSort);
+
+        // Re-display current page
+        showPage(window.currentPage);
+
+        console.log("✅ Products re-sorted with latest feedback");
       }
 
       // NEW: Function to update button content consistently
