@@ -380,41 +380,6 @@ body::before {
   border-radius: 3px;
 }
 
-.search-container {
-  padding: 15px 20px;
-  background-color: var(--soft-white);
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  background-color: var(--light-gray);
-  border-radius: 25px;
-  padding: 10px 20px;
-  box-shadow: var(--card-shadow);
-}
-
-.search-bar i {
-  color: var(--text-gray);
-  margin-right: 10px;
-}
-
-.search-bar input {
-  border: none;
-  background: transparent;
-  outline: none;
-  width: 100%;
-  font-size: 16px;
-  font-family: "Montserrat", sans-serif;
-}
-
-.search-container,
-.categories,
-.products-container,
-.page-content {
-  margin-top: 0;
-}
-
 /* ================= PROFILE IMAGES ================= */
 .profile-btn img.profile-icon,
 .mobile-profile-btn img.profile-icon {
