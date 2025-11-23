@@ -536,6 +536,7 @@
         font-size: 32px;
         position: relative;
         overflow: hidden;
+        border: 2px solid var(--primary-pink);
       }
 
       .photo-preview img {
@@ -862,9 +863,56 @@
           transform: rotate(360deg);
         }
       }
+
+      /* --- NEW TOAST NOTIFICATION STYLES --- */
+      #toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .toast {
+        min-width: 300px;
+        padding: 16px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideIn 0.3s ease forwards;
+        border-left: 5px solid #ccc;
+        color: #333;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .toast.success { border-left-color: #27ae60; }
+      .toast.error { border-left-color: #e74c3c; }
+      
+      .toast.hide { animation: fadeOut 0.3s ease forwards; }
+
+      .toast-icon { font-size: 1.2rem; }
+      .toast.success .toast-icon { color: #27ae60; }
+      .toast.error .toast-icon { color: #e74c3c; }
+
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes fadeOut {
+        to { opacity: 0; transform: translateX(100%); }
+      }
     </style>
   </head>
   <body>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
     <!-- Header -->
     <header class="header">
       <a href="home.html" class="back-btn">
@@ -875,7 +923,6 @@
         <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
       <div style="width: 40px"></div>
-      <!-- Spacer for alignment -->
     </header>
 
     <!-- Profile Content -->
@@ -883,7 +930,6 @@
       <!-- Profile Header -->
       <div class="profile-header">
         <div class="profile-avatar" id="profile-avatar-display">M</div>
-        <!-- In your profile-info section, remove location and simplify -->
         <div class="profile-info">
           <h1 class="profile-name" id="profile-name-display">User Name</h1>
           <p class="profile-username" id="profile-username-display">@user</p>
@@ -1018,7 +1064,6 @@
           <div class="photo-options">
             <div class="photo-preview" id="photo-preview">M</div>
             <div class="photo-actions">
-              <!-- REMOVED Take Photo button -->
               <button class="photo-btn" id="upload-photo-btn">
                 <i class="fas fa-upload"></i> Upload Photo
               </button>
@@ -1219,6 +1264,30 @@
     </div>
 
     <script>
+      // --- NEW PROFESSIONAL TOAST NOTIFICATION SYSTEM ---
+      function showToast(message, type = 'success') {
+          const container = document.getElementById('toast-container');
+          const toast = document.createElement('div');
+          toast.className = `toast ${type}`;
+          
+          const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+          
+          toast.innerHTML = `
+              <span class="toast-icon">${icon}</span>
+              <span>${message}</span>
+          `;
+
+          container.appendChild(toast);
+
+          // Remove after 3 seconds
+          setTimeout(() => {
+              toast.classList.add('hide');
+              toast.addEventListener('animationend', () => {
+                  toast.remove();
+              });
+          }, 3500);
+      }
+
       // Profile data - will be populated from API
       let profileData = {
         name: "",
@@ -1231,16 +1300,13 @@
           unclaimedOrders: 0,
         },
       };
+
       // DOM Elements
       const editProfileBtn = document.getElementById("edit-profile-btn");
       const editProfileModal = document.getElementById("edit-profile-modal");
-      const changePasswordModal = document.getElementById(
-        "change-password-modal"
-      );
+      const changePasswordModal = document.getElementById("change-password-modal");
       const closeEditModalBtn = document.getElementById("close-edit-modal");
-      const closePasswordModalBtn = document.getElementById(
-        "close-password-modal"
-      );
+      const closePasswordModalBtn = document.getElementById("close-password-modal");
       const cancelEditBtn = document.getElementById("cancel-edit");
       const cancelPasswordBtn = document.getElementById("cancel-password");
       const saveProfileBtn = document.getElementById("save-profile");
@@ -1250,28 +1316,21 @@
       const oldPasswordInput = document.getElementById("old-password");
       const newPasswordInput = document.getElementById("new-password");
       const confirmPasswordInput = document.getElementById("confirm-password");
-      const profileNameDisplay = document.getElementById(
-        "profile-name-display"
-      );
-      const profileUsernameDisplay = document.getElementById(
-        "profile-username-display"
-      );
-      const profileAvatarDisplay = document.getElementById(
-        "profile-avatar-display"
-      );
+      const profileNameDisplay = document.getElementById("profile-name-display");
+      const profileUsernameDisplay = document.getElementById("profile-username-display");
+      const profileAvatarDisplay = document.getElementById("profile-avatar-display");
       const photoPreview = document.getElementById("photo-preview");
-      const takePhotoBtn = document.getElementById("take-photo-btn");
       const uploadPhotoBtn = document.getElementById("upload-photo-btn");
       const removePhotoBtn = document.getElementById("remove-photo-btn");
       const passwordError = document.getElementById("password-error");
 
-      // Stats elements (ADD THESE - they were missing)
+      // Stats elements
       const ordersCount = document.getElementById("orders-count");
       const favoritesCount = document.getElementById("favorites-count");
       const cartCount = document.getElementById("cart-count");
       const unclaimedCount = document.getElementById("unclaimed-count");
 
-      // Get user session (same as home page)
+      // Get user session
       async function getUserSession() {
         try {
           const res = await fetch("../php/get-user-session.php");
@@ -1290,32 +1349,23 @@
           console.log("Fetching customer profile...");
 
           if (!currentUser || !currentUser.id) {
-            console.error("No user logged in - showing default profile");
             showDefaultProfile();
             return;
           }
 
           const response = await fetch("../php/get_profile.php", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              user_id: currentUser.id,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: currentUser.id }),
           });
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
           const data = await response.json();
 
           if (data.success) {
-            console.log("Profile data received:", data);
             updateProfileDisplay(data.profile);
           } else {
-            console.error("Failed to fetch profile:", data.message);
             showDefaultProfile();
           }
         } catch (error) {
@@ -1325,41 +1375,31 @@
       }
 
       function updateProfileDisplay(profile) {
-        // Update basic profile info
         profileData.name = profile.full_name || "Customer";
         profileData.username = profile.username || "user";
 
-        // Update display elements
         profileNameDisplay.textContent = profileData.name;
         profileUsernameDisplay.textContent = `@${profileData.username}`;
 
-        // Update avatar with first letter of name
         const firstLetter = profileData.name.charAt(0).toUpperCase();
         profileAvatarDisplay.textContent = firstLetter;
         photoPreview.textContent = firstLetter;
 
-        // Update edit form inputs
         editNameInput.value = profileData.name;
         editUsernameInput.value = profileData.username;
 
-        // Update stats
         if (profile.stats) {
           profileData.stats.orders = profile.stats.orders || 0;
           profileData.stats.favorites = profile.stats.favorites || 0;
           profileData.stats.cartItems = profile.stats.cart_items || 0;
-          profileData.stats.unclaimedOrders =
-            profile.stats.unclaimed_orders || 0;
+          profileData.stats.unclaimedOrders = profile.stats.unclaimed_orders || 0;
 
-          // Update the DOM elements
           if (ordersCount) ordersCount.textContent = profileData.stats.orders;
-          if (favoritesCount)
-            favoritesCount.textContent = profileData.stats.favorites;
+          if (favoritesCount) favoritesCount.textContent = profileData.stats.favorites;
           if (cartCount) cartCount.textContent = profileData.stats.cartItems;
-          if (unclaimedCount)
-            unclaimedCount.textContent = profileData.stats.unclaimedOrders;
+          if (unclaimedCount) unclaimedCount.textContent = profileData.stats.unclaimedOrders;
         }
 
-        // Update member since
         if (profile.member_since) {
           const memberElement = document.querySelector(".profile-member");
           if (memberElement) {
@@ -1368,233 +1408,64 @@
           }
         }
 
-        // Handle profile photo if available
         if (profile.profile_photo) {
           profileData.profilePhoto = profile.profile_photo;
           updateProfilePhoto(profile.profile_photo);
         }
       }
 
-      // Update profile photo display function with debugging
       function updateProfilePhoto(photoUrl) {
         if (photoUrl) {
-          console.log("Updating profile photo with:", photoUrl);
-
-          // If it's a base64 image
-          if (photoUrl.startsWith("data:")) {
-            profileAvatarDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-            photoPreview.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-          } else {
-            // If it's a filename from database - TRY DIFFERENT PATHS
-            const possiblePaths = [
-              `../uploads/profiles/${photoUrl}`,
-              `../../uploads/profiles/${photoUrl}`,
-              `/uploads/profiles/${photoUrl}`,
-              `uploads/profiles/${photoUrl}`,
-              `http://localhost:8080/uploads/profiles/${photoUrl}`,
-            ];
-
-            console.log("Trying paths:", possiblePaths);
-
-            // Try each path until one works
-            let img = new Image();
-            let foundWorkingPath = false;
-
-            const tryPath = (index) => {
-              if (index >= possiblePaths.length) {
-                // No paths worked, show initial
-                const firstLetter = profileData.name.charAt(0).toUpperCase();
-                profileAvatarDisplay.textContent = firstLetter;
-                photoPreview.textContent = firstLetter;
-                return;
-              }
-
-              const testPath = possiblePaths[index];
-              console.log(`Testing path: ${testPath}`);
-
-              img.onload = function () {
-                console.log(`Path works: ${testPath}`);
-                profileAvatarDisplay.innerHTML = `<img src="${testPath}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-                photoPreview.innerHTML = `<img src="${testPath}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-                foundWorkingPath = true;
-              };
-
-              img.onerror = function () {
-                console.log(`Path failed: ${testPath}`);
-                tryPath(index + 1);
-              };
-
-              img.src = testPath;
-            };
-
-            tryPath(0);
+          let imageUrl = photoUrl;
+          if (!photoUrl.startsWith("data:")) {
+             imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(photoUrl)}&user_id=${currentUser.id}`;
           }
+
+          const imgHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+          profileAvatarDisplay.innerHTML = imgHTML;
+          photoPreview.innerHTML = imgHTML;
         }
       }
 
-      async function saveProfileChanges() {
-        try {
-          const updatedData = {
-            user_id: currentUser.id,
-            name: editNameInput.value,
-            username: editUsernameInput.value,
-            profile_photo: profileData.profilePhoto,
-          };
-
-          console.log("Saving profile with photo:", !!profileData.profilePhoto);
-
-          const response = await fetch("../php/update_profile.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedData),
-          });
-
-          const responseText = await response.text();
-          console.log("Raw response:", responseText);
-
-          if (
-            !responseText.trim().startsWith("{") &&
-            !responseText.trim().startsWith("[")
-          ) {
-            throw new Error(
-              "Server returned HTML instead of JSON. Check PHP file for errors."
-            );
-          }
-
-          const data = JSON.parse(responseText);
-
-          if (data.success) {
-            // Update local data and display
-            profileData.name = updatedData.name;
-            profileData.username = updatedData.username;
-
-            // If a photo was uploaded and saved, update the filename
-            if (data.photo_filename) {
-              profileData.profilePhoto = data.photo_filename;
-            }
-
-            profileNameDisplay.textContent = updatedData.name;
-            profileUsernameDisplay.textContent = `@${updatedData.username}`;
-
-            // Update avatar - if we have a photo, use it, otherwise use first letter
-            if (profileData.profilePhoto) {
-              if (profileData.profilePhoto.startsWith("data:")) {
-                // It's still a base64 image (upload might have failed)
-                profileAvatarDisplay.innerHTML = `<img src="${profileData.profilePhoto}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-              } else {
-                // It's a filename - construct the full URL
-                const fullPhotoUrl = `../uploads/profiles/${profileData.profilePhoto}`;
-                profileAvatarDisplay.innerHTML = `<img src="${fullPhotoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-              }
-            } else {
-              const firstLetter = updatedData.name.charAt(0).toUpperCase();
-              profileAvatarDisplay.textContent = firstLetter;
-            }
-
-            closeEditModal();
-            alert("Profile updated successfully!");
-          } else {
-            alert("Error updating profile: " + data.message);
-          }
-        } catch (error) {
-          console.error("Error saving profile:", error);
-          alert("Error: " + error.message);
-        }
-      }
-      // Update profile photo display function - USING PHP ENDPOINT
-      function updateProfilePhoto(photoUrl) {
-        if (photoUrl) {
-          console.log("Updating profile photo with:", photoUrl);
-
-          // If it's a base64 image
-          if (photoUrl.startsWith("data:")) {
-            profileAvatarDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-            photoPreview.innerHTML = `<img src="${photoUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-          } else {
-            // Use PHP endpoint to serve the image
-            const imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(
-              photoUrl
-            )}&user_id=${currentUser.id}`;
-            console.log("Using PHP endpoint:", imageUrl);
-
-            profileAvatarDisplay.innerHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-            photoPreview.innerHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-          }
-        }
-      }
-
-      // Show default profile data (fallback)
       function showDefaultProfile() {
         if (currentUser) {
-          profileNameDisplay.textContent =
-            currentUser.firstName +
-            (currentUser.lastName ? " " + currentUser.lastName : "");
+          profileNameDisplay.textContent = currentUser.firstName + (currentUser.lastName ? " " + currentUser.lastName : "");
           profileUsernameDisplay.textContent = `@${currentUser.username}`;
-
           const firstLetter = currentUser.firstName.charAt(0).toUpperCase();
           profileAvatarDisplay.textContent = firstLetter;
           photoPreview.textContent = firstLetter;
-
-          editNameInput.value =
-            currentUser.firstName +
-            (currentUser.lastName ? " " + currentUser.lastName : "");
+          editNameInput.value = currentUser.firstName + (currentUser.lastName ? " " + currentUser.lastName : "");
           editUsernameInput.value = currentUser.username;
         } else {
-          // Show generic profile for non-logged in users
           profileNameDisplay.textContent = "Guest User";
           profileUsernameDisplay.textContent = "@guest";
           profileAvatarDisplay.textContent = "G";
           photoPreview.textContent = "G";
-          editNameInput.value = "Guest User";
-          editUsernameInput.value = "guest";
-
-          // Hide edit button for guests
-          const editBtn = document.getElementById("edit-profile-btn");
-          if (editBtn) {
-            editBtn.style.display = "none";
-          }
-
-          // Set default stats to 0
-          if (ordersCount) ordersCount.textContent = "0";
-          if (favoritesCount) favoritesCount.textContent = "0";
-          if (cartCount) cartCount.textContent = "0";
-          if (unclaimedCount) unclaimedCount.textContent = "0";
+          if (editProfileBtn) editProfileBtn.style.display = "none";
         }
       }
-      // // Redirect to login if not authenticated
-      // function redirectToLogin() {
-      //     window.location.href = '../../auth/login.html';
-      // }
 
       function initializeEventListeners() {
-        // Edit Profile Modal
         editProfileBtn.addEventListener("click", openEditProfileModal);
         closeEditModalBtn.addEventListener("click", closeEditModal);
         cancelEditBtn.addEventListener("click", closeEditModal);
 
-        // Change Password Modal
         closePasswordModalBtn.addEventListener("click", closePasswordModal);
         cancelPasswordBtn.addEventListener("click", closePasswordModal);
 
-        // Save buttons
         saveProfileBtn.addEventListener("click", saveProfileChanges);
-        savePasswordBtn.addEventListener("click", savePasswordChanges);
+        savePasswordBtn.addEventListener("click", changePassword);
 
-        // Photo actions - REMOVED takePhotoBtn
         uploadPhotoBtn.addEventListener("click", uploadPhoto);
         removePhotoBtn.addEventListener("click", removePhoto);
 
-        // Password validation
         oldPasswordInput.addEventListener("input", validatePassword);
         newPasswordInput.addEventListener("input", validatePassword);
         confirmPasswordInput.addEventListener("input", validatePassword);
 
-        // Initialize password toggles
         initializePasswordToggles();
       }
-      // Initialize password toggle functionality
+
       function initializePasswordToggles() {
         const toggleButtons = document.querySelectorAll(".toggle-password");
         toggleButtons.forEach((button) => {
@@ -1602,7 +1473,6 @@
             const targetId = this.getAttribute("data-target");
             const input = document.getElementById(targetId);
             const icon = this.querySelector("i");
-
             if (input.type === "password") {
               input.type = "text";
               icon.classList.remove("fa-eye");
@@ -1616,77 +1486,206 @@
         });
       }
 
-      // Change Password Functions
-      function openChangePasswordModal() {
-        const modal = document.getElementById("change-password-modal");
-        modal.classList.add("active");
-        resetPasswordForm();
+      // --- EDIT PROFILE LOGIC ---
+
+      // Open Modal: Fetch Current Picture to Preview
+      function openEditProfileModal() {
+        editNameInput.value = profileData.name;
+        editUsernameInput.value = profileData.username;
+
+        // Ensure the preview matches the current profile picture
+        if (profileData.profilePhoto) {
+             // If we have a stored photo URL or Data URI
+             let imageUrl = profileData.profilePhoto;
+             if (!imageUrl.startsWith("data:")) {
+                 imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(imageUrl)}&user_id=${currentUser.id}`;
+             }
+             photoPreview.innerHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+             // No photo, show initial
+             const firstLetter = profileData.name.charAt(0).toUpperCase();
+             photoPreview.textContent = firstLetter;
+        }
+
+        editProfileModal.classList.add("active");
       }
 
-      function closeChangePasswordModal() {
-        const modal = document.getElementById("change-password-modal");
-        modal.classList.remove("active");
+      function closeEditModal() {
+        editProfileModal.classList.remove("active");
+      }
+
+      function closePasswordModal() {
+        changePasswordModal.classList.remove("active");
         resetPasswordForm();
       }
 
       function resetPasswordForm() {
-        document.getElementById("old-password").value = "";
-        document.getElementById("new-password").value = "";
-        document.getElementById("confirm-password").value = "";
-        document.getElementById("password-error").style.display = "none";
-        document.getElementById("save-password").disabled = true;
+        oldPasswordInput.value = "";
+        newPasswordInput.value = "";
+        confirmPasswordInput.value = "";
+        passwordError.style.display = "none";
+        savePasswordBtn.disabled = true;
       }
 
-      function validatePasswordForm() {
-        const oldPassword = document.getElementById("old-password").value;
-        const newPassword = document.getElementById("new-password").value;
-        const confirmPassword =
-          document.getElementById("confirm-password").value;
-        const saveBtn = document.getElementById("save-password");
+      // --- IMAGE UPLOAD LOGIC (INSTANT REFLECTION) ---
+      function uploadPhoto() {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
 
-        // Enable button only if all fields have values
-        saveBtn.disabled = !(oldPassword && newPassword && confirmPassword);
+        fileInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            // Validate file size
+            if (file.size > 2 * 1024 * 1024) {
+              showToast("Error: File size must be less than 2MB", "error");
+              return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith("image/")) {
+              showToast("Error: Please select a valid image file", "error");
+              return;
+            }
+
+            // INSTANT PREVIEW USING FILEREADER
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const result = e.target.result;
+              
+              // 1. Store data for saving
+              profileData.profilePhoto = result;
+
+              // 2. Update Modal Preview Immediately
+              photoPreview.innerHTML = `<img src="${result}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+
+              // 3. Update Main Profile Page Immediately (User sees change instantly)
+              profileAvatarDisplay.innerHTML = `<img src="${result}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+
+              showToast("Photo selected. Click 'Save Changes' to confirm.", "success");
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        fileInput.click();
       }
 
-      async function changePassword() {
-        const oldPassword = document.getElementById("old-password").value;
-        const newPassword = document.getElementById("new-password").value;
-        const confirmPassword =
-          document.getElementById("confirm-password").value;
-        const errorDiv = document.getElementById("password-error");
-        const saveBtn = document.getElementById("save-password");
+      function removePhoto() {
+        profileData.profilePhoto = null;
+        const firstLetter = (editNameInput.value || profileData.name).charAt(0).toUpperCase();
+        
+        // Update both previews to initial
+        photoPreview.textContent = firstLetter;
+        profileAvatarDisplay.textContent = firstLetter;
+        
+        showToast("Photo removed. Click Save to apply.", "success");
+      }
 
-        // Reset error
-        errorDiv.style.display = "none";
+      // --- SAVE PROFILE LOGIC ---
+      async function saveProfileChanges() {
+        try {
+          // Add loading state
+          const originalText = saveProfileBtn.textContent;
+          saveProfileBtn.textContent = "Saving...";
+          saveProfileBtn.disabled = true;
 
-        // Validation
-        if (newPassword !== confirmPassword) {
-          showPasswordError("New passwords do not match");
+          const updatedData = {
+            user_id: currentUser.id,
+            name: editNameInput.value,
+            username: editUsernameInput.value,
+            profile_photo: profileData.profilePhoto,
+          };
+
+          const response = await fetch("../php/update_profile.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedData),
+          });
+
+          const responseText = await response.text();
+          let data;
+          try {
+             data = JSON.parse(responseText);
+          } catch(e) {
+             throw new Error("Server response invalid");
+          }
+
+          if (data.success) {
+            profileData.name = updatedData.name;
+            profileData.username = updatedData.username;
+            if (data.photo_filename) {
+              profileData.profilePhoto = data.photo_filename;
+            }
+
+            // Update Text Displays
+            profileNameDisplay.textContent = updatedData.name;
+            profileUsernameDisplay.textContent = `@${updatedData.username}`;
+            
+            closeEditModal();
+            showToast("Profile updated successfully!", "success"); // Professional Toast
+          } else {
+            showToast(data.message || "Error updating profile", "error");
+          }
+        } catch (error) {
+          console.error("Error saving profile:", error);
+          showToast("Error updating profile. Please try again.", "error");
+        } finally {
+            saveProfileBtn.textContent = "Save Changes";
+            saveProfileBtn.disabled = false;
+        }
+      }
+
+      // --- CHANGE PASSWORD LOGIC ---
+      function validatePassword() {
+        const oldPassword = oldPasswordInput.value;
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+          savePasswordBtn.disabled = true;
+          passwordError.style.display = "none";
           return;
         }
 
-        if (newPassword.length < 8) {
-          showPasswordError("Password must be at least 8 characters long");
+        if (newPassword.length < 6) {
+          passwordError.textContent = "Password must be at least 6 characters long";
+          passwordError.style.display = "block";
+          savePasswordBtn.disabled = true;
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          passwordError.textContent = "New passwords do not match";
+          passwordError.style.display = "block";
+          savePasswordBtn.disabled = true;
           return;
         }
 
         if (oldPassword === newPassword) {
-          showPasswordError("New password must be different from old password");
+          passwordError.textContent = "New password must be different from old password";
+          passwordError.style.display = "block";
+          savePasswordBtn.disabled = true;
           return;
         }
 
+        passwordError.style.display = "none";
+        savePasswordBtn.disabled = false;
+      }
+
+      async function changePassword() {
+        const oldPassword = oldPasswordInput.value;
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
         try {
-          // Show loading state
-          const originalText = saveBtn.innerHTML;
-          saveBtn.innerHTML =
-            '<i class="fas fa-spinner fa-spin"></i> Changing...';
-          saveBtn.disabled = true;
+          const originalText = savePasswordBtn.innerHTML;
+          savePasswordBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing...';
+          savePasswordBtn.disabled = true;
 
           const response = await fetch("../php/change_password.php", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               old_password: oldPassword,
               new_password: newPassword,
@@ -1698,414 +1697,51 @@
           const data = await response.json();
 
           if (data.success) {
-            // Success - close modal and show success message
-            closeChangePasswordModal();
+            closePasswordModal();
             showToast("Password changed successfully!", "success");
           } else {
-            showPasswordError(data.error || "Failed to change password");
+            passwordError.textContent = data.error || "Failed to change password";
+            passwordError.style.display = "block";
           }
-
-          // Restore button state
-          saveBtn.innerHTML = originalText;
-          saveBtn.disabled = false;
+          savePasswordBtn.innerHTML = originalText;
+          savePasswordBtn.disabled = false;
         } catch (error) {
           console.error("Error changing password:", error);
-          showPasswordError("Network error: Could not change password");
-
-          // Restore button state
-          saveBtn.innerHTML = "Change Password";
-          saveBtn.disabled = false;
+          showToast("Network error: Could not change password", "error");
+          savePasswordBtn.innerHTML = "Change Password";
+          savePasswordBtn.disabled = false;
         }
       }
 
-      function showPasswordError(message) {
-        const errorDiv = document.getElementById("password-error");
-        errorDiv.textContent = message;
-        errorDiv.style.display = "block";
-      }
-
-      // Password visibility toggle
-      function setupPasswordToggles() {
-        document.querySelectorAll(".toggle-password").forEach((button) => {
-          button.addEventListener("click", function () {
-            const targetId = this.getAttribute("data-target");
-            const input = document.getElementById(targetId);
-            const icon = this.querySelector("i");
-
-            if (input.type === "password") {
-              input.type = "text";
-              icon.classList.remove("fa-eye");
-              icon.classList.add("fa-eye-slash");
-            } else {
-              input.type = "password";
-              icon.classList.remove("fa-eye-slash");
-              icon.classList.add("fa-eye");
-            }
-          });
-        });
-      }
-
-      // Toast notification function (if not already exists)
-      function showToast(message, type = "success") {
-        // Create toast if it doesn't exist
-        let toast = document.getElementById("toast-notification");
-        if (!toast) {
-          toast = document.createElement("div");
-          toast.id = "toast-notification";
-          toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 10000;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-            max-width: 300px;
-        `;
-          document.body.appendChild(toast);
-        }
-
-        // Set style based on type
-        if (type === "success") {
-          toast.style.background = "linear-gradient(135deg, #27ae60, #2ecc71)";
-        } else {
-          toast.style.background = "linear-gradient(135deg, #e74c3c, #c0392b)";
-        }
-
-        toast.textContent = message;
-
-        // Show toast
-        setTimeout(() => {
-          toast.style.opacity = "1";
-          toast.style.transform = "translateX(0)";
-        }, 100);
-
-        // Hide after 3 seconds
-        setTimeout(() => {
-          toast.style.opacity = "0";
-          toast.style.transform = "translateX(100%)";
-        }, 3000);
-      }
-
-      // Open edit profile modal - UPDATED
-      function openEditProfileModal() {
-        // Set current values in the form
-        editNameInput.value = profileData.name;
-        editUsernameInput.value = profileData.username;
-
-        // Update photo preview in modal
-        if (profileData.profilePhoto) {
-          photoPreview.innerHTML = `<img src="${profileData.profilePhoto}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-        } else {
-          const firstLetter = profileData.name.charAt(0).toUpperCase();
-          photoPreview.textContent = firstLetter;
-        }
-
-        editProfileModal.classList.add("active");
-      }
-
-      // Open change password modal - UPDATED
-      function openChangePasswordModal() {
-        // Clear previous inputs
-        oldPasswordInput.value = "";
-        newPasswordInput.value = "";
-        confirmPasswordInput.value = "";
-        passwordError.style.display = "none";
-        savePasswordBtn.disabled = true;
-
-        // Reset all eye icons to closed state
-        const eyeIcons = document.querySelectorAll(".toggle-password i");
-        eyeIcons.forEach((icon) => {
-          icon.classList.remove("fa-eye-slash");
-          icon.classList.add("fa-eye");
-        });
-
-        // Reset all password fields to password type
-        const passwordInputs = document.querySelectorAll(
-          'input[type="password"], input[type="text"]'
-        );
-        passwordInputs.forEach((input) => {
-          if (input.id.includes("password")) {
-            input.type = "password";
-          }
-        });
-
-        changePasswordModal.classList.add("active");
-      }
-
-      // Close modal functions
-      function closeEditModal() {
-        editProfileModal.classList.remove("active");
-      }
-
-      function closePasswordModal() {
-        changePasswordModal.classList.remove("active");
-      }
-
-      async function saveProfileChanges() {
-        try {
-          const updatedData = {
-            user_id: currentUser.id,
-            name: editNameInput.value,
-            username: editUsernameInput.value,
-            profile_photo: profileData.profilePhoto,
-          };
-
-          console.log("Sending data:", updatedData);
-
-          const response = await fetch("../php/update_profile.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedData),
-          });
-
-          // First, get the raw response text to see what's being returned
-          const responseText = await response.text();
-          console.log("Raw response:", responseText);
-
-          // Then try to parse it as JSON
-          const data = JSON.parse(responseText);
-
-          if (data.success) {
-            // Update local data and display
-            profileData.name = updatedData.name;
-            profileData.username = updatedData.username;
-            profileNameDisplay.textContent = updatedData.name;
-            profileUsernameDisplay.textContent = `@${updatedData.username}`;
-
-            // Update avatar with first letter of new name
-            const firstLetter = updatedData.name.charAt(0).toUpperCase();
-            profileAvatarDisplay.textContent = firstLetter;
-
-            closeEditModal();
-            alert("Profile updated successfully!");
-          } else {
-            alert("Error updating profile: " + data.message);
-          }
-        } catch (error) {
-          console.error("Error saving profile:", error);
-          console.log(
-            "This usually means the PHP file has an error and is returning HTML instead of JSON"
-          );
-          alert(
-            "Error updating profile. Please check the console for details."
-          );
-        }
-      }
-
-      // Password validation
-      function validatePassword() {
-        const oldPassword = oldPasswordInput.value;
-        const newPassword = newPasswordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-
-        // Check if all fields are filled
-        if (!oldPassword || !newPassword || !confirmPassword) {
-          savePasswordBtn.disabled = true;
-          passwordError.style.display = "none";
-          return;
-        }
-
-        // Check if new password meets requirements
-        if (newPassword.length < 6) {
-          passwordError.textContent =
-            "Password must be at least 6 characters long";
-          passwordError.style.display = "block";
-          savePasswordBtn.disabled = true;
-          return;
-        }
-
-        // Check if passwords match
-        if (newPassword !== confirmPassword) {
-          passwordError.textContent = "New passwords do not match";
-          passwordError.style.display = "block";
-          savePasswordBtn.disabled = true;
-          return;
-        }
-
-        // Check if new password is different from old password
-        if (oldPassword === newPassword) {
-          passwordError.textContent =
-            "New password must be different from old password";
-          passwordError.style.display = "block";
-          savePasswordBtn.disabled = true;
-          return;
-        }
-
-        // All validations passed
-        passwordError.style.display = "none";
-        savePasswordBtn.disabled = false;
-      }
-
-      // Save password changes - UPDATED to use API
-      async function savePasswordChanges() {
-        try {
-          const passwordData = {
-            user_id: currentUser.id,
-            old_password: oldPasswordInput.value,
-            new_password: newPasswordInput.value,
-          };
-
-          const response = await fetch("../php/change_password.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(passwordData),
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            closePasswordModal();
-            alert("Password changed successfully!");
-          } else {
-            alert("Error changing password: " + data.message);
-          }
-        } catch (error) {
-          console.error("Error changing password:", error);
-          alert("Error changing password. Please try again.");
-        }
-      }
-
-      // Photo management functions
-      function takePhoto() {
-        alert("Camera functionality would be implemented here!");
-      }
-      function uploadPhoto() {
-        // Create file input element
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = "image/*";
-
-        fileInput.addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            // Validate file size (max 2MB)
-            if (file.size > 2 * 1024 * 1024) {
-              alert("Please select an image smaller than 2MB");
-              return;
-            }
-
-            // Validate file type
-            if (!file.type.startsWith("image/")) {
-              alert("Please select a valid image file");
-              return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              // Store the base64 image data
-              profileData.profilePhoto = e.target.result;
-
-              // Update preview immediately
-              photoPreview.innerHTML = `<img src="${e.target.result}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-
-        fileInput.click();
-      }
-
-      // Remove photo function - UPDATED
-      function removePhoto() {
-        profileData.profilePhoto = null;
-        const firstLetter = (editNameInput.value || profileData.name)
-          .charAt(0)
-          .toUpperCase();
-        photoPreview.textContent = firstLetter;
-
-        // Also update the main avatar display if modal is open
-        if (profileData.profilePhoto) {
-          profileAvatarDisplay.textContent = firstLetter;
-        }
-      }
-
-      // Update stats display
-      function updateStatsDisplay() {
-        if (ordersCount) ordersCount.textContent = profileData.stats.orders;
-        if (favoritesCount)
-          favoritesCount.textContent = profileData.stats.favorites;
-        if (cartCount) cartCount.textContent = profileData.stats.cartItems;
-        if (unclaimedCount)
-          unclaimedCount.textContent = profileData.stats.unclaimedOrders;
-      }
-
-      // Navigate to different sections
-      function navigateTo(section) {
-        switch (section) {
-          case "order-history":
-            window.location.href = "order-history.html";
-            break;
-          case "review-orders":
-            window.location.href = "../reviews/review_orders.html";
-            break;
-          case "all-reviews":
-            window.location.href = "../reviews/all_reviews.html";
-            break;
-          case "preferences":
-            window.location.href = "../preferences/customer_preferences.html";
-            break;
-          default:
-            console.log("Navigation to", section);
-        }
-      }
-
-      // Profile-specific greeting (you can keep this or use the generic one)
-      async function updateProfileGreeting() {
-        if (!currentUser) {
-          console.warn("No user logged in for greeting");
-          return;
-        }
-
-        const greetingElement = document.getElementById("user-greeting");
-        if (greetingElement) {
-          greetingElement.textContent = `Hi, ${currentUser.firstName}!`;
-        }
-      }
-
-      // Store Feedback Functions
+      // --- STORE FEEDBACK LOGIC ---
       async function openStoreFeedbackModal() {
         const modal = document.getElementById("store-feedback-modal");
         modal.classList.add("active");
-
-        // Load existing feedback from database
         await loadExistingFeedback();
       }
 
       function closeStoreFeedbackModal() {
-        const modal = document.getElementById("store-feedback-modal");
-        modal.classList.remove("active");
+        document.getElementById("store-feedback-modal").classList.remove("active");
         resetFeedbackForm();
       }
 
       async function loadExistingFeedback() {
         try {
           const response = await fetch("../php/get_store_feedback.php", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "same-origin",
+             method: "GET",
+             headers: { "Content-Type": "application/json" },
+             credentials: "same-origin",
           });
 
           if (response.ok) {
             const data = await response.json();
-
             if (data.success && data.feedback) {
               showExistingFeedback(data.feedback);
             } else {
               showNewFeedbackForm();
             }
           } else {
-            throw new Error("Failed to load feedback");
+              showNewFeedbackForm();
           }
         } catch (error) {
           console.error("Error loading feedback:", error);
@@ -2118,18 +1754,10 @@
         document.getElementById("store-feedback-form").style.display = "none";
         document.getElementById("submit-feedback").style.display = "none";
 
-        // Display current feedback
-        document.getElementById("current-stars").innerHTML = "★".repeat(
-          feedback.rating
-        );
-        document.getElementById(
-          "current-rating-text"
-        ).textContent = `${feedback.rating}/5 stars`;
-        document.getElementById("current-comment-text").textContent =
-          feedback.comment || "No comment provided.";
-        document.getElementById("feedback-date").textContent = new Date(
-          feedback.created_at
-        ).toLocaleDateString();
+        document.getElementById("current-stars").innerHTML = "★".repeat(feedback.rating);
+        document.getElementById("current-rating-text").textContent = `${feedback.rating}/5 stars`;
+        document.getElementById("current-comment-text").textContent = feedback.comment || "No comment provided.";
+        document.getElementById("feedback-date").textContent = new Date(feedback.created_at).toLocaleDateString();
       }
 
       function showNewFeedbackForm() {
@@ -2139,207 +1767,114 @@
       }
 
       function enableEditing() {
-        // We'll load the existing data into the form for editing
-        document.getElementById("existing-feedback").style.display = "none";
-        document.getElementById("store-feedback-form").style.display = "block";
-        document.getElementById("submit-feedback").style.display = "block";
-
-        // The form will be empty initially, we'll populate it when user clicks edit
+        showNewFeedbackForm();
         loadCurrentFeedbackIntoForm();
       }
 
       async function loadCurrentFeedbackIntoForm() {
         try {
           const response = await fetch("../php/get_store_feedback.php", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "same-origin",
+            method: "GET", headers: { "Content-Type": "application/json" }, credentials: "same-origin"
           });
-
           if (response.ok) {
             const data = await response.json();
-
             if (data.success && data.feedback) {
               const feedback = data.feedback;
-
-              // Populate form with existing data
-              document.querySelector(
-                `input[name="rating"][value="${feedback.rating}"]`
-              ).checked = true;
-              document.getElementById("feedback-comment").value =
-                feedback.comment || "";
-
+              const radio = document.querySelector(`input[name="rating"][value="${feedback.rating}"]`);
+              if(radio) radio.checked = true;
+              document.getElementById("feedback-comment").value = feedback.comment || "";
               updateSubmitButton();
             }
           }
-        } catch (error) {
-          console.error("Error loading current feedback:", error);
-        }
+        } catch (e) { console.error(e); }
       }
 
       async function submitFeedback() {
         const rating = document.querySelector('input[name="rating"]:checked');
         const comment = document.getElementById("feedback-comment").value;
         const errorDiv = document.getElementById("feedback-error");
-        const successDiv = document.getElementById("feedback-success");
 
         if (!rating) {
-          showError("Please select a rating");
+          errorDiv.textContent = "Please select a rating";
+          errorDiv.style.display = "block";
           return;
         }
 
         try {
           const response = await fetch("../php/save_store_feedback.php", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              rating: parseInt(rating.value),
-              comment: comment.trim(),
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rating: parseInt(rating.value), comment: comment.trim() }),
             credentials: "same-origin",
           });
-
           const data = await response.json();
-
           if (data.success) {
-            // Show success message
-            successDiv.textContent = "Thank you for your feedback!";
-            successDiv.style.display = "block";
-            errorDiv.style.display = "none";
-
-            // Close modal after delay
-            setTimeout(() => {
-              closeStoreFeedbackModal();
-            }, 1500);
+            showToast("Thank you for your feedback!", "success");
+            setTimeout(closeStoreFeedbackModal, 1500);
           } else {
-            showError(data.error || "Failed to save feedback");
+            errorDiv.textContent = data.error || "Failed to save feedback";
+            errorDiv.style.display = "block";
           }
         } catch (error) {
-          console.error("Error submitting feedback:", error);
-          showError("Network error: Could not submit feedback");
+          showToast("Network error: Could not submit feedback", "error");
         }
       }
 
       function resetFeedbackForm() {
         document.getElementById("feedback-error").style.display = "none";
-        document.getElementById("feedback-success").style.display = "none";
         document.getElementById("store-feedback-form").reset();
         document.getElementById("submit-feedback").disabled = true;
       }
 
-      function showError(message) {
-        const errorDiv = document.getElementById("feedback-error");
-        errorDiv.textContent = message;
-        errorDiv.style.display = "block";
-      }
-
       function updateSubmitButton() {
         const rating = document.querySelector('input[name="rating"]:checked');
-        const submitBtn = document.getElementById("submit-feedback");
-        submitBtn.disabled = !rating;
+        document.getElementById("submit-feedback").disabled = !rating;
+      }
+
+      // --- NAV & INIT ---
+      function navigateTo(section) {
+        const paths = {
+          'order-history': 'order-history.html',
+          'review-orders': '../reviews/review_orders.html',
+          'all-reviews': '../reviews/all_reviews.html',
+          'preferences': '../preferences/customer_preferences.html'
+        };
+        if(paths[section]) window.location.href = paths[section];
+      }
+
+      function openChangePasswordModal() {
+        const modal = document.getElementById("change-password-modal");
+        resetPasswordForm();
+        modal.classList.add("active");
       }
 
       document.addEventListener("DOMContentLoaded", async function () {
-        // Use setupPageProtection if it exists, otherwise skip
-        if (typeof setupPageProtection === "function") {
-          setupPageProtection();
-        }
+        if (typeof setupPageProtection === "function") setupPageProtection();
 
-        console.log("Profile page loaded");
-
-        // Use your existing authentication system
         currentUser = await fetchUserSession();
-        if (!currentUser) return; // Will redirect if not logged in
+        if (!currentUser) return; 
 
-        // updateUserGreeting() is already called by fetchUserSession internally
-        // But you can call it again if you want to ensure it's updated
-        await updateUserGreeting();
+        await fetchCustomerProfile();
+        initializeEventListeners();
 
-        console.log("User is logged in:", currentUser);
-
-        try {
-          // Fetch and display customer profile data
-          await fetchCustomerProfile();
-
-          // Initialize event listeners for modals and buttons
-          initializeEventListeners();
-
-          updateStatsDisplay();
-        } catch (error) {
-          console.error("Error initializing profile page:", error);
-          showErrorState("Failed to load profile data");
-        }
-
-        // Star rating change
-        document.querySelectorAll('input[name="rating"]').forEach((radio) => {
+        // Feedback Logic listeners
+        document.querySelectorAll('input[name="rating"]').forEach(radio => {
           radio.addEventListener("change", updateSubmitButton);
         });
-
-        // Submit button
-        document
-          .getElementById("submit-feedback")
-          .addEventListener("click", submitFeedback);
-
-        // Close modal buttons
-        document
-          .getElementById("close-feedback-modal")
-          .addEventListener("click", closeStoreFeedbackModal);
-        document
-          .getElementById("cancel-feedback")
-          .addEventListener("click", closeStoreFeedbackModal);
-
-        // Close modal when clicking outside
-        document
-          .getElementById("store-feedback-modal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) {
-              closeStoreFeedbackModal();
-            }
-          });
-        setupPasswordToggles();
-
-        // Real-time validation
-        document
-          .getElementById("old-password")
-          .addEventListener("input", validatePasswordForm);
-        document
-          .getElementById("new-password")
-          .addEventListener("input", validatePasswordForm);
-        document
-          .getElementById("confirm-password")
-          .addEventListener("input", validatePasswordForm);
-
-        // Save button
-        document
-          .getElementById("save-password")
-          .addEventListener("click", changePassword);
-
-        // Close modal buttons
-        document
-          .getElementById("close-password-modal")
-          .addEventListener("click", closeChangePasswordModal);
-        document
-          .getElementById("cancel-password")
-          .addEventListener("click", closeChangePasswordModal);
-
-        // Close modal when clicking outside
-        document
-          .getElementById("change-password-modal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) {
-              closeChangePasswordModal();
-            }
-          });
+        document.getElementById("submit-feedback").addEventListener("click", (e) => {
+            e.preventDefault(); 
+            submitFeedback();
+        });
+        document.getElementById("close-feedback-modal").addEventListener("click", closeStoreFeedbackModal);
+        document.getElementById("cancel-feedback").addEventListener("click", closeStoreFeedbackModal);
+        
+        // Modal Outside clicks
+        window.addEventListener("click", (e) => {
+            if(e.target.id === 'store-feedback-modal') closeStoreFeedbackModal();
+            if(e.target.id === 'change-password-modal') closePasswordModal();
+            if(e.target.id === 'edit-profile-modal') closeEditModal();
+        });
       });
-
-      function showErrorState(message) {
-        console.error(message);
-        // Optional: Show user-friendly error message
-      }
     </script>
   </body>
 </html>
