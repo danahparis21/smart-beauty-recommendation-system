@@ -200,230 +200,6 @@
       .cart-total-amount { font-size: 16px; font-weight: 700; color: var(--primary-pink); margin: 3px 0; line-height: 1.2; }
       .cart-total-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
       .cart-total-popup small { font-size: 10px; color: #9ca3af; display: block; margin-top: 2px; line-height: 1.3; }
-
-    /* ================= Notification Styles ================= */
-.notification-container { 
-    position: relative; 
-    margin-left: 10px; 
-    margin-right: 10px; 
-    display: flex; 
-    align-items: center; 
-}
-
-/* Desktop notification button */
-.notif-btn {
-    background: none; 
-    border: none; 
-    color: var(--primary-pink); 
-    font-size: 18px;
-    cursor: pointer; 
-    position: relative; 
-    padding: 5px; 
-    transition: transform 0.2s;
-}
-.notif-btn:hover { transform: scale(1.1); }
-
-.notif-badge {
-    position: absolute; 
-    top: -2px; 
-    right: -2px; 
-    background: #dc2626; 
-    color: white;
-    border-radius: 50%; 
-    width: 16px; 
-    height: 16px; 
-    font-size: 10px;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    font-weight: bold; 
-    display: none;
-}
-
-/* Desktop notification dropdown */
-.notif-dropdown {
-    position: absolute; 
-    top: 40px; 
-    right: -50px; 
-    width: 300px;
-    background: white; 
-    border-radius: 12px; 
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-    z-index: 5000; 
-    display: none; 
-    overflow: hidden; 
-    border: 1px solid rgba(255, 182, 193, 0.3);
-}
-.notif-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
-
-.notif-header {
-    padding: 12px 15px; 
-    border-bottom: 1px solid #f0f0f0; 
-    font-weight: 600;
-    color: var(--dark-gray); 
-    font-family: "Montserrat", sans-serif;
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-}
-.notif-list { max-height: 300px; overflow-y: auto; }
-.notif-item {
-    padding: 12px 15px; 
-    border-bottom: 1px solid #f9f9f9;
-    transition: background 0.2s; 
-    cursor: pointer;
-    display: flex; 
-    flex-direction: column; 
-    gap: 4px;
-}
-.notif-item:last-child { border-bottom: none; }
-.notif-item:hover { background-color: #fff0f5; }
-.notif-item.unread { background-color: #fef2f2; border-left: 3px solid var(--primary-pink); }
-
-/* Show ONLY title in dropdown */
-.notif-title { font-weight: 600; font-size: 14px; color: #333; }
-.notif-msg { display: none; /* Hide message in dropdown */ }
-.notif-date { font-size: 10px; color: #999; align-self: flex-end; margin-top: 2px; }
-.notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
-
-/* ================= MOBILE NOTIFICATION BUTTON ================= */
-.mobile-notif-btn {
-    display: none; /* Hidden by default on desktop */
-    background: none;
-    border: none;
-    color: var(--primary-pink);
-    font-size: 20px;
-    cursor: pointer;
-    position: relative; /* Change from fixed to relative */
-    padding: 8px;
-    margin-right: 10px; /* Add space between notification and profile */
-}
-
-
-.mobile-notif-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    background: #dc2626;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    display: none;
-}
-
-/* ================= MEDIA QUERIES ================= */
-@media (max-width: 768px) {
-    /* Hide desktop notification on mobile */
-    .notification-container {
-        display: none;
-    }
-    
-    .user-greeting {
-        display: none;
-    }
-    
-    .profile-btn {
-        display: none;
-    }
-    
-    /* Show mobile buttons on mobile */
-    .mobile-notif-btn {
-        display: block;
-    }
-    
-    .mobile-profile-btn {
-        display: block;
-    }
-    
-    /* Ensure user-section displays buttons side by side */
-    .user-section {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Space between buttons */
-    }
-    
-    /* Mobile notification dropdown */
-    .notif-dropdown {
-        position: fixed;
-        top: 60px;
-        right: 10px;
-        left: 10px;
-        width: auto;
-        max-width: 400px;
-        margin: 0 auto;
-    }
-}
-
-/* ================= NOTIFICATION MODAL STYLES ================= */
-.notif-modal-overlay {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: rgba(0,0,0,0.5); 
-    z-index: 10000; 
-    display: none;
-    justify-content: center; 
-    align-items: center; 
-    backdrop-filter: blur(3px);
-}
-.notif-modal-content {
-    background: white; 
-    padding: 25px; 
-    border-radius: 12px; 
-    width: 90%; 
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
-    position: relative;
-    animation: modalPop 0.3s ease; 
-    border-top: 4px solid var(--primary-pink);
-}
-@keyframes modalPop {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-.notif-modal-title { 
-    font-size: 18px; 
-    font-weight: 600; 
-    color: #333; 
-    margin-bottom: 10px; 
-    font-family: "Cormorant Garamond", serif; 
-}
-.notif-modal-date { 
-    font-size: 12px; 
-    color: #888; 
-    margin-bottom: 15px; 
-    border-bottom: 1px solid #eee; 
-    padding-bottom: 10px; 
-    display: block;
-}
-.notif-modal-message { 
-    font-size: 14px; 
-    color: #555; 
-    line-height: 1.6; 
-    margin-bottom: 20px; 
-}
-.notif-modal-close {
-    background: var(--primary-pink); 
-    color: white; 
-    border: none; 
-    padding: 8px 20px;
-    border-radius: 20px; 
-    cursor: pointer; 
-    float: right; 
-    font-size: 12px; 
-    transition: background 0.2s;
-}
-.notif-modal-close:hover { background: var(--dark-pink); }
-      
-
     </style>
   </head>
 
@@ -458,7 +234,6 @@
         </div>
         <!-- NOTIFICATION SECTION END -->
 
-
         <button class="profile-btn" onclick="window.location.href='user_profile.html'">
           <i class="fas fa-user"></i>
         </button>
@@ -467,12 +242,7 @@
       <button class="mobile-profile-btn" onclick="window.location.href='user_profile.html'">
         <i class="fas fa-user"></i>
       </button>
-   
-    <button class="mobile-notif-btn" id="mobile-notif-btn">
-      <i class="fas fa-bell"></i>
-      <span class="mobile-notif-badge" id="mobile-notif-badge">0</span>
-    </button>
-  </header>
+    </header>
 
     <!-- Desktop Navigation -->
     <nav class="desktop-nav">
@@ -552,20 +322,21 @@
       let cart = [];
       const normalizeCategory = (cat) => (cat || "").toLowerCase();
 
+      // --- RENDERING & HELPER FUNCTIONS ---
       function renderProducts(filteredProducts = products) {
-  const productsGrid = document.getElementById("products-grid");
-  if (!productsGrid) return;
-  productsGrid.innerHTML = "";
+        const productsGrid = document.getElementById("products-grid");
+        if (!productsGrid) return;
+        productsGrid.innerHTML = "";
 
-  if (filteredProducts.length === 0) {
-    productsGrid.innerHTML = '<p class="text-center p-5 text-gray-500 col-span-full">No results found.</p>';
-    return;
-  }
-  filteredProducts.forEach((product) => {
-    const productCard = createProductCard(product);
-    productsGrid.appendChild(productCard);
-  });
-}
+        if (filteredProducts.length === 0) {
+          productsGrid.innerHTML = '<p class="text-center p-5 text-gray-500 col-span-full">No results found.</p>';
+          return;
+        }
+        filteredProducts.forEach((product) => {
+          const productCard = createProductCard(product);
+          productsGrid.appendChild(productCard);
+        });
+      }
 
       function createProductCard(product) {
         const cleanProductName = (name) => {
@@ -741,37 +512,16 @@
         if (page === "favorites") renderFavorites();
       }
 
-      async function handleCategoryFilter(category) {
-  document.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"));
-  const categoryBtn = document.querySelector(`.category-btn[data-category="${category.toLowerCase()}"]`);
-  if (categoryBtn) categoryBtn.classList.add("active");
-  
-  if (category.toLowerCase() === "all") {
-    renderProducts();
-  } else if (category.toLowerCase() === "top products") {
-    // Show loading state
-    const productsGrid = document.getElementById("products-grid");
-    productsGrid.innerHTML = '<p class="text-center p-5 text-gray-500 col-span-full">Loading top products...</p>';
-    
-    try {
-      const response = await fetch("../php/top-products.php");
-      const data = await response.json();
-      
-      if (data.success) {
-        renderProducts(data.products);
-      } else {
-        productsGrid.innerHTML = '<p class="text-center p-5 text-gray-500 col-span-full">No top products available.</p>';
+      function handleCategoryFilter(category) {
+        document.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"));
+        const categoryBtn = document.querySelector(`.category-btn[data-category="${category.toLowerCase()}"]`);
+        if (categoryBtn) categoryBtn.classList.add("active");
+        if (category.toLowerCase() === "all") renderProducts();
+        else {
+          const filteredProducts = products.filter((p) => p.category === category.toLowerCase());
+          renderProducts(filteredProducts);
+        }
       }
-    } catch (error) {
-      console.error("Error fetching top products:", error);
-      productsGrid.innerHTML = '<p class="text-center p-5 text-gray-500 col-span-full">Error loading top products.</p>';
-    }
-  } else {
-    const filteredProducts = products.filter((p) => p.category === category.toLowerCase());
-    renderProducts(filteredProducts);
-  }
-}
-
 
       function initSearch() {
         const searchInput = document.querySelector(".search-bar input");
@@ -825,58 +575,45 @@
         setupNotifications();
         fetchNotifications();
 
-     const categoriesContainer = document.getElementById("categories-container");
-  fetch("../php/categories.php")
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success && categoriesContainer) {
-        categoriesContainer.innerHTML = "";
-        
-        // All button
-        const allBtn = document.createElement("button");
-        allBtn.className = "category-btn bg-pink-500 text-white active px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md";
-        allBtn.textContent = "All";
-        allBtn.setAttribute("data-category", "all");
-        categoriesContainer.appendChild(allBtn);
-        allBtn.addEventListener("click", () => handleCategoryFilter("All"));
-        
-        // Top Products button (special category)
-        const topProductsBtn = document.createElement("button");
-        topProductsBtn.className = "category-btn bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-colors duration-200 shadow-md ml-2";
-        topProductsBtn.textContent = "Top Products";
-        topProductsBtn.setAttribute("data-category", "top products");
-        categoriesContainer.appendChild(topProductsBtn);
-        topProductsBtn.addEventListener("click", () => handleCategoryFilter("Top Products"));
-        
-        // Regular category buttons
-        data.categories.filter((c) => normalizeCategory(c) !== "all").forEach((cat) => {
-          const btn = document.createElement("button");
-          btn.className = "category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors duration-200 ml-2";
-          btn.textContent = cat;
-          btn.setAttribute("data-category", normalizeCategory(cat));
-          categoriesContainer.appendChild(btn);
-          btn.addEventListener("click", () => handleCategoryFilter(cat));
-        });
-      }
-    })
-    .catch((err) => console.error("Category Fetch Error:", err));
+        const categoriesContainer = document.getElementById("categories-container");
+        fetch("../php/categories.php")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && categoriesContainer) {
+              categoriesContainer.innerHTML = "";
+              const allBtn = document.createElement("button");
+              allBtn.className = "category-btn bg-pink-500 text-white active px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-600 transition-colors duration-200 shadow-md";
+              allBtn.textContent = "All";
+              allBtn.setAttribute("data-category", "all");
+              categoriesContainer.appendChild(allBtn);
+              allBtn.addEventListener("click", () => handleCategoryFilter("All"));
+              data.categories.filter((c) => normalizeCategory(c) !== "all").forEach((cat) => {
+                  const btn = document.createElement("button");
+                  btn.className = "category-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors duration-200 ml-2";
+                  btn.textContent = cat;
+                  btn.setAttribute("data-category", normalizeCategory(cat));
+                  categoriesContainer.appendChild(btn);
+                  btn.addEventListener("click", () => handleCategoryFilter(cat));
+                });
+            }
+          })
+          .catch((err) => console.error("Category Fetch Error:", err));
 
-  // Load initial products
-  fetch("../php/home.php")
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        products = data.products;
-        renderProducts();
-      } else showNotification("Failed to load products.");
-    })
-    .catch((err) => showNotification("Error fetching products from server."));
+        fetch("../php/home.php")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              products = data.products;
+              renderProducts();
+            } else showNotification("Failed to load products.");
+          })
+          .catch((err) => showNotification("Error fetching products from server."));
 
-  initSearch();
-  updateCartCount();
-  setupNavigation();
-  setupCartHoverListeners();
-});
+        initSearch();
+        updateCartCount();
+        setupNavigation();
+        setupCartHoverListeners();
+      });
 
       function setupCartHoverListeners() {
         const desktopCartNav = document.querySelector('.desktop-nav .nav-item[data-page="cart"]');

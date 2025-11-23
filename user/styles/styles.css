@@ -815,7 +815,7 @@ body::before {
     left: auto !important;
     width: 300px !important;
     max-width: calc(100vw - 20px);
-    z-index: 10001 !important;
+    z-index: auto;
   }
   
   /* Ensure header has proper z-index */
