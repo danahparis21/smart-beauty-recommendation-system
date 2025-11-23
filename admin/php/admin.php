@@ -207,7 +207,6 @@ class AdminDashboard
         return $ratings;
     }
 
-    // ✅ FIXED: Changed user_image to profile_photo
     public function getAllReviews($ratingFilter = 'all', $sort = 'newest') {
         $whereClause = "1=1";
         
@@ -357,22 +356,33 @@ class AdminDashboard
     // ✅ FIXED: Changed user_image to profile_photo (matches database schema)
     public function getTopCustomers($period = 'All Time') {
         $dateFilter = $this->getDateFilterForPeriod($period);
-        $query = "SELECT u.username, u.first_name, u.last_name, u.profile_photo, 
-                  COUNT(o.order_id) as total_orders, 
-                  COALESCE(SUM(o.total_price), 0) as total_spent
-                  FROM orders o 
-                  JOIN users u ON o.user_id = u.UserID 
-                  WHERE o.status = 'completed' AND $dateFilter
-                  GROUP BY u.UserID, u.username, u.first_name, u.last_name, u.profile_photo 
-                  ORDER BY total_spent DESC 
-                  LIMIT 5";
+
+        $query = "SELECT 
+                    u.username, 
+                    u.first_name, 
+                    u.last_name, 
+                    u.profile_photo, 
+                    COUNT(o.order_id) AS total_orders, 
+                    COALESCE(SUM(o.total_price), 0) AS total_spent
+                FROM orders o
+                JOIN users u ON o.user_id = u.UserID
+                WHERE o.status = 'completed'
+                AND u.Role != 'admin'
+                AND $dateFilter
+                GROUP BY u.UserID, u.username, u.first_name, u.last_name, u.profile_photo
+                ORDER BY total_spent DESC
+                LIMIT 5";
+
         $result = $this->conn->query($query);
+
         $customers = [];
         while ($row = $result->fetch_assoc()) {
             $customers[] = $row;
         }
+
         return $customers;
     }
+
 
     public function getDashboardData($period = 'All Time', $chartOnly = false) {
         $data = ['chart_data' => $this->getSalesChartData($period)];
