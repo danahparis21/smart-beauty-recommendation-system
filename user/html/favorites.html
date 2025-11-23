@@ -20,8 +20,15 @@
     <script src="../js/load-profile-notification.js"></script>
 
     <style>
+      :root {
+        --primary-pink: #ec4899;
+        --dark-pink: #db2777;
+        --light-pink: #fbcfe8;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
       .nav-item {
-        position: relative; /* Add this */
+        position: relative;
       }
 
       .nav-cart-count {
@@ -55,7 +62,260 @@
           transform: scale(1);
         }
       }
-      /* Products Grid - EXACT SAME AS HOME */
+
+      /* Search & Filter Container */
+      .search-container {
+        padding: 15px 20px;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 100;
+      }
+
+      .search-bar {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        border-radius: 25px;
+        padding: 10px 20px;
+        box-shadow: var(--card-shadow);
+        transition: box-shadow 0.3s ease;
+      }
+
+      .search-bar:focus-within {
+        box-shadow: 0 0 0 2px var(--light-pink);
+      }
+
+      .search-bar i {
+        color: var(--text-gray, #888);
+        margin-right: 10px;
+      }
+
+      .search-bar input {
+        border: none;
+        background: transparent;
+        outline: none;
+        width: 100%;
+        font-size: 16px;
+        font-family: "Montserrat", sans-serif;
+        color: #333;
+      }
+
+      .search-bar input::placeholder {
+        color: #999;
+      }
+
+      /* Filter Button Styles */
+      .filter-wrapper {
+        position: relative;
+      }
+
+      .filter-btn {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        box-shadow: var(--card-shadow);
+        color: var(--text-gray, #555);
+        font-family: "Montserrat", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        height: 44px;
+        white-space: nowrap;
+        position: relative;
+      }
+
+      .filter-btn:hover, .filter-btn.active {
+        color: var(--primary-pink);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(236, 72, 153, 0.15);
+      }
+
+      .filter-badge {
+        background: var(--primary-pink);
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        animation: bounceIn 0.3s ease;
+      }
+
+      .filter-badge.show {
+        display: flex;
+      }
+
+      @keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+
+      .filter-dropdown {
+        position: absolute;
+        top: 110%;
+        right: 0;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        width: 200px;
+        padding: 8px 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        z-index: 2100;
+        overflow: hidden;
+      }
+
+      .filter-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .filter-option {
+        padding: 10px 20px;
+        font-size: 13px;
+        color: #444;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .filter-option:hover {
+        background-color: #fff0f7;
+        color: var(--primary-pink);
+      }
+
+      .filter-option.selected {
+        background-color: #fff0f7;
+        color: var(--primary-pink);
+        font-weight: 600;
+      }
+
+      .filter-option.selected::after {
+        content: '✓';
+        font-weight: bold;
+        margin-left: 8px;
+      }
+      
+      .filter-option.remove-filter {
+        border-top: 1px solid #eee;
+        color: #ef4444;
+        margin-top: 5px;
+      }
+      .filter-option.remove-filter:hover {
+        background-color: #fef2f2;
+      }
+
+      /* Active Filters Display */
+      .active-filters-container {
+        padding: 10px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        min-height: 40px;
+        transition: all 0.3s ease;
+      }
+
+      .active-filters-container:empty {
+        display: none;
+      }
+
+      .filter-tag {
+        background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-family: "Montserrat", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        animation: slideIn 0.3s ease;
+        box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .filter-tag i {
+        cursor: pointer;
+        font-size: 10px;
+        padding: 2px;
+        transition: transform 0.2s;
+      }
+
+      .filter-tag i:hover {
+        transform: scale(1.3);
+      }
+
+      .clear-all-filters {
+        background: #ef4444;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-family: "Montserrat", sans-serif;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+
+      .clear-all-filters:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      /* Results Counter */
+      .results-counter {
+        text-align: left;
+        padding: 10px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        font-family: "Montserrat", sans-serif;
+        font-size: 14px;
+        color: #666;
+      }
+
+      /* Products Grid */
       .products-container {
         padding: 20px;
         max-width: 1200px;
@@ -323,7 +583,7 @@
         pointer-events: auto;
       }
 
-      /* Responsive Design - EXACT SAME AS HOME */
+      /* Responsive Design */
       @media (min-width: 768px) {
         .products-grid {
           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -376,6 +636,13 @@
 
         .product-image-container {
           height: 180px;
+        }
+
+        .filter-btn span {
+          display: none;
+        }
+        .filter-btn {
+          padding: 10px;
         }
       }
 
@@ -508,7 +775,8 @@
         );
         transform: translateY(-2px);
       }
-      /* Cart total popup - Compact & Elegant */
+
+      /* Cart total popup */
       .cart-total-popup {
         position: absolute;
         background: white;
@@ -526,7 +794,6 @@
         text-align: center;
       }
 
-      /* Desktop positioning */
       .desktop-nav .cart-total-popup {
         top: calc(100% + 8px);
         right: 50%;
@@ -546,7 +813,6 @@
         border-top: 1px solid #f3f4f6;
       }
 
-      /* Mobile positioning */
       .mobile-nav .cart-total-popup {
         bottom: calc(100% + 8px);
         right: 50%;
@@ -595,6 +861,100 @@
         margin-top: 2px;
         line-height: 1.3;
       }
+
+      /* Categories */
+      .categories {
+        padding: 12px 18px;
+        overflow-x: auto;
+        white-space: nowrap;
+        background: transparent;
+        position: relative;
+        backdrop-filter: blur(10px);
+      }
+      .categories::-webkit-scrollbar {
+        height: 4px;
+      }
+      .categories::-webkit-scrollbar-track {
+        background: rgba(255, 182, 193, 0.15);
+        border-radius: 10px;
+      }
+      .categories::-webkit-scrollbar-thumb {
+        background: linear-gradient(90deg, var(--primary-pink), var(--dark-pink));
+        border-radius: 10px;
+      }
+      #categories-container {
+        display: inline-flex;
+        gap: 10px;
+        padding: 3px;
+      }
+
+      .category-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #ea9ec4;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+        white-space: nowrap;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 182, 193, 0.2);
+        flex: 1;
+        min-width: 140px;
+        text-align: center;
+        justify-content: center;
+      }
+      .category-btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        transition: left 0.7s;
+      }
+      .category-btn:hover:before {
+        left: 100%;
+      }
+      .category-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(255, 105, 180, 0.2);
+        color: var(--primary-pink);
+      }
+      .category-btn.active {
+        background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+        color: white;
+        box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+        transform: translateY(-1px);
+      }
+      .category-btn i {
+        margin-right: 6px;
+        font-size: 14px;
+      }
+
+      @media (max-width: 768px) {
+        .categories {
+          padding: 10px 15px;
+          border-radius: 16px;
+        }
+        .category-btn {
+          padding: 7px 14px;
+          font-size: 13px;
+          border-radius: 18px;
+        }
+        .category-btn i {
+          margin-right: 5px;
+          font-size: 13px;
+        }
+      }
     </style>
   </head>
 
@@ -612,7 +972,6 @@
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
 
-        <!-- NOTIFICATION SECTION START -->
         <div class="notification-container">
           <button class="notif-btn" id="notif-btn">
             <i class="fas fa-bell"></i>
@@ -629,12 +988,10 @@
               ></i>
             </div>
             <div class="notif-list" id="notif-list">
-              <!-- Notifications will be injected here -->
               <div class="notif-empty">Loading...</div>
             </div>
           </div>
         </div>
-        <!-- NOTIFICATION SECTION END -->
 
         <button
           class="profile-btn"
@@ -667,17 +1024,50 @@
         <i class="fas fa-shopping-cart"></i>
         <span>Cart</span>
         <div class="nav-cart-count">0</div>
-        <!-- ADD THIS -->
       </a>
       <a href="try-on.html" class="nav-item" data-page="tryon"
         ><i class="fas fa-camera"></i><span>Virtual Try-On</span></a
       >
     </nav>
 
+    <!-- Search Bar and Filter -->
+    <div class="search-container">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Search favorites..." />
+      </div>
+      
+      <div class="filter-wrapper">
+        <button class="filter-btn" id="filter-toggle">
+            <i class="fas fa-filter"></i>
+            <span>Sort</span>
+            <span class="filter-badge" id="filter-badge">0</span>
+        </button>
+        <div class="filter-dropdown" id="filter-options">
+            <div class="filter-option" data-sort="az">A-Z Name</div>
+            <div class="filter-option" data-sort="za">Z-A Name</div>
+            <div class="filter-option" data-sort="price_asc">Lowest Price</div>
+            <div class="filter-option" data-sort="price_desc">Highest Price</div>
+            <div class="filter-option" data-sort="rating_desc">Highest Rating</div>
+            <div class="filter-option remove-filter" data-sort="none">Remove Sort</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Filters Display -->
+    <div class="active-filters-container" id="active-filters"></div>
+
+    <!-- Categories -->
+    <div class="categories overflow-x-auto whitespace-nowrap">
+      <div id="categories-container" class="inline-flex space-x-3 pb-2"></div>
+    </div>
+
+    <!-- Results Counter -->
+    <div class="results-counter" id="results-counter"></div>
+
     <main>
       <section id="favorites" class="page-content">
         <div class="products-container">
-          <h2 class="section-title">Your Favorites</h2>
           <div class="products-grid" id="favorites-grid">
             <p class="text-center p-4 text-gray-500">
               Loading your favorites...
@@ -716,13 +1106,11 @@
         <a href="recommender.html" class="nav-item" data-page="recommender">
           <i class="fas fa-star"></i>
           <span>Recommender</span>
-          <span class="tooltip">Smart Recommender</span>
         </a>
         <a href="cart.html" class="nav-item" data-page="cart">
           <i class="fas fa-shopping-cart"></i>
           <span>Cart</span>
           <div class="nav-cart-count">0</div>
-          <!-- ADD THIS -->
         </a>
         <a href="try-on.html" class="nav-item" data-page="tryon">
           <i class="fas fa-camera"></i>
@@ -732,9 +1120,307 @@
     </nav>
 
     <script>
+      // --- GLOBAL STATE ---
+      let allFavorites = [];
       let currentButton = null;
       let currentProductId = null;
       let currentUserId = null;
+      let selectedCategories = []; // Array for multiple categories
+      let currentSort = null;
+      let currentSearchTerm = '';
+
+      const normalizeCategory = (cat) => (cat || "").toLowerCase();
+
+      // --- FILTER & DISPLAY FUNCTIONS ---
+      function updateActiveFiltersDisplay() {
+        const container = document.getElementById('active-filters');
+        const filterBadge = document.getElementById('filter-badge');
+        if (!container) return;
+
+        container.innerHTML = '';
+        let filterCount = 0;
+
+        // Display selected categories
+        selectedCategories.forEach(cat => {
+          filterCount++;
+          const tag = document.createElement('div');
+          tag.className = 'filter-tag';
+          tag.innerHTML = `
+            <i class="fas fa-tag"></i>
+            <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+            <i class="fas fa-times" onclick="removeCategory('${cat}')"></i>
+          `;
+          container.appendChild(tag);
+        });
+
+        // Display current sort
+        if (currentSort) {
+          filterCount++;
+          const sortLabels = {
+            'az': 'A-Z',
+            'za': 'Z-A',
+            'price_asc': 'Price: Low to High',
+            'price_desc': 'Price: High to Low',
+            'rating_desc': 'Top Rated'
+          };
+          const tag = document.createElement('div');
+          tag.className = 'filter-tag';
+          tag.innerHTML = `
+            <i class="fas fa-sort"></i>
+            <span>${sortLabels[currentSort]}</span>
+            <i class="fas fa-times" onclick="removeSort()"></i>
+          `;
+          container.appendChild(tag);
+        }
+
+        // Display search term
+        if (currentSearchTerm) {
+          filterCount++;
+          const tag = document.createElement('div');
+          tag.className = 'filter-tag';
+          tag.innerHTML = `
+            <i class="fas fa-search"></i>
+            <span>"${currentSearchTerm}"</span>
+            <i class="fas fa-times" onclick="clearSearch()"></i>
+          `;
+          container.appendChild(tag);
+        }
+
+        // Clear all button
+        if (filterCount > 0) {
+          const clearBtn = document.createElement('button');
+          clearBtn.className = 'clear-all-filters';
+          clearBtn.innerHTML = '<i class="fas fa-times-circle"></i> Clear All';
+          clearBtn.onclick = clearAllFilters;
+          container.appendChild(clearBtn);
+        }
+
+        // Update badge
+        if (filterBadge) {
+          filterBadge.textContent = filterCount;
+          if (filterCount > 0) {
+            filterBadge.classList.add('show');
+          } else {
+            filterBadge.classList.remove('show');
+          }
+        }
+      }
+
+      function removeCategory(category) {
+        selectedCategories = selectedCategories.filter(c => c !== category);
+        updateCategoryButtons();
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function removeSort() {
+        currentSort = null;
+        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function clearSearch() {
+        currentSearchTerm = '';
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.value = '';
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function clearAllFilters() {
+        selectedCategories = [];
+        currentSort = null;
+        currentSearchTerm = '';
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.value = '';
+        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        updateCategoryButtons();
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function applyFilters() {
+        let result = [...allFavorites];
+
+        // 1. Filter by Categories (multiple selection)
+        if (selectedCategories.length > 0) {
+          result = result.filter(p => 
+            selectedCategories.includes(normalizeCategory(p.category))
+          );
+        }
+
+        // 2. Filter by Search Term
+        if (currentSearchTerm) {
+          result = result.filter(p => {
+            const term = currentSearchTerm.toLowerCase();
+            const inName = (p.name || '').toLowerCase().includes(term);
+            const inCat = (p.category || '').toLowerCase().includes(term);
+            const inVariants = p.variants && p.variants.some(v => v.name.toLowerCase().includes(term));
+            return inName || inCat || inVariants;
+          });
+        }
+
+        // 2. Apply Sort
+        if (currentSort) {
+          result.sort((a, b) => {
+            switch(currentSort) {
+              case 'az': 
+                return a.name.localeCompare(b.name);
+              case 'za': 
+                return b.name.localeCompare(a.name);
+              case 'price_asc': 
+                return parseFloat(a.price) - parseFloat(b.price);
+              case 'price_desc': 
+                return parseFloat(b.price) - parseFloat(a.price);
+              case 'rating_desc': 
+                return (parseFloat(b.average_rating) || 0) - (parseFloat(a.average_rating) || 0);
+              default: return 0;
+            }
+          });
+        }
+
+        updateResultsCounter(result.length);
+        renderFilteredFavorites(result);
+      }
+
+      // --- CATEGORY FILTER (MULTI-SELECT) ---
+      function handleCategoryClick(category) {
+        const normalizedCat = normalizeCategory(category);
+        
+        if (normalizedCat === 'all') {
+          // Reset all categories
+          selectedCategories = [];
+        } else {
+          // Toggle category selection
+          const index = selectedCategories.indexOf(normalizedCat);
+          if (index > -1) {
+            selectedCategories.splice(index, 1);
+          } else {
+            selectedCategories.push(normalizedCat);
+          }
+        }
+        
+        updateCategoryButtons();
+        updateActiveFiltersDisplay();
+        applyFilters();
+      }
+
+      function updateCategoryButtons() {
+        document.querySelectorAll(".category-btn").forEach((btn) => {
+          const cat = btn.getAttribute("data-category");
+          if (cat === 'all') {
+            // "All" button is active only when no categories are selected
+            if (selectedCategories.length === 0) {
+              btn.classList.add("active");
+            } else {
+              btn.classList.remove("active");
+            }
+          } else {
+            // Other buttons are active if they're in the selectedCategories array
+            if (selectedCategories.includes(cat)) {
+              btn.classList.add("active");
+            } else {
+              btn.classList.remove("active");
+            }
+          }
+        });
+      }
+
+      function updateResultsCounter(count) {
+        const counter = document.getElementById('results-counter');
+        if (!counter) return;
+        
+        if (count === allFavorites.length) {
+          counter.textContent = `Showing all ${count} favorite${count !== 1 ? 's' : ''}`;
+        } else {
+          counter.textContent = `Found ${count} of ${allFavorites.length} favorite${allFavorites.length !== 1 ? 's' : ''}`;
+        }
+      }
+
+      function renderFilteredFavorites(filteredFavorites) {
+        const favoritesGrid = document.getElementById("favorites-grid");
+        if (!favoritesGrid) return;
+        favoritesGrid.innerHTML = "";
+
+        if (filteredFavorites.length === 0) {
+          if (currentSearchTerm || currentSort) {
+            favoritesGrid.innerHTML = '<p class="text-center p-4 text-gray-500">No favorites match your filters.</p>';
+          } else {
+            favoritesGrid.innerHTML = '<p class="text-center p-4 text-gray-500">You have no favorite products yet.</p>';
+          }
+          return;
+        }
+
+        filteredFavorites.forEach((product) => {
+          favoritesGrid.appendChild(createProductCard(product));
+        });
+      }
+
+      function initFilterDropdown() {
+        const btn = document.getElementById('filter-toggle');
+        const dropdown = document.getElementById('filter-options');
+        const options = document.querySelectorAll('.filter-option');
+
+        if(!btn || !dropdown) return;
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdown.classList.toggle('show');
+          btn.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+            btn.classList.remove('active');
+          }
+        });
+
+        options.forEach(option => {
+          option.addEventListener('click', () => {
+            const sortType = option.getAttribute('data-sort');
+            
+            if (sortType === 'none') {
+              currentSort = null;
+              options.forEach(o => o.classList.remove('selected'));
+            } else {
+              currentSort = sortType;
+              options.forEach(o => o.classList.remove('selected'));
+              option.classList.add('selected');
+            }
+
+            dropdown.classList.remove('show');
+            btn.classList.remove('active');
+            
+            updateActiveFiltersDisplay();
+            applyFilters();
+          });
+        });
+      }
+
+      function initSearch() {
+        const searchInput = document.getElementById("search-input");
+        const searchIcon = document.querySelector(".search-bar .fa-search");
+        if (!searchInput) return;
+
+        const performSearch = () => {
+          currentSearchTerm = searchInput.value.trim();
+          updateActiveFiltersDisplay();
+          applyFilters();
+        };
+
+        let debounceTimer;
+        searchInput.addEventListener("input", () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(performSearch, 300);
+        });
+        
+        if(searchIcon) searchIcon.addEventListener("click", performSearch);
+        searchInput.addEventListener("keypress", (e) => { 
+          if (e.key === "Enter") performSearch(); 
+        });
+      }
 
       // --- Get User Session ---
       async function getUserSession() {
@@ -784,7 +1470,6 @@
             ? `<div class="stock-alert">Only ${product.stockQuantity} left!</div>`
             : "";
 
-        // ✅ ADDED: Dynamic star rating calculation (same as home.html)
         const averageRating = parseFloat(product.average_rating) || 0;
         const generateStarHTML = (rating) => {
           const fullStars = Math.floor(rating);
@@ -838,7 +1523,7 @@
         <div class="product-info">
             <div class="product-name">${cleanProductName(product.name)}</div>
             <div class="product-price">${priceDisplay}</div>
-            ${ratingsHTML} <!-- ✅ CHANGED: Now uses dynamic ratings -->
+            ${ratingsHTML}
             ${variantListHTML}
             <div class="product-actions">
                 <button class="like-btn liked" onclick="event.stopPropagation(); toggleFavorite('${
@@ -855,7 +1540,6 @@
         </div>
     `;
 
-        // Card click redirects to detail page
         card.addEventListener("click", (e) => {
           if (
             e.target.closest(".like-btn") ||
@@ -866,7 +1550,6 @@
           window.location.href = `productdetail.html?productId=${product.id}`;
         });
 
-        // Variant switching
         const img = card.querySelector(".product-image");
         card.querySelectorAll(".color-circle").forEach((circle) => {
           circle.addEventListener("click", (e) => {
@@ -887,6 +1570,7 @@
 
         return card;
       }
+
       // --- Toggle Favorite ---
       async function toggleFavorite(productId, button) {
         currentButton = button;
@@ -911,7 +1595,6 @@
           confirmBtn.disabled = true;
 
           const card = currentButton.closest(".product-card");
-          const favoritesGrid = document.getElementById("favorites-grid");
 
           try {
             const formData = new FormData();
@@ -926,19 +1609,19 @@
             const data = await res.json();
 
             if (data.success && data.action === "unliked") {
+              // Remove from allFavorites array
+              allFavorites = allFavorites.filter(p => p.id !== currentProductId);
+              
               if (card) {
                 card.style.transition = "all 0.3s ease";
                 card.style.opacity = "0";
                 card.style.transform = "scale(0.9)";
                 setTimeout(() => {
                   card.remove();
-                  if (!favoritesGrid.querySelector(".product-card")) {
-                    favoritesGrid.innerHTML =
-                      "<p class='text-center p-4 text-gray-500'>You have no favorite products yet.</p>";
-                  }
+                  applyFilters(); // Re-render with updated count
                 }, 300);
               }
-              showNotification("Removed from favorites");
+              showNotification("Removed from favorites 💔");
             } else {
               showNotification(data.message ?? "Failed to remove favorite");
             }
@@ -952,7 +1635,6 @@
           }
         });
 
-      // Click outside modal closes it
       document.getElementById("unlike-modal").addEventListener("click", (e) => {
         if (e.target.id === "unlike-modal") {
           e.currentTarget.style.display = "none";
@@ -961,48 +1643,6 @@
         }
       });
 
-      // --- Add to Cart ---
-      async function addToCart(productId) {
-        try {
-          const res = await fetch("../php/add-to-cart.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ product_id: productId, quantity: 1 }),
-            credentials: "same-origin",
-          });
-          const data = await res.json();
-          showNotification(
-            data.success
-              ? "Product added to cart!"
-              : data.message ?? "Failed to add to cart"
-          );
-        } catch (err) {
-          console.error(err);
-          showNotification("Failed to add to cart");
-        }
-      }
-
-      async function testFavoritesAPI() {
-        try {
-          const res = await fetch("../php/favorites-handler.php", {
-            credentials: "same-origin",
-          });
-          const data = await res.json();
-          console.log("🔍 FAVORITES API FULL RESPONSE:", data);
-
-          if (data.products && data.products.length > 0) {
-            console.log("📦 FIRST PRODUCT DETAILS:", data.products[0]);
-            console.log(
-              "🔄 ALL PRODUCT IDs:",
-              data.products.map((p) => p.id)
-            );
-          }
-
-          return data;
-        } catch (err) {
-          console.error("❌ API Error:", err);
-        }
-      }
       async function updateCartCount() {
         try {
           const response = await fetch("../php/get-cart-count.php");
@@ -1011,9 +1651,10 @@
           if (data.success) {
             const cartCounts = document.querySelectorAll(".nav-cart-count");
             cartCounts.forEach((count) => {
+              if(count.id === 'notif-badge') return;
               count.textContent = data.count;
               if (data.count > 0) {
-                count.classList.add("show"); // Use class instead of inline style
+                count.classList.add("show");
               } else {
                 count.classList.remove("show");
               }
@@ -1023,6 +1664,7 @@
           console.log("Cart count update failed, setting to 0");
           const cartCounts = document.querySelectorAll(".nav-cart-count");
           cartCounts.forEach((count) => {
+            if(count.id === 'notif-badge') return;
             count.textContent = "0";
             count.classList.remove("show");
           });
@@ -1037,7 +1679,12 @@
         await updateUserGreeting();
         await updateCartCount();
 
-        // Use currentUser from user-session.js instead of getUserSession()
+        initFilterDropdown();
+        initSearch();
+
+        // Load categories first
+        loadCategories();
+
         const favoritesGrid = document.getElementById("favorites-grid");
 
         if (!currentUser) {
@@ -1046,30 +1693,76 @@
           return;
         }
 
-        const apiData = await testFavoritesAPI();
-
         try {
           const res = await fetch("../php/favorites-handler.php", {
             credentials: "same-origin",
           });
           const data = await res.json();
+          
           if (!data.success || !data.products?.length) {
             favoritesGrid.innerHTML =
-              "<p class='text-center p-4 text-gray-500'>You have no favorite products yet.</p>";
+              "<p class='text-center p-4 text-gray-500'>You have no favorite products yet. 💔</p>";
             return;
           }
 
-          favoritesGrid.innerHTML = "";
-          data.products.forEach((product) => {
-            favoritesGrid.appendChild(createProductCard(product));
-          });
+          allFavorites = data.products;
+          applyFilters(); // Initial render with filters
         } catch (err) {
           console.error(err);
           favoritesGrid.innerHTML = `<p class='text-center text-red-500'>Error loading favorites: ${err.message}</p>`;
         }
+        
         setupCartHoverListeners();
       });
-      // ADD THIS FUNCTION TO HOME PAGE:
+
+      // Load categories function
+      async function loadCategories() {
+        const categoriesContainer = document.getElementById("categories-container");
+        if (!categoriesContainer) return;
+
+        try {
+          const response = await fetch("../php/categories.php");
+          const data = await response.json();
+          
+          if (data.success) {
+            categoriesContainer.innerHTML = "";
+            
+            // All Button
+            const allBtn = document.createElement("button");
+            allBtn.className = "category-btn active";
+            allBtn.innerHTML = '<i class="fas fa-th"></i> All';
+            allBtn.setAttribute("data-category", "all");
+            categoriesContainer.appendChild(allBtn);
+            allBtn.addEventListener("click", () => handleCategoryClick("all"));
+
+            // Category Icons Map
+            const categoryIcons = {
+              'lips': 'fa-kiss-wink-heart',
+              'eyes': 'fa-eye',
+              'face': 'fa-smile',
+              'cheeks': 'fa-grin-hearts',
+              'nails': 'fa-hand-sparkles',
+              'tools': 'fa-tools',
+              'skincare': 'fa-spa',
+              'brushes': 'fa-paint-brush'
+            };
+
+            // Other Categories
+            data.categories.filter((c) => normalizeCategory(c) !== "all").forEach((cat) => {
+              const btn = document.createElement("button");
+              btn.className = "category-btn";
+              const iconClass = categoryIcons[normalizeCategory(cat)] || 'fa-star';
+              btn.innerHTML = `<i class="fas ${iconClass}"></i> ${cat}`;
+              btn.setAttribute("data-category", normalizeCategory(cat));
+              categoriesContainer.appendChild(btn);
+              btn.addEventListener("click", () => handleCategoryClick(cat));
+            });
+          }
+        } catch (error) {
+          console.error("Error loading categories:", error);
+        }
+      }
+
       function setupCartHoverListeners() {
         const desktopCartNav = document.querySelector(
           '.desktop-nav .nav-item[data-page="cart"]'
@@ -1078,54 +1771,40 @@
           '.mobile-nav .nav-item[data-page="cart"]'
         );
 
-        console.log("Setting up cart hover listeners...");
-        console.log("Desktop cart nav found:", !!desktopCartNav);
-        console.log("Mobile cart nav found:", !!mobileCartNav);
-
-        // Desktop hover
         if (desktopCartNav) {
           desktopCartNav.addEventListener("mouseenter", function () {
-            console.log("Desktop cart hover triggered");
             showCartTotalOnHover();
           });
         }
 
-        // Mobile touch (for better mobile experience)
         if (mobileCartNav) {
           let touchTimer;
 
           mobileCartNav.addEventListener("touchstart", function () {
             touchTimer = setTimeout(() => {
-              console.log("Mobile cart long press triggered");
               showCartTotalOnHover();
-            }, 500); // Show after 500ms long press
+            }, 500);
           });
 
           mobileCartNav.addEventListener("touchend", function () {
             clearTimeout(touchTimer);
           });
 
-          // Also show on click for mobile
           mobileCartNav.addEventListener("click", function (e) {
-            // Only show if it's not navigating (prevent double trigger)
             if (!e.target.closest("a")) {
-              console.log("Mobile cart click triggered");
               showCartTotalOnHover();
             }
           });
         }
       }
 
-      // Notification function
       function showNotification(message, type = "success") {
-        // Remove existing notification if any
         const existingNotification =
           document.querySelector(".cart-notification");
         if (existingNotification) {
           existingNotification.remove();
         }
 
-        // Create notification element
         const notification = document.createElement("div");
         notification.className = `cart-notification ${type}`;
         notification.innerHTML = `
@@ -1137,15 +1816,12 @@
     </div>
   `;
 
-        // Add to page
         document.body.appendChild(notification);
 
-        // Show with animation
         setTimeout(() => {
           notification.classList.add("show");
         }, 10);
 
-        // Auto remove after 3 seconds
         setTimeout(() => {
           notification.classList.remove("show");
           setTimeout(() => {
@@ -1156,72 +1832,8 @@
         }, 3000);
       }
 
-      // Cart total popup function
-      function showCartTotal(totalAmount) {
-        // Remove existing popups if any
-        const existingPopups = document.querySelectorAll(".cart-total-popup");
-        existingPopups.forEach((popup) => popup.remove());
-
-        // Get both desktop and mobile cart nav items
-        const desktopCartNav = document.querySelector(
-          '.desktop-nav .nav-item[data-page="cart"]'
-        );
-        const mobileCartNav = document.querySelector(
-          '.mobile-nav .nav-item[data-page="cart"]'
-        );
-
-        // Create popup for desktop
-        if (desktopCartNav) {
-          const desktopPopup = document.createElement("div");
-          desktopPopup.className = "cart-total-popup";
-          desktopPopup.innerHTML = `
-      <div class="cart-total-label">Cart Total</div>
-      <div class="cart-total-amount">₱${formatNumberWithCommas(
-        parseFloat(totalAmount).toFixed(2)
-      )}</div>
-      <small>Click cart to view items</small>
-    `;
-
-          desktopCartNav.style.position = "relative";
-          desktopCartNav.appendChild(desktopPopup);
-
-          setTimeout(() => {
-            desktopPopup.classList.add("show");
-          }, 10);
-        }
-
-        // Create popup for mobile
-        if (mobileCartNav) {
-          const mobilePopup = document.createElement("div");
-          mobilePopup.className = "cart-total-popup";
-          mobilePopup.innerHTML = `
-      <div class="cart-total-label">Cart Total</div>
-      <div class="cart-total-amount">₱${formatNumberWithCommas(
-        parseFloat(totalAmount).toFixed(2)
-      )}</div>
-      <small>Tap cart to view items</small>
-    `;
-
-          mobileCartNav.style.position = "relative";
-          mobileCartNav.appendChild(mobilePopup);
-
-          setTimeout(() => {
-            mobilePopup.classList.add("show");
-          }, 10);
-        }
-
-        // Auto hide after 3 seconds
-        setTimeout(() => {
-          const allPopups = document.querySelectorAll(".cart-total-popup");
-          allPopups.forEach((popup) => {
-            popup.classList.remove("show");
-            setTimeout(() => {
-              if (popup.parentNode) {
-                popup.remove();
-              }
-            }, 300);
-          });
-        }, 3000);
+      function formatNumberWithCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
 
       async function showCartTotalOnHover() {
@@ -1233,7 +1845,6 @@
             const existingPopups =
               document.querySelectorAll(".cart-total-popup");
 
-            // Don't show if there's already a popup
             if (existingPopups.length > 0) return;
 
             const desktopCartNav = document.querySelector(
@@ -1243,7 +1854,6 @@
               '.mobile-nav .nav-item[data-page="cart"]'
             );
 
-            // Create popup for desktop
             if (desktopCartNav) {
               const desktopPopup = document.createElement("div");
               desktopPopup.className = "cart-total-popup";
@@ -1252,13 +1862,11 @@
                     <div class="cart-total-amount">₱${formatNumberWithCommas(
                       parseFloat(result.totalAmount).toFixed(2)
                     )}</div>
-                    
                 `;
 
               desktopCartNav.appendChild(desktopPopup);
               setTimeout(() => desktopPopup.classList.add("show"), 10);
 
-              // Remove on mouse leave (desktop only)
               desktopCartNav.addEventListener(
                 "mouseleave",
                 function () {
@@ -1271,7 +1879,6 @@
               );
             }
 
-            // Create popup for mobile
             if (mobileCartNav) {
               const mobilePopup = document.createElement("div");
               mobilePopup.className = "cart-total-popup";
@@ -1280,13 +1887,11 @@
                     <div class="cart-total-amount">₱${formatNumberWithCommas(
                       parseFloat(result.totalAmount).toFixed(2)
                     )}</div>
-                    
                 `;
 
               mobileCartNav.appendChild(mobilePopup);
               setTimeout(() => mobilePopup.classList.add("show"), 10);
 
-              // Auto-remove after 3 seconds on mobile
               setTimeout(() => {
                 mobilePopup.classList.remove("show");
                 setTimeout(() => {
