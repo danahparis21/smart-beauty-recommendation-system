@@ -1191,20 +1191,42 @@
     // Google Login Button Handler
     const googleLoginBtn = document.querySelector('.social-btn.google');
     googleLoginBtn.addEventListener('click', function () {
-      const clientId = '1002579907182-03h0l3s7dend47reghc4j805herork3l.apps.googleusercontent.com';
-      const redirectUri = 'http://localhost:8080/user/php/google-callback.php';
-      const scope = 'email profile';
+      // Show loading state
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      this.style.pointerEvents = 'none';
+      
+      // Fetch Google config from server
+      fetch('../php/get-google-config.php')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch configuration');
+          }
+          return response.json();
+        })
+        .then(config => {
+          const clientId = config.clientId;
+          const redirectUri = config.loginRedirectUri;
+          const scope = 'email profile';
 
-      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-        `client_id=${encodeURIComponent(clientId)}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&response_type=code` +
-        `&scope=${encodeURIComponent(scope)}` +
-        `&access_type=online` +
-        `&prompt=select_account`;
+          const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+            `client_id=${encodeURIComponent(clientId)}` +
+            `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+            `&response_type=code` +
+            `&scope=${encodeURIComponent(scope)}` +
+            `&access_type=online` +
+            `&state=login` +
+            `&prompt=select_account`;
 
-      console.log('Redirecting to:', googleAuthUrl); // Debug log
-      window.location.href = googleAuthUrl;
+          console.log('Redirecting to:', googleAuthUrl);
+          window.location.href = googleAuthUrl;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showToast('Failed to initialize Google Sign-In. Please try again.');
+          // Restore button
+          this.innerHTML = '<i class="fab fa-google"></i>';
+          this.style.pointerEvents = 'auto';
+        });
     });
 
     // Forgot Password Handler
