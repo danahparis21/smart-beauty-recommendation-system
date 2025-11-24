@@ -132,7 +132,8 @@ error_log("Attributes collected - SkinType: $skinType, SkinTone: $skinTone, Unde
 $productRating = 0;
 
 // --- IMAGE UPLOAD---
-$targetDir = '../uploads/product_images/';
+$targetDir = '/var/www/html/uploads/product_images/';
+$webPath = '/uploads/product_images/'; // Path for database
 $variantImagePath = handleFileUpload('variantImage', $targetDir);
 $previewImagePath = handleFileUpload('previewImage', $targetDir);
 
@@ -287,7 +288,8 @@ if ($type === 'new') {
         error_log('Adding variant image media...');
         $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
         if ($media_stmt) {
-            $media_stmt->bind_param('sss', $parentProductID, $variantID, $variantImagePath);
+            $webVariantPath = '../uploads/product_images/' . basename($variantImagePath);
+            $media_stmt->bind_param('sss', $parentProductID, $variantID, $webVariantPath);
             if (!$media_stmt->execute()) {
                 error_log('Variant image media insert failed: ' . $media_stmt->error);
             } else {
@@ -303,7 +305,8 @@ if ($type === 'new') {
         error_log('Adding preview image media...');
         $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'PREVIEW', 1)");
         if ($media_stmt) {
-            $media_stmt->bind_param('ss', $parentProductID, $previewImagePath);
+            $webPreviewPath = '../uploads/product_images/' . basename($previewImagePath);
+            $media_stmt->bind_param('ss', $parentProductID, $webPreviewPath);
             if (!$media_stmt->execute()) {
                 error_log('Preview image media insert failed: ' . $media_stmt->error);
             } else {
@@ -329,7 +332,8 @@ if ($type === 'new') {
                 if (move_uploaded_file($tmp_name, $targetFile)) {
                     $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'GALLERY', ?)");
                     if ($media_stmt) {
-                        $media_stmt->bind_param('ssi', $parentProductID, $targetFile, $sortOrder);
+                        $webGalleryPath = '../uploads/product_images/' . basename($targetFile);
+                        $media_stmt->bind_param('ssi', $parentProductID, $webGalleryPath, $sortOrder);
                         if (!$media_stmt->execute()) {
                             error_log('Gallery image media insert failed: ' . $media_stmt->error);
                         } else {
