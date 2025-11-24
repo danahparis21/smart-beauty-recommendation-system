@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cashier Mode - Beauty & Blessed</title>
-    <link rel="icon" href="../images/mainlogo.png" type="image/png" />
+    <link rel="icon" href="../images/mainlogo1.png" type="image/png" />
     <link rel="stylesheet" href="../styles/styles.css" />
     <link
       rel="stylesheet"
@@ -854,7 +854,7 @@
     <div class="cashier-transition-screen" id="exitingCashierMode">
       <div class="cashier-logo-container">
         <div class="cashier-logo">
-          <img src="../images/mainlogo.png" alt="Store Logo" />
+          <img src="../images/mainlogo1.png" alt="Store Logo" />
         </div>
         <div class="cashier-title">Exiting Cashier Mode</div>
         <div class="cashier-subtitle">Returning to Admin Dashboard</div>
@@ -1097,22 +1097,25 @@
 
         // Load products from server
         function loadProducts() {
-          console.log("Loading products...");
+        
+            
 
           fetch("../php/cashier-mode.php?action=get_products")
             .then((response) => {
-              console.log("Response status:", response.status);
+           
+                
               return response.json();
             })
             .then((data) => {
-              console.log("Received data:", data);
+            
+                
 
               if (data.success) {
                 products = data.products;
                 categories = data.categories;
 
-                console.log("Products loaded:", products.length);
-                console.log("Categories:", categories);
+            
+                
 
                 renderProducts();
                 renderCategories();
@@ -1664,7 +1667,8 @@
         const script = document.createElement("script");
         script.src = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js";
         script.onload = function () {
-          console.log("jsQR library loaded successfully");
+         
+            
         };
         script.onerror = function () {
           console.error("Failed to load jsQR library");
@@ -1776,7 +1780,9 @@
         function handleQRCode(qrData) {
           if (!scanning) return;
 
-          console.log("QR Code detected:", qrData);
+        
+          
+
 
           // Show loading state
           scannerResults.innerHTML =
@@ -1790,7 +1796,8 @@
         // Fetch order details from server
         async function fetchOrderDetails(qrCode) {
           try {
-            console.log("Fetching order for QR:", qrCode);
+       
+            
 
             const response = await fetch(
               `../php/qr-scanner.php?action=get_order&qr_code=${encodeURIComponent(
@@ -1917,10 +1924,8 @@
 
         // Long Press Functions
         function setupLongPress() {
-          console.log(
-            "Setting up long press for mobile:",
-            window.innerWidth < 992
-          );
+        
+            
 
           // Only activate on mobile devices
           if (window.innerWidth < 992) {
@@ -1948,7 +1953,8 @@
           // Only activate on mobile devices
           if (window.innerWidth >= 992) return;
 
-          console.log("Touch started");
+       
+          
           e.preventDefault();
 
           // Get the touch position
@@ -1971,7 +1977,8 @@
         function handlePressEnd(e) {
           if (!isActivating || hasTriggered) return;
 
-          console.log("Touch ended");
+      
+          
           const pressDuration = Date.now() - startTime;
           console.log("Press duration:", pressDuration);
 
@@ -2006,7 +2013,8 @@
         }
 
         function showLongPress(x, y) {
-          console.log("Showing long press at:", x, y);
+      
+            
 
           // Position the circle at the touch position
           longPressCircle.style.left = x + "px";
@@ -2029,7 +2037,8 @@
           const maxScale =
             (Math.max(viewportWidth, viewportHeight) / circleSize) * 1.5;
 
-          console.log("Starting expansion animation, max scale:", maxScale);
+       
+            
 
           const updateExpansion = () => {
             if (!isActivating) return;
@@ -2071,7 +2080,8 @@
         function triggerExit() {
           if (hasTriggered) return;
 
-          console.log("Triggering exit");
+         
+          
           hasTriggered = true;
 
           // Haptic feedback for completion
@@ -2090,19 +2100,19 @@
         }
 
         function showExitingCashierMode() {
-          console.log("Showing exit screen");
+        
+            
           exitingCashierMode.classList.add("active");
 
-          // Wait for the screen to be fully covered before redirecting
+          
           setTimeout(() => {
             window.location.href = "admin.html";
           }, 2000);
         }
 
         function cancelLongPress() {
-          console.log("Cancelling long press");
-
-          // Smoothly animate the circle back to zero scale
+         
+            
           longPressCircle.style.transition =
             "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease, box-shadow 0.4s ease";
           longPressCircle.style.transform = "translate(-50%, -50%) scale(0)";

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Recommender | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png" />
     <link rel="stylesheet" href="../styles/styles.css" />
     <link
       rel="stylesheet"
@@ -4438,9 +4438,6 @@
 
         if (!currentUser) return;
 
-        console.log("User ID:", currentUser.id);
-        console.log("Username:", currentUser.username);
-
         // Check if user already has preferences
         await checkExistingPreferences();
         const isRetakingQuiz =
@@ -4448,7 +4445,6 @@
 
         // If user has existing preferences, automatically load their results
         if (hasExistingPreferences && currentPreferences && !isRetakingQuiz) {
-          console.log("User has existing preferences, auto-loading results...");
           await loadExistingUserResults();
         } else {
           // Clear the retake flag and show intro
@@ -4551,7 +4547,6 @@
           if (data.success && data.hasPreferences) {
             hasExistingPreferences = true;
             currentPreferences = data.preferences;
-            console.log("User has existing preferences:", currentPreferences);
 
             // Return true to indicate preferences exist
             return true;
@@ -4583,7 +4578,6 @@
         // Remove any existing scan summaries from ALL possible locations
         const existingSummaries = document.querySelectorAll(".scan-summary");
         existingSummaries.forEach((summary) => {
-          console.log("Removing existing scan summary");
           summary.remove();
         });
 
@@ -4607,8 +4601,6 @@
       }
 
       function skipToProductFinishStep(scanResults) {
-        console.log("Skipping to product finish step...");
-
         // Clean up again to be safe
         cleanupScanSummaries();
 
@@ -4673,12 +4665,8 @@
       }
 
       function startFaceScan() {
-        console.log("Starting face scan...");
-
-        // Clean up ANY existing scan summaries before starting new scan
         cleanupScanSummaries();
 
-        // Open camera modal directly
         document.getElementById("camera-modal").classList.add("active");
         initializeCamera();
       }
@@ -4694,15 +4682,11 @@
             },
           });
 
-          console.log("Camera access granted");
-
           const video = document.getElementById("camera-video");
           video.srcObject = cameraStream;
 
           // Wait for video to be ready
           video.onloadedmetadata = () => {
-            console.log("Video is ready to play");
-            // Enable capture button once video is ready
             document.getElementById("capture-btn").disabled = false;
           };
 
@@ -4755,99 +4739,94 @@
       }
 
       async function analyzeFace(imageData) {
-    try {
-        console.log("Sending face analysis request to Python...");
-
-        const response = await fetch("http://localhost:5000/analyze-skin-complete", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                image: imageData,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const text = await response.text();
-        console.log("Raw Python response:", text);
-
-        let result;
         try {
+          const response = await fetch(
+            "http://localhost:5000/analyze-skin-complete",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                image: imageData,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const text = await response.text();
+
+          let result;
+          try {
             result = JSON.parse(text);
-        } catch (parseError) {
+          } catch (parseError) {
             console.error("JSON parse error:", parseError);
             throw new Error("Invalid response from Python server");
-        }
+          }
 
-        if (result.success) {
-            console.log("Complete skin analysis successful:", result.skin_analysis);
-            
+          if (result.success) {
             // Map Python response to your expected format
             const mappedResults = {
-                skinType: result.skin_analysis.skin_type,
-                skinTone: result.skin_analysis.tone,
-                undertone: result.skin_analysis.undertone,
-                concerns: result.skin_analysis.concerns
+              skinType: result.skin_analysis.skin_type,
+              skinTone: result.skin_analysis.tone,
+              undertone: result.skin_analysis.undertone,
+              concerns: result.skin_analysis.concerns,
             };
-            
+
             displayScanResults(mappedResults);
-        } else {
+          } else {
             console.error("Python analysis failed:", result.error);
             throw new Error(result.error || "Skin analysis failed");
-        }
-    } catch (error) {
-        console.error("Python analysis error:", error);
-        // Fallback to PHP analysis if Python fails
-        console.log("🔄 Falling back to PHP analysis...");
-        analyzeFaceWithPHP(imageData);
-    }
-}
+          }
+        } catch (error) {
+          console.error("Python analysis error:", error);
 
-// Keep your existing PHP fallback
-async function analyzeFaceWithPHP(imageData) {
-    try {
-        const response = await fetch("../php/analyze-face.php", {
+          analyzeFaceWithPHP(imageData);
+        }
+      }
+
+      // Keep your existing PHP fallback
+      async function analyzeFaceWithPHP(imageData) {
+        try {
+          const response = await fetch("../php/analyze-face.php", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                image: imageData,
+              image: imageData,
             }),
-        });
+          });
 
-        if (!response.ok) {
+          if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
-        }
+          }
 
-        const text = await response.text();
-        console.log("Raw PHP response:", text);
+          const text = await response.text();
 
-        let result;
-        try {
+          let result;
+          try {
             result = JSON.parse(text);
-        } catch (parseError) {
+          } catch (parseError) {
             console.error("JSON parse error:", parseError);
             throw new Error("Invalid response from server");
-        }
+          }
 
-        if (result.success) {
-            console.log("PHP analysis successful:", result.analysis);
+          if (result.success) {
             displayScanResults(result.analysis);
-        } else {
+          } else {
             console.error("PHP analysis failed:", result.error);
             throw new Error(result.error || "Face analysis failed");
+          }
+        } catch (error) {
+          console.error("PHP analysis error:", error);
+          // Final fallback to default values
+          displayScanResults(getDefaultScanResults());
         }
-    } catch (error) {
-        console.error("PHP analysis error:", error);
-        // Final fallback to default values
-        displayScanResults(getDefaultScanResults());
-    }
-}
+      }
       function getDefaultScanResults() {
         return {
           skinType: "Normal",
@@ -4858,90 +4837,108 @@ async function analyzeFaceWithPHP(imageData) {
       }
 
       function displayScanResults(analysis) {
-    // Validate and map the results to our allowed values
-    const validatedResults = validateScanResults(analysis);
+        // Validate and map the results to our allowed values
+        const validatedResults = validateScanResults(analysis);
 
-    document.getElementById("scan-skin-type").textContent = validatedResults.skinType;
-    document.getElementById("scan-skin-tone").textContent = validatedResults.skinTone;
-    document.getElementById("scan-undertone").textContent = validatedResults.undertone;
+        document.getElementById("scan-skin-type").textContent =
+          validatedResults.skinType;
+        document.getElementById("scan-skin-tone").textContent =
+          validatedResults.skinTone;
+        document.getElementById("scan-undertone").textContent =
+          validatedResults.undertone;
 
-    const concernsElement = document.getElementById("scan-concerns");
-    if (validatedResults.concerns && validatedResults.concerns.length > 0) {
-        concernsElement.innerHTML = validatedResults.concerns
+        const concernsElement = document.getElementById("scan-concerns");
+        if (validatedResults.concerns && validatedResults.concerns.length > 0) {
+          concernsElement.innerHTML = validatedResults.concerns
             .map((concern) => `<span class="concern-tag">${concern}</span>`)
             .join("");
-    } else {
-        concernsElement.innerHTML = '<span style="color: #666;">None detected</span>';
-    }
-    
-    console.log("🎯 Displaying validated results:", validatedResults);
-}
-function validateScanResults(analysis) {
-    // Allowed values for each category
-    const allowedSkinTypes = ["Normal", "Oily", "Dry", "Combination", "Sensitive"];
-    const allowedSkinTones = ["Fair", "Medium", "Tan", "Deep"];
-    const allowedUndertones = ["Warm", "Cool", "Neutral"];
-    const allowedConcerns = ["acne", "dryness", "dark-spots", "aging"];
+        } else {
+          concernsElement.innerHTML =
+            '<span style="color: #666;">None detected</span>';
+        }
+      }
+      function validateScanResults(analysis) {
+        // Allowed values for each category
+        const allowedSkinTypes = [
+          "Normal",
+          "Oily",
+          "Dry",
+          "Combination",
+          "Sensitive",
+        ];
+        const allowedSkinTones = ["Fair", "Medium", "Tan", "Deep"];
+        const allowedUndertones = ["Warm", "Cool", "Neutral"];
+        const allowedConcerns = ["acne", "dryness", "dark-spots", "aging"];
 
-    // Validate and correct skin type
-    let skinType = analysis.skinType || "Normal";
-    if (!allowedSkinTypes.includes(skinType)) {
-        skinType = "Normal"; // Default fallback
-    }
+        // Validate and correct skin type
+        let skinType = analysis.skinType || "Normal";
+        if (!allowedSkinTypes.includes(skinType)) {
+          skinType = "Normal"; // Default fallback
+        }
 
-    // Validate and correct skin tone
-    let skinTone = analysis.skinTone || "Medium";
-    if (!allowedSkinTones.includes(skinTone)) {
-        if (skinTone === "Light") skinTone = "Fair";
-        else if (skinTone === "Olive") skinTone = "Medium";
-        else skinTone = "Medium";
-    }
+        // Validate and correct skin tone
+        let skinTone = analysis.skinTone || "Medium";
+        if (!allowedSkinTones.includes(skinTone)) {
+          if (skinTone === "Light") skinTone = "Fair";
+          else if (skinTone === "Olive") skinTone = "Medium";
+          else skinTone = "Medium";
+        }
 
-    // Validate and correct undertone
-    let undertone = analysis.undertone || "Neutral";
-    if (!allowedUndertones.includes(undertone)) {
-        undertone = "Neutral";
-    }
+        // Validate and correct undertone
+        let undertone = analysis.undertone || "Neutral";
+        if (!allowedUndertones.includes(undertone)) {
+          undertone = "Neutral";
+        }
 
-    // Validate concerns
-    let concerns = analysis.concerns || [];
-    concerns = concerns.filter((concern) => allowedConcerns.includes(concern));
+        // Validate concerns
+        let concerns = analysis.concerns || [];
+        concerns = concerns.filter((concern) =>
+          allowedConcerns.includes(concern)
+        );
 
-    return {
-        skinType,
-        skinTone,
-        undertone,
-        concerns,
-    };
-}
+        return {
+          skinType,
+          skinTone,
+          undertone,
+          concerns,
+        };
+      }
 
-function useScanResults() {
-    try {
-        console.log("useScanResults function called");
-        closeCamera();
+      function useScanResults() {
+        try {
+          closeCamera();
 
-        // Get the validated scan results and update quizData
-        quizData.skinType = document.getElementById("scan-skin-type").textContent.trim();
-        quizData.skinTone = document.getElementById("scan-skin-tone").textContent.trim();
-        quizData.undertone = document.getElementById("scan-undertone").textContent.trim();
-        quizData.concerns = Array.from(document.querySelectorAll("#scan-concerns .concern-tag"))
-            .map(tag => tag.textContent.trim().toLowerCase().replace(" ", "-"));
-        quizData.finish = ""; // Will be set in step 5
+          // Get the validated scan results and update quizData
+          quizData.skinType = document
+            .getElementById("scan-skin-type")
+            .textContent.trim();
+          quizData.skinTone = document
+            .getElementById("scan-skin-tone")
+            .textContent.trim();
+          quizData.undertone = document
+            .getElementById("scan-undertone")
+            .textContent.trim();
+          quizData.concerns = Array.from(
+            document.querySelectorAll("#scan-concerns .concern-tag")
+          ).map((tag) =>
+            tag.textContent.trim().toLowerCase().replace(" ", "-")
+          );
+          quizData.finish = ""; // Will be set in step 5
 
-        console.log("Updated quizData with scan results:", quizData);
-
-        document.getElementById("scan-results-modal").classList.remove("active");
-        skipToProductFinishStep();
-    } catch (error) {
-        console.error("Error in useScanResults:", error);
-        // Proceed silently since data will save anyway
-        document.getElementById("scan-results-modal").classList.remove("active");
-        skipToProductFinishStep();
-    }
-}
+          document
+            .getElementById("scan-results-modal")
+            .classList.remove("active");
+          skipToProductFinishStep();
+        } catch (error) {
+          console.error("Error in useScanResults:", error);
+          // Proceed silently since data will save anyway
+          document
+            .getElementById("scan-results-modal")
+            .classList.remove("active");
+          skipToProductFinishStep();
+        }
+      }
       function closeCamera() {
-        console.log("Closing camera...");
-
         // Stop camera stream
         if (cameraStream) {
           cameraStream.getTracks().forEach((track) => {
@@ -4959,8 +4956,6 @@ function useScanResults() {
 
         // Close modal
         document.getElementById("camera-modal").classList.remove("active");
-
-        console.log("Camera closed successfully");
       }
       // Close camera when page is unloaded (user leaves)
       window.addEventListener("beforeunload", function () {
@@ -4999,8 +4994,6 @@ function useScanResults() {
       }
 
       function addScanSummaryToStep5(scanResults) {
-        console.log("Adding scan summary to step 5");
-
         // Final cleanup check
         cleanupScanSummaries();
 
@@ -5026,7 +5019,6 @@ function useScanResults() {
         // Insert the summary before the options grid
         const optionsGrid = document.querySelector("#step-5 .options-grid");
         if (optionsGrid) {
-          console.log("Inserting scan summary before options grid");
           optionsGrid.insertAdjacentHTML("beforebegin", summaryHtml);
         }
       }
@@ -5219,7 +5211,6 @@ function useScanResults() {
           }
 
           const text = await response.text();
-          console.log("📦 Raw response:", text);
 
           let result;
           try {
@@ -5267,8 +5258,6 @@ function useScanResults() {
           const result = await response.json();
 
           if (result.success && result.ratings) {
-            console.log("📊 Loaded user ratings:", result.ratings);
-
             // Merge ratings into product data - KEEP AS TEXT
             result.ratings.forEach((rating) => {
               const productId = rating.ProductID;
@@ -5290,7 +5279,7 @@ function useScanResults() {
 
             // Refresh ALL feedback buttons after loading ratings
             refreshAllFeedbackButtons();
-            console.log("🔍 Debug after loading ratings:");
+
             debugFeedbackState();
 
             // Also refresh the display if needed
@@ -5307,8 +5296,6 @@ function useScanResults() {
       function refreshAllFeedbackButtons() {
         if (!window.productData) return;
 
-        console.log("🔄 Refreshing all feedback buttons");
-
         Object.keys(window.productData).forEach((productId) => {
           const product = window.productData[productId];
           if (product.user_feedback) {
@@ -5322,13 +5309,9 @@ function useScanResults() {
       function debugFeedbackState() {
         if (!window.productData) return;
 
-        console.log("🔍 CURRENT FEEDBACK STATE:");
         Object.keys(window.productData).forEach((productId) => {
           const product = window.productData[productId];
           if (product.user_feedback) {
-            console.log(
-              `   ${productId}: ${product.user_feedback.RecommendationFeedback} (Rating: ${product.user_feedback.UserRating})`
-            );
           }
         });
       }
@@ -5336,8 +5319,6 @@ function useScanResults() {
       // Update your existing displayRecommendations function
       function displayRecommendations(recommendations) {
         const container = document.getElementById("recommended-products");
-
-        console.log("🎯 Displaying recommendations:", recommendations?.length);
 
         if (
           !recommendations ||
@@ -5389,15 +5370,9 @@ function useScanResults() {
       function showPage(page) {
         const container = document.getElementById("recommended-products");
 
-        console.log(`📄 Page ${page}: Showing filtered/sorted results`);
-
         // Use filtered results if available, otherwise use all recommendations
         const recommendationsToShow =
           window.filteredRecommendations || window.allRecommendations;
-
-        console.log(
-          `📦 Total products to paginate: ${recommendationsToShow.length}`
-        );
 
         // Categorize products
         const allSpecific = recommendationsToShow.filter((product) => {
@@ -5649,12 +5624,7 @@ function useScanResults() {
         );
         const totalPages = Math.max(personalizedPages, universalPages);
 
-        console.log(
-          `🔢 Pagination: ${currentPage}/${totalPages} pages (Personalized:${personalizedPages}, Universal:${universalPages})`
-        );
-
         if (totalPages <= 1) {
-          console.log("ℹ️ Only one page - hiding pagination");
           return "";
         }
 
@@ -5680,12 +5650,10 @@ function useScanResults() {
         const prevBtn = document.getElementById("prev-page");
         const nextBtn = document.getElementById("next-page");
 
-        console.log("🔄 Setting up pagination events...");
-
         if (prevBtn) {
           prevBtn.onclick = (e) => {
             e.preventDefault();
-            console.log("⬅️ Previous page clicked");
+
             if (window.currentPage > 1) {
               showPage(window.currentPage - 1);
             }
@@ -5695,7 +5663,6 @@ function useScanResults() {
         if (nextBtn) {
           nextBtn.onclick = (e) => {
             e.preventDefault();
-            console.log("➡️ Next page clicked");
 
             // Use the SAME calculation method as createPaginationHTML
             const allPersonalized = window.allRecommendations.filter(
@@ -6174,13 +6141,6 @@ function useScanResults() {
                 ? window.productData[productId].Name
                 : "Unknown Product";
 
-            console.log("🎯 Button Clicked:", {
-              productId,
-              rating,
-              productName,
-              buttonHTML: button.outerHTML,
-            });
-
             submitProductFeedback(productId, rating, productName);
           }
         });
@@ -6216,8 +6176,6 @@ function useScanResults() {
                 categoryFilter.appendChild(option);
               }
             });
-
-            console.log("✅ Categories loaded into filter:", data.categories);
           }
         } catch (error) {
           console.error("❌ Error loading categories:", error);
@@ -6226,17 +6184,9 @@ function useScanResults() {
       }
 
       function setupFilters() {
-        console.log("🔧 Setting up filters...");
-
         const categoryFilter = document.getElementById("category-filter");
         const matchTypeFilter = document.getElementById("match-type-filter");
         const sortByFilter = document.getElementById("sort-by-filter");
-
-        console.log("Filters found:", {
-          categoryFilter: !!categoryFilter,
-          matchTypeFilter: !!matchTypeFilter,
-          sortByFilter: !!sortByFilter,
-        });
 
         if (categoryFilter) {
           categoryFilter.addEventListener("change", applyFilters);
@@ -6253,7 +6203,6 @@ function useScanResults() {
 
         // Debug: Check if products exist
         const productCards = document.querySelectorAll(".product-card");
-        console.log("Product cards found during setup:", productCards.length);
       }
 
       const filterDescriptions = {
@@ -6309,20 +6258,12 @@ function useScanResults() {
       }
 
       function applyFilters() {
-        console.log("Applying filters to ALL products...");
-
         const selectedCategory =
           document.getElementById("category-filter")?.value || "all";
         const selectedMatchType =
           document.getElementById("match-type-filter")?.value || "all";
         const selectedSort =
           document.getElementById("sort-by-filter")?.value || "relevance";
-
-        console.log("Filter criteria:", {
-          selectedCategory,
-          selectedMatchType,
-          selectedSort,
-        });
 
         // Store filter state globally so pagination respects it
         window.currentFilters = {
@@ -6354,10 +6295,6 @@ function useScanResults() {
 
             return shouldInclude;
           }
-        );
-
-        console.log(
-          `Filtered from ${window.allRecommendations.length} to ${filteredRecommendations.length} products`
         );
 
         // Apply sorting to the filtered results
@@ -6633,8 +6570,6 @@ function useScanResults() {
 
       // New function to sort ALL products (not just visible ones)
       function sortAllProducts(products, sortBy) {
-        console.log(`Sorting ${products.length} products by:`, sortBy);
-
         return products.sort((a, b) => {
           try {
             switch (sortBy) {
@@ -6820,8 +6755,6 @@ function useScanResults() {
         // Update results count
         updateResultsCount(window.allRecommendations.length);
         // updateFilterDescription();
-
-        console.log("🔄 Filters reset to show all products");
       }
 
       // Remove the old sorting functions since we're now sorting at the data level
@@ -6943,18 +6876,11 @@ function useScanResults() {
         const ratingTextA = a.querySelector(".rating-text")?.textContent || "0";
         const ratingTextB = b.querySelector(".rating-text")?.textContent || "0";
 
-        console.log("⭐ Comparing ratings:", {
-          productA: ratingTextA,
-          productB: ratingTextB,
-        });
-
         // Handle "No ratings yet" text
         const ratingA =
           ratingTextA === "No ratings yet" ? 0 : parseFloat(ratingTextA) || 0;
         const ratingB =
           ratingTextB === "No ratings yet" ? 0 : parseFloat(ratingTextB) || 0;
-
-        console.log("Parsed ratings:", { ratingA, ratingB });
 
         // Sort highest to lowest
         return ratingB - ratingA;
@@ -6966,15 +6892,8 @@ function useScanResults() {
         const matchesTextB =
           b.querySelector(".attribute-text")?.textContent || "0/5";
 
-        console.log("Comparing matches:", {
-          productA: matchesTextA,
-          productB: matchesTextB,
-        });
-
         const matchesA = parseInt(matchesTextA.split("/")[0]) || 0;
         const matchesB = parseInt(matchesTextB.split("/")[0]) || 0;
-
-        console.log("Parsed matches:", { matchesA, matchesB });
 
         // Sort highest to lowest
         return matchesB - matchesA;
@@ -7260,7 +7179,6 @@ function useScanResults() {
               preferred_finish: quizData.finish,
               updated_at: new Date().toISOString(),
             };
-            console.log("✅ Preferences updated globally");
           }
 
           return data.success;
@@ -7551,8 +7469,6 @@ function useScanResults() {
               // Update quizData.finish (your existing data structure)
               quizData.finish = this.getAttribute("data-value");
 
-              console.log("Selected finish:", quizData.finish);
-
               // Enable the Get Results button
               const step5Next = document.getElementById("step5-next");
               if (step5Next) {
@@ -7566,9 +7482,9 @@ function useScanResults() {
         const productImages = [
           "/admin/uploads/product_images/blush-nobg.png",
           "/admin/uploads/product_images/concealer-nobg.png",
-          "/admin/uploads/product_images/blush-nobg.png",
-          "/admin/uploads/product_images/blush-nobg.png",
-          "/admin/uploads/product_images/blush-nobg.png",
+          "/admin/uploads/product_images/lipstick-nobg.png",
+          "/admin/uploads/product_images/foundation-nobg.png",
+          "/admin/uploads/product_images/facecare-nobg.png",
           "/admin/uploads/product_images/blush-nobg.png",
         ];
 
@@ -7626,7 +7542,6 @@ function useScanResults() {
             });
           }
         } catch (error) {
-          console.log("Cart count update failed, setting to 0");
           const cartCounts = document.querySelectorAll(".nav-cart-count");
           cartCounts.forEach((count) => {
             count.textContent = "0";
@@ -7636,7 +7551,6 @@ function useScanResults() {
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-        console.log("📄 DOM loaded, initializing carousel...");
         initFloatingProduct();
         updateCartCount();
       });
@@ -7762,13 +7676,6 @@ function useScanResults() {
           let numericRating;
           let feedbackText;
 
-          console.log(
-            "📝 Original rating received:",
-            rating,
-            "Type:",
-            typeof rating
-          );
-
           // Handle both string and number inputs consistently
           if (rating === "good" || rating === 1 || rating === "1") {
             numericRating = 1;
@@ -7824,7 +7731,6 @@ function useScanResults() {
             throw new Error(`HTTP error! status: ${response.status}`);
 
           const text = await response.text();
-          console.log("Raw response:", text);
 
           let result;
           try {
@@ -7834,8 +7740,6 @@ function useScanResults() {
             throw new Error("Server returned invalid JSON response");
           }
 
-          console.log("Parsed response:", result);
-
           if (result.success) {
             // Store the feedback as TEXT (consistent with database)
             if (window.productData && window.productData[productId]) {
@@ -7844,10 +7748,6 @@ function useScanResults() {
                 RecommendationFeedback: result.recommendation_feedback, // Store as TEXT
                 CreatedAt: new Date().toISOString(),
               };
-              console.log(
-                "✅ Updated product data with feedback:",
-                result.recommendation_feedback
-              );
             }
 
             // Update UI with TEXT feedback
@@ -7855,7 +7755,7 @@ function useScanResults() {
 
             // REMOVED: Auto-refresh - keep logs visible
             showNotification("Rating saved successfully! ✓", "success");
-            console.log("🔍 Debug after feedback submission:");
+
             debugFeedbackState();
 
             // Optional: Re-sort without refresh for immediate UI update
@@ -7902,7 +7802,6 @@ function useScanResults() {
           // Add active class only to the button matching the active feedback
           if (buttonFeedbackText === activeFeedback) {
             btn.classList.add("active");
-            console.log(`✅ Activated ${btnFeedback} button for ${productId}`);
           }
 
           updateButtonContent(btn);
@@ -7911,8 +7810,6 @@ function useScanResults() {
 
       function resortAndDisplayProducts() {
         if (!window.allRecommendations || !window.productData) return;
-
-        console.log("🔄 Re-sorting products after feedback update");
 
         // Get current sort method
         const sortSelect = document.getElementById("sort-by-filter");
@@ -7923,8 +7820,6 @@ function useScanResults() {
 
         // Re-display current page
         showPage(window.currentPage);
-
-        console.log("✅ Products re-sorted with latest feedback");
       }
 
       // NEW: Function to update button content consistently

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Product Details - Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png">
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -1207,18 +1207,22 @@
 
       // DOM Content Loaded - Add more detailed logging
       document.addEventListener("DOMContentLoaded", function () {
-        console.log("=== DOM CONTENT LOADED ===");
-        console.log("Window location:", window.location.href);
+   
+  
+        
 
         const productId = getProductIdFromURL();
-        console.log("Product ID from URL:", productId);
+     
+        
 
         if (productId) {
-          console.log("Starting fetch for product details...");
+      
+          
           fetchProductDetails(productId);
         } else {
           console.error("❌ No product ID found in URL");
-          console.log("Full URL search:", window.location.search);
+        
+          
           showErrorState(
             "Product not found. Please select a product from the home page."
           );
@@ -1231,13 +1235,14 @@
 
       // Function to extract product ID from URL parameters
       function getProductIdFromURL() {
-        console.log("=== EXTRACTING PRODUCT ID FROM URL ===");
+        
+        
 
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get("productId");
 
-        console.log("URL Search:", window.location.search);
-        console.log("Extracted productId:", productId);
+      
+        
 
         return productId;
       }
@@ -1255,24 +1260,26 @@
         });
 
         productImage.addEventListener("load", function () {
-          console.log("Image loaded successfully:", this.src);
+    
+          
         });
       }
 
       async function fetchProductDetails(productId) {
-        console.log("=== FETCHING PRODUCT DETAILS ===");
-        console.log("Product ID:", productId);
+  
+        
 
         const phpUrl = `../php/get_product_details.php?productId=${productId}`;
-        console.log("PHP URL:", phpUrl);
+     
+        
 
         try {
-          console.log("🔄 Making fetch request...");
+       
+          
           const response = await fetch(phpUrl);
 
-          console.log("✅ Fetch completed");
-          console.log("Response status:", response.status);
-          console.log("Response OK:", response.ok);
+     
+          
 
           if (!response.ok) {
             console.error("❌ Fetch failed with status:", response.status);
@@ -1283,43 +1290,37 @@
           }
 
           const text = await response.text();
-          console.log("Raw response text:", text);
+     
+          
 
           // Try to parse JSON
           let data;
           try {
             data = JSON.parse(text);
-            console.log("✅ JSON parsed successfully");
+        
+            
 
-            // DEBUG: Check reviews in response
-            console.log("=== REVIEWS DEBUG ===");
-            console.log("Reviews key exists:", "reviews" in data);
-            console.log("Reviews array:", data.reviews);
+       
+            
             console.log(
               "Number of reviews:",
               data.reviews ? data.reviews.length : 0
             );
             if (data.reviews && data.reviews.length > 0) {
-              console.log("First review:", data.reviews[0]);
+         
+              
             }
           } catch (parseError) {
-            console.error("❌ JSON parse error:", parseError);
-            console.log("Response text that failed to parse:", text);
+     
+            
             showErrorState("Invalid product data received from server.");
             return;
           }
 
           if (data.success) {
             productData = data;
-            console.log("✅ Product data stored successfully");
-
-            // DEBUG: Check why variants are empty
-            console.log("=== DEBUG VARIANT DATA ===");
-            console.log("Parent Product ID:", data.parentProduct?.id);
-            console.log("Variants count:", data.variants?.length);
-            console.log("Variants data:", data.variants);
-            console.log("Selected variant:", data.selectedVariant);
-            console.log("Reviews data:", data.reviews); // Log reviews
+        
+            
             console.log(
               "Reviews count:",
               data.reviews ? data.reviews.length : 0
@@ -1342,7 +1343,8 @@
       }
 
       function setupProductPage() {
-        console.log("Setting up product page with data:", productData);
+ 
+        
 
         if (!productData) {
           console.error("No productData available!");
@@ -1357,10 +1359,8 @@
           reviews: fetchedReviews,
         } = productData;
 
-        console.log("Parent product:", parentProduct);
-        console.log("Selected variant:", selectedVariant);
-        console.log("Variants:", variants);
-        console.log("Fetched reviews:", fetchedReviews);
+ 
+        
 
         // Check if we have the essential data
         if (!parentProduct || !selectedVariant) {
@@ -1382,7 +1382,8 @@
               ? `${parentName} - ${variantName}`
               : parentName;
             productTitle.textContent = displayName;
-            console.log("Updated product title:", productTitle.textContent);
+          
+            
           }
 
           // Update product price
@@ -1395,7 +1396,8 @@
               priceElement.textContent = `₱${parseFloat(
                 selectedVariant.price
               ).toFixed(2)}`;
-              console.log("Updated price to:", priceElement.textContent);
+            
+              
             } else {
               priceElement.textContent = "Price not available";
             }
@@ -1420,7 +1422,8 @@
           if (descElement) {
             descElement.textContent =
               selectedVariant.description || "No description available";
-            console.log("Updated description");
+           
+              
           }
 
           // Update ingredients
@@ -1430,14 +1433,16 @@
           if (ingredientsElement) {
             ingredientsElement.textContent =
               selectedVariant.ingredients || "No ingredients listed";
-            console.log("Updated ingredients");
+        
+              
           }
 
           // UPDATE PRODUCT ATTRIBUTES
           updateProductAttributes(selectedVariant.attributes, parentProduct);
 
           // ===== INITIALIZE IMAGE GALLERY =====
-          console.log("=== SETTING UP IMAGE GALLERY ===");
+     
+          
           initializeImageGallery(selectedVariant, parentProduct);
 
           // Set up navigation buttons
@@ -1447,22 +1452,21 @@
           if (prevButton && nextButton) {
             prevButton.addEventListener("click", showPreviousImage);
             nextButton.addEventListener("click", showNextImage);
-            console.log("Navigation buttons set up");
+         
+            
           }
 
           // ===== DEBUG AND SET UP VARIANTS =====
           const variationsContainer = document.querySelector(
             ".variations-container"
           );
-          console.log("=== DEBUG VARIANT DISPLAY ===");
-          console.log("Variations container exists:", !!variationsContainer);
-          console.log("Variants array:", variants);
-          console.log("Variants length:", variants?.length);
-          console.log("Selected variant ID:", selectedVariant.id);
+     
+          
 
           if (variationsContainer) {
             if (variants && variants.length > 0) {
-              console.log("Loading variants:", variants.length);
+            
+              
               variationsContainer.innerHTML = variants
                 .map(
                   (variant) => `
@@ -1490,16 +1494,15 @@
               // Set up variation selection with better debugging
               const variationOptions =
                 document.querySelectorAll(".variation-option");
-              console.log("Variation options found:", variationOptions.length);
+           
+                
 
               variationOptions.forEach((option, index) => {
-                console.log(
-                  `Setting up click event for variant ${index + 1}:`,
-                  option.querySelector("span").textContent
-                );
-
+           
+                
                 option.addEventListener("click", function () {
-                  console.log("=== VARIANT CLICKED ===");
+                
+                  
                   console.log(
                     "Clicked variant:",
                     this.querySelector("span").textContent
@@ -1519,9 +1522,11 @@
                 });
               });
 
-              console.log("✅ Variants loaded successfully");
+    
+              
             } else {
-              console.log("No variants found in data");
+          
+              
               variationsContainer.innerHTML = "<p>No shades available</p>";
             }
           } else {
@@ -1538,7 +1543,8 @@
           // Update reviews section with fetched reviews
           updateReviewsDisplay();
 
-          console.log("✅ Product page setup completed successfully");
+       
+          
         } catch (error) {
           console.error("Error during page setup:", error);
           showErrorState("Error displaying product: " + error.message);
@@ -1571,9 +1577,8 @@
 
       // Function to initialize image gallery
       function initializeImageGallery(selectedVariant, parentProduct) {
-        console.log("=== INITIALIZING IMAGE GALLERY ===");
-        console.log("Selected variant:", selectedVariant);
-        console.log("Parent product:", parentProduct);
+   
+        
 
         // Reset gallery
         currentImageGallery = [];
@@ -1585,7 +1590,8 @@
             src: selectedVariant.image,
             type: "VARIANT",
           });
-          console.log("Added variant image:", selectedVariant.image);
+      
+          
         }
 
         // 2. Add parent preview image if available
@@ -1597,7 +1603,8 @@
             src: parentProduct.previewImage,
             type: "PREVIEW",
           });
-          console.log("Added preview image:", parentProduct.previewImage);
+   
+          
         }
 
         // 3. Add parent gallery images if available
@@ -1619,11 +1626,13 @@
               src: galleryImage,
               type: "GALLERY",
             });
-            console.log("Added gallery image:", galleryImage);
+         
+            
           });
         }
 
-        console.log("Final image gallery:", currentImageGallery);
+   
+        
 
         // Display the first image
         displayCurrentImage();
@@ -1636,18 +1645,16 @@
         const prevButton = document.querySelector(".prev-button");
         const nextButton = document.querySelector(".next-button");
 
-        console.log(
-          "Displaying image - Gallery length:",
-          currentImageGallery.length
-        );
-        console.log("Current image index:", currentImageIndex);
+     
+        
 
         if (
           currentImageGallery.length > 0 &&
           currentImageGallery[currentImageIndex]
         ) {
           const currentImage = currentImageGallery[currentImageIndex];
-          console.log("Loading image:", currentImage.src);
+       
+          
 
           // Show actual image, hide placeholder
           productImage.src = currentImage.src;
@@ -1675,7 +1682,8 @@
           }
         } else {
           // No images available, show placeholder
-          console.log("No images available, showing placeholder");
+      
+          
           if (productImage) {
             productImage.style.display = "none";
           }
@@ -1708,8 +1716,8 @@
 
       // UPDATED FUNCTION: Update Product Attributes in Specifications Section
       function updateProductAttributes(attributes, parentProduct) {
-        console.log("Updating product attributes:", attributes);
-        console.log("Parent product in attributes function:", parentProduct);
+  
+        
 
         // Update basic product info
         const categoryElement = document.getElementById("spec-category");
@@ -1736,7 +1744,8 @@
         });
 
         if (!attributes) {
-          console.log("No attributes available");
+      
+          
           return;
         }
 
@@ -1752,7 +1761,8 @@
           const finishElement = document.getElementById("spec-finish");
           if (finishElement) {
             finishElement.textContent = finishTypes.join(", ");
-            console.log("Updated finish to:", finishTypes.join(", "));
+        
+            
           }
         } else {
           const finishElement = document.getElementById("spec-finish");
@@ -1791,7 +1801,8 @@
           }
         });
 
-        console.log("✅ Product specifications updated");
+    
+        
       }
 
       // Function to update product details when a variant is selected
@@ -1803,8 +1814,8 @@
             console.error("No selected option provided");
             return;
           }
-          console.log("Selected option:", selectedOption);
-          console.log("Selected option class:", selectedOption.className);
+       
+          
 
           // Get data from the clicked variant option
           const variantId = selectedOption.getAttribute("data-variant-id");
@@ -1840,7 +1851,8 @@
             priceElement.textContent = `₱${parseFloat(variantPrice).toFixed(
               2
             )}`;
-            console.log("Updated price to:", priceElement.textContent);
+          
+            
           }
 
           // Update images when variant changes
@@ -1861,7 +1873,8 @@
           if (descElement) {
             descElement.textContent =
               variantDescription || "No description available";
-            console.log("Updated description");
+           
+              
           }
 
           // Update ingredients
@@ -1871,7 +1884,8 @@
           if (ingredientsElement) {
             ingredientsElement.textContent =
               variantIngredients || "No ingredients listed";
-            console.log("Updated ingredients");
+        
+              
           }
 
           // Update product title to show selected variant name
@@ -1880,7 +1894,8 @@
             const variantName =
               selectedOption.querySelector("span").textContent;
             productTitle.textContent = `${productData.parentProduct.name} - ${variantName}`;
-            console.log("Updated product title:", productTitle.textContent);
+          
+            
           }
 
           // Update stock status
@@ -1894,7 +1909,8 @@
               stockElement.textContent = "Out of Stock";
               stockElement.style.color = "red";
             }
-            console.log("Updated stock to:", stockElement.textContent);
+         
+            
           }
 
           // Update product attributes
@@ -1964,11 +1980,11 @@
 
             isProductLiked = isLiked;
             updateLikeButtonUI();
-            console.log(`Product ${productId} liked status:`, isLiked);
+        
+            
           } else {
-            console.log(
-              "No favorite products found or API error checking favorites."
-            );
+         
+            
             isProductLiked = false;
             updateLikeButtonUI();
           }
@@ -1980,9 +1996,11 @@
       }
 
       function updateReviewsDisplay() {
-        console.log("=== UPDATING REVIEWS DISPLAY ===");
+     
+        
         if (!productData || !productData.reviews) {
-          console.log("No review data available.");
+         
+          
           return;
         }
 
@@ -2048,7 +2066,8 @@
           btn.style.display = reviewCount > 0 ? "block" : "none";
         });
 
-        console.log("✅ Reviews display updated. Total reviews:", reviewCount);
+      
+        
       }
 
       // Helper function to generate star HTML
@@ -2231,7 +2250,8 @@
           });
 
           const result = await response.json();
-          console.log("Add to cart response:", result);
+      
+          
 
           if (result.success) {
             // Update cart count using the same method as navigation
@@ -2438,8 +2458,8 @@
               });
 
               const result = await response.json();
-              console.log("Favorites handler response:", result);
-
+         
+              
               if (!result.success) {
                 // Backend failed – revert UI
                 isProductLiked = !isProductLiked;
@@ -2449,10 +2469,12 @@
               }
 
               if (result.action === "liked") {
-                console.log("Added to Favorites ❤️");
+            
+                
                 showNotification("Added to Favorites!");
               } else if (result.action === "unliked") {
-                console.log("Removed from Favorites 💔");
+           
+                
                 showNotification("Removed from Favorites.");
               }
             } catch (err) {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cart | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png">
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -1453,7 +1453,7 @@
         setupPageProtection();
     }
 
-    console.log("🚀 Cart page loaded");
+   
 
     await updateUserGreeting();
     if (!currentUser) {
@@ -1506,7 +1506,7 @@ function setupCheckoutButton() {
         return;
     }
 
-    console.log("✅ Checkout button found, attaching listener");
+  
 
     // Remove any existing listeners
     const newBtn = checkoutBtn.cloneNode(true);
@@ -1520,14 +1520,12 @@ function setupCheckoutButton() {
 
 // Open checkout confirmation modal
 function handleCheckout(e) {
-    console.log("🛒 Checkout button clicked!");
-
+  
     e.preventDefault();
     e.stopPropagation();
 
     const selectedItems = cart.filter((i) => i.selected);
 
-    console.log("📦 Selected items:", selectedItems);
 
     if (selectedItems.length === 0) {
         showToast("⚠️ Please select at least one item to check out.");
@@ -1605,7 +1603,7 @@ async function confirmCheckout() {
             })),
         };
 
-        console.log("📤 Sending checkout request:", orderData);
+    
 
         const response = await fetch("../php/checkout.php", {
             method: "POST",
@@ -1616,10 +1614,10 @@ async function confirmCheckout() {
             body: JSON.stringify(orderData),
         });
 
-        console.log("📡 Response status:", response.status);
+     
 
         const result = await response.json();
-        console.log("📦 Checkout result:", result);
+     
 
         if (!result.success) {
             throw new Error(result.message || "Checkout failed");
@@ -1634,7 +1632,7 @@ async function confirmCheckout() {
             items_count: result.order.items_count,
         };
 
-        console.log("💾 Saving to localStorage:", checkoutOrder);
+    
         localStorage.setItem("checkoutOrder", JSON.stringify(checkoutOrder));
 
         // Show success toast
@@ -1645,7 +1643,7 @@ async function confirmCheckout() {
 
         // Redirect after short delay
         setTimeout(() => {
-            console.log("🔄 Redirecting to checkout.html");
+         
             window.location.href = "checkout.html";
         }, 1500);
     } catch (err) {
@@ -1758,7 +1756,7 @@ function initCheckoutModal() {
               subtotal: parseFloat(item.subtotal) || item.price * item.quantity,
             }));
           }
-          console.log("🛒 Cart loaded:", cart.length, "items");
+       
           applyFilters();
           updateFloatingCartCount();
         } catch (err) {
@@ -1775,7 +1773,7 @@ function initCheckoutModal() {
 
         if (!displayCart || displayCart.length === 0) {
           if (currentSearchTerm || selectedCategories.length > 0) {
-            console.log("🔍 Showing empty search state");
+        
             cartItems.innerHTML = `
                 <div class="empty-search">
                     <i class="fas fa-search"></i>
@@ -1784,7 +1782,7 @@ function initCheckoutModal() {
                 </div>
             `;
           } else {
-            console.log("🛒 Showing empty cart state");
+        
             cartItems.innerHTML = `
                 <div class="empty-cart">
                     <i class="fas fa-shopping-cart"></i>
@@ -1803,7 +1801,7 @@ function initCheckoutModal() {
           return;
         }
 
-        console.log("✅ Rendering", displayCart.length, "items");
+   
 
         const sorted = [...displayCart].reverse();
         sorted.forEach((item) => {

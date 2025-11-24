@@ -3,7 +3,7 @@
 
 define('DB_HOST', 'db');
 define('DB_USER', 'user');
-define('DB_PASS', 'userpass');
+define('DB_PASS', 'SecureUserPass123!');
 define('DB_NAME', 'beauty_blessed');
 define('DB_PORT', '3306');
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Virtual Lipstick Try-On | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -2299,9 +2299,8 @@
 
         if (!currentUser) return; // Will redirect if not logged in
 
-        // Now you can use currentUser anywhere in your page
-        console.log("User ID:", currentUser.id);
-        console.log("Username:", currentUser.username);
+      
+        
 
         const fileInput = document.getElementById("file-input");
         const uploadBtn = document.getElementById("upload-btn");
@@ -2311,14 +2310,16 @@
         const canvas = document.getElementById("lipstick-canvas");
         const ctx = canvas.getContext("2d");
         const shadeOptions = document.querySelectorAll(".shade-option");
-        console.log("🎨 Found shade options:", shadeOptions.length);
+    
+        
 
         let hasProcessedImage = false;
         let currentImageSource = null;
 
         // Test if shade buttons are clickable
         shadeOptions.forEach((shade, index) => {
-          console.log(`Shade ${index}:`, shade.getAttribute("data-color"));
+        
+          
         });
         const loading = document.getElementById("loading");
         const productsList = document.getElementById("tryon-products");
@@ -2382,9 +2383,8 @@
 
             hasProcessedImage = true;
             currentImageSource = "upload";
-            console.log("🔄 Restored image - state updated!");
-            console.log("hasProcessedImage:", hasProcessedImage);
-            console.log("currentImageSource:", currentImageSource);
+      
+            
           };
 
           uploadedImage.src = lastUploadedImage;
@@ -2451,9 +2451,8 @@
 
                 hasProcessedImage = true;
                 currentImageSource = "upload";
-                console.log("📁 File uploaded - state updated!");
-                console.log("hasProcessedImage:", hasProcessedImage);
-                console.log("currentImageSource:", currentImageSource);
+              
+                
               };
 
               uploadedImage.src = event.target.result;
@@ -2477,7 +2476,8 @@
             this.classList.add("active");
 
             currentShade = this.getAttribute("data-color");
-            console.log("Selected shade:", currentShade);
+       
+            
 
             // Re-apply lipstick to current image
             if (canvas._lastLandmarks || canvas._displayInfo) {
@@ -2489,9 +2489,8 @@
           // RESET STATE WHEN OPENING CAMERA - this is the key fix!
           hasProcessedImage = false;
           currentImageSource = null;
-          console.log("📷 Camera opened - state reset!");
-          console.log("hasProcessedImage:", hasProcessedImage);
-          console.log("currentImageSource:", currentImageSource);
+       
+          
 
           if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             startCamera();
@@ -2646,9 +2645,8 @@
 
             hasProcessedImage = true;
             currentImageSource = "camera";
-            console.log("📸 Photo captured - state updated!");
-            console.log("hasProcessedImage:", hasProcessedImage);
-            console.log("currentImageSource:", currentImageSource);
+         
+            
           };
 
           uploadedImage.src = imageData;
@@ -2744,12 +2742,14 @@
             // Store landmarks for later use when changing shades
             canvas._lastLandmarks = landmarks;
             applyLipstickToLandmarks(landmarks);
-            console.log("Lipstick applied successfully!");
+          
+            
 
             // Hide any error message
             hideFaceDetectionError();
           } else {
-            console.log("No face detected");
+          
+            
             // Clear stored landmarks
             canvas._lastLandmarks = null;
 
@@ -3044,14 +3044,15 @@
           isProcessing = true;
           loading.style.display = "block";
 
-          console.log("Processing image with FaceMesh...");
+       
+          
 
           // Process with FaceMesh directly on the image
           faceMesh
             .send({ image: image })
             .then(() => {
-              console.log("FaceMesh processing completed");
-              // ADD THIS LINE:
+            
+              
               onImageProcessedSuccessfully();
             })
             .catch((err) => {
@@ -3224,7 +3225,8 @@
                 return; // Stop here if no photo
               }
 
-              console.log("🖱️ Shade clicked:", this.getAttribute("data-color"));
+            
+              
 
               // Remove active class from all shades
               document
@@ -3235,8 +3237,8 @@
               const clickedShade = this.getAttribute("data-color");
               const productId = this.getAttribute("data-product-id");
 
-              console.log("🎨 Current shade set to:", clickedShade);
-              console.log("📦 Product ID:", productId);
+           
+              
 
               // Update the global currentShade variable
               currentShade = clickedShade;
@@ -3253,10 +3255,12 @@
               // Analyze compatibility if image exists
               const canvas = document.getElementById("lipstick-canvas");
               if (canvas._displayInfo) {
-                console.log("📸 Image is loaded, starting analysis...");
+              
+                
                 const imageData = localStorage.getItem("lastUploadedImage");
                 if (imageData) {
-                  console.log("🖼️ Image data found in localStorage");
+               
+                  
 
                   // PASS THE PRODUCT ID HERE
                   const analysis = await analyzeLipstickCompatibility(
@@ -3266,7 +3270,8 @@
                   );
 
                   if (analysis) {
-                    console.log("📊 Displaying compatibility result...");
+                   
+                    
                     displayCompatibilityResult(analysis);
                   } else {
                     console.log("❌ No analysis result returned");
@@ -3296,11 +3301,7 @@
             updateActionButtons();
           }
 
-          console.log(
-            "✅ Shade event listeners attached to",
-            shades.length,
-            "buttons"
-          );
+       
         }
         function updateActionButtons() {
           const productNameElem = document.getElementById(
@@ -3594,7 +3595,8 @@
             });
           }
         } catch (error) {
-          console.log("Cart count update failed, setting to 0");
+        
+          
           const cartCounts = document.querySelectorAll(".nav-cart-count");
           cartCounts.forEach((count) => {
             count.textContent = "0";
@@ -3781,9 +3783,8 @@
         productId = null
       ) {
         try {
-          console.log("🎨 Starting lipstick compatibility analysis...");
-          console.log("Lipstick color:", lipstickColor);
-          console.log("Product ID:", productId);
+       
+          
           console.log(
             "Image data length:",
             imageData ? imageData.length : "No image data"
@@ -3798,7 +3799,8 @@
           // Add product_id if available
           if (productId) {
             payload.product_id = productId;
-            console.log("📦 Product ID added to payload:", productId);
+          
+            
           } else {
             console.log(
               "⚠️ No product ID provided - using algorithmic approach"
@@ -3816,8 +3818,8 @@
             }
           );
 
-          console.log("📡 Response status:", response.status);
-          console.log("📡 Response ok:", response.ok);
+       
+          
 
           if (!response.ok) {
             console.error(
@@ -3831,14 +3833,16 @@
           }
 
           const result = await response.json();
-          console.log("✅ Analysis result:", result);
-
+    
+          
+          
           if (result.success) {
             console.log(
               "🎯 Compatibility score:",
               result.color_compatibility.compatibility_score + "%"
             );
-            console.log("🔍 Match source:", result.match_source);
+         
+            
             return result;
           } else {
             console.error("❌ Analysis failed:", result.message);

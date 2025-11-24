@@ -10,7 +10,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Profile | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -891,21 +891,42 @@
         font-size: 14px;
       }
 
-      .toast.success { border-left-color: #27ae60; }
-      .toast.error { border-left-color: #e74c3c; }
-      
-      .toast.hide { animation: fadeOut 0.3s ease forwards; }
+      .toast.success {
+        border-left-color: #27ae60;
+      }
+      .toast.error {
+        border-left-color: #e74c3c;
+      }
 
-      .toast-icon { font-size: 1.2rem; }
-      .toast.success .toast-icon { color: #27ae60; }
-      .toast.error .toast-icon { color: #e74c3c; }
+      .toast.hide {
+        animation: fadeOut 0.3s ease forwards;
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+      }
+      .toast.success .toast-icon {
+        color: #27ae60;
+      }
+      .toast.error .toast-icon {
+        color: #e74c3c;
+      }
 
       @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
       }
       @keyframes fadeOut {
-        to { opacity: 0; transform: translateX(100%); }
+        to {
+          opacity: 0;
+          transform: translateX(100%);
+        }
       }
     </style>
   </head>
@@ -1265,27 +1286,30 @@
 
     <script>
       // --- NEW PROFESSIONAL TOAST NOTIFICATION SYSTEM ---
-      function showToast(message, type = 'success') {
-          const container = document.getElementById('toast-container');
-          const toast = document.createElement('div');
-          toast.className = `toast ${type}`;
-          
-          const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
-          
-          toast.innerHTML = `
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+
+        const icon =
+          type === "success"
+            ? '<i class="fas fa-check-circle"></i>'
+            : '<i class="fas fa-exclamation-circle"></i>';
+
+        toast.innerHTML = `
               <span class="toast-icon">${icon}</span>
               <span>${message}</span>
           `;
 
-          container.appendChild(toast);
+        container.appendChild(toast);
 
-          // Remove after 3 seconds
-          setTimeout(() => {
-              toast.classList.add('hide');
-              toast.addEventListener('animationend', () => {
-                  toast.remove();
-              });
-          }, 3500);
+        // Remove after 3 seconds
+        setTimeout(() => {
+          toast.classList.add("hide");
+          toast.addEventListener("animationend", () => {
+            toast.remove();
+          });
+        }, 3500);
       }
 
       // Profile data - will be populated from API
@@ -1304,9 +1328,13 @@
       // DOM Elements
       const editProfileBtn = document.getElementById("edit-profile-btn");
       const editProfileModal = document.getElementById("edit-profile-modal");
-      const changePasswordModal = document.getElementById("change-password-modal");
+      const changePasswordModal = document.getElementById(
+        "change-password-modal"
+      );
       const closeEditModalBtn = document.getElementById("close-edit-modal");
-      const closePasswordModalBtn = document.getElementById("close-password-modal");
+      const closePasswordModalBtn = document.getElementById(
+        "close-password-modal"
+      );
       const cancelEditBtn = document.getElementById("cancel-edit");
       const cancelPasswordBtn = document.getElementById("cancel-password");
       const saveProfileBtn = document.getElementById("save-profile");
@@ -1316,9 +1344,15 @@
       const oldPasswordInput = document.getElementById("old-password");
       const newPasswordInput = document.getElementById("new-password");
       const confirmPasswordInput = document.getElementById("confirm-password");
-      const profileNameDisplay = document.getElementById("profile-name-display");
-      const profileUsernameDisplay = document.getElementById("profile-username-display");
-      const profileAvatarDisplay = document.getElementById("profile-avatar-display");
+      const profileNameDisplay = document.getElementById(
+        "profile-name-display"
+      );
+      const profileUsernameDisplay = document.getElementById(
+        "profile-username-display"
+      );
+      const profileAvatarDisplay = document.getElementById(
+        "profile-avatar-display"
+      );
       const photoPreview = document.getElementById("photo-preview");
       const uploadPhotoBtn = document.getElementById("upload-photo-btn");
       const removePhotoBtn = document.getElementById("remove-photo-btn");
@@ -1346,8 +1380,6 @@
 
       async function fetchCustomerProfile() {
         try {
-          console.log("Fetching customer profile...");
-
           if (!currentUser || !currentUser.id) {
             showDefaultProfile();
             return;
@@ -1359,7 +1391,8 @@
             body: JSON.stringify({ user_id: currentUser.id }),
           });
 
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          if (!response.ok)
+            throw new Error(`HTTP error! status: ${response.status}`);
 
           const data = await response.json();
 
@@ -1392,12 +1425,15 @@
           profileData.stats.orders = profile.stats.orders || 0;
           profileData.stats.favorites = profile.stats.favorites || 0;
           profileData.stats.cartItems = profile.stats.cart_items || 0;
-          profileData.stats.unclaimedOrders = profile.stats.unclaimed_orders || 0;
+          profileData.stats.unclaimedOrders =
+            profile.stats.unclaimed_orders || 0;
 
           if (ordersCount) ordersCount.textContent = profileData.stats.orders;
-          if (favoritesCount) favoritesCount.textContent = profileData.stats.favorites;
+          if (favoritesCount)
+            favoritesCount.textContent = profileData.stats.favorites;
           if (cartCount) cartCount.textContent = profileData.stats.cartItems;
-          if (unclaimedCount) unclaimedCount.textContent = profileData.stats.unclaimedOrders;
+          if (unclaimedCount)
+            unclaimedCount.textContent = profileData.stats.unclaimedOrders;
         }
 
         if (profile.member_since) {
@@ -1418,7 +1454,9 @@
         if (photoUrl) {
           let imageUrl = photoUrl;
           if (!photoUrl.startsWith("data:")) {
-             imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(photoUrl)}&user_id=${currentUser.id}`;
+            imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(
+              photoUrl
+            )}&user_id=${currentUser.id}`;
           }
 
           const imgHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
@@ -1429,12 +1467,16 @@
 
       function showDefaultProfile() {
         if (currentUser) {
-          profileNameDisplay.textContent = currentUser.firstName + (currentUser.lastName ? " " + currentUser.lastName : "");
+          profileNameDisplay.textContent =
+            currentUser.firstName +
+            (currentUser.lastName ? " " + currentUser.lastName : "");
           profileUsernameDisplay.textContent = `@${currentUser.username}`;
           const firstLetter = currentUser.firstName.charAt(0).toUpperCase();
           profileAvatarDisplay.textContent = firstLetter;
           photoPreview.textContent = firstLetter;
-          editNameInput.value = currentUser.firstName + (currentUser.lastName ? " " + currentUser.lastName : "");
+          editNameInput.value =
+            currentUser.firstName +
+            (currentUser.lastName ? " " + currentUser.lastName : "");
           editUsernameInput.value = currentUser.username;
         } else {
           profileNameDisplay.textContent = "Guest User";
@@ -1495,16 +1537,18 @@
 
         // Ensure the preview matches the current profile picture
         if (profileData.profilePhoto) {
-             // If we have a stored photo URL or Data URI
-             let imageUrl = profileData.profilePhoto;
-             if (!imageUrl.startsWith("data:")) {
-                 imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(imageUrl)}&user_id=${currentUser.id}`;
-             }
-             photoPreview.innerHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+          // If we have a stored photo URL or Data URI
+          let imageUrl = profileData.profilePhoto;
+          if (!imageUrl.startsWith("data:")) {
+            imageUrl = `../php/get_profile_image.php?filename=${encodeURIComponent(
+              imageUrl
+            )}&user_id=${currentUser.id}`;
+          }
+          photoPreview.innerHTML = `<img src="${imageUrl}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
         } else {
-             // No photo, show initial
-             const firstLetter = profileData.name.charAt(0).toUpperCase();
-             photoPreview.textContent = firstLetter;
+          // No photo, show initial
+          const firstLetter = profileData.name.charAt(0).toUpperCase();
+          photoPreview.textContent = firstLetter;
         }
 
         editProfileModal.classList.add("active");
@@ -1552,7 +1596,7 @@
             const reader = new FileReader();
             reader.onload = (e) => {
               const result = e.target.result;
-              
+
               // 1. Store data for saving
               profileData.profilePhoto = result;
 
@@ -1562,7 +1606,10 @@
               // 3. Update Main Profile Page Immediately (User sees change instantly)
               profileAvatarDisplay.innerHTML = `<img src="${result}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
 
-              showToast("Photo selected. Click 'Save Changes' to confirm.", "success");
+              showToast(
+                "Photo selected. Click 'Save Changes' to confirm.",
+                "success"
+              );
             };
             reader.readAsDataURL(file);
           }
@@ -1573,12 +1620,14 @@
 
       function removePhoto() {
         profileData.profilePhoto = null;
-        const firstLetter = (editNameInput.value || profileData.name).charAt(0).toUpperCase();
-        
+        const firstLetter = (editNameInput.value || profileData.name)
+          .charAt(0)
+          .toUpperCase();
+
         // Update both previews to initial
         photoPreview.textContent = firstLetter;
         profileAvatarDisplay.textContent = firstLetter;
-        
+
         showToast("Photo removed. Click Save to apply.", "success");
       }
 
@@ -1606,9 +1655,9 @@
           const responseText = await response.text();
           let data;
           try {
-             data = JSON.parse(responseText);
-          } catch(e) {
-             throw new Error("Server response invalid");
+            data = JSON.parse(responseText);
+          } catch (e) {
+            throw new Error("Server response invalid");
           }
 
           if (data.success) {
@@ -1621,7 +1670,7 @@
             // Update Text Displays
             profileNameDisplay.textContent = updatedData.name;
             profileUsernameDisplay.textContent = `@${updatedData.username}`;
-            
+
             closeEditModal();
             showToast("Profile updated successfully!", "success"); // Professional Toast
           } else {
@@ -1631,8 +1680,8 @@
           console.error("Error saving profile:", error);
           showToast("Error updating profile. Please try again.", "error");
         } finally {
-            saveProfileBtn.textContent = "Save Changes";
-            saveProfileBtn.disabled = false;
+          saveProfileBtn.textContent = "Save Changes";
+          saveProfileBtn.disabled = false;
         }
       }
 
@@ -1649,7 +1698,8 @@
         }
 
         if (newPassword.length < 6) {
-          passwordError.textContent = "Password must be at least 6 characters long";
+          passwordError.textContent =
+            "Password must be at least 6 characters long";
           passwordError.style.display = "block";
           savePasswordBtn.disabled = true;
           return;
@@ -1663,7 +1713,8 @@
         }
 
         if (oldPassword === newPassword) {
-          passwordError.textContent = "New password must be different from old password";
+          passwordError.textContent =
+            "New password must be different from old password";
           passwordError.style.display = "block";
           savePasswordBtn.disabled = true;
           return;
@@ -1680,7 +1731,8 @@
 
         try {
           const originalText = savePasswordBtn.innerHTML;
-          savePasswordBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing...';
+          savePasswordBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Changing...';
           savePasswordBtn.disabled = true;
 
           const response = await fetch("../php/change_password.php", {
@@ -1700,7 +1752,8 @@
             closePasswordModal();
             showToast("Password changed successfully!", "success");
           } else {
-            passwordError.textContent = data.error || "Failed to change password";
+            passwordError.textContent =
+              data.error || "Failed to change password";
             passwordError.style.display = "block";
           }
           savePasswordBtn.innerHTML = originalText;
@@ -1721,16 +1774,18 @@
       }
 
       function closeStoreFeedbackModal() {
-        document.getElementById("store-feedback-modal").classList.remove("active");
+        document
+          .getElementById("store-feedback-modal")
+          .classList.remove("active");
         resetFeedbackForm();
       }
 
       async function loadExistingFeedback() {
         try {
           const response = await fetch("../php/get_store_feedback.php", {
-             method: "GET",
-             headers: { "Content-Type": "application/json" },
-             credentials: "same-origin",
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
           });
 
           if (response.ok) {
@@ -1741,7 +1796,7 @@
               showNewFeedbackForm();
             }
           } else {
-              showNewFeedbackForm();
+            showNewFeedbackForm();
           }
         } catch (error) {
           console.error("Error loading feedback:", error);
@@ -1754,10 +1809,17 @@
         document.getElementById("store-feedback-form").style.display = "none";
         document.getElementById("submit-feedback").style.display = "none";
 
-        document.getElementById("current-stars").innerHTML = "★".repeat(feedback.rating);
-        document.getElementById("current-rating-text").textContent = `${feedback.rating}/5 stars`;
-        document.getElementById("current-comment-text").textContent = feedback.comment || "No comment provided.";
-        document.getElementById("feedback-date").textContent = new Date(feedback.created_at).toLocaleDateString();
+        document.getElementById("current-stars").innerHTML = "★".repeat(
+          feedback.rating
+        );
+        document.getElementById(
+          "current-rating-text"
+        ).textContent = `${feedback.rating}/5 stars`;
+        document.getElementById("current-comment-text").textContent =
+          feedback.comment || "No comment provided.";
+        document.getElementById("feedback-date").textContent = new Date(
+          feedback.created_at
+        ).toLocaleDateString();
       }
 
       function showNewFeedbackForm() {
@@ -1774,19 +1836,26 @@
       async function loadCurrentFeedbackIntoForm() {
         try {
           const response = await fetch("../php/get_store_feedback.php", {
-            method: "GET", headers: { "Content-Type": "application/json" }, credentials: "same-origin"
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
           });
           if (response.ok) {
             const data = await response.json();
             if (data.success && data.feedback) {
               const feedback = data.feedback;
-              const radio = document.querySelector(`input[name="rating"][value="${feedback.rating}"]`);
-              if(radio) radio.checked = true;
-              document.getElementById("feedback-comment").value = feedback.comment || "";
+              const radio = document.querySelector(
+                `input[name="rating"][value="${feedback.rating}"]`
+              );
+              if (radio) radio.checked = true;
+              document.getElementById("feedback-comment").value =
+                feedback.comment || "";
               updateSubmitButton();
             }
           }
-        } catch (e) { console.error(e); }
+        } catch (e) {
+          console.error(e);
+        }
       }
 
       async function submitFeedback() {
@@ -1804,7 +1873,10 @@
           const response = await fetch("../php/save_store_feedback.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ rating: parseInt(rating.value), comment: comment.trim() }),
+            body: JSON.stringify({
+              rating: parseInt(rating.value),
+              comment: comment.trim(),
+            }),
             credentials: "same-origin",
           });
           const data = await response.json();
@@ -1834,12 +1906,12 @@
       // --- NAV & INIT ---
       function navigateTo(section) {
         const paths = {
-          'order-history': 'order-history.html',
-          'review-orders': '../reviews/review_orders.html',
-          'all-reviews': '../reviews/all_reviews.html',
-          'preferences': '../preferences/customer_preferences.html'
+          "order-history": "order-history.html",
+          "review-orders": "../reviews/review_orders.html",
+          "all-reviews": "../reviews/all_reviews.html",
+          preferences: "../preferences/customer_preferences.html",
         };
-        if(paths[section]) window.location.href = paths[section];
+        if (paths[section]) window.location.href = paths[section];
       }
 
       function openChangePasswordModal() {
@@ -1852,27 +1924,33 @@
         if (typeof setupPageProtection === "function") setupPageProtection();
 
         currentUser = await fetchUserSession();
-        if (!currentUser) return; 
+        if (!currentUser) return;
 
         await fetchCustomerProfile();
         initializeEventListeners();
 
         // Feedback Logic listeners
-        document.querySelectorAll('input[name="rating"]').forEach(radio => {
+        document.querySelectorAll('input[name="rating"]').forEach((radio) => {
           radio.addEventListener("change", updateSubmitButton);
         });
-        document.getElementById("submit-feedback").addEventListener("click", (e) => {
-            e.preventDefault(); 
+        document
+          .getElementById("submit-feedback")
+          .addEventListener("click", (e) => {
+            e.preventDefault();
             submitFeedback();
-        });
-        document.getElementById("close-feedback-modal").addEventListener("click", closeStoreFeedbackModal);
-        document.getElementById("cancel-feedback").addEventListener("click", closeStoreFeedbackModal);
-        
+          });
+        document
+          .getElementById("close-feedback-modal")
+          .addEventListener("click", closeStoreFeedbackModal);
+        document
+          .getElementById("cancel-feedback")
+          .addEventListener("click", closeStoreFeedbackModal);
+
         // Modal Outside clicks
         window.addEventListener("click", (e) => {
-            if(e.target.id === 'store-feedback-modal') closeStoreFeedbackModal();
-            if(e.target.id === 'change-password-modal') closePasswordModal();
-            if(e.target.id === 'edit-profile-modal') closeEditModal();
+          if (e.target.id === "store-feedback-modal") closeStoreFeedbackModal();
+          if (e.target.id === "change-password-modal") closePasswordModal();
+          if (e.target.id === "edit-profile-modal") closeEditModal();
         });
       });
     </script>

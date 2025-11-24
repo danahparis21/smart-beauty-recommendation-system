@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blessence | Login</title>
-  <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png">
+  <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
@@ -1003,7 +1003,8 @@
     // Check if coming from logout
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('logout') === 'true') {
-        console.log('Successfully logged out');
+    
+      
     }
       function showToast(message) {
         const toast = document.getElementById("toast");
@@ -1055,7 +1056,8 @@
 
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
-        console.log("Submitting login form:", { username, password }); // <-- log input
+      
+        
 
         // Simple validation
         if (username && password) {
@@ -1072,7 +1074,8 @@
           })
             .then((res) => res.text()) // <-- temporarily get raw text
             .then((text) => {
-              console.log("Raw server response:", text); // <-- log response
+             
+              
               let data;
               try {
                 data = JSON.parse(text); // <-- parse JSON after logging
@@ -1084,8 +1087,7 @@
                 return;
               }
 
-              console.log("Parsed JSON:", data); // <-- log parsed JSON
-
+            
               if (data.success) {
                 showToast(
                   `Logged In successfully! Welcome, ${data.firstName}!`
@@ -1096,7 +1098,8 @@
                       ? "../../admin/html/admin.html"
                       : "/user/html/home.html";
 
-                  console.log("Attempting redirect to:", redirectUrl);
+            
+                      
 
                   // Test if the URL exists before redirecting
                   fetch(redirectUrl, { method: "HEAD" })
@@ -1217,7 +1220,8 @@
             `&state=login` +
             `&prompt=select_account`;
 
-          console.log('Redirecting to:', googleAuthUrl);
+     
+            
           window.location.href = googleAuthUrl;
         })
         .catch(error => {

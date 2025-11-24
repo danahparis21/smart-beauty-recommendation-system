@@ -12,7 +12,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Blessence - Premium Makeup & Beauty Products</title>
-    <link rel="icon" href="admin/images/mainlogo.png" type="image/png">
+    <link rel="icon" href="admin/images/mainlogo1.png" type="image/png">
     <meta name="description" content="Invest in yourself with Beauty & Blessed. Discover premium Malaysian cosmetics, virtual try-on technology, and personalized beauty recommendations in Nasugbu, Batangas.">
     <meta name="author" content="Blessence">
     

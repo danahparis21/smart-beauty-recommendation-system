@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Product Management - Blessence</title>
-    <link rel="icon" href="../images/mainlogo.png" type="image/png" />
+    <link rel="icon" href="../images/mainlogo1.png" type="image/png" />
 
     <link rel="stylesheet" href="../styles/styles.css" />
 
@@ -1447,7 +1447,7 @@
         </button>
         <div class="mobile-logo">
           <a href="admin.html" class="nav-link">
-            <img src="../images/mainlogo.png" alt="Store Logo" />
+            <img src="../images/mainlogo1.png" alt="Store Logo" />
           </a>
         </div>
       </div>
@@ -1462,7 +1462,7 @@
         <nav class="col-md-2 d-md-block sidebar" id="sidebar">
           <div class="logo-container">
             <a href="admin.html">
-              <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
+              <img src="../images/mainlogo1.png" alt="Store Logo" class="logo" />
             </a>
             <div class="store-name">Blessence</div>
           </div>
@@ -2301,7 +2301,7 @@
     <div class="cashier-mode-entry" id="cashierModeEntry">
       <div class="cashier-logo-container">
         <div class="cashier-logo">
-          <img src="../images/mainlogo.png" alt="Store Logo" />
+          <img src="../images/mainlogo1.png" alt="Store Logo" />
         </div>
         <div class="cashier-title">Entering Cashier Mode</div>
         <div class="cashier-subtitle">Blessence Point of Sale</div>
@@ -2319,10 +2319,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Function to explicitly toggle fields based on mode, used ONLY in Edit context.
+   
+   
       function toggleEditFormFields() {
-        console.log("🔄 [DEBUG] toggleEditFormFields called");
-        // This is the logic you already have.
+     
+        
         const isVariantMode = document.getElementById("typeNewVariant").checked;
         const parentProductGroup =
           document.getElementById("parentProductGroup");
@@ -2334,30 +2335,28 @@
         );
         const descriptionTextarea =
           document.getElementById("productDescription");
-        console.log(
-          "📝 [DEBUG] Description before toggle:",
-          descriptionTextarea.value
-        );
+      
+          
 
         if (isVariantMode) {
           // Variant Update Mode
-          console.log("🔄 Switching to VARIANT mode");
+        
+          
           variantFields.forEach((el) => el.classList.remove("d-none"));
           parentFields.forEach((el) => el.classList.add("d-none"));
           if (parentProductGroup) parentProductGroup.classList.remove("d-none");
           if (categorySelect) categorySelect.disabled = true;
         } else {
           // Parent Update Mode
-          console.log("🔄 Switching to PARENT mode");
+       
+          
           parentFields.forEach((el) => el.classList.remove("d-none"));
           variantFields.forEach((el) => el.classList.add("d-none"));
           if (parentProductGroup) parentProductGroup.classList.add("d-none");
           if (categorySelect) categorySelect.disabled = false;
         }
-        console.log(
-          "📝 [DEBUG] Description after toggle:",
-          descriptionTextarea.value
-        );
+   
+        
       }
       // Define loadCategories globally
       function loadCategories() {
@@ -2411,7 +2410,8 @@
       let filteredProducts = [];
 
       async function deleteProduct(id, isParent) {
-        console.log("🧩 Deleting:", { id, isParent });
+       
+        
 
         try {
           const response = await fetch("../php/delete_product.php", {
@@ -2421,8 +2421,8 @@
           });
 
           const text = await response.text();
-          console.log("🧾 Raw response:", text);
-
+       
+          
           if (text.trim().startsWith("{")) {
             const result = JSON.parse(text);
             if (result.success) {
@@ -2901,7 +2901,8 @@
               });
 
               const rawResponse = await response.text();
-              console.log("📄 RAW PHP RESPONSE:", rawResponse);
+           
+              
 
               let result;
               try {
@@ -3087,7 +3088,7 @@
         if (parentProductIDSelect) {
           parentProductIDSelect.addEventListener("change", function () {
             document.getElementById("hiddenParentProductID").value = this.value;
-            console.log("🔄 ParentProductID updated to:", this.value);
+           
           });
         }
 
@@ -3102,16 +3103,13 @@
         async function fetchAndRenderProducts(page = 1) {
           const tableBody = document.getElementById("productTableBody");
           if (tableBody) {
-            console.log(
-              "🟢 Table body found, event listeners:",
-              tableBody.addEventListener
-                ? "addEventListener exists"
-                : "NO addEventListener"
-            );
+           
+            
 
             // Test if we can manually trigger the event
             tableBody.addEventListener("click", function (e) {
-              console.log("🟢 TABLE CLICK WORKING - Target:", e.target);
+           
+              
             });
           } else {
             console.error("❌ productTableBody NOT FOUND!");
@@ -3840,7 +3838,8 @@
           }
         }
         function setFormMode(mode, productID = null) {
-          console.log("🔄 [DEBUG] setFormMode called with:", mode, productID);
+        
+          
           const title = document.getElementById("productFormTitle");
           const labelNewProduct = document.querySelector(
             'label[for="typeNewProduct"]'
@@ -3854,10 +3853,8 @@
 
           const descriptionTextarea =
             document.getElementById("productDescription");
-          console.log(
-            "📝 [DEBUG] Description before setFormMode:",
-            descriptionTextarea.value
-          );
+         
+            
 
           if (mode === "update") {
             // --- A. Main Title and Buttons ---
@@ -3946,7 +3943,8 @@
             });
 
             const rawResponse = await response.text();
-            console.log("📄 RAW PHP RESPONSE:", rawResponse);
+          
+            
 
             let result;
             try {
@@ -4038,19 +4036,16 @@
           resetAdditionalImages(data.DetailImages);
 
           // 6. Final cleanup (only needed once)
-          // setFormMode('update', data.ProductID); // REMOVE: Already called at the start
+          // setFormMode('update', data.ProductID);
+          
         }
         let isPopulatingForm = false;
         function populateVariantForm(data) {
           isPopulatingForm = true; // Set flag
-          console.log("🔍 [DEBUG] populateVariantForm called with data:", data);
-
-          // Debug: Check if Description exists in the response
-          console.log("📝 [DEBUG] Description field check:", {
-            hasDescription: data.hasOwnProperty("Description"),
-            descriptionValue: data.Description,
-            descriptionType: typeof data.Description,
-          });
+       
+          
+       
+          
 
           setFormMode("update", data.ProductID);
           // Force switch to Variant mode display
@@ -4064,21 +4059,15 @@
           // DEBUG: Check the textarea element
           const descriptionTextarea =
             document.getElementById("productDescription");
-          console.log(
-            "📝 [DEBUG] Textarea element BEFORE setting:",
-            descriptionTextarea
-          );
-          console.log(
-            "📝 [DEBUG] Textarea value BEFORE setting:",
-            descriptionTextarea.value
-          );
+      
+            
+          
+            
 
           descriptionTextarea.value = data.Description || "";
 
-          console.log(
-            "📝 [DEBUG] Textarea value after setting:",
-            descriptionTextarea.value
-          );
+      
+          
 
           document.getElementById("productIngredients").value =
             data.Ingredients || "";
@@ -4098,18 +4087,11 @@
           document.getElementById("hiddenParentProductID").value =
             data.ParentProductID || "";
           // 4. Debug parent product info
-          console.log("📦 [DEBUG] Variant Parent Data:", {
-            variantID: data.ProductID,
-            variantName: data.Name,
-            parentProductID: data.ParentProductID,
-            parentProductName: data.ParentProductName,
-            description: data.Description,
-          });
+       
+          
           setTimeout(() => {
-            console.log(
-              "📝 [FINAL CHECK] Textarea value after all operations:",
-              document.getElementById("productDescription").value
-            );
+           
+            
           }, 100);
           loadParentProducts(() => {
             const parentProductIDSelect =
@@ -4122,7 +4104,8 @@
               // Method 2: If Method 1 fails, wait a bit and try again (for async issues)
               setTimeout(() => {
                 if (parentProductIDSelect.value !== targetValue) {
-                  console.log("🔄 Retrying dropdown selection...");
+              
+                  
                   parentProductIDSelect.value = targetValue;
 
                   // Method 3: If still not working, force by iterating options
@@ -4143,14 +4126,9 @@
                 }
 
                 // Final check and event trigger
-                console.log(
-                  "🎯 Final selection - Value:",
-                  parentProductIDSelect.value,
-                  "Text:",
-                  parentProductIDSelect.options[
-                    parentProductIDSelect.selectedIndex
-                  ]?.text
-                );
+             
+                
+
                 parentProductIDSelect.dispatchEvent(
                   new Event("change", { bubbles: true })
                 );
@@ -4242,71 +4220,56 @@
           }
 
           // FINAL DEBUG: Check all form values
-          console.log(
-            "✅ [DEBUG] Form population complete. Current form values:",
-            {
-              name: document.getElementById("productName").value,
-              description: document.getElementById("productDescription").value,
-              ingredients: document.getElementById("productIngredients").value,
-              variantName: document.getElementById("productVariantName").value,
-            }
-          );
+       
+          
           setTimeout(() => {
             isPopulatingForm = false;
-            console.log("🔄 [DEBUG] Form population complete, flag reset");
+         
+            
           }, 1000);
         }
 
         // Function to pre-fill variant form with existing variant data
         async function prefillVariantForm(parentID, isSwitchingParent = false) {
           if (!parentID) {
-            console.log("❌ [DEBUG] No parent ID provided for pre-fill");
+          
+            
             return;
           }
 
           try {
-            console.log(
-              "🔄 [DEBUG] Fetching existing variant data for parent:",
-              parentID
-            );
+          
+            
 
             const response = await fetch(
               `../php/fetch_existing_variant.php?parent_id=${parentID}`
             );
 
             if (!response.ok) {
-              console.log(
-                "⚠️ [DEBUG] Response not OK, status:",
-                response.status
-              );
+             
+              
               return;
             }
 
             const result = await response.json();
 
-            // 🆕 ADD THIS DEBUG LOG
-            console.log("🔍 [DEBUG] Full API response:", result);
+           
+            
 
             if (result.error) {
-              console.log("⚠️ [DEBUG] API returned error:", result.error);
+            
+              
               return;
             }
 
             if (result.exists && result.data) {
               const data = result.data;
-              console.log(
-                "✅ [DEBUG] Found existing variant, pre-filling form:",
-                data
-              );
+             
+              
 
               // 🆕 CRITICAL FIX: Check if Description exists and is valid
-              console.log("📝 [DEBUG] Description data check:", {
-                hasDescription: data.hasOwnProperty("Description"),
-                descriptionValue: data.Description,
-                descriptionType: typeof data.Description,
-                isNull: data.Description === null,
-                isUndefined: data.Description === undefined,
-              });
+          
+              
 
               // 🆕 IMPROVED PRE-FILL LOGIC: Clear and set fields when switching parents
               const descriptionField =
@@ -4348,11 +4311,11 @@
               }
               prefillVariantAttributes(data, isSwitchingParent);
 
-              console.log("✅ [DEBUG] Variant form pre-filled successfully");
+          
+              
             } else {
-              console.log(
-                "ℹ️ [DEBUG] No existing variants found for this parent product"
-              );
+             
+              
               // 🆕 Clear the form if no variants exist
               if (isSwitchingParent) {
                 clearVariantForm();
@@ -4365,7 +4328,8 @@
 
         // 🆕 NEW: Function to clear variant attributes
         function clearVariantAttributes() {
-          console.log("🔄 [DEBUG] Clearing variant attributes");
+      
+          
 
           // Clear boolean attributes
           const booleanFields = [
@@ -4400,7 +4364,8 @@
 
         // 🆕 NEW: Function to clear entire variant form
         function clearVariantForm() {
-          console.log("🔄 [DEBUG] Clearing variant form");
+        
+          
 
           document.getElementById("productDescription").value = "";
           document.getElementById("productIngredients").value = "";
@@ -4430,14 +4395,14 @@
                 document.getElementById("undertone").value !== "");
 
             if (anyAttributeSet) {
-              console.log(
-                "ℹ️ [DEBUG] Attributes already populated, skipping attribute pre-fill"
-              );
+            
+              
               return;
             }
           }
 
-          console.log("🔄 [DEBUG] Pre-filling variant attributes");
+       
+          
 
           // Pre-fill boolean attributes
           const booleanFields = [
@@ -4537,9 +4502,8 @@
                   .getElementById("productForm")
                   .appendChild(deletedInput); // Append to the form
 
-                console.log(
-                  `Image at index ${index} (path: ${path}) marked for deletion`
-                );
+              
+                  
               });
 
               box.appendChild(deleteBtn);
@@ -4561,12 +4525,12 @@
         document
           .getElementById("productTableBody")
           .addEventListener("click", async (e) => {
-            console.log("🟢 MAIN TABLE CLICK EVENT FIRED");
-            console.log("🔍 Clicked element:", e.target);
-            console.log("🔍 Clicked element class:", e.target.className);
+          
+            
             // 1. PARENT EDIT BUTTON
             if (e.target.closest(".edit-parent-btn")) {
-              console.log("🎯 PARENT EDIT BUTTON CLICKED");
+            
+              
               const btn = e.target.closest(".edit-parent-btn");
               const productID = btn.getAttribute("data-id");
 
@@ -4593,8 +4557,8 @@
                 // STEP 2: Process the response into JSON and DEFINE 'data'
                 const data = await response.json();
 
-                // Log the data for debugging (Good practice!)
-                console.log("Parent Product Data Response:", data);
+             
+                
 
                 // STEP 3: Check for application-level errors
                 if (data.error) {
@@ -4621,11 +4585,12 @@
             // 2. VARIANT EDIT BUTTON
             // 2. VARIANT EDIT BUTTON
             if (e.target.closest(".edit-variant-btn")) {
-              console.log("🎯 VARIANT EDIT BUTTON CLICKED IN MAIN HANDLER");
+          
+              
               const btn = e.target.closest(".edit-variant-btn");
               const variantID = btn.getAttribute("data-id");
-              console.log("🔍 Variant ID:", variantID);
-
+         
+              
               if (!variantID) {
                 console.error("No Product ID found for variant edit.");
                 return;
@@ -4635,29 +4600,24 @@
               btn.disabled = true;
 
               try {
-                console.log(
-                  "🔍 [DEBUG] Fetching variant details for ID:",
-                  variantID
-                );
+              
+                
                 const response = await fetch(
                   `../php/fetch_variant_details.php?id=${variantID}`
                 );
 
-                console.log("🔍 Response status:", response.status);
+             
+                
                 if (!response.ok) {
                   throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log("🔍 Full API response:", data);
+             
+                
 
-                // ADD THIS SPECIFIC DEBUG FOR DESCRIPTION:
-                console.log("📝 [DEBUG] Description in API response:", {
-                  hasDescription: data.hasOwnProperty("Description"),
-                  descriptionValue: data.Description,
-                  descriptionType: typeof data.Description,
-                  fullDataKeys: Object.keys(data),
-                });
+             
+                
 
                 if (data.error) {
                   alert("Error fetching variant details: " + data.error);
@@ -4665,7 +4625,8 @@
                   return;
                 }
 
-                console.log("✅ API Success, calling populateVariantForm");
+            
+                
                 // Load the form with the fetched variant data
                 populateVariantForm(data);
               } catch (error) {
@@ -4763,7 +4724,8 @@
         toggleFormMode("new");
 
         function loadParentProducts(callback = null) {
-          console.log("🔄 [DEBUG] Loading parent products...");
+      
+          
 
           fetch("../php/fetch_parent_products.php")
             .then((res) => {
@@ -4771,7 +4733,8 @@
               return res.json();
             })
             .then((data) => {
-              console.log("🔄 [DEBUG] Parent products loaded:", data);
+            
+              
 
               parentProductID.innerHTML =
                 '<option value="" selected disabled>Select an existing product line</option>';
@@ -4788,12 +4751,7 @@
                 opt.dataset.category = product.Category;
                 opt.dataset.description = product.Description;
 
-                console.log("🔄 [DEBUG] Added option:", {
-                  value: product.ProductID,
-                  text: cleanName,
-                  category: product.Category,
-                  description: product.Description,
-                });
+                
 
                 parentProductID.appendChild(opt);
               });
@@ -4813,26 +4771,22 @@
             document.getElementById("hiddenProductID").value !== "" &&
             document.getElementById("typeNewVariant").checked;
 
-          console.log("🎯 [DEBUG] Parent product dropdown change event FIRED");
-          console.log("🎯 [DEBUG] Edit mode check:", {
-            hiddenProductID: document.getElementById("hiddenProductID").value,
-            isVariantMode: document.getElementById("typeNewVariant").checked,
-            isEditingExistingVariant: isEditingExistingVariant,
-          });
+        
+            
 
           if (isEditingExistingVariant) {
-            console.log(
-              "🔄 [DEBUG] Editing existing variant - skipping parent product auto-fill"
-            );
+        
+            
             return;
           }
 
           const selectedOption =
             parentProductID.options[parentProductID.selectedIndex];
-          console.log("🎯 [DEBUG] Selected option:", selectedOption);
-
+        
+            
           if (selectedOption.value) {
-            console.log("🔄 [DEBUG] Auto-filling form with parent data");
+          
+            
 
             const cleanName = selectedOption.textContent.replace(
               /^Parent Record:\s*/i,
@@ -4843,21 +4797,15 @@
             productDescriptionTextarea.value =
               selectedOption.dataset.description;
 
-            console.log("🔄 [DEBUG] Form fields after auto-fill:", {
-              productName: productNameInput.value,
-              category: productCategorySelect.value,
-              description: productDescriptionTextarea.value,
-            });
+         
+              
 
-            // 🆕 UPDATED: Pre-fill variant data and indicate we're switching parents
-            console.log(
-              "🔄 [DEBUG] Starting variant data pre-fill for parent:",
-              selectedOption.value
-            );
+           
+              
             await prefillVariantForm(selectedOption.value, true); // true = isSwitchingParent
           } else {
-            console.log("❌ [DEBUG] No value in selected option");
-            // 🆕 Clear the form if no parent selected
+          
+            
             clearVariantForm();
           }
         });
@@ -4886,18 +4834,19 @@
             '<i class="fas fa-spinner fa-spin"></i> Adding Product...';
           addBtn.disabled = true;
 
-          // DEBUG
-          console.log("--- Form Data Contents ---");
+        
+          
           for (const [key, value] of formData.entries()) {
             if (value instanceof File) {
-              console.log(
-                `INPUT: ${key}: File - ${value.name} (${value.size} bytes)`
-              );
+           
+              
             } else {
-              console.log(`INPUT: ${key}: "${value}"`);
+            
+              
             }
           }
-          console.log("--------------------------");
+     
+          
 
           // Send data to backend
           fetch("../php/add_product.php", {
@@ -4906,7 +4855,8 @@
           })
             .then((res) => {
               return res.text().then((text) => {
-                console.log("HTTP Status:", res.status);
+              
+                
 
                 if (!res.ok) {
                   console.error("❌ Server Error Response:", text);
@@ -4921,9 +4871,11 @@
               });
             })
             .then((response) => {
-              console.log("✅ Success:", response);
+            
+              
 
-              // Parse the response to show appropriate message
+          
+              
               if (response.includes("New product line and first variant")) {
                 const match = response.match(
                   /Parent ID: (\w+), Variant ID: (\w+)/
@@ -5048,7 +5000,8 @@
                 );
             }
 
-            console.log("🔍 [DEBUG] Validation errors:", errors);
+          
+            
 
             if (errors.length > 0) {
               showModal(
@@ -5182,7 +5135,8 @@
         document
           .getElementById("exportCsvBtn")
           .addEventListener("click", function () {
-            console.log("📊 [DEBUG] Export CSV button clicked");
+        
+            
             exportToCSV();
           });
 
@@ -5195,10 +5149,8 @@
           btn.disabled = true;
 
           try {
-            console.log(
-              "📊 [DEBUG] Starting CSV export with enhanced data fetching"
-            );
-
+          
+            
             // Get current filtered products
             let productsToExport = allProducts;
 
@@ -5232,9 +5184,8 @@
               return;
             }
 
-            console.log(
-              `📊 [DEBUG] Processing ${productsToExport.length} products for export`
-            );
+          
+            
 
             // Enhanced: Fetch complete variant data for each product
             const enhancedProducts = await fetchCompleteVariantData(
@@ -5250,8 +5201,8 @@
             }.csv`;
 
             // Debug: Show sample of CSV data
-            console.log("📊 [DEBUG] Final CSV sample (first 2 rows):");
-            console.log(csvData.split("\n").slice(0, 2).join("\n"));
+          
+            
 
             downloadCSV(csvData, filename);
 
@@ -5287,9 +5238,8 @@
             for (const variant of variants) {
               if (variant.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP") {
                 try {
-                  console.log(
-                    `🔄 [DEBUG] Fetching variant ${variant.ProductID}`
-                  );
+                 
+                  
 
                   // Fetch complete variant details
                   const response = await fetch(
@@ -5298,17 +5248,8 @@
 
                   if (response.ok) {
                     const completeVariant = await response.json();
-                    console.log(
-                      `✅ [DEBUG] Successfully fetched variant ${variant.ProductID}:`,
-                      {
-                        hasDescription: !!completeVariant.Description,
-                        hasExpirationDate: !!completeVariant.ExpirationDate,
-                        expirationDate: completeVariant.ExpirationDate,
-                        hasStatus: !!completeVariant.Status,
-                        status: completeVariant.Status,
-                        hasAttributes: !!completeVariant.SkinType,
-                      }
-                    );
+                  
+                    
                     enhancedVariants.push(completeVariant);
                     successfulFetches++;
                   } else {
@@ -5335,12 +5276,7 @@
             });
           }
 
-          console.log(`📊 [DEBUG] Data Fetching Summary:`, {
-            successfulFetches: successfulFetches,
-            failedFetches: failedFetches,
-            totalFetches: successfulFetches + failedFetches,
-          });
-
+    
           return enhancedProducts;
         }
 
@@ -5378,11 +5314,8 @@
           let variantsWithCompleteData = 0;
 
           products.forEach((parent, parentIndex) => {
-            console.log(`📊 [DEBUG] Processing parent ${parentIndex + 1}:`, {
-              parentID: parent.ProductID,
-              parentName: parent.ParentName,
-              variantCount: parent.Variants ? parent.Variants.length : 0,
-            });
+        
+            
 
             const variants = parent.Variants || [];
 
@@ -5398,19 +5331,8 @@
                 variantsWithCompleteData++;
               }
 
-              console.log(
-                `📊 [DEBUG] Variant ${variantIndex + 1} complete data:`,
-                {
-                  variantID: variant.ProductID,
-                  expirationDate: variant.ExpirationDate,
-                  status: variant.Status,
-                  description: variant.Description
-                    ? variant.Description.substring(0, 50) + "..."
-                    : "MISSING",
-                  stocks: variant.Stocks,
-                  price: variant.Price,
-                }
-              );
+            
+              
 
               const row = [
                 `"${variant.ProductID || ""}"`,
@@ -5442,14 +5364,8 @@
             });
           });
 
-          console.log(`📊 [DEBUG] Export Summary:`, {
-            totalParents: products.length,
-            totalVariants: totalVariants,
-            variantsWithCompleteData: variantsWithCompleteData,
-            completenessRate: `${Math.round(
-              (variantsWithCompleteData / totalVariants) * 100
-            )}%`,
-          });
+        
+          
 
           return rows.join("\n");
         }

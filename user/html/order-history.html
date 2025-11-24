@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <title>Blessence | Order History</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -2664,7 +2665,8 @@
 
               productImage.appendChild(img);
             } else {
-              console.log("No image data for product:", product.name);
+         
+              
               const icon = document.createElement("i");
               icon.className = "fas fa-palette";
               productImage.appendChild(icon);
@@ -2906,7 +2908,8 @@
           }
 
           const result = await response.json();
-          console.log("📦 Add to cart response:", result);
+      
+          
 
           if (result.success) {
             showNotification(result.message || "Added to cart! 🛒");

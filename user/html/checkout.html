@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blessence | Generate QR</title>
-    <link rel="icon" href="../../admin/images/mainlogo.png" type="image/png" />
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link
       rel="stylesheet"
@@ -1074,10 +1074,7 @@
 
         // Display order summary
         function displayOrderSummary() {
-          console.log(
-            "📋 Fetching order details for order_id:",
-            orderDetails.order_id
-          );
+     
           orderItemsEl.innerHTML =
             '<p style="text-align:center; color: var(--text-gray);">Loading order details...</p>';
 
@@ -1086,11 +1083,11 @@
             credentials: "same-origin",
           })
             .then((res) => {
-              console.log("📡 Response status:", res.status);
+        
               return res.json();
             })
             .then((data) => {
-              console.log("📦 Received data:", data);
+         
 
               if (!data.success) {
                 console.error("❌ API returned error:", data.message);
@@ -1107,7 +1104,7 @@
                 return;
               }
 
-              console.log("✅ Loading", data.items.length, "items");
+          
               orderItemsEl.innerHTML = "";
 
               data.items.forEach((item) => {
@@ -1149,7 +1146,8 @@
                 data.order.total_price
               );
 
-              console.log("✅ Order display complete");
+          
+              
             })
             .catch((err) => {
               console.error("❌ Fetch error:", err);
@@ -1159,10 +1157,8 @@
 
         // Generate REAL scannable QR Code using only order_id
         function generateQRCode() {
-          console.log(
-            "🎨 Generating QR code for order ID:",
-            orderDetails.order_id
-          );
+        
+          
 
           // Use order ID as the QR data
           const qrData = String(orderDetails.order_id);
@@ -1223,7 +1219,8 @@
 
             qrModal.classList.add("active");
 
-            console.log("✅ QR code generated successfully");
+        
+            
           } catch (error) {
             console.error("❌ QR generation error:", error);
             alert("Error generating QR code. Please refresh the page.");
@@ -1259,10 +1256,8 @@
         }
 
         async function showThankYouModal() {
-          console.log(
-            "🎉 Order placed successfully, keeping as pending:",
-            orderDetails.order_id
-          );
+       
+          
 
           // Show thank you modal
           thankYouModal.classList.add("active");
