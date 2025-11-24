@@ -1462,7 +1462,11 @@
         <nav class="col-md-2 d-md-block sidebar" id="sidebar">
           <div class="logo-container">
             <a href="admin.html">
-              <img src="../images/mainlogo1.png" alt="Store Logo" class="logo" />
+              <img
+                src="../images/mainlogo1.png"
+                alt="Store Logo"
+                class="logo"
+              />
             </a>
             <div class="store-name">Blessence</div>
           </div>
@@ -2319,11 +2323,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-   
-   
       function toggleEditFormFields() {
-     
-        
         const isVariantMode = document.getElementById("typeNewVariant").checked;
         const parentProductGroup =
           document.getElementById("parentProductGroup");
@@ -2335,28 +2335,22 @@
         );
         const descriptionTextarea =
           document.getElementById("productDescription");
-      
-          
 
         if (isVariantMode) {
           // Variant Update Mode
-        
-          
+
           variantFields.forEach((el) => el.classList.remove("d-none"));
           parentFields.forEach((el) => el.classList.add("d-none"));
           if (parentProductGroup) parentProductGroup.classList.remove("d-none");
           if (categorySelect) categorySelect.disabled = true;
         } else {
           // Parent Update Mode
-       
-          
+
           parentFields.forEach((el) => el.classList.remove("d-none"));
           variantFields.forEach((el) => el.classList.add("d-none"));
           if (parentProductGroup) parentProductGroup.classList.add("d-none");
           if (categorySelect) categorySelect.disabled = false;
         }
-   
-        
       }
       // Define loadCategories globally
       function loadCategories() {
@@ -2410,9 +2404,6 @@
       let filteredProducts = [];
 
       async function deleteProduct(id, isParent) {
-       
-        
-
         try {
           const response = await fetch("../php/delete_product.php", {
             method: "POST",
@@ -2421,8 +2412,7 @@
           });
 
           const text = await response.text();
-       
-          
+
           if (text.trim().startsWith("{")) {
             const result = JSON.parse(text);
             if (result.success) {
@@ -2901,8 +2891,6 @@
               });
 
               const rawResponse = await response.text();
-           
-              
 
               let result;
               try {
@@ -3088,7 +3076,6 @@
         if (parentProductIDSelect) {
           parentProductIDSelect.addEventListener("change", function () {
             document.getElementById("hiddenParentProductID").value = this.value;
-           
           });
         }
 
@@ -3103,14 +3090,8 @@
         async function fetchAndRenderProducts(page = 1) {
           const tableBody = document.getElementById("productTableBody");
           if (tableBody) {
-           
-            
-
             // Test if we can manually trigger the event
-            tableBody.addEventListener("click", function (e) {
-           
-              
-            });
+            tableBody.addEventListener("click", function (e) {});
           } else {
             console.error("❌ productTableBody NOT FOUND!");
           }
@@ -3160,11 +3141,10 @@
               const variants = parent.Variants || [];
               totalVariants += variants.length;
 
-              const parentImage = parent.Image 
-    ? `<img src="${parent.Image}" alt="${parent.ParentName}" 
-         style="width:80px;height:80px;object-fit:cover;border-radius:6px;"
-         onerror="this.onerror=null; this.src='/uploads/placeholder.jpg'; this.alt='Image not found'">`
-    : `<div class="text-muted small">No Image</div>`;
+              const parentImage = parent.Image
+                ? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width80px;height:80px;object-fit:cover;border-radius:6px;">`
+                : `<div class="text-muted small">No Image</div>`;
+
               // Parent Row
               const parentRow = document.createElement("tr");
               parentRow.classList.add("parent-product-row");
@@ -3237,11 +3217,13 @@
                   (v) => v.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP"
                 )
                 .map((variant) => {
-                  const variantImage = variant.Image 
-    ? `<img src="${variant.Image}" alt="${variant.ShadeOrVariant || variant.Name}" 
-         style="width:80px;height:80px;object-fit:cover;border-radius:4px;"
-         onerror="this.onerror=null; this.src='/uploads/placeholder.jpg'; this.alt='Image not found'">`
-    : `<div class="text-muted small">No Image</div>`;
+                  const variantImage = variant.Image
+                    ? `<img src="${variant.Image}" alt="${
+                        variant.ShadeOrVariant || variant.Name
+                      }"
+                          style="width:80px;height:80px;object-fit:cover;border-radius:4px;">`
+                    : `<div class="text-muted small">No Image</div>`;
+
                   const attributesHtml = `
                   <span class="d-block text-muted small">Skin Type: <strong class="text-dark">${
                     variant["Skin Type"] || "N/A"
@@ -3432,7 +3414,7 @@
                   </td></tr>`;
           }
         }
-? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;">`
+
         fetchAndRenderProducts();
         document.addEventListener("click", async function (e) {
           const parentBtn = e.target.closest(".delete-parent-btn");
@@ -3837,8 +3819,6 @@
           }
         }
         function setFormMode(mode, productID = null) {
-        
-          
           const title = document.getElementById("productFormTitle");
           const labelNewProduct = document.querySelector(
             'label[for="typeNewProduct"]'
@@ -3852,8 +3832,6 @@
 
           const descriptionTextarea =
             document.getElementById("productDescription");
-         
-            
 
           if (mode === "update") {
             // --- A. Main Title and Buttons ---
@@ -3942,8 +3920,6 @@
             });
 
             const rawResponse = await response.text();
-          
-            
 
             let result;
             try {
@@ -4036,15 +4012,10 @@
 
           // 6. Final cleanup (only needed once)
           // setFormMode('update', data.ProductID);
-          
         }
         let isPopulatingForm = false;
         function populateVariantForm(data) {
           isPopulatingForm = true; // Set flag
-       
-          
-       
-          
 
           setFormMode("update", data.ProductID);
           // Force switch to Variant mode display
@@ -4058,15 +4029,8 @@
           // DEBUG: Check the textarea element
           const descriptionTextarea =
             document.getElementById("productDescription");
-      
-            
-          
-            
 
           descriptionTextarea.value = data.Description || "";
-
-      
-          
 
           document.getElementById("productIngredients").value =
             data.Ingredients || "";
@@ -4086,12 +4050,8 @@
           document.getElementById("hiddenParentProductID").value =
             data.ParentProductID || "";
           // 4. Debug parent product info
-       
-          
-          setTimeout(() => {
-           
-            
-          }, 100);
+
+          setTimeout(() => {}, 100);
           loadParentProducts(() => {
             const parentProductIDSelect =
               document.getElementById("parentProductID");
@@ -4103,8 +4063,6 @@
               // Method 2: If Method 1 fails, wait a bit and try again (for async issues)
               setTimeout(() => {
                 if (parentProductIDSelect.value !== targetValue) {
-              
-                  
                   parentProductIDSelect.value = targetValue;
 
                   // Method 3: If still not working, force by iterating options
@@ -4125,8 +4083,6 @@
                 }
 
                 // Final check and event trigger
-             
-                
 
                 parentProductIDSelect.dispatchEvent(
                   new Event("change", { bubbles: true })
@@ -4219,56 +4175,37 @@
           }
 
           // FINAL DEBUG: Check all form values
-       
-          
+
           setTimeout(() => {
             isPopulatingForm = false;
-         
-            
           }, 1000);
         }
 
         // Function to pre-fill variant form with existing variant data
         async function prefillVariantForm(parentID, isSwitchingParent = false) {
           if (!parentID) {
-          
-            
             return;
           }
 
           try {
-          
-            
-
             const response = await fetch(
               `../php/fetch_existing_variant.php?parent_id=${parentID}`
             );
 
             if (!response.ok) {
-             
-              
               return;
             }
 
             const result = await response.json();
 
-           
-            
-
             if (result.error) {
-            
-              
               return;
             }
 
             if (result.exists && result.data) {
               const data = result.data;
-             
-              
 
               // 🆕 CRITICAL FIX: Check if Description exists and is valid
-          
-              
 
               // 🆕 IMPROVED PRE-FILL LOGIC: Clear and set fields when switching parents
               const descriptionField =
@@ -4309,12 +4246,7 @@
                 clearVariantAttributes();
               }
               prefillVariantAttributes(data, isSwitchingParent);
-
-          
-              
             } else {
-             
-              
               // 🆕 Clear the form if no variants exist
               if (isSwitchingParent) {
                 clearVariantForm();
@@ -4327,9 +4259,6 @@
 
         // 🆕 NEW: Function to clear variant attributes
         function clearVariantAttributes() {
-      
-          
-
           // Clear boolean attributes
           const booleanFields = [
             "acne",
@@ -4363,9 +4292,6 @@
 
         // 🆕 NEW: Function to clear entire variant form
         function clearVariantForm() {
-        
-          
-
           document.getElementById("productDescription").value = "";
           document.getElementById("productIngredients").value = "";
           document.getElementById("productPrice").value = "0.00";
@@ -4394,14 +4320,9 @@
                 document.getElementById("undertone").value !== "");
 
             if (anyAttributeSet) {
-            
-              
               return;
             }
           }
-
-       
-          
 
           // Pre-fill boolean attributes
           const booleanFields = [
@@ -4500,9 +4421,6 @@
                 document
                   .getElementById("productForm")
                   .appendChild(deletedInput); // Append to the form
-
-              
-                  
               });
 
               box.appendChild(deleteBtn);
@@ -4524,12 +4442,8 @@
         document
           .getElementById("productTableBody")
           .addEventListener("click", async (e) => {
-          
-            
             // 1. PARENT EDIT BUTTON
             if (e.target.closest(".edit-parent-btn")) {
-            
-              
               const btn = e.target.closest(".edit-parent-btn");
               const productID = btn.getAttribute("data-id");
 
@@ -4556,9 +4470,6 @@
                 // STEP 2: Process the response into JSON and DEFINE 'data'
                 const data = await response.json();
 
-             
-                
-
                 // STEP 3: Check for application-level errors
                 if (data.error) {
                   console.error(data.error);
@@ -4584,12 +4495,9 @@
             // 2. VARIANT EDIT BUTTON
             // 2. VARIANT EDIT BUTTON
             if (e.target.closest(".edit-variant-btn")) {
-          
-              
               const btn = e.target.closest(".edit-variant-btn");
               const variantID = btn.getAttribute("data-id");
-         
-              
+
               if (!variantID) {
                 console.error("No Product ID found for variant edit.");
                 return;
@@ -4599,24 +4507,15 @@
               btn.disabled = true;
 
               try {
-              
-                
                 const response = await fetch(
                   `../php/fetch_variant_details.php?id=${variantID}`
                 );
 
-             
-                
                 if (!response.ok) {
                   throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
-             
-                
-
-             
-                
 
                 if (data.error) {
                   alert("Error fetching variant details: " + data.error);
@@ -4624,8 +4523,6 @@
                   return;
                 }
 
-            
-                
                 // Load the form with the fetched variant data
                 populateVariantForm(data);
               } catch (error) {
@@ -4723,18 +4620,12 @@
         toggleFormMode("new");
 
         function loadParentProducts(callback = null) {
-      
-          
-
           fetch("../php/fetch_parent_products.php")
             .then((res) => {
               if (!res.ok) throw new Error("Network response was not ok");
               return res.json();
             })
             .then((data) => {
-            
-              
-
               parentProductID.innerHTML =
                 '<option value="" selected disabled>Select an existing product line</option>';
               data.forEach((product) => {
@@ -4749,8 +4640,6 @@
 
                 opt.dataset.category = product.Category;
                 opt.dataset.description = product.Description;
-
-                
 
                 parentProductID.appendChild(opt);
               });
@@ -4770,23 +4659,14 @@
             document.getElementById("hiddenProductID").value !== "" &&
             document.getElementById("typeNewVariant").checked;
 
-        
-            
-
           if (isEditingExistingVariant) {
-        
-            
             return;
           }
 
           const selectedOption =
             parentProductID.options[parentProductID.selectedIndex];
-        
-            
-          if (selectedOption.value) {
-          
-            
 
+          if (selectedOption.value) {
             const cleanName = selectedOption.textContent.replace(
               /^Parent Record:\s*/i,
               ""
@@ -4796,15 +4676,8 @@
             productDescriptionTextarea.value =
               selectedOption.dataset.description;
 
-         
-              
-
-           
-              
             await prefillVariantForm(selectedOption.value, true); // true = isSwitchingParent
           } else {
-          
-            
             clearVariantForm();
           }
         });
@@ -4833,19 +4706,11 @@
             '<i class="fas fa-spinner fa-spin"></i> Adding Product...';
           addBtn.disabled = true;
 
-        
-          
           for (const [key, value] of formData.entries()) {
             if (value instanceof File) {
-           
-              
             } else {
-            
-              
             }
           }
-     
-          
 
           // Send data to backend
           fetch("../php/add_product.php", {
@@ -4854,9 +4719,6 @@
           })
             .then((res) => {
               return res.text().then((text) => {
-              
-                
-
                 if (!res.ok) {
                   console.error("❌ Server Error Response:", text);
                   showModal(
@@ -4870,11 +4732,6 @@
               });
             })
             .then((response) => {
-            
-              
-
-          
-              
               if (response.includes("New product line and first variant")) {
                 const match = response.match(
                   /Parent ID: (\w+), Variant ID: (\w+)/
@@ -4998,9 +4855,6 @@
                   "You must select a Parent Product Line for a New Variant"
                 );
             }
-
-          
-            
 
             if (errors.length > 0) {
               showModal(
@@ -5134,8 +4988,6 @@
         document
           .getElementById("exportCsvBtn")
           .addEventListener("click", function () {
-        
-            
             exportToCSV();
           });
 
@@ -5148,8 +5000,6 @@
           btn.disabled = true;
 
           try {
-          
-            
             // Get current filtered products
             let productsToExport = allProducts;
 
@@ -5183,9 +5033,6 @@
               return;
             }
 
-          
-            
-
             // Enhanced: Fetch complete variant data for each product
             const enhancedProducts = await fetchCompleteVariantData(
               productsToExport
@@ -5200,8 +5047,6 @@
             }.csv`;
 
             // Debug: Show sample of CSV data
-          
-            
 
             downloadCSV(csvData, filename);
 
@@ -5237,9 +5082,6 @@
             for (const variant of variants) {
               if (variant.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP") {
                 try {
-                 
-                  
-
                   // Fetch complete variant details
                   const response = await fetch(
                     `../php/fetch_variant_details.php?id=${variant.ProductID}`
@@ -5247,8 +5089,7 @@
 
                   if (response.ok) {
                     const completeVariant = await response.json();
-                  
-                    
+
                     enhancedVariants.push(completeVariant);
                     successfulFetches++;
                   } else {
@@ -5275,7 +5116,6 @@
             });
           }
 
-    
           return enhancedProducts;
         }
 
@@ -5313,9 +5153,6 @@
           let variantsWithCompleteData = 0;
 
           products.forEach((parent, parentIndex) => {
-        
-            
-
             const variants = parent.Variants || [];
 
             variants.forEach((variant, variantIndex) => {
@@ -5329,9 +5166,6 @@
               if (hasExpirationDate && hasStatus && hasDescription) {
                 variantsWithCompleteData++;
               }
-
-            
-              
 
               const row = [
                 `"${variant.ProductID || ""}"`,
@@ -5362,9 +5196,6 @@
               rows.push(row.join(","));
             });
           });
-
-        
-          
 
           return rows.join("\n");
         }
