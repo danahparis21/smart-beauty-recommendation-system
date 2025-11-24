@@ -304,7 +304,7 @@ function deleteOldFile($filePath)
 {
     // Add debugging to see what files we're trying to delete
     error_log("Attempting to delete file: $filePath");
-    
+
     if (file_exists($filePath)) {
         $result = unlink($filePath);
         error_log("Delete result for $filePath: " . ($result ? 'SUCCESS' : 'FAILED'));
@@ -314,13 +314,17 @@ function deleteOldFile($filePath)
     }
     return true;
 }
+
 // -----------------------------------------------------------------------------------
 // IMPLEMENTATION OF handle_media_update (Inside update_product.php)
 // -----------------------------------------------------------------------------------
 
 function handle_media_update($conn, $productID, $isParent)
 {
-    $targetDir = '/var/www/html/uploads/product_images/'; // FIXED: Absolute server path
+    error_log('=== MEDIA UPDATE DEBUG ===');
+    error_log("ProductID: $productID, IsParent: " . ($isParent ? 'YES' : 'NO'));
+
+    $targetDir = '/var/www/html/uploads/product_images/';  // FIXED: Absolute server path
     $parentID = $isParent ? $productID : getParentIDFromVariant($conn, $productID);
     $variantID = $isParent ? null : $productID;
 
@@ -337,12 +341,12 @@ function handle_media_update($conn, $productID, $isParent)
         $result = $stmt_select->get_result();
 
         $physical_delete_paths = [];
-while ($row = $result->fetch_assoc()) {
-    // Construct the correct absolute path
-    $fileToDelete = '/var/www/html/uploads/product_images/' . basename($row['ImagePath']);
-    error_log("Marking for deletion: " . $fileToDelete);
-    $physical_delete_paths[] = $fileToDelete;
-}
+        while ($row = $result->fetch_assoc()) {
+            // Construct the correct absolute path
+            $fileToDelete = '/var/www/html/uploads/product_images/' . basename($row['ImagePath']);
+            error_log('Marking for deletion: ' . $fileToDelete);
+            $physical_delete_paths[] = $fileToDelete;
+        }
         $stmt_select->close();
 
         // Delete records from the DB
@@ -363,15 +367,24 @@ while ($row = $result->fetch_assoc()) {
         if ($previewNewPath) {
             // Fetch and Delete OLD File
             $oldPath = getOldImagePath($conn, $parentID, 'PREVIEW', true);
-            if ($oldPath)
-                deleteOldFile($targetDir . basename($oldPath)); // FIXED: Use absolute path
-            
+            if ($oldPath) {
+                deleteOldFile('/var/www/html/uploads/product_images/' . basename($oldPath));
+            }
+
             // Upsert with corrected web path
-            $webPreviewPath = '/uploads/product_images/' . basename($previewNewPath); // FIXED: Web path
-            $stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, ImagePath, MediaType, SortOrder) 
-                                    VALUES (?, ?, 'PREVIEW', 1) 
-                                    ON DUPLICATE KEY UPDATE ImagePath = VALUES(ImagePath)");
-            $stmt->bind_param('ss', $parentID, $webPreviewPath);
+            $webPreviewPath = '/uploads/product_images/' . basename($previewNewPath);
+
+            // Check if preview image already exists
+            $existingPreview = getOldImagePath($conn, $parentID, 'PREVIEW', true);
+            if ($existingPreview) {
+                // UPDATE existing record
+                $stmt = $conn->prepare("UPDATE ProductMedia SET ImagePath = ? WHERE ParentProductID = ? AND MediaType = 'PREVIEW'");
+                $stmt->bind_param('ss', $webPreviewPath, $parentID);
+            } else {
+                // INSERT new record
+                $stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, 'PREVIEW', 1)");
+                $stmt->bind_param('ss', $parentID, $webPreviewPath);
+            }
             $stmt->execute();
             $stmt->close();
         }
@@ -383,15 +396,24 @@ while ($row = $result->fetch_assoc()) {
         if ($variantNewPath) {
             // Fetch and Delete OLD File
             $oldPath = getOldImagePath($conn, $variantID, 'VARIANT', false);
-            if ($oldPath)
-                deleteOldFile($targetDir . basename($oldPath)); // FIXED: Use absolute path
-            
+            if ($oldPath) {
+                deleteOldFile('/var/www/html/uploads/product_images/' . basename($oldPath));
+            }
+
             // Upsert with corrected web path
-            $webVariantPath = '/uploads/product_images/' . basename($variantNewPath); // FIXED: Web path
-            $stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) 
-                                    VALUES (?, ?, ?, 'VARIANT', 1) 
-                                    ON DUPLICATE KEY UPDATE ImagePath = VALUES(ImagePath)");
-            $stmt->bind_param('sss', $parentID, $variantID, $webVariantPath);
+            $webVariantPath = '/uploads/product_images/' . basename($variantNewPath);
+
+            // Check if variant image already exists
+            $existingVariant = getOldImagePath($conn, $variantID, 'VARIANT', false);
+            if ($existingVariant) {
+                // UPDATE existing record
+                $stmt = $conn->prepare("UPDATE ProductMedia SET ImagePath = ? WHERE VariantProductID = ? AND MediaType = 'VARIANT'");
+                $stmt->bind_param('ss', $webVariantPath, $variantID);
+            } else {
+                // INSERT new record
+                $stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
+                $stmt->bind_param('sss', $parentID, $variantID, $webVariantPath);
+            }
             $stmt->execute();
             $stmt->close();
         }
@@ -409,7 +431,7 @@ while ($row = $result->fetch_assoc()) {
                 $targetFile = $targetDir . $fileName;
 
                 if (move_uploaded_file($files['tmp_name'][$key], $targetFile)) {
-                    $webGalleryPath = '/uploads/product_images/' . basename($targetFile); // FIXED: Web path
+                    $webGalleryPath = '/uploads/product_images/' . basename($targetFile);  // FIXED: Web path
                     $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, 'GALLERY', ?)");
                     $media_stmt->bind_param('ssi', $parentID, $webGalleryPath, $sortOrder);
                     $media_stmt->execute();
