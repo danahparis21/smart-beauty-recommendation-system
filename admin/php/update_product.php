@@ -302,12 +302,18 @@ function handleFileUpload($fileInputName, $targetDir = '/var/www/html/uploads/pr
 
 function deleteOldFile($filePath)
 {
+    // Add debugging to see what files we're trying to delete
+    error_log("Attempting to delete file: $filePath");
+    
     if (file_exists($filePath)) {
-        return unlink($filePath);
+        $result = unlink($filePath);
+        error_log("Delete result for $filePath: " . ($result ? 'SUCCESS' : 'FAILED'));
+        return $result;
+    } else {
+        error_log("File not found: $filePath");
     }
     return true;
 }
-
 // -----------------------------------------------------------------------------------
 // IMPLEMENTATION OF handle_media_update (Inside update_product.php)
 // -----------------------------------------------------------------------------------
@@ -331,9 +337,12 @@ function handle_media_update($conn, $productID, $isParent)
         $result = $stmt_select->get_result();
 
         $physical_delete_paths = [];
-        while ($row = $result->fetch_assoc()) {
-            $physical_delete_paths[] = $targetDir . basename($row['ImagePath']); // FIXED: Use absolute path
-        }
+while ($row = $result->fetch_assoc()) {
+    // Construct the correct absolute path
+    $fileToDelete = '/var/www/html/uploads/product_images/' . basename($row['ImagePath']);
+    error_log("Marking for deletion: " . $fileToDelete);
+    $physical_delete_paths[] = $fileToDelete;
+}
         $stmt_select->close();
 
         // Delete records from the DB
