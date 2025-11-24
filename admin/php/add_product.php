@@ -284,28 +284,31 @@ if ($type === 'new') {
     error_log('Variant product created successfully');
 
     // INSERT INTO ProductMedia for Variant-Specific Image
-    if ($variantImagePath) {
-        error_log('Adding variant image media...');
-        $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
-        if ($media_stmt) {
-            $webVariantPath = '../uploads/product_images/' . basename($variantImagePath);
-            $media_stmt->bind_param('sss', $parentProductID, $variantID, $webVariantPath);
-            if (!$media_stmt->execute()) {
-                error_log('Variant image media insert failed: ' . $media_stmt->error);
-            } else {
-                error_log('Variant image media inserted successfully');
-            }
+    // INSERT INTO ProductMedia for Variant-Specific Image
+if ($variantImagePath) {
+    error_log('Adding variant image media...');
+    $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
+    if ($media_stmt) {
+        // FIX: Use absolute web path instead of ../ path
+        $webVariantPath = '/uploads/product_images/' . basename($variantImagePath);
+        $media_stmt->bind_param('sss', $parentProductID, $variantID, $webVariantPath);
+        if (!$media_stmt->execute()) {
+            error_log('Variant image media insert failed: ' . $media_stmt->error);
         } else {
-            error_log('Variant image media prepare failed: ' . $conn->error);
+            error_log('Variant image media inserted successfully');
         }
+    } else {
+        error_log('Variant image media prepare failed: ' . $conn->error);
     }
+}
 
     // INSERT INTO ProductMedia for Preview/Hover Image
     if ($previewImagePath) {
         error_log('Adding preview image media...');
         $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'PREVIEW', 1)");
         if ($media_stmt) {
-            $webPreviewPath = '../uploads/product_images/' . basename($previewImagePath);
+            // FIX: Use absolute web path instead of ../ path
+            $webPreviewPath = '/uploads/product_images/' . basename($previewImagePath);
             $media_stmt->bind_param('ss', $parentProductID, $webPreviewPath);
             if (!$media_stmt->execute()) {
                 error_log('Preview image media insert failed: ' . $media_stmt->error);
@@ -321,18 +324,19 @@ if ($type === 'new') {
     if (isset($_FILES['detailImages'])) {
         error_log('Processing gallery images...');
         $sortOrder = 1;
-
+    
         foreach ($_FILES['detailImages']['name'] as $key => $name) {
             if ($_FILES['detailImages']['error'][$key] === UPLOAD_ERR_OK) {
                 $tmp_name = $_FILES['detailImages']['tmp_name'][$key];
                 $ext = pathinfo($name, PATHINFO_EXTENSION);
                 $fileName = uniqid('gall_') . '_' . $key . time() . '.' . $ext;
                 $targetFile = $targetDir . $fileName;
-
+    
                 if (move_uploaded_file($tmp_name, $targetFile)) {
                     $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'GALLERY', ?)");
                     if ($media_stmt) {
-                        $webGalleryPath = '../uploads/product_images/' . basename($targetFile);
+                        // FIX: Use absolute web path instead of ../ path
+                        $webGalleryPath = '/uploads/product_images/' . basename($targetFile);
                         $media_stmt->bind_param('ssi', $parentProductID, $webGalleryPath, $sortOrder);
                         if (!$media_stmt->execute()) {
                             error_log('Gallery image media insert failed: ' . $media_stmt->error);
@@ -396,7 +400,9 @@ if ($type === 'variant') {
 
     if ($variantImagePath) {
         $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
-        $media_stmt->bind_param('sss', $parentProductID, $variantID, $variantImagePath);
+        // FIX: Use absolute web path
+        $webVariantPath = '/uploads/product_images/' . basename($variantImagePath);
+        $media_stmt->bind_param('sss', $parentProductID, $variantID, $webVariantPath);
         $media_stmt->execute();
     }
 
