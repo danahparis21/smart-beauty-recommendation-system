@@ -59,7 +59,7 @@ try {
             p.Category,
             COALESCE(pm_variant.ImagePath, pm_preview.ImagePath, '/admin/uploads/product_images/no-image.png') AS image
         FROM orderitems oi
-        INNER JOIN products p ON oi.product_id = p.ProductID
+        INNER JOIN Products p ON oi.product_id = p.ProductID
         LEFT JOIN productmedia pm_variant 
             ON p.ProductID = pm_variant.VariantProductID 
             AND pm_variant.MediaType = 'VARIANT'

@@ -12,7 +12,7 @@ header('Content-Type: application/json');
 
 try {
     $updateStmt = $conn->prepare("
-        UPDATE products p
+        UPDATE Products p
         SET 
             p.ProductRating = COALESCE(
                 (SELECT ROUND(AVG(r.stars), 1) FROM ratings r WHERE r.product_id = p.ProductID AND r.stars > 0),
@@ -26,7 +26,7 @@ try {
         $affectedRows = $conn->affected_rows;
         echo json_encode([
             'success' => true,
-            'message' => "Updated ratings for {$affectedRows} products",
+            'message' => "Updated ratings for {$affectedRows} Products",
             'affected_rows' => $affectedRows
         ]);
     } else {

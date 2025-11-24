@@ -8,7 +8,7 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 header('Content-Type: application/json');
 
-$sql = "SELECT DISTINCT Category FROM products WHERE Category IS NOT NULL AND Category != '' ORDER BY Category ASC";
+$sql = "SELECT DISTINCT Category FROM Products WHERE Category IS NOT NULL AND Category != '' ORDER BY Category ASC";
 $result = $conn->query($sql);
 if (!$result) {
     echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);

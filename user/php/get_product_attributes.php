@@ -35,7 +35,7 @@ try {
             p.Name,
             p.ShadeOrVariant
         FROM productattributes pa
-        JOIN products p ON pa.ProductID = p.ProductID
+        JOIN Products p ON pa.ProductID = p.ProductID
         WHERE pa.ProductID = ?
     ";
 

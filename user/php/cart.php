@@ -93,7 +93,7 @@ function addToCart($conn, $userId, &$response)
         $quantity = 1;
 
     // Validate product existence
-    $productQuery = 'SELECT ProductID, Name, Price, Stocks FROM products WHERE ProductID = ?';
+    $productQuery = 'SELECT ProductID, Name, Price, Stocks FROM Products WHERE ProductID = ?';
     $stmt = $conn->prepare($productQuery);
     $stmt->bind_param('s', $productId);
     $stmt->execute();
@@ -173,7 +173,7 @@ function removeFromCart($conn, $userId, &$response)
     }
 
     // Get product name before deleting for logging
-    $productQuery = 'SELECT Name FROM products WHERE ProductID = ?';
+    $productQuery = 'SELECT Name FROM Products WHERE ProductID = ?';
     $stmt = $conn->prepare($productQuery);
     $stmt->bind_param('s', $productId);
     $stmt->execute();
@@ -219,7 +219,7 @@ function updateCartQuantity($conn, $userId, &$response)
     }
 
     // Check stock and get product name
-    $stockQuery = 'SELECT Stocks, Name FROM products WHERE ProductID = ?';
+    $stockQuery = 'SELECT Stocks, Name FROM Products WHERE ProductID = ?';
     $stmt = $conn->prepare($stockQuery);
     $stmt->bind_param('s', $productId);
     $stmt->execute();
@@ -274,7 +274,7 @@ function getCart($conn, $userId, &$response)
             (c.quantity * p.Price) AS subtotal,
             COALESCE(pm_variant.ImagePath, pm_preview.ImagePath) AS image
         FROM cart c
-        INNER JOIN products p ON c.product_id = p.ProductID
+        INNER JOIN Products p ON c.product_id = p.ProductID
         LEFT JOIN productmedia pm_variant 
             ON p.ProductID = pm_variant.VariantProductID 
             AND pm_variant.MediaType = 'VARIANT'

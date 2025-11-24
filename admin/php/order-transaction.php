@@ -91,7 +91,7 @@ function getOrdersList($conn)
                 OR u.Email LIKE '%$searchEscaped%'
                 OR o.order_id IN (
                     SELECT order_id FROM orderitems oi
-                    JOIN products p ON oi.product_id = p.ProductID
+                    JOIN Products p ON oi.product_id = p.ProductID
                     WHERE p.Name LIKE '%$searchEscaped%'
                 )
             )";
@@ -227,7 +227,7 @@ function getOrderDetails($conn)
                 p.Category,
                 pm.ImagePath as image_path
             FROM orderitems oi
-            LEFT JOIN products p ON oi.product_id = p.ProductID
+            LEFT JOIN Products p ON oi.product_id = p.ProductID
             LEFT JOIN ProductMedia pm ON p.ProductID = pm.VariantProductID AND pm.MediaType = 'VARIANT'
             WHERE oi.order_id = ?
         ";
@@ -243,7 +243,7 @@ function getOrderDetails($conn)
             if (!$item['image_path']) {
                 $parentImageQuery = "
                     SELECT pm.ImagePath 
-                    FROM products p 
+                    FROM Products p 
                     LEFT JOIN ProductMedia pm ON p.ParentProductID = pm.ParentProductID AND pm.MediaType = 'PREVIEW'
                     WHERE p.ProductID = ?
                     LIMIT 1

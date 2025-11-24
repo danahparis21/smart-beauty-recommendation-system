@@ -125,7 +125,7 @@ try {
                 p.Category,
                 (oi.quantity * oi.price) as subtotal
             FROM orderitems oi
-            JOIN products p ON oi.product_id = p.ProductID
+            JOIN Products p ON oi.product_id = p.ProductID
             WHERE oi.order_id = ?
         ";
         

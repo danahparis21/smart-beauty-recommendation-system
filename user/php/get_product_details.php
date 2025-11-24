@@ -355,7 +355,7 @@ if (!$parentProduct && !empty($variants)) {
         // Get all product IDs that belong to this parent (including the parent itself) - WITH STATUS FILTER
         $productIdsSql = "
             SELECT ProductID 
-            FROM products 
+            FROM Products 
             WHERE (ParentProductID = ? OR ProductID = ?)
                 AND Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
                 AND Stocks > 0
@@ -391,7 +391,7 @@ if (!$parentProduct && !empty($variants)) {
                     p.HexCode
                 FROM ratings r
                 LEFT JOIN users u ON r.user_id = u.UserID
-                LEFT JOIN products p ON r.product_id = p.ProductID
+                LEFT JOIN Products p ON r.product_id = p.ProductID
                 WHERE r.product_id IN ($placeholders)
                 ORDER BY r.created_at DESC
                 LIMIT 50

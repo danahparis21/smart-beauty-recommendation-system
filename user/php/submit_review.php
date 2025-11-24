@@ -76,7 +76,7 @@ try {
     $currentDateTime = date('Y-m-d H:i:s');
 
     // Get product name for logging
-    $productNameStmt = $conn->prepare('SELECT Name FROM products WHERE ProductID = ?');
+    $productNameStmt = $conn->prepare('SELECT Name FROM Products WHERE ProductID = ?');
     $productNameStmt->bind_param('s', $productId);
     $productNameStmt->execute();
     $productNameResult = $productNameStmt->get_result();
@@ -190,7 +190,7 @@ try {
     // ✅ UPDATE PRODUCT'S AVERAGE RATING (for both new and updated reviews)
     // Note: Using MySQL NOW() for UpdatedAt since it's just an internal timestamp
     $updateProductStmt = $conn->prepare('
-        UPDATE products 
+        UPDATE Products 
         SET 
             ProductRating = COALESCE(
                 (SELECT ROUND(AVG(stars), 1) FROM ratings WHERE product_id = ? AND stars > 0),
@@ -210,7 +210,7 @@ try {
     $updateProductStmt->close();
 
     // ✅ GET THE UPDATED RATING TO RETURN TO CLIENT
-    $getRatingStmt = $conn->prepare('SELECT ProductRating FROM products WHERE ProductID = ?');
+    $getRatingStmt = $conn->prepare('SELECT ProductRating FROM Products WHERE ProductID = ?');
     $getRatingStmt->bind_param('s', $productId);
     $getRatingStmt->execute();
     $ratingResult = $getRatingStmt->get_result();

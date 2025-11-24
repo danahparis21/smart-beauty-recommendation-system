@@ -57,7 +57,7 @@ try {
     $stmt = $conn->prepare("
         SELECT oi.product_id, oi.quantity, oi.price, p.Name as product_name
         FROM orderitems oi 
-        JOIN products p ON oi.product_id = p.ProductID
+        JOIN Products p ON oi.product_id = p.ProductID
         WHERE oi.order_id = ?
     ");
     $stmt->bind_param("i", $orderId);
@@ -70,7 +70,7 @@ try {
     }
     
     // Restore product stock
-    $updateStock = $conn->prepare("UPDATE products SET Stocks = Stocks + ? WHERE ProductID = ?");
+    $updateStock = $conn->prepare("UPDATE Products SET Stocks = Stocks + ? WHERE ProductID = ?");
     foreach ($orderItems as $item) {
         $updateStock->bind_param("is", $item['quantity'], $item['product_id']);
         $updateStock->execute();

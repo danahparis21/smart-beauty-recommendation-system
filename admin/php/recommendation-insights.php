@@ -104,7 +104,7 @@ try {
     ROUND(AVG(pf.UserRating), 1) AS avg_rating,
     ROUND(SUM(CASE WHEN pf.UserRating >= 4 THEN 1 ELSE 0 END) / COUNT(pf.FeedbackID) * 100, 1) AS positive_percentage
 FROM productfeedback pf
-JOIN products p ON pf.ProductID = p.ProductID
+JOIN Products p ON pf.ProductID = p.ProductID
 WHERE pf.UserRating IS NOT NULL
 $dateCondition
 GROUP BY p.ProductID
@@ -229,7 +229,7 @@ LIMIT 10;
             u.last_name,
             u.username
         FROM productfeedback pf
-        JOIN products p ON pf.ProductID = p.ProductID
+        JOIN Products p ON pf.ProductID = p.ProductID
         JOIN users u ON pf.UserID = u.UserID
         WHERE pf.UserRating IS NOT NULL
         $feedbackCondition
