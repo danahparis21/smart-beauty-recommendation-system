@@ -279,7 +279,7 @@ try {
         $conn->close();
 }
 
-function handleFileUpload($fileInputName, $targetDir = '../uploads/product_images/')
+function handleFileUpload($fileInputName, $targetDir = '/var/www/html/uploads/product_images/')
 {
     if (!isset($_FILES[$fileInputName]) || $_FILES[$fileInputName]['error'] !== UPLOAD_ERR_OK) {
         return null;
@@ -314,11 +314,11 @@ function deleteOldFile($filePath)
 
 function handle_media_update($conn, $productID, $isParent)
 {
-    $targetDir = '../uploads/product_images/';
+    $targetDir = '/var/www/html/uploads/product_images/'; // FIXED: Absolute server path
     $parentID = $isParent ? $productID : getParentIDFromVariant($conn, $productID);
     $variantID = $isParent ? null : $productID;
 
-    // 1. HANDLE DELETIONS (Gallery images deleted via hidden inputs from JS)
+    // 1. HANDLE DELETIONS
     $deletedPaths = $_POST['deleted_images'] ?? [];
     if (!empty($deletedPaths)) {
         $inQuery = str_repeat('?,', count($deletedPaths) - 1) . '?';
@@ -332,7 +332,7 @@ function handle_media_update($conn, $productID, $isParent)
 
         $physical_delete_paths = [];
         while ($row = $result->fetch_assoc()) {
-            $physical_delete_paths[] = $targetDir . basename($row['ImagePath']);
+            $physical_delete_paths[] = $targetDir . basename($row['ImagePath']); // FIXED: Use absolute path
         }
         $stmt_select->close();
 
@@ -348,78 +348,64 @@ function handle_media_update($conn, $productID, $isParent)
         }
     }
 
-    // 2. HANDLE MAIN/PREVIEW IMAGE UPDATE (Applies to Parent Product)
+    // 2. HANDLE MAIN/PREVIEW IMAGE UPDATE (Parent Product)
     if ($isParent) {
         $previewNewPath = handleFileUpload('previewImage', $targetDir);
         if ($previewNewPath) {
-            // *** FIX: Fetch and Delete OLD File ***
+            // Fetch and Delete OLD File
             $oldPath = getOldImagePath($conn, $parentID, 'PREVIEW', true);
             if ($oldPath)
-                deleteOldFile($targetDir . basename($oldPath));
-            // Upsert (Update or Insert) the new Preview Image
+                deleteOldFile($targetDir . basename($oldPath)); // FIXED: Use absolute path
+            
+            // Upsert with corrected web path
+            $webPreviewPath = '/uploads/product_images/' . basename($previewNewPath); // FIXED: Web path
             $stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, ImagePath, MediaType, SortOrder) 
                                     VALUES (?, ?, 'PREVIEW', 1) 
                                     ON DUPLICATE KEY UPDATE ImagePath = VALUES(ImagePath)");
-            // NOTE: This requires a unique index on (ParentProductID, MediaType)
-            $stmt->bind_param('ss', $parentID, $previewNewPath);
+            $stmt->bind_param('ss', $parentID, $webPreviewPath);
             $stmt->execute();
             $stmt->close();
         }
     }
 
-    // 3. HANDLE VARIANT IMAGE UPDATE (Applies to Variant)
+    // 3. HANDLE VARIANT IMAGE UPDATE (Variant)
     if (!$isParent) {
         $variantNewPath = handleFileUpload('variantImage', $targetDir);
         if ($variantNewPath) {
-            // *** FIX: Fetch and Delete OLD File ***
+            // Fetch and Delete OLD File
             $oldPath = getOldImagePath($conn, $variantID, 'VARIANT', false);
             if ($oldPath)
-                deleteOldFile($targetDir . basename($oldPath));
-            // Upsert the new Variant Image
+                deleteOldFile($targetDir . basename($oldPath)); // FIXED: Use absolute path
+            
+            // Upsert with corrected web path
+            $webVariantPath = '/uploads/product_images/' . basename($variantNewPath); // FIXED: Web path
             $stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) 
                                     VALUES (?, ?, ?, 'VARIANT', 1) 
                                     ON DUPLICATE KEY UPDATE ImagePath = VALUES(ImagePath)");
-            // NOTE: This requires a unique index on (VariantProductID, MediaType)
-            $stmt->bind_param('sss', $parentID, $variantID, $variantNewPath);
+            $stmt->bind_param('sss', $parentID, $variantID, $webVariantPath);
             $stmt->execute();
             $stmt->close();
         }
     }
 
-    // 4. HANDLE ADDITIONAL GALLERY IMAGES (Applies to Parent Product)
+    // 4. HANDLE ADDITIONAL GALLERY IMAGES (Parent Product)
     if ($isParent && isset($_FILES['detailImages'])) {
-        // Find the current highest SortOrder to continue numbering new images
         $sortOrder = getCurrentMaxSortOrder($conn, $parentID, 'GALLERY') + 1;
 
-        // Loop through the array of files
         $files = $_FILES['detailImages'];
         foreach ($files['name'] as $key => $name) {
             if ($files['error'][$key] === UPLOAD_ERR_OK) {
-                // Re-run the file upload logic
-                $file = [
-                    'name' => $files['name'][$key],
-                    'type' => $files['type'][$key],
-                    'tmp_name' => $files['tmp_name'][$key],
-                    'error' => $files['error'][$key],
-                    'size' => $files['size'][$key],
-                ];
-
-                // Temporary set $_FILES for the helper
-                $_FILES['temp_file'] = $file;
-
-                // Call file upload (you may need to adapt your handleFileUpload if it doesn't support temp renaming)
-                // Simpler approach: manual move and direct insertion
                 $ext = pathinfo($name, PATHINFO_EXTENSION);
                 $fileName = uniqid('gall_') . '_' . $key . time() . '.' . $ext;
                 $targetFile = $targetDir . $fileName;
 
                 if (move_uploaded_file($files['tmp_name'][$key], $targetFile)) {
+                    $webGalleryPath = '/uploads/product_images/' . basename($targetFile); // FIXED: Web path
                     $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, 'GALLERY', ?)");
-                    $media_stmt->bind_param('ssi', $parentID, $targetFile, $sortOrder);
+                    $media_stmt->bind_param('ssi', $parentID, $webGalleryPath, $sortOrder);
                     $media_stmt->execute();
                     $sortOrder++;
                 }
-                unset($_FILES['temp_file']);  // Cleanup
             }
         }
     }
