@@ -1,879 +1,1057 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Customer Management - Blessence</title>
+    <link rel="icon" href="../images/mainlogo.png" type="image/png" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Customer Management - Blessence</title>
-  <link rel="icon" href="../images/mainlogo.png" type="image/png">
+    <link rel="stylesheet" href="../styles/styles.css" />
 
-  <link rel="stylesheet" href="../styles/styles.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="../../admin/styles/logout.js"></script>
 
-  <script src="../../admin/styles/logout.js"></script>
+    <!-- SweetAlert2 CSS & JS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-  <!-- SweetAlert2 CSS & JS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Flatpickr (Custom Calendar) CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-  <!-- Flatpickr (Custom Calendar) CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="../js/admin-session.js"></script>
 
-  <style>
-    /* Profile Picture Styles */
-.customer-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--primary-pink);
-  margin-bottom: 15px;
-}
+    <style>
+      /* Profile Picture Styles */
+      .customer-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-pink);
+        margin-bottom: 15px;
+      }
 
-.customer-avatar-fallback {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--primary-pink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 15px;
-  border: 3px solid var(--primary-pink);
-}
-    /* Define CSS Variables based on your design */
-    :root {
-      --primary-pink: #e497aa;
-      --secondary-pink: #db8299;
-      --dark-pink: #c36c82;
-      --light-pink: #f8e2e7;
-      --accent-pink: #ffe4e9;
-    }
+      .customer-avatar-fallback {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        border: 3px solid var(--primary-pink);
+      }
+      /* Define CSS Variables based on your design */
+      :root {
+        --primary-pink: #e497aa;
+        --secondary-pink: #db8299;
+        --dark-pink: #c36c82;
+        --light-pink: #f8e2e7;
+        --accent-pink: #ffe4e9;
+      }
 
-    body {
-      background-color: #f8f9fa;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+      body {
+        background-color: #f8f9fa;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-    .page-header {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid rgba(228, 151, 170, 0.15);
-    }
+      .page-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+      }
 
-    .page-title {
-      color: var(--dark-pink);
-      font-weight: 700;
-      font-size: 2rem;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
+      .page-title {
+        color: var(--dark-pink);
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+      }
 
-    .page-header p {
-      color: #6c757d;
-      font-size: 1rem;
-      margin: 0;
-    }
+      .page-header p {
+        color: #6c757d;
+        font-size: 1rem;
+        margin: 0;
+      }
 
-    /* Main content padding */
-    main {
-      padding: 35px !important;
-      margin-left: 16.666667%;
-      width: calc(100% - 16.666667%);
-      transition: margin-left 0.3s ease;
-    }
+      /* Main content padding */
+      main {
+        padding: 35px !important;
+        margin-left: 16.666667%;
+        width: calc(100% - 16.666667%);
+        transition: margin-left 0.3s ease;
+      }
 
-    /* Fixed Header Section */
-    .fixed-header {
-      z-index: 10;
-      background: transparent;
-      padding: 20px 0;
-      margin-bottom: 20px;
-      border-bottom: 1px solid rgba(228, 151, 170, 0.1);
-    }
+      /* Fixed Header Section */
+      .fixed-header {
+        z-index: 10;
+        background: transparent;
+        padding: 20px 0;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(228, 151, 170, 0.1);
+      }
 
-    /* Stats Cards */
-    .stats-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      margin-bottom: 25px;
-    }
+      /* Stats Cards */
+      .stats-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+      }
 
-    .stat-btn {
-      border: none;
-      border-radius: 16px;
-      padding: 28px 24px;
-      color: rgb(0, 0, 0);
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      position: relative;
-      overflow: hidden;
-      background: var(--primary-pink);
-    }
+      .stat-btn {
+        border: none;
+        border-radius: 16px;
+        padding: 28px 24px;
+        color: rgb(0, 0, 0);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        background: var(--primary-pink);
+      }
 
-    .stat-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transform: skewX(-20deg);
-      transition: right 0.6s ease;
-    }
+      .stat-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transform: skewX(-20deg);
+        transition: right 0.6s ease;
+      }
 
-    .stat-btn:hover::before {
-      right: 150%;
-    }
+      .stat-btn:hover::before {
+        right: 150%;
+      }
 
-    .stat-btn:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
-    }
+      .stat-btn:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+      }
 
-    .stat-btn i {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-      opacity: 0.95;
-      position: relative;
-      z-index: 1;
-      color: white;
-    }
+      .stat-btn i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        opacity: 0.95;
+        position: relative;
+        z-index: 1;
+        color: white;
+      }
 
-    .stat-value {
-      font-size: 2.2rem;
-      margin: 10px 0 5px 0;
-      display: block;
-      position: relative;
-      z-index: 1;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: white;
-    }
+      .stat-value {
+        font-size: 2.2rem;
+        margin: 10px 0 5px 0;
+        display: block;
+        position: relative;
+        z-index: 1;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: white;
+      }
 
-    .stat-label {
-      position: relative;
-      z-index: 1;
-      font-size: 0.9rem;
-      opacity: 0.9;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.9);
-    }
+      .stat-label {
+        position: relative;
+        z-index: 1;
+        font-size: 0.9rem;
+        opacity: 0.9;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+      }
 
-    .total-customers { background: linear-gradient(135deg, #e497aa 0%, #db8299 100%); }
-    .new-this-month { background: linear-gradient(135deg, #db8299 0%, #c36c82 100%); }
-    .active-customers { background: linear-gradient(135deg, #c36c82 0%, #b05a70 100%); }
-    .feedback-received { background: linear-gradient(135deg, #b05a70 0%, #9d4e5f 100%); }
+      .total-customers {
+        background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+      }
+      .new-this-month {
+        background: linear-gradient(135deg, #db8299 0%, #c36c82 100%);
+      }
+      .active-customers {
+        background: linear-gradient(135deg, #c36c82 0%, #b05a70 100%);
+      }
+      .feedback-received {
+        background: linear-gradient(135deg, #b05a70 0%, #9d4e5f 100%);
+      }
 
-    /* Search and Filter */
-    .search-filter-container {
-      background: white;
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(228, 151, 170, 0.1);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      align-items: center;
-      justify-content: space-between;
-      
-    }
+      /* Search and Filter */
+      .search-filter-container {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-    .search-box {
-      position: relative;
-      flex-grow: 1;
-      max-width: 450px;
-      margin-right : 80px
-    }
+      .search-box {
+        position: relative;
+        flex-grow: 1;
+        max-width: 450px;
+        margin-right: 80px;
+      }
 
-    .search-box input {
-      width: 100%;
-      padding: 12px 45px 12px 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
+      .search-box input {
+        width: 100%;
+        padding: 12px 45px 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
 
-    .search-box input:focus {
-      border-color: var(--primary-pink);
-      box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
-      outline: none;
-    }
+      .search-box input:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
+        outline: none;
+      }
 
-    .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #6c757d;
-    }
+      .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+      }
 
-    .filter-options {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
+      .filter-options {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
 
-    .filter-btn {
-      background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #666;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+      .filter-btn {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
 
-    .filter-btn:hover,
-    .filter-btn.active {
-      border-color: var(--primary-pink);
-      color: var(--dark-pink);
-      background: rgba(228, 151, 170, 0.05);
-    }
+      .filter-btn:hover,
+      .filter-btn.active {
+        border-color: var(--primary-pink);
+        color: var(--dark-pink);
+        background: rgba(228, 151, 170, 0.05);
+      }
 
-    .filter-btn.active {
-      background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
-      border-color: var(--primary-pink);
-      color: white;
-    }
+      .filter-btn.active {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+        border-color: var(--primary-pink);
+        color: white;
+      }
 
-    /* --- Announcement Button & Modal Styles --- */
-    .btn-announcement {
-      background: var(--dark-pink);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(195, 108, 130, 0.3);
-    }
-    .btn-announcement:hover {
-      background: #b05a70;
-      transform: translateY(-2px);
-      color: white;
-    }
+      /* --- Announcement Button & Modal Styles --- */
+      .btn-announcement {
+        background: var(--dark-pink);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(195, 108, 130, 0.3);
+      }
+      .btn-announcement:hover {
+        background: #b05a70;
+        transform: translateY(-2px);
+        color: white;
+      }
 
-    .btn-history {
-      background: white;
-      color: var(--dark-pink);
-      border: 2px solid var(--dark-pink);
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-    }
-    .btn-history:hover {
-      background: var(--light-pink);
-    }
-    
-    /* Modal Customization */
-    .modal-header { background: var(--light-pink); border-bottom: 1px solid rgba(228, 151, 170, 0.2); }
-    .modal-title { color: var(--dark-pink); font-weight: 700; }
-    .user-selection-list {
+      .btn-history {
+        background: white;
+        color: var(--dark-pink);
+        border: 2px solid var(--dark-pink);
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+      }
+      .btn-history:hover {
+        background: var(--light-pink);
+      }
+
+      /* Modal Customization */
+      .modal-header {
+        background: var(--light-pink);
+        border-bottom: 1px solid rgba(228, 151, 170, 0.2);
+      }
+      .modal-title {
+        color: var(--dark-pink);
+        font-weight: 700;
+      }
+      .user-selection-list {
         max-height: 250px;
         overflow-y: auto;
         border: 1px solid #dee2e6;
         border-radius: 8px;
         padding: 10px;
         background: #fcfcfc;
-    }
-    .user-checkbox-item { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
-    .user-checkbox-item:last-child { border-bottom: none; }
-    .user-checkbox-item:hover { background-color: #f8e2e7; }
-    .user-checkbox-item input { margin-right: 10px; width: 18px; height: 18px; accent-color: var(--dark-pink); }
-    .user-role-badge { font-size: 0.7rem; background: #eee; padding: 2px 6px; border-radius: 4px; margin-left: auto; }
-    
-    /* History Table Styles */
-    .history-table th { color: var(--dark-pink); font-weight: 600; border-bottom: 2px solid var(--primary-pink); }
-    .history-table td { vertical-align: middle; font-size: 0.9rem; }
-    .status-badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; }
-    .bg-active { background: rgba(40, 167, 69, 0.1); color: #28a745; }
-    .bg-expired { background: rgba(108, 117, 125, 0.1); color: #6c757d; }
+      }
+      .user-checkbox-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+      }
+      .user-checkbox-item:last-child {
+        border-bottom: none;
+      }
+      .user-checkbox-item:hover {
+        background-color: #f8e2e7;
+      }
+      .user-checkbox-item input {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--dark-pink);
+      }
+      .user-role-badge {
+        font-size: 0.7rem;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: auto;
+      }
 
-    /* ============================================================ */
-    /* CUSTOMIZED RESPONSIVE CALENDAR (FLATPICKR) STYLING */
-    /* ============================================================ */
-    
-    /* Container and base */
-    .flatpickr-calendar {
-      background: #fff;
-      border: none;
-      border-radius: 20px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 10px;
-      width: 330px; /* Better default width */
-    }
+      /* History Table Styles */
+      .history-table th {
+        color: var(--dark-pink);
+        font-weight: 600;
+        border-bottom: 2px solid var(--primary-pink);
+      }
+      .history-table td {
+        vertical-align: middle;
+        font-size: 0.9rem;
+      }
+      .status-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+      .bg-active {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+      }
+      .bg-expired {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+      }
 
-    .flatpickr-calendar:before, .flatpickr-calendar:after { display: none; } /* Remove default arrow */
+      /* ============================================================ */
+      /* CUSTOMIZED RESPONSIVE CALENDAR (FLATPICKR) STYLING */
+      /* ============================================================ */
 
-    /* Header (Month/Year) */
-    .flatpickr-month {
-      background: transparent;
-      color: var(--dark-pink);
-      fill: var(--dark-pink);
-      margin-bottom: 5px;
-    }
-    
-    .flatpickr-current-month {
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    
-    .flatpickr-current-month .flatpickr-monthDropdown-months {
-      font-weight: 700;
-    }
-
-    .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
-      background: rgba(228, 151, 170, 0.1);
-    }
-
-    .flatpickr-months .flatpickr-prev-month, 
-    .flatpickr-months .flatpickr-next-month {
-      fill: var(--dark-pink);
-      color: var(--dark-pink);
-    }
-
-    .flatpickr-months .flatpickr-prev-month:hover svg, 
-    .flatpickr-months .flatpickr-next-month:hover svg {
-      fill: #9d4e5f;
-    }
-
-    /* Weekdays */
-    .flatpickr-weekdays {
-      background: transparent;
-      margin-bottom: 5px;
-    }
-    
-    span.flatpickr-weekday {
-      color: #6c757d;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    /* Days */
-    .flatpickr-day {
-      border-radius: 10px; /* Softer squares */
-      color: #333;
-      font-weight: 500;
-      border: none;
-      transition: all 0.2s ease;
-      margin-top: 2px;
-    }
-
-    .flatpickr-day.today {
-      border: 2px solid var(--secondary-pink);
-      background: transparent;
-      color: var(--dark-pink);
-    }
-
-    .flatpickr-day:hover {
-      background: var(--light-pink);
-      border-color: var(--light-pink);
-    }
-
-    /* Selected Date Styling */
-    .flatpickr-day.selected, 
-    .flatpickr-day.startRange, 
-    .flatpickr-day.endRange, 
-    .flatpickr-day.selected.inRange, 
-    .flatpickr-day.startRange.inRange, 
-    .flatpickr-day.endRange.inRange, 
-    .flatpickr-day.selected:focus, 
-    .flatpickr-day.startRange:focus, 
-    .flatpickr-day.endRange:focus, 
-    .flatpickr-day.selected:hover, 
-    .flatpickr-day.startRange:hover, 
-    .flatpickr-day.endRange:hover {
-      background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 4px 10px rgba(195, 108, 130, 0.4);
-    }
-
-    /* Time Picker */
-    .flatpickr-time {
-      border-top: 1px solid rgba(228, 151, 170, 0.2);
-      padding-top: 10px;
-    }
-    
-    .flatpickr-time input {
-      color: var(--dark-pink);
-      font-weight: bold;
-    }
-    
-    .flatpickr-time .flatpickr-time-separator {
-      color: var(--dark-pink);
-    }
-
-    .flatpickr-time input:hover, 
-    .flatpickr-time .flatpickr-am-pm:hover, 
-    .flatpickr-time input:focus, 
-    .flatpickr-time .flatpickr-am-pm:focus {
-      background: var(--light-pink);
-    }
-
-    /* Responsive Calendar adjustments */
-    @media (max-width: 400px) {
+      /* Container and base */
       .flatpickr-calendar {
-        width: 300px; /* Shrink slightly for very small screens */
-      }
-      .flatpickr-days {
-        width: 280px;
-      }
-      .dayContainer {
-        width: 280px;
-        min-width: 280px;
-        max-width: 280px;
-      }
-    }
-
-    /* Input field styling enhancement */
-    input.flatpickr-input {
-      background-color: #fff !important; /* prevent read-only gray */
-      cursor: pointer;
-    }
-    input.flatpickr-input:active, input.flatpickr-input:focus {
-      border-color: var(--primary-pink);
-      box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
-    }
-
-    /* ============================================================ */
-
-    /* Customer Cards Grid */
-    .customers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 25px;
-      margin-bottom: 30px;
-    }
-
-    .customer-card {
-      background: white;
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid rgba(228, 151, 170, 0.1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .customer-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-    }
-
-    .customer-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary-pink), var(--secondary-pink));
-    }
-
-    .customer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 15px;
-    }
-
-    .customer-name {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .customer-username {
-      color: #6c757d;
-      font-size: 0.9rem;
-    }
-
-    .customer-status {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .status-active { background-color: rgba(40, 167, 69, 0.1); color: #28a745; }
-    .status-inactive { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; }
-    .status-new { background-color: rgba(0, 123, 255, 0.1); color: #007bff; }
-
-    .customer-details { margin-bottom: 20px; }
-
-    .customer-detail {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
-    }
-
-    .customer-detail i {
-      width: 20px;
-      margin-right: 10px;
-      color: var(--primary-pink);
-    }
-
-    .customer-stats {
-      display: flex;
-      justify-content: space-between;
-      background: var(--primary-pink);
-      border-radius: 10px;
-      padding: 15px;
-      margin-top: 15px;
-    }
-
-    .stat-item { text-align: center; }
-
-    .stat-number {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--dark-pink);
-    }
-
-    .customer-stats .stat-number {
-      color: #ffffff;
-      font-size: 1.3rem;
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
-    }
-
-    .customer-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-
-    .action-btn {
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 0.8rem;
-      color: #666;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .action-btn:hover {
-      background-color: var(--accent-pink);
-      border-color: var(--primary-pink);
-      color: var(--dark-pink);
-    }
-
-    .action-btn i { font-size: 0.9rem; }
-
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #6c757d;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .empty-state i {
-      font-size: 4rem;
-      margin-bottom: 20px;
-      color: var(--primary-pink);
-    }
-
-    .empty-state h4 {
-      color: var(--dark-pink);
-      margin-bottom: 10px;
-    }
-
-    /* Scrollable Content Area */
-    .scrollable-content {
-      max-height: calc(100vh - 100px);
-      overflow-y: auto;
-      padding-right: 10px;
-    }
-
-    .scrollable-content::-webkit-scrollbar { width: 6px; }
-    .scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-    .scrollable-content::-webkit-scrollbar-thumb { background: var(--primary-pink); border-radius: 10px; }
-    .scrollable-content::-webkit-scrollbar-thumb:hover { background: var(--dark-pink); }
-
-    /* Pagination Styles */
-    .pagination-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 30px;
-      padding: 20px 0;
-    }
-
-    .pagination {
-      display: flex;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      gap: 8px;
-    }
-
-    .page-item { margin: 0; }
-
-    .page-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 40px;
-      height: 40px;
-      padding: 0 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 10px;
-      color: #666;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      background: white;
-    }
-
-    .page-link:hover {
-      border-color: var(--primary-pink);
-      color: var(--dark-pink);
-      background: rgba(228, 151, 170, 0.05);
-    }
-
-    .page-item.active .page-link {
-      background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
-      border-color: var(--primary-pink);
-      color: white;
-    }
-
-    .page-item.disabled .page-link {
-      color: #ccc;
-      cursor: not-allowed;
-    }
-
-    .page-item.disabled .page-link:hover {
-      border-color: #e0e0e0;
-      background: white;
-      color: #ccc;
-    }
-
-    /* Star Rating Styles */
-    .star-rating { display: flex; gap: 2px; align-items: center; }
-    .star { color: #ddd; font-size: 14px; }
-    .star.filled { color: #ffc107; }
-    .rating-value { margin-left: 8px; font-size: 0.9rem; font-weight: 600; color: #666; }
-    .no-rating { color: #999; font-size: 0.85rem; font-style: italic; }
-
-    /* Responsive Design */
-    @media (max-width: 991px) {
-      .mobile-header { display: block; }
-      .sidebar {
-        position: fixed;
-        top: 0; left: 0; height: 100%; width: 280px;
-        transform: translateX(-100%); z-index: 100; padding-top: 60px;
-      }
-      .sidebar.mobile-open { transform: translateX(0); }
-      .sidebar-overlay.active { display: block; }
-      main { margin-left: 0 !important; width: 100% !important; margin-top: 70px; }
-      .fixed-header { position: relative; }
-
-      /* Stats Cards 2x2 */
-      .stats-buttons {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        background: #fff;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 10px;
+        width: 330px; /* Better default width */
       }
 
-      /* Filter Buttons 2x2 */
-      .filter-options {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        width: 100%;
+      .flatpickr-calendar:before,
+      .flatpickr-calendar:after {
+        display: none;
+      } /* Remove default arrow */
+
+      /* Header (Month/Year) */
+      .flatpickr-month {
+        background: transparent;
+        color: var(--dark-pink);
+        fill: var(--dark-pink);
+        margin-bottom: 5px;
       }
 
-      /* Customers grid adjusts for mobile */
+      .flatpickr-current-month {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+
+      .flatpickr-current-month .flatpickr-monthDropdown-months {
+        font-weight: 700;
+      }
+
+      .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+        background: rgba(228, 151, 170, 0.1);
+      }
+
+      .flatpickr-months .flatpickr-prev-month,
+      .flatpickr-months .flatpickr-next-month {
+        fill: var(--dark-pink);
+        color: var(--dark-pink);
+      }
+
+      .flatpickr-months .flatpickr-prev-month:hover svg,
+      .flatpickr-months .flatpickr-next-month:hover svg {
+        fill: #9d4e5f;
+      }
+
+      /* Weekdays */
+      .flatpickr-weekdays {
+        background: transparent;
+        margin-bottom: 5px;
+      }
+
+      span.flatpickr-weekday {
+        color: #6c757d;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      /* Days */
+      .flatpickr-day {
+        border-radius: 10px; /* Softer squares */
+        color: #333;
+        font-weight: 500;
+        border: none;
+        transition: all 0.2s ease;
+        margin-top: 2px;
+      }
+
+      .flatpickr-day.today {
+        border: 2px solid var(--secondary-pink);
+        background: transparent;
+        color: var(--dark-pink);
+      }
+
+      .flatpickr-day:hover {
+        background: var(--light-pink);
+        border-color: var(--light-pink);
+      }
+
+      /* Selected Date Styling */
+      .flatpickr-day.selected,
+      .flatpickr-day.startRange,
+      .flatpickr-day.endRange,
+      .flatpickr-day.selected.inRange,
+      .flatpickr-day.startRange.inRange,
+      .flatpickr-day.endRange.inRange,
+      .flatpickr-day.selected:focus,
+      .flatpickr-day.startRange:focus,
+      .flatpickr-day.endRange:focus,
+      .flatpickr-day.selected:hover,
+      .flatpickr-day.startRange:hover,
+      .flatpickr-day.endRange:hover {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 4px 10px rgba(195, 108, 130, 0.4);
+      }
+
+      /* Time Picker */
+      .flatpickr-time {
+        border-top: 1px solid rgba(228, 151, 170, 0.2);
+        padding-top: 10px;
+      }
+
+      .flatpickr-time input {
+        color: var(--dark-pink);
+        font-weight: bold;
+      }
+
+      .flatpickr-time .flatpickr-time-separator {
+        color: var(--dark-pink);
+      }
+
+      .flatpickr-time input:hover,
+      .flatpickr-time .flatpickr-am-pm:hover,
+      .flatpickr-time input:focus,
+      .flatpickr-time .flatpickr-am-pm:focus {
+        background: var(--light-pink);
+      }
+
+      /* Responsive Calendar adjustments */
+      @media (max-width: 400px) {
+        .flatpickr-calendar {
+          width: 300px; /* Shrink slightly for very small screens */
+        }
+        .flatpickr-days {
+          width: 280px;
+        }
+        .dayContainer {
+          width: 280px;
+          min-width: 280px;
+          max-width: 280px;
+        }
+      }
+
+      /* Input field styling enhancement */
+      input.flatpickr-input {
+        background-color: #fff !important; /* prevent read-only gray */
+        cursor: pointer;
+      }
+      input.flatpickr-input:active,
+      input.flatpickr-input:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
+      }
+
+      /* ============================================================ */
+
+      /* Customer Cards Grid */
       .customers-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      }
-
-      .search-box {
-        max-width: 100%;
-        margin-right: 0;
-      }
-    }
-
-
-    @media (max-width: 575px) {
-      /* Stats Cards 2x2 */
-      .stats-buttons {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
       }
-      .filter-options { flex-direction: column; }
-      .filter-btn { text-align: center; }
-      .pagination { flex-wrap: wrap; justify-content: center; }
-      .customers-grid { grid-template-columns: 1fr; }
-      .customer-actions { flex-direction: column; gap: 10px; }
-      .action-btn { justify-content: center; }
-    }
-  </style>
-</head>
 
-<body>
+      .customer-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
 
-  <!-- Mobile Header -->
-  <div class="mobile-header">
-    <div class="mobile-header-content">
-      <button class="hamburger-btn" id="hamburgerBtn">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="mobile-logo">
-        <img src="../images/mainlogo.png" alt="Store Logo">
+      .customer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      }
+
+      .customer-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+      }
+
+      .customer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+      }
+
+      .customer-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .customer-username {
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+
+      .customer-status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .status-active {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+      }
+      .status-inactive {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+      }
+      .status-new {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: #007bff;
+      }
+
+      .customer-details {
+        margin-bottom: 20px;
+      }
+
+      .customer-detail {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+      }
+
+      .customer-detail i {
+        width: 20px;
+        margin-right: 10px;
+        color: var(--primary-pink);
+      }
+
+      .customer-stats {
+        display: flex;
+        justify-content: space-between;
+        background: var(--primary-pink);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--dark-pink);
+      }
+
+      .customer-stats .stat-number {
+        color: #ffffff;
+        font-size: 1.3rem;
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
+      }
+
+      .customer-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .action-btn {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .action-btn:hover {
+        background-color: var(--accent-pink);
+        border-color: var(--primary-pink);
+        color: var(--dark-pink);
+      }
+
+      .action-btn i {
+        font-size: 0.9rem;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: var(--primary-pink);
+      }
+
+      .empty-state h4 {
+        color: var(--dark-pink);
+        margin-bottom: 10px;
+      }
+
+      /* Scrollable Content Area */
+      .scrollable-content {
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .scrollable-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .scrollable-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      .scrollable-content::-webkit-scrollbar-thumb {
+        background: var(--primary-pink);
+        border-radius: 10px;
+      }
+      .scrollable-content::-webkit-scrollbar-thumb:hover {
+        background: var(--dark-pink);
+      }
+
+      /* Pagination Styles */
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+        padding: 20px 0;
+      }
+
+      .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 8px;
+      }
+
+      .page-item {
+        margin: 0;
+      }
+
+      .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        color: #666;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .page-link:hover {
+        border-color: var(--primary-pink);
+        color: var(--dark-pink);
+        background: rgba(228, 151, 170, 0.05);
+      }
+
+      .page-item.active .page-link {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+        border-color: var(--primary-pink);
+        color: white;
+      }
+
+      .page-item.disabled .page-link {
+        color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .page-item.disabled .page-link:hover {
+        border-color: #e0e0e0;
+        background: white;
+        color: #ccc;
+      }
+
+      /* Star Rating Styles */
+      .star-rating {
+        display: flex;
+        gap: 2px;
+        align-items: center;
+      }
+      .star {
+        color: #ddd;
+        font-size: 14px;
+      }
+      .star.filled {
+        color: #ffc107;
+      }
+      .rating-value {
+        margin-left: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #666;
+      }
+      .no-rating {
+        color: #999;
+        font-size: 0.85rem;
+        font-style: italic;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 991px) {
+        .mobile-header {
+          display: block;
+        }
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 280px;
+          transform: translateX(-100%);
+          z-index: 100;
+          padding-top: 60px;
+        }
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+        .sidebar-overlay.active {
+          display: block;
+        }
+        main {
+          margin-left: 0 !important;
+          width: 100% !important;
+          margin-top: 70px;
+        }
+        .fixed-header {
+          position: relative;
+        }
+
+        /* Stats Cards 2x2 */
+        .stats-buttons {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+
+        /* Filter Buttons 2x2 */
+        .filter-options {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+          width: 100%;
+        }
+
+        /* Customers grid adjusts for mobile */
+        .customers-grid {
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .search-box {
+          max-width: 100%;
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 575px) {
+        /* Stats Cards 2x2 */
+        .stats-buttons {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+        .filter-options {
+          flex-direction: column;
+        }
+        .filter-btn {
+          text-align: center;
+        }
+        .pagination {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .customers-grid {
+          grid-template-columns: 1fr;
+        }
+        .customer-actions {
+          flex-direction: column;
+          gap: 10px;
+        }
+        .action-btn {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="mobile-header-content">
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="mobile-logo">
+          <img src="../images/mainlogo.png" alt="Store Logo" />
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Sidebar Overlay -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <nav class="col-md-2 d-md-block sidebar" id="sidebar">
-        <div class="logo-container">
-          <a href="admin.html">
-            <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
-          </a>
-          <div class="store-name">Blessence</div>
-        </div>
-        <div class="nav flex-column">
-          <a href="admin.html" class="nav-link">
-            <i class="fa-solid fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-          </a>
-          <a href="product-management.html" class="nav-link">
-            <i class="fa-solid fa-box"></i>
-            <span>Product Management</span>
-          </a>
-          <a href="recommendation-insights.html" class="nav-link">
-            <i class="fa-solid fa-lightbulb"></i>
-            <span>Recommendation Insights</span>
-          </a>
-          <a href="customer-managemnet.html" class="nav-link">
-            <i class="fa-solid fa-users"></i>
-            <span>Customer Management</span>
-          </a>
-          <a href="order-transactions.html" class="nav-link">
-            <i class="fa-solid fa-credit-card"></i>
-            <span>Order Transaction</span>
-          </a>
-          <a href="activity-log.html" class="nav-link">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>Activity Log</span>
-          </a>
-          <!-- New Cashier Mode Link -->
-          <a href="javascript:void(0)" class="nav-link cashier-mode-link" id="cashierModeLink">
-            <i class="fa-solid fa-cash-register"></i>
-            <span>Cashier Mode</span>
-          </a>
-
-          <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Log Out</span>
-          </a>
-        </div>
-      </nav>
-
-      <!-- Main content -->
-      <main class="col-md-10">
-        <div class="d-flex gap-2">
-                
-                <!-- NEW ANNOUNCEMENT BUTTON -->
-                <button class="btn-announcement" data-bs-toggle="modal" data-bs-target="#announcementModal">
-                    <i class="fas fa-bullhorn"></i> Create Announcement
-                </button>
-                <!-- NEW HISTORY BUTTON -->
-                <button class="btn-history" data-bs-toggle="modal" data-bs-target="#historyModal" onclick="loadAnnouncementHistory()">
-                    <i class="fas fa-history"></i> Manage History
-                </button>
-            </div>
-
-        <!-- Fixed Header Section -->
-        <div class="fixed-header">
-          <!-- Stats Cards -->
-          <div class="stats-buttons">
-            <button class="stat-btn total-customers">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-md-block sidebar" id="sidebar">
+          <div class="logo-container">
+            <a href="admin.html">
+              <img src="../images/mainlogo.png" alt="Store Logo" class="logo" />
+            </a>
+            <div class="store-name">Blessence</div>
+          </div>
+          <div class="nav flex-column">
+            <a href="admin.html" class="nav-link">
+              <i class="fa-solid fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+            <a href="product-management.html" class="nav-link">
+              <i class="fa-solid fa-box"></i>
+              <span>Product Management</span>
+            </a>
+            <a href="recommendation-insights.html" class="nav-link">
+              <i class="fa-solid fa-lightbulb"></i>
+              <span>Recommendation Insights</span>
+            </a>
+            <a href="customer-managemnet.html" class="nav-link">
               <i class="fa-solid fa-users"></i>
-              <div class="stat-content">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Total Customers</span>
-              </div>
-            </button>
+              <span>Customer Management</span>
+            </a>
+            <a href="order-transactions.html" class="nav-link">
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Order Transaction</span>
+            </a>
+            <a href="activity-log.html" class="nav-link">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <span>Activity Log</span>
+            </a>
+            <!-- New Cashier Mode Link -->
+            <a
+              href="javascript:void(0)"
+              class="nav-link cashier-mode-link"
+              id="cashierModeLink"
+            >
+              <i class="fa-solid fa-cash-register"></i>
+              <span>Cashier Mode</span>
+            </a>
 
-            <button class="stat-btn new-this-month">
-              <i class="fa-solid fa-user-plus"></i>
-              <div class="stat-content">
-                <span class="stat-value">--</span>
-                <span class="stat-label">New This Month</span>
-              </div>
-            </button>
+            <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Log Out</span>
+            </a>
+          </div>
+        </nav>
 
-            <button class="stat-btn active-customers">
-              <i class="fa-solid fa-user-check"></i>
-              <div class="stat-content">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Active Customers</span>
-              </div>
+        <!-- Main content -->
+        <main class="col-md-10">
+          <div class="d-flex gap-2">
+            <!-- NEW ANNOUNCEMENT BUTTON -->
+            <button
+              class="btn-announcement"
+              data-bs-toggle="modal"
+              data-bs-target="#announcementModal"
+            >
+              <i class="fas fa-bullhorn"></i> Create Announcement
             </button>
-
-            <button class="stat-btn feedback-received">
-              <i class="fa-solid fa-comment"></i>
-              <div class="stat-content">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Feedback Received</span>
-              </div>
+            <!-- NEW HISTORY BUTTON -->
+            <button
+              class="btn-history"
+              data-bs-toggle="modal"
+              data-bs-target="#historyModal"
+              onclick="loadAnnouncementHistory()"
+            >
+              <i class="fas fa-history"></i> Manage History
             </button>
           </div>
 
-          <!-- Search and Filter -->
-          <div class="search-filter-container">
-            <div class="d-flex gap-3 flex-grow-1 flex-wrap">
+          <!-- Fixed Header Section -->
+          <div class="fixed-header">
+            <!-- Stats Cards -->
+            <div class="stats-buttons">
+              <button class="stat-btn total-customers">
+                <i class="fa-solid fa-users"></i>
+                <div class="stat-content">
+                  <span class="stat-value">--</span>
+                  <span class="stat-label">Total Customers</span>
+                </div>
+              </button>
+
+              <button class="stat-btn new-this-month">
+                <i class="fa-solid fa-user-plus"></i>
+                <div class="stat-content">
+                  <span class="stat-value">--</span>
+                  <span class="stat-label">New This Month</span>
+                </div>
+              </button>
+
+              <button class="stat-btn active-customers">
+                <i class="fa-solid fa-user-check"></i>
+                <div class="stat-content">
+                  <span class="stat-value">--</span>
+                  <span class="stat-label">Active Customers</span>
+                </div>
+              </button>
+
+              <button class="stat-btn feedback-received">
+                <i class="fa-solid fa-comment"></i>
+                <div class="stat-content">
+                  <span class="stat-value">--</span>
+                  <span class="stat-label">Feedback Received</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="search-filter-container">
+              <div class="d-flex gap-3 flex-grow-1 flex-wrap">
                 <div class="search-box">
-                  <input type="text" placeholder="Search customers by name, email, or preferences...">
+                  <input
+                    type="text"
+                    placeholder="Search customers by name, email, or preferences..."
+                  />
                   <i class="fas fa-search search-icon"></i>
                 </div>
                 <div class="filter-options">
@@ -882,279 +1060,407 @@
                   <button class="filter-btn">With Feedback</button>
                   <button class="filter-btn">Inactive</button>
                 </div>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Scrollable Content Area -->
-        <div class="scrollable-content">
-          <!-- Content loaded via JS -->
-           <div class="text-center p-5"><div class="spinner-border text-danger" role="status"></div></div>
-        </div>
-      </main>
+          <!-- Scrollable Content Area -->
+          <div class="scrollable-content">
+            <!-- Content loaded via JS -->
+            <div class="text-center p-5">
+              <div class="spinner-border text-danger" role="status"></div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
-  </div>
 
-  <!-- CREATE ANNOUNCEMENT MODAL -->
-  <div class="modal fade" id="announcementModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            <i class="fas fa-bullhorn me-2"></i>Compose Announcement
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="announcementForm">
-            
-            <!-- Content Section -->
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color:var(--dark-pink)">Title</label>
-              <input type="text" class="form-control" id="annTitle" placeholder="e.g., Big Summer Sale!" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label fw-bold" style="color:var(--dark-pink)">Message Body</label>
-              <textarea class="form-control" id="annMessage" rows="4" placeholder="Enter your announcement details here..." required></textarea>
-            </div>
+    <!-- CREATE ANNOUNCEMENT MODAL -->
+    <div
+      class="modal fade"
+      id="announcementModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-bullhorn me-2"></i>Compose Announcement
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="announcementForm">
+              <!-- Content Section -->
+              <div class="mb-3">
+                <label
+                  class="form-label fw-bold"
+                  style="color: var(--dark-pink)"
+                  >Title</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="annTitle"
+                  placeholder="e.g., Big Summer Sale!"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label
+                  class="form-label fw-bold"
+                  style="color: var(--dark-pink)"
+                  >Message Body</label
+                >
+                <textarea
+                  class="form-control"
+                  id="annMessage"
+                  rows="4"
+                  placeholder="Enter your announcement details here..."
+                  required
+                ></textarea>
+              </div>
 
-            <div class="row">
+              <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold" style="color:var(--dark-pink)">Schedule Publish (Optional)</label>
-                    <!-- CHANGED: Using Text input for Flatpickr to attach to -->
-                    <div class="input-group">
-                        <span class="input-group-text bg-light text-danger"><i class="fas fa-calendar-alt"></i></span>
-                        <input type="text" class="form-control flatpickr-input" id="annSchedule" placeholder="Select Date & Time">
-                    </div>
-                    <div class="form-text">Leave blank to publish immediately.</div>
+                  <label
+                    class="form-label fw-bold"
+                    style="color: var(--dark-pink)"
+                    >Schedule Publish (Optional)</label
+                  >
+                  <!-- CHANGED: Using Text input for Flatpickr to attach to -->
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-danger"
+                      ><i class="fas fa-calendar-alt"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control flatpickr-input"
+                      id="annSchedule"
+                      placeholder="Select Date & Time"
+                    />
+                  </div>
+                  <div class="form-text">
+                    Leave blank to publish immediately.
+                  </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold" style="color:var(--dark-pink)">Expiration Date (Optional)</label>
-                    <!-- CHANGED: Using Text input for Flatpickr to attach to -->
-                    <div class="input-group">
-                        <span class="input-group-text bg-light text-danger"><i class="fas fa-hourglass-end"></i></span>
-                        <input type="text" class="form-control flatpickr-input" id="annExpire" placeholder="Select Date & Time">
-                    </div>
-                    <div class="form-text">Announcement disappears after this date.</div>
+                  <label
+                    class="form-label fw-bold"
+                    style="color: var(--dark-pink)"
+                    >Expiration Date (Optional)</label
+                  >
+                  <!-- CHANGED: Using Text input for Flatpickr to attach to -->
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-danger"
+                      ><i class="fas fa-hourglass-end"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control flatpickr-input"
+                      id="annExpire"
+                      placeholder="Select Date & Time"
+                    />
+                  </div>
+                  <div class="form-text">
+                    Announcement disappears after this date.
+                  </div>
                 </div>
-            </div>
+              </div>
 
-            <!-- User Selection Section -->
-            <div class="mb-2">
-                <label class="form-label fw-bold" style="color:var(--dark-pink)">Target Recipients</label>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="selectAllUsers">
-                        <label class="form-check-label" for="selectAllUsers">Select All</label>
-                    </div>
-                    <!-- Filter Users in Modal -->
-                    <select class="form-select form-select-sm w-auto" id="modalUserFilter">
-                        <option value="all">Filter: All Roles</option>
-                        <option value="customer">Customers Only</option>
-                        <option value="admin">Admins Only</option>
-                    </select>
+              <!-- User Selection Section -->
+              <div class="mb-2">
+                <label
+                  class="form-label fw-bold"
+                  style="color: var(--dark-pink)"
+                  >Target Recipients</label
+                >
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="selectAllUsers"
+                    />
+                    <label class="form-check-label" for="selectAllUsers"
+                      >Select All</label
+                    >
+                  </div>
+                  <!-- Filter Users in Modal -->
+                  <select
+                    class="form-select form-select-sm w-auto"
+                    id="modalUserFilter"
+                  >
+                    <option value="all">Filter: All Roles</option>
+                    <option value="customer">Customers Only</option>
+                    <option value="admin">Admins Only</option>
+                  </select>
                 </div>
-                
-                <input type="text" class="form-control form-control-sm mb-2" id="userSearchInModal" placeholder="Search specific user...">
+
+                <input
+                  type="text"
+                  class="form-control form-control-sm mb-2"
+                  id="userSearchInModal"
+                  placeholder="Search specific user..."
+                />
 
                 <div class="user-selection-list" id="userCheckboxList">
-                   <!-- Populated by JS -->
-                   <div class="text-center p-3">Loading users...</div>
+                  <!-- Populated by JS -->
+                  <div class="text-center p-3">Loading users...</div>
                 </div>
-                <div class="form-text text-end" id="selectedCount">0 users selected</div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-info text-white" id="previewBtn">
-            <i class="fas fa-eye"></i> Preview
-          </button>
-          <button type="button" class="btn btn-success" id="publishBtn" style="background-color: var(--dark-pink); border-color: var(--dark-pink);">
-            <i class="fas fa-paper-plane"></i> Publish / Schedule
-          </button>
+                <div class="form-text text-end" id="selectedCount">
+                  0 users selected
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-info text-white"
+              id="previewBtn"
+            >
+              <i class="fas fa-eye"></i> Preview
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              id="publishBtn"
+              style="
+                background-color: var(--dark-pink);
+                border-color: var(--dark-pink);
+              "
+            >
+              <i class="fas fa-paper-plane"></i> Publish / Schedule
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- HISTORY / DELETE MODAL -->
-  <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            <i class="fas fa-history me-2"></i>Announcement History
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
+    <!-- HISTORY / DELETE MODAL -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-history me-2"></i>Announcement History
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
             <div class="table-responsive">
-                <table class="table history-table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Date Sent</th>
-                            <th>Title</th>
-                            <th>Recipients</th>
-                            <th>Status</th>
-                            <th class="text-end">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyTableBody">
-                        <tr><td colspan="5" class="text-center py-4">Loading history...</td></tr>
-                    </tbody>
-                </table>
+              <table class="table history-table table-hover">
+                <thead>
+                  <tr>
+                    <th>Date Sent</th>
+                    <th>Title</th>
+                    <th>Recipients</th>
+                    <th>Status</th>
+                    <th class="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                  <tr>
+                    <td colspan="5" class="text-center py-4">
+                      Loading history...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Before closing </body> tag -->
-  <div class="reveal-overlay" id="revealOverlay"></div>
-  <div class="fullscreen-reveal" id="fullscreenReveal">
-    <div class="reveal-progress" id="revealProgress"></div>
-    <div class="fullscreen-reveal-content">
-      <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
-    </div>
-  </div>
-
-  <div class="cashier-mode-entry" id="cashierModeEntry">
-    <div class="cashier-logo-container">
-      <div class="cashier-logo">
-        <img src="../images/mainlogo.png" alt="Store Logo">
+    <!-- Before closing </body> tag -->
+    <div class="reveal-overlay" id="revealOverlay"></div>
+    <div class="fullscreen-reveal" id="fullscreenReveal">
+      <div class="reveal-progress" id="revealProgress"></div>
+      <div class="fullscreen-reveal-content">
+        <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
       </div>
-      <div class="cashier-title">Entering Cashier Mode</div>
-      <div class="cashier-subtitle">Blessence Point of Sale</div>
     </div>
-    <div class="cashier-loading">
-      <div class="cashier-loading-dot"></div>
-      <div class="cashier-loading-dot"></div>
-      <div class="cashier-loading-dot"></div>
+
+    <div class="cashier-mode-entry" id="cashierModeEntry">
+      <div class="cashier-logo-container">
+        <div class="cashier-logo">
+          <img src="../images/mainlogo.png" alt="Store Logo" />
+        </div>
+        <div class="cashier-title">Entering Cashier Mode</div>
+        <div class="cashier-subtitle">Blessence Point of Sale</div>
+      </div>
+      <div class="cashier-loading">
+        <div class="cashier-loading-dot"></div>
+        <div class="cashier-loading-dot"></div>
+        <div class="cashier-loading-dot"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="cashier-tap-counter" id="cashierTapCounter"></div>
+    <div class="cashier-tap-counter" id="cashierTapCounter"></div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      
-      // --- CUSTOM CALENDAR INITIALIZATION (Flatpickr) ---
-      flatpickr("#annSchedule", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i",
-        minDate: "today",
-        disableMobile: "true", // Forces the custom theme on mobile instead of native picker
-        time_24hr: false
-      });
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        // First, verify admin session
+        setupAdminPageProtection();
+        currentAdmin = await fetchAdminSession();
+        if (!currentAdmin) return;
 
-      flatpickr("#annExpire", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i",
-        minDate: "today",
-        disableMobile: "true",
-        time_24hr: false
-      });
-      // ---------------------------------------------------
+        await updateAdminGreeting();
 
-      // Load customer data (Existing Logic)
-      loadCustomerData('all', '', 1);
-      
-      // Load users for the announcement modal
-      loadUsersForModal();
+        flatpickr("#annSchedule", {
+          enableTime: true,
+          dateFormat: "Y-m-d H:i",
+          minDate: "today",
+          disableMobile: "true", // Forces the custom theme on mobile instead of native picker
+          time_24hr: false,
+        });
 
-      const searchBox = document.querySelector('.search-box input');
-      const filterButtons = document.querySelectorAll('.filter-btn');
-      let currentFilter = 'all';
-      let searchTimeout;
-      let currentPage = 1;
+        flatpickr("#annExpire", {
+          enableTime: true,
+          dateFormat: "Y-m-d H:i",
+          minDate: "today",
+          disableMobile: "true",
+          time_24hr: false,
+        });
+        // ---------------------------------------------------
 
-      // Filter buttons
-      filterButtons.forEach(button => {
-        button.addEventListener('click', function () {
-          filterButtons.forEach(btn => btn.classList.remove('active'));
-          this.classList.add('active');
+        // Load customer data (Existing Logic)
+        loadCustomerData("all", "", 1);
 
-          let filter = this.textContent.trim().toLowerCase();
-          if (filter === 'all customers') filter = 'all';
-          if (filter === 'new customers') filter = 'new';
-          if (filter === 'with feedback') filter = 'feedback';
-          if (filter === 'inactive') filter = 'inactive';
+        // Load users for the announcement modal
+        loadUsersForModal();
 
-          currentFilter = filter;
-          currentPage = 1;
-          loadCustomerData(currentFilter, searchBox.value.trim(), currentPage);
+        const searchBox = document.querySelector(".search-box input");
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        let currentFilter = "all";
+        let searchTimeout;
+        let currentPage = 1;
+
+        // Filter buttons
+        filterButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            filterButtons.forEach((btn) => btn.classList.remove("active"));
+            this.classList.add("active");
+
+            let filter = this.textContent.trim().toLowerCase();
+            if (filter === "all customers") filter = "all";
+            if (filter === "new customers") filter = "new";
+            if (filter === "with feedback") filter = "feedback";
+            if (filter === "inactive") filter = "inactive";
+
+            currentFilter = filter;
+            currentPage = 1;
+            loadCustomerData(
+              currentFilter,
+              searchBox.value.trim(),
+              currentPage
+            );
+          });
+        });
+
+        // Search functionality (live search with debounce)
+        searchBox.addEventListener("input", () => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            const query = searchBox.value.trim();
+            currentPage = 1;
+            loadCustomerData(currentFilter, query, currentPage);
+          }, 400);
+        });
+
+        // Also allow pressing Enter to trigger search immediately
+        searchBox.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            currentPage = 1;
+            loadCustomerData(
+              currentFilter,
+              searchBox.value.trim(),
+              currentPage
+            );
+          }
         });
       });
 
-      // Search functionality (live search with debounce)
-      searchBox.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-          const query = searchBox.value.trim();
-          currentPage = 1;
-          loadCustomerData(currentFilter, query, currentPage);
-        }, 400);
-      });
+      // --- Mobile Sidebar Toggle Logic ---
+      const hamburgerBtn = document.getElementById("hamburgerBtn");
+      const sidebar = document.getElementById("sidebar");
+      const sidebarOverlay = document.getElementById("sidebarOverlay");
 
-      // Also allow pressing Enter to trigger search immediately
-      searchBox.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          currentPage = 1;
-          loadCustomerData(currentFilter, searchBox.value.trim(), currentPage);
-        }
-      });
-    });
+      if (hamburgerBtn && sidebar && sidebarOverlay) {
+        hamburgerBtn.addEventListener("click", function () {
+          sidebar.classList.toggle("mobile-open");
+          sidebarOverlay.classList.toggle("active");
+        });
 
-    // --- Mobile Sidebar Toggle Logic ---
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+        sidebarOverlay.addEventListener("click", function () {
+          sidebar.classList.remove("mobile-open");
+          sidebarOverlay.classList.remove("active");
+        });
+      }
 
-    if (hamburgerBtn && sidebar && sidebarOverlay) {
-      hamburgerBtn.addEventListener('click', function () {
-        sidebar.classList.toggle('mobile-open');
-        sidebarOverlay.classList.toggle('active');
-      });
+      // --- ANNOUNCEMENT CREATION LOGIC ---
+      let allModalUsers = [];
 
-      sidebarOverlay.addEventListener('click', function () {
-        sidebar.classList.remove('mobile-open');
-        sidebarOverlay.classList.remove('active');
-      });
-    }
+      function loadUsersForModal() {
+        fetch("../php/get-users-for-announcement.php")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              allModalUsers = data.users;
+              renderUserList(allModalUsers);
+            } else {
+              document.getElementById(
+                "userCheckboxList"
+              ).innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+            }
+          })
+          .catch((err) => console.error("Error fetching users:", err));
+      }
 
-    // --- ANNOUNCEMENT CREATION LOGIC ---
-    let allModalUsers = []; 
-
-    function loadUsersForModal() {
-        fetch('../php/get-users-for-announcement.php')
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    allModalUsers = data.users;
-                    renderUserList(allModalUsers);
-                } else {
-                    document.getElementById('userCheckboxList').innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
-                }
-            })
-            .catch(err => console.error('Error fetching users:', err));
-    }
-
-    function renderUserList(users) {
-        const container = document.getElementById('userCheckboxList');
-        if(users.length === 0) {
-            container.innerHTML = '<div class="text-center p-2 text-muted">No users found.</div>';
-            return;
+      function renderUserList(users) {
+        const container = document.getElementById("userCheckboxList");
+        if (users.length === 0) {
+          container.innerHTML =
+            '<div class="text-center p-2 text-muted">No users found.</div>';
+          return;
         }
 
-        let html = '';
-        users.forEach(user => {
-            html += `
+        let html = "";
+        users.forEach((user) => {
+          html += `
                 <div class="user-checkbox-item">
                     <input type="checkbox" class="user-select-cb" value="${user.id}" data-role="${user.role}">
                     <div style="flex-grow:1">
@@ -1167,239 +1473,323 @@
         });
         container.innerHTML = html;
         updateSelectedCount();
-    }
+      }
 
-    // Modal Filters & Search
-    document.getElementById('userSearchInModal').addEventListener('input', function(e) {
-        const term = e.target.value.toLowerCase();
-        const roleFilter = document.getElementById('modalUserFilter').value;
-        filterModalUsers(term, roleFilter);
-    });
+      // Modal Filters & Search
+      document
+        .getElementById("userSearchInModal")
+        .addEventListener("input", function (e) {
+          const term = e.target.value.toLowerCase();
+          const roleFilter = document.getElementById("modalUserFilter").value;
+          filterModalUsers(term, roleFilter);
+        });
 
-    document.getElementById('modalUserFilter').addEventListener('change', function(e) {
-        const roleFilter = e.target.value;
-        const term = document.getElementById('userSearchInModal').value.toLowerCase();
-        filterModalUsers(term, roleFilter);
-    });
+      document
+        .getElementById("modalUserFilter")
+        .addEventListener("change", function (e) {
+          const roleFilter = e.target.value;
+          const term = document
+            .getElementById("userSearchInModal")
+            .value.toLowerCase();
+          filterModalUsers(term, roleFilter);
+        });
 
-    function filterModalUsers(term, role) {
-        const filtered = allModalUsers.filter(user => {
-            const matchesTerm = user.name.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
-            const matchesRole = role === 'all' || user.role.toLowerCase() === role;
-            return matchesTerm && matchesRole;
+      function filterModalUsers(term, role) {
+        const filtered = allModalUsers.filter((user) => {
+          const matchesTerm =
+            user.name.toLowerCase().includes(term) ||
+            user.email.toLowerCase().includes(term);
+          const matchesRole =
+            role === "all" || user.role.toLowerCase() === role;
+          return matchesTerm && matchesRole;
         });
         renderUserList(filtered);
-        document.getElementById('selectAllUsers').checked = false;
-    }
+        document.getElementById("selectAllUsers").checked = false;
+      }
 
-    document.getElementById('selectAllUsers').addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('#userCheckboxList .user-select-cb');
-        checkboxes.forEach(cb => cb.checked = this.checked);
-        updateSelectedCount();
-    });
+      document
+        .getElementById("selectAllUsers")
+        .addEventListener("change", function () {
+          const checkboxes = document.querySelectorAll(
+            "#userCheckboxList .user-select-cb"
+          );
+          checkboxes.forEach((cb) => (cb.checked = this.checked));
+          updateSelectedCount();
+        });
 
-    document.getElementById('userCheckboxList').addEventListener('change', function(e) {
-        if (e.target.classList.contains('user-select-cb')) {
+      document
+        .getElementById("userCheckboxList")
+        .addEventListener("change", function (e) {
+          if (e.target.classList.contains("user-select-cb")) {
             updateSelectedCount();
-        }
-    });
+          }
+        });
 
-    function updateSelectedCount() {
-        const count = document.querySelectorAll('#userCheckboxList .user-select-cb:checked').length;
-        document.getElementById('selectedCount').innerText = `${count} users selected`;
-    }
+      function updateSelectedCount() {
+        const count = document.querySelectorAll(
+          "#userCheckboxList .user-select-cb:checked"
+        ).length;
+        document.getElementById(
+          "selectedCount"
+        ).innerText = `${count} users selected`;
+      }
 
-    // Preview Button
-    document.getElementById('previewBtn').addEventListener('click', function() {
-        const title = document.getElementById('annTitle').value;
-        const message = document.getElementById('annMessage').value;
+      // Preview Button
+      document
+        .getElementById("previewBtn")
+        .addEventListener("click", function () {
+          const title = document.getElementById("annTitle").value;
+          const message = document.getElementById("annMessage").value;
 
-        if(!title || !message) {
-            Swal.fire('Missing Info', 'Please enter a title and message first.', 'warning');
+          if (!title || !message) {
+            Swal.fire(
+              "Missing Info",
+              "Please enter a title and message first.",
+              "warning"
+            );
             return;
-        }
+          }
 
-        Swal.fire({
+          Swal.fire({
             title: title,
-            html: `<div class="text-start p-3 border rounded bg-light">${message.replace(/\n/g, '<br>')}</div>`,
-            icon: 'info',
-            confirmButtonText: 'Looks Good',
-            confirmButtonColor: 'var(--dark-pink)'
+            html: `<div class="text-start p-3 border rounded bg-light">${message.replace(
+              /\n/g,
+              "<br>"
+            )}</div>`,
+            icon: "info",
+            confirmButtonText: "Looks Good",
+            confirmButtonColor: "var(--dark-pink)",
+          });
         });
-    });
 
-    // Publish Button
-    document.getElementById('publishBtn').addEventListener('click', function() {
-        const title = document.getElementById('annTitle').value;
-        const message = document.getElementById('annMessage').value;
-        const scheduledDate = document.getElementById('annSchedule').value;
-        const expirationDate = document.getElementById('annExpire').value;
-        const selectedCheckboxes = document.querySelectorAll('#userCheckboxList .user-select-cb:checked');
-        const recipients = Array.from(selectedCheckboxes).map(cb => cb.value);
+      // Publish Button
+      document
+        .getElementById("publishBtn")
+        .addEventListener("click", function () {
+          const title = document.getElementById("annTitle").value;
+          const message = document.getElementById("annMessage").value;
+          const scheduledDate = document.getElementById("annSchedule").value;
+          const expirationDate = document.getElementById("annExpire").value;
+          const selectedCheckboxes = document.querySelectorAll(
+            "#userCheckboxList .user-select-cb:checked"
+          );
+          const recipients = Array.from(selectedCheckboxes).map(
+            (cb) => cb.value
+          );
 
-        if (!title || !message) {
-            Swal.fire('Error', 'Title and Message are required.', 'error');
+          if (!title || !message) {
+            Swal.fire("Error", "Title and Message are required.", "error");
             return;
-        }
+          }
 
-        if (recipients.length === 0) {
-            Swal.fire('Error', 'Please select at least one recipient.', 'error');
+          if (recipients.length === 0) {
+            Swal.fire(
+              "Error",
+              "Please select at least one recipient.",
+              "error"
+            );
             return;
-        }
+          }
 
-        let confirmText = scheduledDate ? 
-            `This will be scheduled for ${scheduledDate}.` : 
-            "This will be visible to users immediately.";
+          let confirmText = scheduledDate
+            ? `This will be scheduled for ${scheduledDate}.`
+            : "This will be visible to users immediately.";
 
-        Swal.fire({
-            title: 'Are you sure?',
+          Swal.fire({
+            title: "Are you sure?",
             text: confirmText,
-            icon: 'question',
+            icon: "question",
             showCancelButton: true,
-            confirmButtonText: scheduledDate ? 'Schedule It' : 'Publish Now',
-            confirmButtonColor: 'var(--dark-pink)'
-        }).then((result) => {
+            confirmButtonText: scheduledDate ? "Schedule It" : "Publish Now",
+            confirmButtonColor: "var(--dark-pink)",
+          }).then((result) => {
             if (result.isConfirmed) {
-                sendAnnouncement({ title, message, scheduledDate, expirationDate, recipients });
+              sendAnnouncement({
+                title,
+                message,
+                scheduledDate,
+                expirationDate,
+                recipients,
+              });
             }
+          });
         });
-    });
 
-    function sendAnnouncement(data) {
-        fetch('../php/send-announcement.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+      function sendAnnouncement(data) {
+        fetch("../php/send-announcement.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
         })
-        .then(res => res.json())
-        .then(response => {
+          .then((res) => res.json())
+          .then((response) => {
             if (response.success) {
-                Swal.fire('Success!', `Announcement sent/scheduled for ${response.count} users.`, 'success');
-                document.getElementById('announcementForm').reset();
-                document.getElementById('selectAllUsers').checked = false;
-                updateSelectedCount();
-                
-                const modalEl = document.getElementById('announcementModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                modal.hide();
+              Swal.fire(
+                "Success!",
+                `Announcement sent/scheduled for ${response.count} users.`,
+                "success"
+              );
+              document.getElementById("announcementForm").reset();
+              document.getElementById("selectAllUsers").checked = false;
+              updateSelectedCount();
+
+              const modalEl = document.getElementById("announcementModal");
+              const modal = bootstrap.Modal.getInstance(modalEl);
+              modal.hide();
             } else {
-                Swal.fire('Error', response.error, 'error');
+              Swal.fire("Error", response.error, "error");
             }
-        })
-        .catch(err => {
-            Swal.fire('Error', 'Failed to connect to server.', 'error');
-        });
-    }
+          })
+          .catch((err) => {
+            Swal.fire("Error", "Failed to connect to server.", "error");
+          });
+      }
 
-    // --- NEW: HISTORY & DELETE LOGIC ---
-    function loadAnnouncementHistory() {
-        const tbody = document.getElementById('historyTableBody');
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Loading history...</td></tr>';
+      // --- NEW: HISTORY & DELETE LOGIC ---
+      function loadAnnouncementHistory() {
+        const tbody = document.getElementById("historyTableBody");
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="text-center py-4">Loading history...</td></tr>';
 
-        fetch('../php/get-announcement-history.php')
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    if(data.data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No announcements found.</td></tr>';
-                        return;
-                    }
+        fetch("../php/get-announcement-history.php")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              if (data.data.length === 0) {
+                tbody.innerHTML =
+                  '<tr><td colspan="5" class="text-center py-4 text-muted">No announcements found.</td></tr>';
+                return;
+              }
 
-                    let html = '';
-                    data.data.forEach(item => {
-                        const statusClass = item.status === 'Active' ? 'bg-active' : 'bg-expired';
-                        html += `
+              let html = "";
+              data.data.forEach((item) => {
+                const statusClass =
+                  item.status === "Active" ? "bg-active" : "bg-expired";
+                html += `
                             <tr>
                                 <td>${item.date}</td>
                                 <td class="fw-bold text-dark">${item.title}</td>
                                 <td>${item.recipients} users</td>
-                                <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                                <td><span class="status-badge ${statusClass}">${
+                  item.status
+                }</span></td>
                                 <td class="text-end">
-                                    <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${item.title.replace(/'/g, "\\'")}', '${item.raw_date}')">
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${item.title.replace(
+                                      /'/g,
+                                      "\\'"
+                                    )}', '${item.raw_date}')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
                         `;
-                    });
-                    tbody.innerHTML = html;
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${data.error}</td></tr>`;
-                }
-            })
-            .catch(err => {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load history.</td></tr>';
-            });
-    }
-
-    function deleteAnnouncement(title, date) {
-        Swal.fire({
-            title: 'Delete this announcement?',
-            text: "This will remove it from all recipient's notifications. This action cannot be undone.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch('../php/delete-announcement.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: title, date: date })
-                })
-                .then(res => res.json())
-                .then(response => {
-                    if(response.success) {
-                        Swal.fire('Deleted!', 'The announcement has been removed.', 'success');
-                        loadAnnouncementHistory(); // Refresh list
-                    } else {
-                        Swal.fire('Error', response.error, 'error');
-                    }
-                });
-            }
-        });
-    }
-
-    // --- EXISTING FUNCTION: loadCustomerData ---
-    function loadCustomerData(filter = 'all', search = '') {
-  fetch(`../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(search)}`)
-    .then(response => response.json())
-    .then(data => {
-      const contentArea = document.querySelector('.scrollable-content');
-
-      if (data.success) {
-        // Update stats
-        if(data.stats) {
-            document.querySelector('.total-customers .stat-value').textContent = data.stats.total_customers;
-            document.querySelector('.new-this-month .stat-value').textContent = data.stats.new_this_month;
-            document.querySelector('.active-customers .stat-value').textContent = data.stats.active_customers;
-            document.querySelector('.feedback-received .stat-value').textContent = data.stats.feedback_received;
-        }
-
-        // Populate all customers
-        if (data.customers.length > 0) {
-          let customersHTML = '<div class="customers-grid">';
-
-          data.customers.forEach(c => {
-            let statusClass = 'status-active';
-            if (c.status.toLowerCase().includes('inactive')) {
-              statusClass = 'status-inactive';
-            } else if (c.status.toLowerCase().includes('new')) {
-              statusClass = 'status-new';
-            }
-            const starRatingHTML = generateStarRating(c.avg_rating, c.has_feedback);
-
-            // ✅ Generate Profile Picture or Fallback
-            let avatarHTML = '';
-            if (c.profile_photo && c.profile_photo.trim() !== '' && c.profile_photo !== 'default.png') {
-              avatarHTML = `<img src="../../uploads/profiles/${c.profile_photo}" alt="${c.display_name}" class="customer-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
-              avatarHTML += `<div class="customer-avatar-fallback" style="display:none;">${c.display_name.charAt(0).toUpperCase()}</div>`;
+              });
+              tbody.innerHTML = html;
             } else {
-              avatarHTML = `<div class="customer-avatar-fallback">${c.display_name.charAt(0).toUpperCase()}</div>`;
+              tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${data.error}</td></tr>`;
             }
+          })
+          .catch((err) => {
+            tbody.innerHTML =
+              '<tr><td colspan="5" class="text-center text-danger">Failed to load history.</td></tr>';
+          });
+      }
 
-            customersHTML += `
+      function deleteAnnouncement(title, date) {
+        Swal.fire({
+          title: "Delete this announcement?",
+          text: "This will remove it from all recipient's notifications. This action cannot be undone.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch("../php/delete-announcement.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ title: title, date: date }),
+            })
+              .then((res) => res.json())
+              .then((response) => {
+                if (response.success) {
+                  Swal.fire(
+                    "Deleted!",
+                    "The announcement has been removed.",
+                    "success"
+                  );
+                  loadAnnouncementHistory(); // Refresh list
+                } else {
+                  Swal.fire("Error", response.error, "error");
+                }
+              });
+          }
+        });
+      }
+
+      // --- EXISTING FUNCTION: loadCustomerData ---
+      function loadCustomerData(filter = "all", search = "") {
+        fetch(
+          `../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(
+            search
+          )}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            const contentArea = document.querySelector(".scrollable-content");
+
+            if (data.success) {
+              // Update stats
+              if (data.stats) {
+                document.querySelector(
+                  ".total-customers .stat-value"
+                ).textContent = data.stats.total_customers;
+                document.querySelector(
+                  ".new-this-month .stat-value"
+                ).textContent = data.stats.new_this_month;
+                document.querySelector(
+                  ".active-customers .stat-value"
+                ).textContent = data.stats.active_customers;
+                document.querySelector(
+                  ".feedback-received .stat-value"
+                ).textContent = data.stats.feedback_received;
+              }
+
+              // Populate all customers
+              if (data.customers.length > 0) {
+                let customersHTML = '<div class="customers-grid">';
+
+                data.customers.forEach((c) => {
+                  let statusClass = "status-active";
+                  if (c.status.toLowerCase().includes("inactive")) {
+                    statusClass = "status-inactive";
+                  } else if (c.status.toLowerCase().includes("new")) {
+                    statusClass = "status-new";
+                  }
+                  const starRatingHTML = generateStarRating(
+                    c.avg_rating,
+                    c.has_feedback
+                  );
+
+                  // ✅ Generate Profile Picture or Fallback
+                  let avatarHTML = "";
+                  if (
+                    c.profile_photo &&
+                    c.profile_photo.trim() !== "" &&
+                    c.profile_photo !== "default.png"
+                  ) {
+                    avatarHTML = `<img src="../../uploads/profiles/${c.profile_photo}" alt="${c.display_name}" class="customer-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+                    avatarHTML += `<div class="customer-avatar-fallback" style="display:none;">${c.display_name
+                      .charAt(0)
+                      .toUpperCase()}</div>`;
+                  } else {
+                    avatarHTML = `<div class="customer-avatar-fallback">${c.display_name
+                      .charAt(0)
+                      .toUpperCase()}</div>`;
+                  }
+
+                  customersHTML += `
           <div class="customer-card">
             <div class="text-center">
               ${avatarHTML}
@@ -1445,37 +1835,40 @@
             </div>
           </div>
         `;
-          });
+                });
 
-          customersHTML += '</div>';
+                customersHTML += "</div>";
 
-          // Add pagination if needed
-          if (data.total_pages > 1) {
-            customersHTML += generatePagination(data.current_page, data.total_pages);
-          }
+                // Add pagination if needed
+                if (data.total_pages > 1) {
+                  customersHTML += generatePagination(
+                    data.current_page,
+                    data.total_pages
+                  );
+                }
 
-          contentArea.innerHTML = customersHTML;
-        } else {
-          contentArea.innerHTML = `
+                contentArea.innerHTML = customersHTML;
+              } else {
+                contentArea.innerHTML = `
         <div class="empty-state">
           <i class="fas fa-users"></i>
           <h4>No Customers Found</h4>
           <p>No results match your current filter or search.</p>
         </div>`;
-        }
-      } else {
-        console.error('Server error:', data.error);
-        contentArea.innerHTML = `<div class="empty-state"><h4>Server Error</h4></div>`;
+              }
+            } else {
+              console.error("Server error:", data.error);
+              contentArea.innerHTML = `<div class="empty-state"><h4>Server Error</h4></div>`;
+            }
+          })
+          .catch((err) => {
+            console.error("Fetch error:", err);
+          });
       }
-    })
-    .catch(err => {
-      console.error('Fetch error:', err);
-    });
-}
 
-    function generateStarRating(rating, hasFeedback) {
-      if (!hasFeedback || rating === 0) {
-        return `
+      function generateStarRating(rating, hasFeedback) {
+        if (!hasFeedback || rating === 0) {
+          return `
             <div class="star-rating">
                 <span class="star">★</span>
                 <span class="star">★</span>
@@ -1485,62 +1878,67 @@
                 <span class="no-rating">No ratings yet</span>
             </div>
         `;
-      }
-
-      let starsHTML = '<div class="star-rating">';
-      for (let i = 1; i <= 5; i++) {
-        if (i <= Math.floor(rating)) {
-          starsHTML += `<span class="star filled">★</span>`;
-        } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
-          starsHTML += `<span class="star filled">★</span>`;
-        } else {
-          starsHTML += `<span class="star">★</span>`;
         }
-      }
-      starsHTML += `<span class="rating-value">${rating.toFixed(1)}</span>`;
-      starsHTML += '</div>';
-      return starsHTML;
-    }
 
-    function generatePagination(currentPage, totalPages) {
-      let paginationHTML = '<div class="pagination-container"><ul class="pagination">';
-      if (currentPage > 1) {
-        paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a></li>`;
-      } else {
-        paginationHTML += `<li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>`;
-      }
-      for (let i = 1; i <= totalPages; i++) {
-        if (i === currentPage) {
-          paginationHTML += `<li class="page-item active"><a class="page-link" href="#">${i}</a></li>`;
-        } else {
-          paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+        let starsHTML = '<div class="star-rating">';
+        for (let i = 1; i <= 5; i++) {
+          if (i <= Math.floor(rating)) {
+            starsHTML += `<span class="star filled">★</span>`;
+          } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+            starsHTML += `<span class="star filled">★</span>`;
+          } else {
+            starsHTML += `<span class="star">★</span>`;
+          }
         }
+        starsHTML += `<span class="rating-value">${rating.toFixed(1)}</span>`;
+        starsHTML += "</div>";
+        return starsHTML;
       }
-      if (currentPage < totalPages) {
-        paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a></li>`;
-      } else {
-        paginationHTML += `<li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>`;
-      }
-      paginationHTML += '</ul></div>';
-      return paginationHTML;
-    }
 
-    // Highlight active sidebar link based on current URL
-    const highlightActiveNavLink = () => {
-      const navLinks = document.querySelectorAll('.sidebar .nav-link');
-      const currentPath = window.location.pathname.split('/').pop();
-
-      navLinks.forEach(link => {
-        const linkPath = link.getAttribute('href');
-        if (linkPath === currentPath) {
-          link.classList.add('active');
+      function generatePagination(currentPage, totalPages) {
+        let paginationHTML =
+          '<div class="pagination-container"><ul class="pagination">';
+        if (currentPage > 1) {
+          paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${
+            currentPage - 1
+          }">&laquo;</a></li>`;
         } else {
-          link.classList.remove('active');
+          paginationHTML += `<li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>`;
         }
-      });
-    };
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === currentPage) {
+            paginationHTML += `<li class="page-item active"><a class="page-link" href="#">${i}</a></li>`;
+          } else {
+            paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+          }
+        }
+        if (currentPage < totalPages) {
+          paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${
+            currentPage + 1
+          }">&raquo;</a></li>`;
+        } else {
+          paginationHTML += `<li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>`;
+        }
+        paginationHTML += "</ul></div>";
+        return paginationHTML;
+      }
 
-    highlightActiveNavLink();
-  </script>
-</body>
+      // Highlight active sidebar link based on current URL
+      const highlightActiveNavLink = () => {
+        const navLinks = document.querySelectorAll(".sidebar .nav-link");
+        const currentPath = window.location.pathname.split("/").pop();
+
+        navLinks.forEach((link) => {
+          const linkPath = link.getAttribute("href");
+          if (linkPath === currentPath) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
+          }
+        });
+      };
+
+      highlightActiveNavLink();
+    </script>
+  </body>
 </html>

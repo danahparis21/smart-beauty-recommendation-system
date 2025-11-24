@@ -1,23 +1,41 @@
 <?php
-// Add these lines at the very top to suppress HTML errors and ensure JSON output
-ini_set('display_errors', 0);
-ini_set('log_errors', 1);
-error_reporting(E_ALL);
-header('Content-Type: application/json'); 
+session_start();
 
-// Check if we're in Docker environment
+// Prevent caching for admin pages
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Check if user is logged in and is admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    die(json_encode(['error' => 'Access denied. Admin privileges required.']));
+}
+
+$adminId = $_SESSION['user_id'];
+
+header('Content-Type: application/json');
+error_reporting(E_ALL);
+ini_set('display_errors', 0);  // Don't display errors to output, keep JSON clean
+
+// Configuration & Connection
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// Set admin ID for triggers (if this file does any database modifications)
+$conn->query("SET @admin_user_id = $adminId");
+
 // Add global error handler to catch any unexpected errors
-function handleException($e) {
-    error_log("Uncaught exception: " . $e->getMessage());
+function handleException($e)
+{
+    error_log('Uncaught exception: ' . $e->getMessage());
     echo json_encode(['success' => false, 'error' => 'Internal server error']);
     exit;
 }
+
 set_exception_handler('handleException');
 
 // Your existing code continues...
@@ -30,14 +48,15 @@ if ($action === 'get_order_details') {
     getOrdersList($conn);
 }
 
-function getOrdersList($conn) {
+function getOrdersList($conn)
+{
     // Get filter and search parameters
     $filter = strtolower($_GET['filter'] ?? 'all');
     $search = trim($_GET['search'] ?? '');
 
     try {
         // === 1. Summary Stats ===
-        $totalOrders = $conn->query("SELECT COUNT(*) AS total FROM orders")->fetch_assoc()['total'];
+        $totalOrders = $conn->query('SELECT COUNT(*) AS total FROM orders')->fetch_assoc()['total'];
         $pendingOrders = $conn->query("SELECT COUNT(*) AS total FROM orders WHERE LOWER(status) = 'pending'")->fetch_assoc()['total'];
         $completedOrders = $conn->query("SELECT COUNT(*) AS total FROM orders WHERE LOWER(status) = 'completed'")->fetch_assoc()['total'];
         $cancelledOrders = $conn->query("SELECT COUNT(*) AS total FROM orders WHERE LOWER(status) = 'cancelled'")->fetch_assoc()['total'];
@@ -57,9 +76,9 @@ function getOrdersList($conn) {
                 $whereConditions[] = "LOWER(o.status) = 'cancelled'";
                 break;
             case 'this_week':
-                $whereConditions[] = "YEARWEEK(o.order_date, 1) = YEARWEEK(NOW(), 1)";
+                $whereConditions[] = 'YEARWEEK(o.order_date, 1) = YEARWEEK(NOW(), 1)';
                 break;
-            // 'all' means no specific condition
+                // 'all' means no specific condition
         }
 
         // Apply search
@@ -78,7 +97,7 @@ function getOrdersList($conn) {
             )";
         }
 
-        $whereClause = !empty($whereConditions) ? "WHERE " . implode(" AND ", $whereConditions) : "";
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
 
         // === 3. Main query - UPDATED to include item count ===
         $query = "
@@ -104,12 +123,12 @@ function getOrdersList($conn) {
             LIMIT 100
         ";
 
-        error_log("SQL Query: " . $query); // Debug logging
+        error_log('SQL Query: ' . $query);  // Debug logging
 
         $result = $conn->query($query);
 
         if (!$result) {
-            throw new Exception("Query failed: " . $conn->error);
+            throw new Exception('Query failed: ' . $conn->error);
         }
 
         $orders = [];
@@ -122,7 +141,7 @@ function getOrdersList($conn) {
                 'status' => ucfirst($row['order_status']),
                 'order_date' => date('M d, Y h:i A', strtotime($row['order_date'])),
                 'qr_code' => $row['qr_code'],
-                'item_count' => (int)$row['item_count'],
+                'item_count' => (int) $row['item_count'],
                 'shipping_method' => $row['shipping_method'],
                 'shipping_address' => $row['shipping_address']
             ];
@@ -132,18 +151,17 @@ function getOrdersList($conn) {
         echo json_encode([
             'success' => true,
             'stats' => [
-                'total_orders' => (int)$totalOrders,
-                'pending_orders' => (int)$pendingOrders,
-                'completed_orders' => (int)$completedOrders,
-                'cancelled_orders' => (int)$cancelledOrders
+                'total_orders' => (int) $totalOrders,
+                'pending_orders' => (int) $pendingOrders,
+                'completed_orders' => (int) $completedOrders,
+                'cancelled_orders' => (int) $cancelledOrders
             ],
             'orders' => $orders,
             'filter' => $filter,
             'search' => $search
         ]);
-
     } catch (Exception $e) {
-        error_log("Error in order-transaction.php: " . $e->getMessage());
+        error_log('Error in order-transaction.php: ' . $e->getMessage());
 
         echo json_encode([
             'success' => false,
@@ -159,9 +177,10 @@ function getOrdersList($conn) {
     }
 }
 
-function getOrderDetails($conn) {
+function getOrderDetails($conn)
+{
     $order_id = $_GET['order_id'] ?? 0;
-    
+
     if (!$order_id) {
         echo json_encode(['success' => false, 'error' => 'Order ID is required']);
         return;
@@ -184,19 +203,19 @@ function getOrderDetails($conn) {
             LEFT JOIN users u ON o.user_id = u.UserID
             WHERE o.order_id = ?
         ";
-        
+
         $stmt = $conn->prepare($orderQuery);
-        $stmt->bind_param("i", $order_id);
+        $stmt->bind_param('i', $order_id);
         $stmt->execute();
         $orderResult = $stmt->get_result();
-        
+
         if ($orderResult->num_rows === 0) {
             echo json_encode(['success' => false, 'error' => 'Order not found']);
             return;
         }
-        
+
         $order = $orderResult->fetch_assoc();
-        
+
         // Get order items with product details and images
         $itemsQuery = "
             SELECT 
@@ -212,12 +231,12 @@ function getOrderDetails($conn) {
             LEFT JOIN ProductMedia pm ON p.ProductID = pm.VariantProductID AND pm.MediaType = 'VARIANT'
             WHERE oi.order_id = ?
         ";
-        
+
         $stmt = $conn->prepare($itemsQuery);
-        $stmt->bind_param("i", $order_id);
+        $stmt->bind_param('i', $order_id);
         $stmt->execute();
         $itemsResult = $stmt->get_result();
-        
+
         $items = [];
         while ($item = $itemsResult->fetch_assoc()) {
             // If no variant image, try to get parent product image
@@ -230,7 +249,7 @@ function getOrderDetails($conn) {
                     LIMIT 1
                 ";
                 $parentStmt = $conn->prepare($parentImageQuery);
-                $parentStmt->bind_param("s", $item['product_id']);
+                $parentStmt->bind_param('s', $item['product_id']);
                 $parentStmt->execute();
                 $parentResult = $parentStmt->get_result();
                 if ($parentResult->num_rows > 0) {
@@ -238,15 +257,15 @@ function getOrderDetails($conn) {
                     $item['image_path'] = $parentImage['ImagePath'];
                 }
             }
-            
+
             // If still no image, use default
             if (!$item['image_path']) {
                 $item['image_path'] = '../images/default-product.jpg';
             }
-            
+
             $items[] = $item;
         }
-        
+
         // Format the order data
         $formattedOrder = [
             'order_id' => $order['order_id'],
@@ -257,15 +276,14 @@ function getOrderDetails($conn) {
             'order_date' => date('M d, Y h:i A', strtotime($order['order_date'])),
             'qr_code' => $order['qr_code']
         ];
-        
+
         echo json_encode([
             'success' => true,
             'order' => $formattedOrder,
             'items' => $items
         ]);
-        
     } catch (Exception $e) {
-        error_log("Error getting order details: " . $e->getMessage());
+        error_log('Error getting order details: ' . $e->getMessage());
         echo json_encode(['success' => false, 'error' => 'Failed to load order details: ' . $e->getMessage()]);
     }
 }

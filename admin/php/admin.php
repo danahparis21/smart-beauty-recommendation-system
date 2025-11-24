@@ -1,4 +1,20 @@
 <?php
+
+session_start();
+
+// Prevent caching for admin pages
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Check if user is logged in and is admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    die(json_encode(['error' => 'Access denied. Admin privileges required.']));
+}
+
+$adminId = $_SESSION['user_id'];
+
 // include __DIR__ . '/../../config/db.php';
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
@@ -20,7 +36,8 @@ class AdminDashboard
         $this->conn = $conn;
     }
 
-    public function getOrdersToday($period = 'All Time') {
+    public function getOrdersToday($period = 'All Time')
+    {
         if ($period === 'All Time') {
             $query = "SELECT COUNT(*) as count FROM orders WHERE DATE(order_date) = CURDATE() AND status = 'completed'";
         } else {
@@ -31,7 +48,8 @@ class AdminDashboard
         return $result->fetch_assoc()['count'];
     }
 
-    public function getOrdersThisWeek($period = 'All Time') {
+    public function getOrdersThisWeek($period = 'All Time')
+    {
         if ($period === 'All Time') {
             $query = "SELECT COUNT(*) as count FROM orders WHERE YEARWEEK(order_date, 1) = YEARWEEK(CURDATE(), 1) AND status = 'completed'";
         } else {
@@ -42,7 +60,8 @@ class AdminDashboard
         return $result->fetch_assoc()['count'];
     }
 
-    public function getTotalSales($period = 'All Time') {
+    public function getTotalSales($period = 'All Time')
+    {
         if ($period === 'All Time') {
             $query = "SELECT COALESCE(SUM(total_price), 0) AS total FROM orders WHERE status = 'completed'";
         } else {
@@ -52,10 +71,11 @@ class AdminDashboard
         $result = $this->conn->query($query);
         $row = $result->fetch_assoc();
         $clean = str_replace(',', '.', $row['total']);
-        return number_format((float)$clean, 2, '.', '');
+        return number_format((float) $clean, 2, '.', '');
     }
 
-    private function getDateFilterForPeriod($period) {
+    private function getDateFilterForPeriod($period)
+    {
         switch ($period) {
             case 'Daily':
                 $start = date('Y-m-d', strtotime('monday this week'));
@@ -73,17 +93,19 @@ class AdminDashboard
                 $startYear = $currentYear - 5;
                 return "YEAR(order_date) BETWEEN $startYear AND $currentYear";
             default:
-                return "1=1";
+                return '1=1';
         }
     }
 
-    public function getTotalFavorites() {
-        $query = "SELECT COUNT(*) as total_favorites FROM favorites";
+    public function getTotalFavorites()
+    {
+        $query = 'SELECT COUNT(*) as total_favorites FROM favorites';
         $result = $this->conn->query($query);
         return $result->fetch_assoc()['total_favorites'];
     }
 
-    public function getSalesChartData($period = 'All Time') {
+    public function getSalesChartData($period = 'All Time')
+    {
         $data = [];
         $labels = [];
         switch ($period) {
@@ -101,11 +123,14 @@ class AdminDashboard
                 $endOfMonth = date('Y-m-t');
                 $weeks = [];
                 $firstMonday = date('Y-m-d', strtotime('monday this month'));
-                if (date('j', strtotime($firstMonday)) > 7) { $firstMonday = date('Y-m-d', strtotime('monday last month')); }
+                if (date('j', strtotime($firstMonday)) > 7) {
+                    $firstMonday = date('Y-m-d', strtotime('monday last month'));
+                }
                 for ($i = 0; $i < 5; $i++) {
                     $weekStart = date('Y-m-d', strtotime("$firstMonday +$i week"));
                     $weekEnd = date('Y-m-d', strtotime("$weekStart +6 days"));
-                    if ($weekStart > $endOfMonth) break;
+                    if ($weekStart > $endOfMonth)
+                        break;
                     $label = 'Week ' . ($i + 1);
                     $weeks[$label] = ['start' => $weekStart, 'end' => min($weekEnd, $endOfMonth)];
                     $data[$label] = ['sales' => 0, 'orders' => 0];
@@ -113,7 +138,8 @@ class AdminDashboard
                 $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders FROM orders WHERE order_date BETWEEN '$startOfMonth' AND '$endOfMonth' AND status = 'completed' GROUP BY DATE(order_date) ORDER BY date";
                 $result = $this->conn->query($query);
                 $raw = [];
-                while ($row = $result->fetch_assoc()) $raw[] = $row;
+                while ($row = $result->fetch_assoc())
+                    $raw[] = $row;
                 foreach ($raw as $row) {
                     foreach ($weeks as $label => $range) {
                         if ($row['date'] >= $range['start'] && $row['date'] <= $range['end']) {
@@ -124,7 +150,9 @@ class AdminDashboard
                     }
                 }
                 $formatted = [];
-                foreach ($weeks as $label => $_) { $formatted[] = ['display_date' => $label, 'sales' => $data[$label]['sales'], 'orders' => $data[$label]['orders']]; }
+                foreach ($weeks as $label => $_) {
+                    $formatted[] = ['display_date' => $label, 'sales' => $data[$label]['sales'], 'orders' => $data[$label]['orders']];
+                }
                 return $formatted;
             case 'Monthly':
                 $year = date('Y');
@@ -153,28 +181,31 @@ class AdminDashboard
         }
         $result = $this->conn->query($query);
         while ($row = $result->fetch_assoc()) {
-            $key = ($period === 'Daily') ? $row['date'] : (($period === 'Monthly') ? (int)$row['month'] : $row['year']);
+            $key = ($period === 'Daily') ? $row['date'] : (($period === 'Monthly') ? (int) $row['month'] : $row['year']);
             if (isset($data[$key])) {
                 $data[$key]['sales'] = (float) $row['sales'];
                 $data[$key]['orders'] = (int) $row['orders'];
             }
         }
         $formatted = [];
-        foreach ($labels as $key => $label) { $formatted[] = ['display_date' => $label, 'sales' => $data[$key]['sales'], 'orders' => $data[$key]['orders']]; }
+        foreach ($labels as $key => $label) {
+            $formatted[] = ['display_date' => $label, 'sales' => $data[$key]['sales'], 'orders' => $data[$key]['orders']];
+        }
         return $formatted;
     }
 
-    public function getBestSellingProducts() {
+    public function getBestSellingProducts()
+    {
         $query = "SELECT p.Name AS product_name, p.Category, SUM(oi.quantity) AS total_sold, COUNT(DISTINCT o.order_id) AS total_orders FROM orderitems oi INNER JOIN orders o ON oi.order_id = o.order_id INNER JOIN products p ON oi.product_id = p.ProductID WHERE o.status = 'completed' GROUP BY p.ProductID, p.Name, p.Category HAVING total_sold > 0 ORDER BY total_sold DESC LIMIT 5";
         $result = $this->conn->query($query);
         $products = [];
-        while ($row = $result->fetch_assoc()) { 
+        while ($row = $result->fetch_assoc()) {
             $products[] = [
-                'product_name' => $row['product_name'], 
-                'Category' => $row['Category'], 
-                'total_quantity' => $row['total_sold'], 
+                'product_name' => $row['product_name'],
+                'Category' => $row['Category'],
+                'total_quantity' => $row['total_sold'],
                 'units_sold' => $row['total_sold']
-            ]; 
+            ];
         }
         return $products;
     }
@@ -190,39 +221,40 @@ class AdminDashboard
                   FROM store_ratings";
         $result = $this->conn->query($query);
         $ratings = $result->fetch_assoc();
-        
+
         // ✅ FIXED: Changed user_image to profile_photo (matches database schema)
-        $recentQuery = "SELECT sr.rating, sr.comment, sr.created_at, u.username, u.profile_photo 
+        $recentQuery = 'SELECT sr.rating, sr.comment, sr.created_at, u.username, u.profile_photo 
                         FROM store_ratings sr 
                         LEFT JOIN users u ON sr.user_id = u.UserID 
                         ORDER BY sr.created_at DESC 
-                        LIMIT 2";
+                        LIMIT 2';
         $recentResult = $this->conn->query($recentQuery);
         $recentReviews = [];
-        while($row = $recentResult->fetch_assoc()) {
+        while ($row = $recentResult->fetch_assoc()) {
             $recentReviews[] = $row;
         }
-        
+
         $ratings['recent_reviews'] = $recentReviews;
         return $ratings;
     }
 
-    public function getAllReviews($ratingFilter = 'all', $sort = 'newest') {
-        $whereClause = "1=1";
-        
+    public function getAllReviews($ratingFilter = 'all', $sort = 'newest')
+    {
+        $whereClause = '1=1';
+
         if ($ratingFilter !== 'all') {
             $rating = intval($ratingFilter);
             $whereClause .= " AND sr.rating = $rating";
         }
 
-        $orderBy = ($sort === 'oldest') ? "sr.created_at ASC" : "sr.created_at DESC";
+        $orderBy = ($sort === 'oldest') ? 'sr.created_at ASC' : 'sr.created_at DESC';
 
         $query = "SELECT sr.rating, sr.comment, sr.created_at, u.username, u.profile_photo 
                   FROM store_ratings sr 
                   LEFT JOIN users u ON sr.user_id = u.UserID 
                   WHERE $whereClause 
                   ORDER BY $orderBy";
-        
+
         $result = $this->conn->query($query);
         $reviews = [];
         while ($row = $result->fetch_assoc()) {
@@ -231,7 +263,8 @@ class AdminDashboard
         return $reviews;
     }
 
-    public function getCategorySales($period = 'All Time') {
+    public function getCategorySales($period = 'All Time')
+    {
         $dateFilter = $this->getDateFilterForPeriod($period);
         $query = "SELECT p.Category, SUM(oi.quantity) as total_items_sold 
                   FROM orderitems oi 
@@ -242,13 +275,14 @@ class AdminDashboard
                   ORDER BY total_items_sold DESC";
         $result = $this->conn->query($query);
         $data = [];
-        while($row = $result->fetch_assoc()) { 
-            $data[] = $row; 
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
         }
         return $data;
     }
 
-    public function getCustomerDemographics($period = 'All Time') {
+    public function getCustomerDemographics($period = 'All Time')
+    {
         $dateFilter = $this->getDateFilterForPeriod($period);
         $query = "SELECT up.skin_type, COUNT(DISTINCT up.user_id) as count 
                   FROM user_preferences up 
@@ -258,13 +292,14 @@ class AdminDashboard
                   GROUP BY up.skin_type";
         $result = $this->conn->query($query);
         $data = [];
-        while($row = $result->fetch_assoc()) { 
-            $data[] = $row; 
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
         }
         return $data;
     }
 
-    public function getOrderStatusDistribution($period = 'All Time') {
+    public function getOrderStatusDistribution($period = 'All Time')
+    {
         $dateFilter = $this->getDateFilterForPeriod($period);
         $query = "SELECT status, COUNT(*) as count 
                   FROM orders 
@@ -272,18 +307,20 @@ class AdminDashboard
                   GROUP BY status";
         $result = $this->conn->query($query);
         $data = [];
-        while($row = $result->fetch_assoc()) { 
-            $data[] = $row; 
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
         }
         return $data;
     }
 
-    public function getAIInsights($period = 'All Time') {
+    public function getAIInsights($period = 'All Time')
+    {
         $insights = [];
-        $addInsight = function (&$insights, $message) { 
-            if (count($insights) < 5) $insights[] = $message; 
+        $addInsight = function (&$insights, $message) {
+            if (count($insights) < 5)
+                $insights[] = $message;
         };
-        
+
         // Critical stock alert
         $criticalStockQuery = "SELECT Name, Stocks 
                                FROM products 
@@ -293,32 +330,32 @@ class AdminDashboard
                                ORDER BY Stocks ASC 
                                LIMIT 1";
         $critRes = $this->conn->query($criticalStockQuery);
-        if ($critRes && $critRes->num_rows > 0) { 
-            $row = $critRes->fetch_assoc(); 
-            $addInsight($insights, "🚨 CRITICAL: Low Stock! " . $row['Name'] . " has only " . $row['Stocks'] . " left."); 
+        if ($critRes && $critRes->num_rows > 0) {
+            $row = $critRes->fetch_assoc();
+            $addInsight($insights, '🚨 CRITICAL: Low Stock! ' . $row['Name'] . ' has only ' . $row['Stocks'] . ' left.');
         }
-        
+
         // Revenue comparison
         $dateFilter = $this->getDateFilterForPeriod($period);
-        $todayRevenue = 0; 
+        $todayRevenue = 0;
         $yesterdayRevenue = 0;
         $revQuery = "SELECT DATE(order_date) as date, SUM(total_price) as rev 
                      FROM orders 
                      WHERE status='completed' AND $dateFilter 
                      GROUP BY DATE(order_date)";
         $revRes = $this->conn->query($revQuery);
-        while($row = $revRes->fetch_assoc()) { 
-            if($row['date'] == date('Y-m-d')) {
-                $todayRevenue = $row['rev']; 
+        while ($row = $revRes->fetch_assoc()) {
+            if ($row['date'] == date('Y-m-d')) {
+                $todayRevenue = $row['rev'];
             } else {
-                $yesterdayRevenue = $row['rev']; 
+                $yesterdayRevenue = $row['rev'];
             }
         }
-        if ($todayRevenue > $yesterdayRevenue && $yesterdayRevenue > 0) { 
-            $pct = round((($todayRevenue - $yesterdayRevenue) / $yesterdayRevenue) * 100); 
-            $addInsight($insights, "📈 Revenue is up {$pct}% compared to yesterday."); 
+        if ($todayRevenue > $yesterdayRevenue && $yesterdayRevenue > 0) {
+            $pct = round((($todayRevenue - $yesterdayRevenue) / $yesterdayRevenue) * 100);
+            $addInsight($insights, "📈 Revenue is up {$pct}% compared to yesterday.");
         }
-        
+
         // Top category
         $catQuery = "SELECT p.Category, COUNT(oi.order_item_id) as cnt 
                      FROM orderitems oi 
@@ -329,11 +366,11 @@ class AdminDashboard
                      ORDER BY cnt DESC 
                      LIMIT 1";
         $catRes = $this->conn->query($catQuery);
-        if($catRes && $catRes->num_rows > 0) { 
-            $row = $catRes->fetch_assoc(); 
-            $addInsight($insights, "🏆 Top Category this week: " . $row['Category']); 
+        if ($catRes && $catRes->num_rows > 0) {
+            $row = $catRes->fetch_assoc();
+            $addInsight($insights, '🏆 Top Category this week: ' . $row['Category']);
         }
-        
+
         // Expiring products
         $expQuery = "SELECT COUNT(*) as cnt 
                      FROM products 
@@ -341,20 +378,21 @@ class AdminDashboard
                      AND Status='Available'";
         $expRes = $this->conn->query($expQuery);
         $expCnt = $expRes->fetch_assoc()['cnt'];
-        if($expCnt > 0) { 
-            $addInsight($insights, "⏰ {$expCnt} products expiring within 30 days."); 
+        if ($expCnt > 0) {
+            $addInsight($insights, "⏰ {$expCnt} products expiring within 30 days.");
         }
-        
+
         // Fill remaining slots
-        while (count($insights) < 5) { 
-            $addInsight($insights, "ℹ️ Monitor sales trends to unlock more insights."); 
+        while (count($insights) < 5) {
+            $addInsight($insights, 'ℹ️ Monitor sales trends to unlock more insights.');
         }
-        
+
         return $insights;
     }
 
     // ✅ FIXED: Changed user_image to profile_photo (matches database schema)
-    public function getTopCustomers($period = 'All Time') {
+    public function getTopCustomers($period = 'All Time')
+    {
         $dateFilter = $this->getDateFilterForPeriod($period);
 
         $query = "SELECT 
@@ -383,10 +421,10 @@ class AdminDashboard
         return $customers;
     }
 
-
-    public function getDashboardData($period = 'All Time', $chartOnly = false) {
+    public function getDashboardData($period = 'All Time', $chartOnly = false)
+    {
         $data = ['chart_data' => $this->getSalesChartData($period)];
-        
+
         if (!$chartOnly) {
             $data['stats'] = [
                 'orders_today' => $this->getOrdersToday($period),
@@ -402,7 +440,7 @@ class AdminDashboard
             $data['customer_demographics'] = $this->getCustomerDemographics($period);
             $data['order_status_dist'] = $this->getOrderStatusDistribution($period);
         }
-        
+
         return $data;
     }
 }
@@ -411,7 +449,7 @@ try {
     if (!isset($conn)) {
         throw new Exception('Database connection not established');
     }
-    
+
     $dashboard = new AdminDashboard($conn);
 
     // HANDLE SPECIFIC ACTION REQUESTS (Like getting reviews)
@@ -428,7 +466,6 @@ try {
     $chartOnly = isset($_GET['chartOnly']) ? filter_var($_GET['chartOnly'], FILTER_VALIDATE_BOOLEAN) : false;
     $data = $dashboard->getDashboardData($period, $chartOnly);
     echo json_encode(['success' => true, 'data' => $data, 'period' => $period], JSON_PRETTY_PRINT);
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => $e->getMessage()], JSON_PRETTY_PRINT);

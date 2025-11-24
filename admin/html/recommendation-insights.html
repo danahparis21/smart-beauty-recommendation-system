@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
+  <script src="../js/admin-session.js"></script>
   <style>
     main {
       margin-left: 220px;
@@ -1037,11 +1038,18 @@
     let currentFilter = 'all';
     let currentFeedbackFilter = 'all';
 
-    // Load data on page load
-    document.addEventListener('DOMContentLoaded', function () {
-      loadRecommendationData();
-      setupFilterButtons();
-    });
+    document.addEventListener('DOMContentLoaded', async function () {
+  // First, verify admin session
+  setupAdminPageProtection();
+  currentAdmin = await fetchAdminSession();
+  if (!currentAdmin) return;
+
+  await updateAdminGreeting();
+
+  // Your existing code
+  loadRecommendationData();
+  setupFilterButtons();
+});
 
     // --- Mobile Sidebar Toggle Logic ---
     const hamburgerBtn = document.getElementById('hamburgerBtn');

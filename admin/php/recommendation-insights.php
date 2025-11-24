@@ -1,4 +1,19 @@
 <?php
+session_start();
+
+// Prevent caching for admin pages
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Check if user is logged in and is admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    die(json_encode(['error' => 'Access denied. Admin privileges required.']));
+}
+
+$adminId = $_SESSION['user_id'];
+
 header('Content-Type: application/json');
 error_reporting(E_ALL); 
 ini_set('display_errors', 0); // Don't display errors to output, keep JSON clean
@@ -9,6 +24,9 @@ if (getenv('DOCKER_ENV') === 'true') {
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+
+// Set admin ID for triggers (if this file does any database modifications)
+$conn->query("SET @admin_user_id = $adminId");
 
 // Get filter parameter (all, month, week)
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';

@@ -3,12 +3,29 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Configuration & Connection
+session_start();
+// Prevent caching for admin pages
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Check if user is logged in and is admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    die(json_encode(['error' => 'Access denied. Admin privileges required.']));
+}
+
+$adminId = $_SESSION['user_id'];
+
+// Your existing database connection
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+
+// Set admin ID for triggers (if doing database operations)
+$conn->query("SET @admin_user_id = $adminId");
 
 header('Content-Type: application/json');
 
