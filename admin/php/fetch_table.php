@@ -85,14 +85,14 @@ if ($result && $result->num_rows > 0) {
 
         // ✅ Set parent image (only once)
         if ($row['MediaType'] === 'PREVIEW' && empty($products_by_parent[$grouping_id]['Image'])) {
-            $products_by_parent[$grouping_id]['Image'] = $row['MediaImage'];
+            $products_by_parent[$grouping_id]['Image'] = str_replace('../', '/', $row['MediaImage']);
         }
 
         // ✅ Skip Parent_GROUP pseudo variants
         if ($row['ShadeOrVariant'] === 'PARENT_GROUP')
             continue;
 
-        $variant_image = $row['MediaType'] === 'VARIANT' ? $row['MediaImage'] : null;
+            $variant_image = $row['MediaType'] === 'VARIANT' ? str_replace('../', '/', $row['MediaImage']) : null;
 
         // Build skin concern
         $concerns = [];

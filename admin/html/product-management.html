@@ -3433,7 +3433,7 @@
                   </td></tr>`;
           }
         }
-
+? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;">`
         fetchAndRenderProducts();
         document.addEventListener("click", async function (e) {
           const parentBtn = e.target.closest(".delete-parent-btn");
