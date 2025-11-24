@@ -35,7 +35,7 @@ class CashierMode
                 p.Status,
                 COALESCE(pm.ImagePath, '../uploads/product_images/no-image.png') as ImagePath
             FROM Products p
-            LEFT JOIN productmedia pm ON p.ProductID = pm.VariantProductID 
+            LEFT JOIN ProductMedia pm ON p.ProductID = pm.VariantProductID 
                 AND pm.MediaType = 'VARIANT'
             WHERE p.ShadeOrVariant != 'PARENT_GROUP'
             AND p.Status != 'Deleted'

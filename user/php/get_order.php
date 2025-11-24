@@ -60,10 +60,10 @@ try {
             COALESCE(pm_variant.ImagePath, pm_preview.ImagePath, '/admin/uploads/product_images/no-image.png') AS image
         FROM orderitems oi
         INNER JOIN Products p ON oi.product_id = p.ProductID
-        LEFT JOIN productmedia pm_variant 
+        LEFT JOIN ProductMedia pm_variant 
             ON p.ProductID = pm_variant.VariantProductID 
             AND pm_variant.MediaType = 'VARIANT'
-        LEFT JOIN productmedia pm_preview 
+        LEFT JOIN ProductMedia pm_preview 
             ON p.ParentProductID = pm_preview.ParentProductID 
             AND pm_preview.MediaType = 'PREVIEW'
         WHERE oi.order_id = ?
