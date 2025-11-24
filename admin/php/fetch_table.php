@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
-error_reporting(0);
-ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
@@ -62,6 +62,7 @@ ORDER BY
     COALESCE(p.ParentProductID, p.ProductID),
     p.CreatedAt DESC,
     pm.SortOrder ASC
+LIMIT $limit OFFSET $offset
 ";
 
 $result = $conn->query($sql);
@@ -84,40 +85,33 @@ if ($result && $result->num_rows > 0) {
             ];
         }
 
-        // ✅ Set parent image (only once)
-        if ($row['MediaType'] === 'PREVIEW' && empty($products_by_parent[$grouping_id]['Image'])) {
-            $products_by_parent[$grouping_id]['Image'] = str_replace('../', '/', $row['MediaImage']);
+        // ✅ FIXED: Set parent image with corrected path
+        if ($row['MediaType'] === 'PREVIEW' && empty($products_by_parent[$grouping_id]['Image']) && !empty($row['MediaImage'])) {
+            $products_by_parent[$grouping_id]['Image'] = formatImagePathForWeb($row['MediaImage']);
         }
 
         // ✅ Skip Parent_GROUP pseudo variants
-        if ($row['ShadeOrVariant'] === 'PARENT_GROUP')
+        if ($row['ShadeOrVariant'] === 'PARENT_GROUP') {
             continue;
+        }
 
-            $variant_image = $row['MediaType'] === 'VARIANT' ? str_replace('../', '/', $row['MediaImage']) : null;
+        // ✅ FIXED: Set variant image with corrected path
+        $variant_image = ($row['MediaType'] === 'VARIANT' && !empty($row['MediaImage'])) 
+            ? formatImagePathForWeb($row['MediaImage']) 
+            : null;
 
         // Build skin concern
         $concerns = [];
-        if ($row['Acne'] == 1)
-            $concerns[] = 'Acne';
-        if ($row['Dryness'] == 1)
-            $concerns[] = 'Dryness';
-        if ($row['DarkSpots'] == 1)
-            $concerns[] = 'Dark Spots';
+        if ($row['Acne'] == 1) $concerns[] = 'Acne';
+        if ($row['Dryness'] == 1) $concerns[] = 'Dryness';
+        if ($row['DarkSpots'] == 1) $concerns[] = 'Dark Spots';
         $skin_concern_value = empty($concerns) ? 'N/A' : implode(', ', $concerns);
 
-        // NEW Finish Logic (Complete)
+        // Finish Logic
         $finish_attributes = [];
-
-        if ($row['Matte'] == 1) {
-            $finish_attributes[] = 'Matte';
-        }
-        if ($row['Dewy'] == 1) {
-            $finish_attributes[] = 'Dewy';
-        }
-        if ($row['LongLasting'] == 1) {
-            $finish_attributes[] = 'Long-lasting';
-        }
-
+        if ($row['Matte'] == 1) $finish_attributes[] = 'Matte';
+        if ($row['Dewy'] == 1) $finish_attributes[] = 'Dewy';
+        if ($row['LongLasting'] == 1) $finish_attributes[] = 'Long-lasting';
         $finish_value = empty($finish_attributes) ? 'N/A' : implode(', ', $finish_attributes);
 
         $status = $row['Status'];
@@ -126,6 +120,7 @@ if ($result && $result->num_rows > 0) {
         } elseif ((int) $row['Stocks'] < 5 && $row['Status'] !== 'No Stock') {
             $status = 'Low Stock';
         }
+
         // Add variant
         $products_by_parent[$grouping_id]['Variants'][] = [
             'ProductID' => $row['ProductID'],
@@ -142,33 +137,51 @@ if ($result && $result->num_rows > 0) {
             'Skin Concern' => $skin_concern_value,
             'Finish' => $finish_value
         ];
-        // ✅ Compute "Available Shades" count for each parent
-        foreach ($products_by_parent as $grouping_id => &$parentData) {
-            $availableCount = 0;
-
-            foreach ($parentData['Variants'] as $variant) {
-                if (!in_array($variant['Status'], ['No Stock', 'Expired'])) {
-                    $availableCount++;
-                }
-            }
-
-            $parentData['Status'] = $availableCount > 0
-                ? $availableCount . ' Shades'
-                : 'No Shades';
-        }
-        unset($parentData);  // break reference
     }
+
+    // ✅ Compute "Available Shades" count for each parent
+    foreach ($products_by_parent as $grouping_id => &$parentData) {
+        $availableCount = 0;
+        foreach ($parentData['Variants'] as $variant) {
+            if (!in_array($variant['Status'], ['No Stock', 'Expired'])) {
+                $availableCount++;
+            }
+        }
+        $parentData['Status'] = $availableCount > 0 ? $availableCount . ' Shades' : 'No Shades';
+    }
+    unset($parentData);
 }
 
 $total_query = $conn->query("SELECT COUNT(*) as total FROM Products WHERE Status != 'Deleted'");
 $total_row = $total_query->fetch_assoc();
 $total_count = (int) $total_row['total'];
 
-header('Content-Type: application/json');
 echo json_encode([
     'parents' => array_values($products_by_parent),
     'total' => $total_count
 ]);
 
 $conn->close();
+
+/**
+ * Convert database image paths to web-accessible URLs
+ * Example: 
+ * Input: "../uploads/product_images/img_69245f9bb5bf91763991451.jpg"
+ * Output: "/uploads/product_images/img_69245f9bb5bf91763991451.jpg"
+ */
+function formatImagePathForWeb($dbPath) {
+    if (empty($dbPath)) {
+        return null;
+    }
+    
+    // Remove the '../' prefix that's causing the 404 errors
+    $cleanPath = str_replace('../', '', $dbPath);
+    
+    // Ensure the path starts with a slash for absolute paths
+    if (substr($cleanPath, 0, 1) !== '/') {
+        $cleanPath = '/' . $cleanPath;
+    }
+    
+    return $cleanPath;
+}
 ?>

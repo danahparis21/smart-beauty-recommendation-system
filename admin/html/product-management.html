@@ -3160,10 +3160,11 @@
               const variants = parent.Variants || [];
               totalVariants += variants.length;
 
-              const parentImage = parent.Image
-                ? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width80px;height:80px;object-fit:cover;border-radius:6px;">`
-                : `<div class="text-muted small">No Image</div>`;
-
+              const parentImage = parent.Image 
+    ? `<img src="${parent.Image}" alt="${parent.ParentName}" 
+         style="width:80px;height:80px;object-fit:cover;border-radius:6px;"
+         onerror="this.onerror=null; this.src='/uploads/placeholder.jpg'; this.alt='Image not found'">`
+    : `<div class="text-muted small">No Image</div>`;
               // Parent Row
               const parentRow = document.createElement("tr");
               parentRow.classList.add("parent-product-row");
@@ -3236,13 +3237,11 @@
                   (v) => v.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP"
                 )
                 .map((variant) => {
-                  const variantImage = variant.Image
-                    ? `<img src="${variant.Image}" alt="${
-                        variant.ShadeOrVariant || variant.Name
-                      }"
-                          style="width:80px;height:80px;object-fit:cover;border-radius:4px;">`
-                    : `<div class="text-muted small">No Image</div>`;
-
+                  const variantImage = variant.Image 
+    ? `<img src="${variant.Image}" alt="${variant.ShadeOrVariant || variant.Name}" 
+         style="width:80px;height:80px;object-fit:cover;border-radius:4px;"
+         onerror="this.onerror=null; this.src='/uploads/placeholder.jpg'; this.alt='Image not found'">`
+    : `<div class="text-muted small">No Image</div>`;
                   const attributesHtml = `
                   <span class="d-block text-muted small">Skin Type: <strong class="text-dark">${
                     variant["Skin Type"] || "N/A"
