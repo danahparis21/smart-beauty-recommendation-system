@@ -22,19 +22,21 @@ function getPublicImagePath($dbPath)
 {
     if (empty($dbPath))
         return '';
-
-    // Remove any leading '../' from old paths
-    $dbPath = str_replace('../', '/', $dbPath);
-
-    // If path already starts with /, return as is
+    
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        // Convert ../uploads/... to /admin/uploads/...
+        return str_replace('../', '/admin/', $dbPath);
+    }
+    
+    // Handle new paths that already start with '/'
     if (strpos($dbPath, '/') === 0) {
         return $dbPath;
     }
-
-    // Otherwise, add leading slash
+    
+    // Fallback: add leading slash
     return '/' . $dbPath;
 }
-
 // Get logged-in user ID
 $user_id = $_SESSION['user_id'] ?? null;
 
