@@ -12,7 +12,7 @@ if (getenv('DOCKER_ENV') === 'true') {
 
 // Include activity logger
 require_once __DIR__ . '/activity_logger.php';
-$conn->query("SET time_zone = '+08:00'"); 
+$conn->query("SET time_zone = '+08:00'");
 // Initialize response
 $response = [
     'success' => false,
@@ -75,6 +75,27 @@ echo json_encode($response);
 $conn->close();
 
 // ==================== FUNCTIONS ==================== //
+
+// Add this function near the top, after the cleanProductName function
+function getPublicImagePath($dbPath)
+{
+    if (empty($dbPath))
+        return '';
+
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        // Convert ../uploads/... to /admin/uploads/...
+        return str_replace('../', '/admin/', $dbPath);
+    }
+
+    // Handle new paths that already start with '/'
+    if (strpos($dbPath, '/') === 0) {
+        return $dbPath;
+    }
+
+    // Fallback: add leading slash
+    return '/' . $dbPath;
+}
 
 /**
  * Add product to cart
@@ -296,7 +317,7 @@ function getCart($conn, $userId, &$response)
     while ($row = $result->fetch_assoc()) {
         $row['name'] = cleanProductName($row['name']);
         $row['image'] = !empty($row['image'])
-            ? '/admin/uploads/product_images/' . basename($row['image'])
+            ? getPublicImagePath($row['image'])
             : '/admin/uploads/product_images/no-image.png';
 
         $cartItems[] = $row;
