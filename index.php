@@ -23,6 +23,16 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta property="og:title" content="Blessence - Premium Makeup & Beauty Products">
+<meta property="og:description" content="Invest in yourself — reveal the beauty that's already within. Shop premium Malaysian cosmetics and beauty products.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blessence.site/">
+<meta property="og:image" content="https://blessence.site/admin/images/mainlogo1.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Blessence - Premium Makeup & Beauty Products">
+<meta name="twitter:description" content="Invest in yourself — reveal the beauty that's already within.">
+<meta name="twitter:image" content="https://blessence.site/admin/images/mainlogo1.png">
     
 
     <style>
