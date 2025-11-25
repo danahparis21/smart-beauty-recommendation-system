@@ -44,7 +44,7 @@ try {
 
     foreach ($selectedItems as $item) {
         // Verify product exists and get current price
-        $stmt = $conn->prepare('SELECT ProductID, Name, Price, Stocks FROM products WHERE ProductID = ?');
+        $stmt = $conn->prepare('SELECT ProductID, Name, Price, Stocks FROM Products WHERE ProductID = ?');
         $stmt->bind_param('s', $item['id']);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -102,7 +102,7 @@ try {
         $stmt->execute();
 
         // Update product stock
-        $updateStock = $conn->prepare('UPDATE products SET Stocks = Stocks - ? WHERE ProductID = ?');
+        $updateStock = $conn->prepare('UPDATE Products SET Stocks = Stocks - ? WHERE ProductID = ?');
         $updateStock->bind_param('is', $item['quantity'], $item['product_id']);
         $updateStock->execute();
 
