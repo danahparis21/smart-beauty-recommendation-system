@@ -22,15 +22,24 @@ function getPublicImagePath($dbPath)
 {
     if (empty($dbPath))
         return '';
-    $filename = basename($dbPath);
-    return '/admin/uploads/product_images/' . $filename;
+
+    // Remove any leading '../' from old paths
+    $dbPath = str_replace('../', '/', $dbPath);
+
+    // If path already starts with /, return as is
+    if (strpos($dbPath, '/') === 0) {
+        return $dbPath;
+    }
+
+    // Otherwise, add leading slash
+    return '/' . $dbPath;
 }
 
 // Get logged-in user ID
 $user_id = $_SESSION['user_id'] ?? null;
 
 // ===================== STRICT FILTERING SQL ===================== //
-$sql = "
+$sql = '
     SELECT 
         p.ProductID AS id, 
         p.Name AS name, 
@@ -48,7 +57,7 @@ $sql = "
         parent.Name AS parentName,
         parent.Status AS parentStatus,
         parent.ProductRating AS parent_rating,
-        " . ($user_id ? "IF(f.favorite_id IS NOT NULL, 1, 0) AS liked" : "0 AS liked") . "
+        ' . ($user_id ? 'IF(f.favorite_id IS NOT NULL, 1, 0) AS liked' : '0 AS liked') . "
     FROM 
         Products p
     LEFT JOIN ProductMedia pm_v 
@@ -59,9 +68,9 @@ $sql = "
         AND pm_p.MediaType = 'PREVIEW'
     LEFT JOIN Products parent 
         ON p.ParentProductID = parent.ProductID
-    " . ($user_id ? "LEFT JOIN favorites f 
+    " . ($user_id ? 'LEFT JOIN favorites f 
         ON (f.product_id = p.ProductID OR f.product_id = COALESCE(p.ParentProductID, p.ProductID))
-        AND f.user_id = ?" : "") . "
+        AND f.user_id = ?' : '') . "
     WHERE 
         p.Status IN ('Available', 'Low Stock')  -- CHANGED THIS LINE
         AND p.Stocks > 0
@@ -73,7 +82,7 @@ $sql = "
 // Update to use prepared statement if user is logged in
 if ($user_id) {
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
@@ -91,8 +100,9 @@ $processedParentIds = [];
 error_log('Total rows from SQL (after filtering): ' . $result->num_rows);
 
 // Clean product name function
-$cleanName = function($name) {
-    if (empty($name)) return '';
+$cleanName = function ($name) {
+    if (empty($name))
+        return '';
     return trim(str_ireplace(['Parent Record:', 'Product Record:', ':'], '', $name));
 };
 
@@ -105,10 +115,10 @@ while ($row = $result->fetch_assoc()) {
     $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
     $row['name'] = $cleanName($row['name']);
     $row['parentName'] = $cleanName($row['parentName'] ?? '');
-    
+
     // Store liked status
-    $isLiked = (bool)($row['liked'] ?? false);
-    
+    $isLiked = (bool) ($row['liked'] ?? false);
+
     // Ratings data - use the highest rating among all variants
     $variantRating = floatval($row['product_rating']);
     $parentRating = floatval($row['parent_rating']);
@@ -142,16 +152,16 @@ while ($row = $result->fetch_assoc()) {
         // Only create parent if it has at least one available variant
         if (!isset($groupedProducts[$parentKey])) {
             // Fetch the actual parent product details for the name
-            $parentSql = "SELECT Name, Category FROM Products WHERE ProductID = ?";
+            $parentSql = 'SELECT Name, Category FROM Products WHERE ProductID = ?';
             $parentStmt = $conn->prepare($parentSql);
             $parentStmt->bind_param('s', $parentKey);
             $parentStmt->execute();
             $parentResult = $parentStmt->get_result();
             $actualParent = $parentResult->fetch_assoc();
             $parentStmt->close();
-            
+
             $actualParentName = $actualParent ? $cleanName($actualParent['Name']) : $parentName;
-            
+
             $groupedProducts[$parentKey] = [
                 'id' => $parentKey,
                 'name' => $actualParentName,
@@ -241,24 +251,24 @@ $finalProducts = array_filter($finalProducts, function ($product) {
 // Additional check: Remove parent products that have no available variants
 $finalProducts = array_filter($finalProducts, function ($product) {
     if (empty($product['variants'])) {
-        return false; // Remove products with no variants
+        return false;  // Remove products with no variants
     }
-    
+
     // Check if at least one variant is actually available (including Low Stock)
     foreach ($product['variants'] as $variant) {
         if ($variant['stockQuantity'] > 0 && in_array($variant['status'], ['Available', 'Low Stock'])) {
-            return true; // Keep product if at least one variant is available
+            return true;  // Keep product if at least one variant is available
         }
     }
-    
+
     error_log("Removing product {$product['id']} - no available variants found");
-    return false; // Remove product if no variants are available
+    return false;  // Remove product if no variants are available
 });
 
 // Debug final output
 error_log('Final products count after filtering: ' . count($finalProducts));
 foreach ($finalProducts as $product) {
-    $availableVariants = array_filter($product['variants'], function($v) {
+    $availableVariants = array_filter($product['variants'], function ($v) {
         return $v['stockQuantity'] > 0 && $v['status'] === 'Available';
     });
     error_log("Final product: {$product['id']} - {$product['name']} - Available Variants: " . count($availableVariants) . " - Rating: {$product['average_rating']}");
@@ -267,7 +277,7 @@ foreach ($finalProducts as $product) {
 // ===================== OUTPUT ===================== //
 $response = [
     'success' => true,
-    'products' => array_values($finalProducts), // Reindex array
+    'products' => array_values($finalProducts),  // Reindex array
     'debug' => [
         'total_products' => count($finalProducts),
         'product_ids' => array_column($finalProducts, 'id'),
