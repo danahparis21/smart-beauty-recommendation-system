@@ -15,8 +15,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $adminId = $_SESSION['user_id'];
 
 header('Content-Type: application/json');
-error_reporting(E_ALL); 
-ini_set('display_errors', 0); // Don't display errors to output, keep JSON clean
+error_reporting(E_ALL);
+ini_set('display_errors', 0);  // Don't display errors to output, keep JSON clean
 
 // Configuration & Connection
 if (getenv('DOCKER_ENV') === 'true') {
@@ -33,16 +33,16 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $feedbackFilter = isset($_GET['feedback']) ? $_GET['feedback'] : 'all';
 
 // Calculate date range based on filter
-$dateCondition = "";
-switch($filter) {
+$dateCondition = '';
+switch ($filter) {
     case 'month':
-        $dateCondition = "AND pf.CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 MONTH)";
+        $dateCondition = 'AND pf.CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 MONTH)';
         break;
     case 'week':
-        $dateCondition = "AND pf.CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 WEEK)";
+        $dateCondition = 'AND pf.CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 WEEK)';
         break;
     default:
-        $dateCondition = "";
+        $dateCondition = '';
 }
 
 try {
@@ -57,16 +57,17 @@ try {
         WHERE UserRating IS NOT NULL
         $dateCondition
     ";
-    
+
     $successResult = $conn->query($successQuery);
-    
+
     if (!$successResult) {
-        throw new Exception("Query 1 Failed: " . $conn->error);
+        throw new Exception('Query 1 Failed: ' . $conn->error);
     }
 
     $successData = $successResult->fetch_assoc();
-    $successRate = $successData['total'] > 0 ? 
-        round(($successData['positive'] / $successData['total']) * 100) : 0;
+    $successRate = $successData['total'] > 0
+        ? round(($successData['positive'] / $successData['total']) * 100)
+        : 0;
 
     // 2. Total Recommendations (Total feedback with ratings)
     $totalRecommendations = $successData['total'];
@@ -82,11 +83,11 @@ try {
         $dateCondition
     ";
     $avgScoreResult = $conn->query($avgScoreQuery);
-    
+
     if (!$avgScoreResult) {
-        throw new Exception("Query 2 Failed: " . $conn->error);
+        throw new Exception('Query 2 Failed: ' . $conn->error);
     }
-    
+
     $avgScoreData = $avgScoreResult->fetch_assoc();
     $avgScore = $avgScoreData['avg_score'] ? round($avgScoreData['avg_score'], 1) : 0;
 
@@ -113,16 +114,17 @@ LIMIT 10;
 
     ";
     $productsResult = $conn->query($productsQuery);
-    
+
     if (!$productsResult) {
-        throw new Exception("Query 3 Failed: " . $conn->error);
+        throw new Exception('Query 3 Failed: ' . $conn->error);
     }
 
     $products = [];
-    while($row = $productsResult->fetch_assoc()) {
-        $successPercentage = $row['recommendation_count'] > 0 ? 
-            round(($row['positive_feedback'] / $row['recommendation_count']) * 100) : 0;
-        
+    while ($row = $productsResult->fetch_assoc()) {
+        $successPercentage = $row['recommendation_count'] > 0
+            ? round(($row['positive_feedback'] / $row['recommendation_count']) * 100)
+            : 0;
+
         $products[] = [
             'product_id' => $row['ProductID'],
             'name' => $row['Name'],
@@ -151,24 +153,24 @@ LIMIT 10;
         GROUP BY pa.SkinTone
     ";
     $preferencesResult = $conn->query($preferencesQuery);
-    
+
     if (!$preferencesResult) {
         // If ProductAttributes table issues occur, don't crash the whole page, just empty array
         $skinTones = ['fair' => 0, 'medium' => 0, 'tan' => 0, 'deep' => 0];
     } else {
         $skinTones = ['fair' => 0, 'medium' => 0, 'tan' => 0, 'deep' => 0];
-        while($row = $preferencesResult->fetch_assoc()) {
+        while ($row = $preferencesResult->fetch_assoc()) {
             // Handle comma-separated skin tones
             $tones = explode(',', strtolower($row['SkinTone']));
-            foreach($tones as $tone) {
+            foreach ($tones as $tone) {
                 $tone = trim($tone);
-                if($tone === 'fair' || $tone === 'light') {
+                if ($tone === 'fair' || $tone === 'light') {
                     $skinTones['fair'] += $row['count'];
-                } elseif($tone === 'medium') {
+                } elseif ($tone === 'medium') {
                     $skinTones['medium'] += $row['count'];
-                } elseif($tone === 'tan') {
+                } elseif ($tone === 'tan') {
                     $skinTones['tan'] += $row['count'];
-                } elseif($tone === 'deep') {
+                } elseif ($tone === 'deep') {
                     $skinTones['deep'] += $row['count'];
                 }
             }
@@ -190,17 +192,17 @@ LIMIT 10;
     ";
     $undertonesResult = $conn->query($undertonesQuery);
     $undertones = ['warm' => 0, 'cool' => 0, 'neutral' => 0];
-    
+
     if ($undertonesResult) {
-        while($row = $undertonesResult->fetch_assoc()) {
+        while ($row = $undertonesResult->fetch_assoc()) {
             $key = strtolower(trim($row['Undertone']));
-            if($key === 'warm') {
+            if ($key === 'warm') {
                 $undertones['warm'] += $row['count'];
-            } elseif($key === 'cool') {
+            } elseif ($key === 'cool') {
                 $undertones['cool'] += $row['count'];
-            } elseif($key === 'neutral') {
+            } elseif ($key === 'neutral') {
                 $undertones['neutral'] += $row['count'];
-            } elseif($key === 'all') {
+            } elseif ($key === 'all') {
                 $undertones['warm'] += floor($row['count'] / 3);
                 $undertones['cool'] += floor($row['count'] / 3);
                 $undertones['neutral'] += floor($row['count'] / 3);
@@ -209,11 +211,11 @@ LIMIT 10;
     }
 
     // 7. Recent Customer Feedback (Filter: Positive = 4-5 stars, Negative = 1-3 stars)
-    $feedbackCondition = "";
-    if($feedbackFilter === 'positive') {
-        $feedbackCondition = "AND pf.UserRating >= 4";
-    } elseif($feedbackFilter === 'negative') {
-        $feedbackCondition = "AND pf.UserRating <= 3";
+    $feedbackCondition = '';
+    if ($feedbackFilter === 'positive') {
+        $feedbackCondition = 'AND pf.UserRating >= 4';
+    } elseif ($feedbackFilter === 'negative') {
+        $feedbackCondition = 'AND pf.UserRating <= 3';
     }
 
     $recentFeedbackQuery = "
@@ -238,13 +240,13 @@ LIMIT 10;
         LIMIT 15
     ";
     $recentFeedbackResult = $conn->query($recentFeedbackQuery);
-    
+
     if (!$recentFeedbackResult) {
-         throw new Exception("Query 5 Failed: " . $conn->error);
+        throw new Exception('Query 5 Failed: ' . $conn->error);
     }
-    
+
     $recentFeedback = [];
-    while($row = $recentFeedbackResult->fetch_assoc()) {
+    while ($row = $recentFeedbackResult->fetch_assoc()) {
         $recentFeedback[] = [
             'feedback_id' => $row['FeedbackID'],
             'rating' => $row['UserRating'],
@@ -281,8 +283,7 @@ LIMIT 10;
     ];
 
     echo json_encode($response);
-
-} catch(Exception $e) {
+} catch (Exception $e) {
     echo json_encode([
         'success' => false,
         'error' => $e->getMessage()
