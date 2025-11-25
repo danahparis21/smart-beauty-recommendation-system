@@ -1164,12 +1164,12 @@
                           product.ProductID
                         }">
                             <img src="${
-                              product.ImagePath ||
-                              "/admin/images/placeholder-product.jpg"
-                            }" 
+    product.ImagePath ||
+    "/admin/uploads/product_images/no-image.png"
+}" 
      class="product-image" 
      alt="${product.Name}"
-     onerror="this.src='/admin/images/placeholder-product.jpg'">
+     onerror="this.src='/admin/uploads/product_images/no-image.png'">
                             <div class="card-body">
                                 <div class="product-name">${product.Name}</div>
                                 <div class="product-category">${
