@@ -143,7 +143,7 @@ LIMIT 10;
             pa.SkinTone,
             COUNT(*) as count
         FROM productfeedback pf
-        JOIN productattributes pa ON pf.ProductID = pa.ProductID
+        JOIN ProductAttributes pa ON pf.ProductID = pa.ProductID
         WHERE pf.UserRating IS NOT NULL
         $dateCondition
         AND pa.SkinTone IS NOT NULL
@@ -153,7 +153,7 @@ LIMIT 10;
     $preferencesResult = $conn->query($preferencesQuery);
     
     if (!$preferencesResult) {
-        // If productattributes table issues occur, don't crash the whole page, just empty array
+        // If ProductAttributes table issues occur, don't crash the whole page, just empty array
         $skinTones = ['fair' => 0, 'medium' => 0, 'tan' => 0, 'deep' => 0];
     } else {
         $skinTones = ['fair' => 0, 'medium' => 0, 'tan' => 0, 'deep' => 0];
@@ -181,7 +181,7 @@ LIMIT 10;
             pa.Undertone,
             COUNT(*) as count
         FROM productfeedback pf
-        JOIN productattributes pa ON pf.ProductID = pa.ProductID
+        JOIN ProductAttributes pa ON pf.ProductID = pa.ProductID
         WHERE pf.UserRating IS NOT NULL
         $dateCondition
         AND pa.Undertone IS NOT NULL
