@@ -24,15 +24,6 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="Blessence - Premium Makeup & Beauty Products">
-    <meta property="og:description" content="Invest in yourself — reveal the beauty that's already within. Shop premium Malaysian cosmetics and beauty products.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@Lovable">
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png">
 
     <style>
         /* CSS Variables using your HSL design system */
