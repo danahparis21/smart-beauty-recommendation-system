@@ -27,6 +27,21 @@
     />
 
     <style>
+      /* --- FIX: Disable text selection on mobile to prevent copy/paste popup --- */
+      body {
+        -webkit-user-select: none; /* Safari */
+        -ms-user-select: none; /* IE 10 and IE 11 */
+        user-select: none; /* Standard syntax */
+        -webkit-touch-callout: none; /* iOS Safari */
+      }
+      /* Allow typing in inputs */
+      input,
+      textarea {
+        -webkit-user-select: text;
+        user-select: text;
+        -webkit-touch-callout: default;
+      }
+
       .cashier-container {
         max-width: 1400px;
         margin: 0 auto;
@@ -453,6 +468,7 @@
         justify-content: center;
         gap: 15px;
         margin-top: 20px;
+        flex-wrap: wrap; /* Added for mobile wrapping */
       }
 
       .camera-btn {
@@ -499,6 +515,19 @@
 
       .camera-btn.off:hover:not(:disabled) {
         box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+      }
+
+      /* --- NEW: FLIP CAMERA BUTTON STYLES --- */
+      #flipCamera {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        display: none; /* Default hidden on desktop */
+      }
+
+      /* Only show Flip Camera on mobile screens */
+      @media (max-width: 991px) {
+        #flipCamera {
+          display: flex;
+        }
       }
 
       .scanner-results {
@@ -1020,6 +1049,12 @@
           <button class="camera-btn" id="startCamera">
             <i class="fas fa-camera"></i> Start Camera
           </button>
+
+          <!-- NEW: Flip Camera Button (Mobile Only) -->
+          <button class="camera-btn" id="flipCamera">
+            <i class="fas fa-sync-alt"></i> Flip Camera
+          </button>
+
           <button class="camera-btn off" id="stopCamera" disabled>
             <i class="fas fa-stop"></i> Stop Camera
           </button>
@@ -1048,6 +1083,7 @@
         const cameraPlaceholder = document.getElementById("cameraPlaceholder");
         const startCameraBtn = document.getElementById("startCamera");
         const stopCameraBtn = document.getElementById("stopCamera");
+        const flipCameraBtn = document.getElementById("flipCamera"); // NEW BUTTON
         const scannerResults = document.getElementById("scannerResults");
         const closeQrScannerBtn = document.getElementById("closeQrScanner");
         const paymentMethodIndicator = document.getElementById(
@@ -1072,6 +1108,7 @@
         let scanInterval = null;
         let lastScannedQR = null;
         let lastScanTime = 0;
+        let currentFacingMode = "environment"; // NEW: Track camera direction
         const SCAN_COOLDOWN = 3000; // 3 seconds cooldown between scans
 
         // NEW: Track payment method and order details
@@ -1081,7 +1118,7 @@
 
         // Long Press State
         let pressTimer = null;
-        let pressDuration = 5000; // 5 seconds
+        let pressDuration = 3000; // 3 seconds wait time
         let startTime = 0;
         let animationFrame = null;
         let isActivating = false;
@@ -1664,12 +1701,13 @@
         };
         document.head.appendChild(script);
 
-        // Start camera function
+        // Start camera function - MODIFIED TO SUPPORT FACING MODE
         async function startCamera() {
           try {
+            // Use currentFacingMode (default 'environment')
             stream = await navigator.mediaDevices.getUserMedia({
               video: {
-                facingMode: "environment",
+                facingMode: currentFacingMode,
                 width: { ideal: 1280 },
                 height: { ideal: 720 },
               },
@@ -1681,6 +1719,8 @@
 
             startCameraBtn.disabled = true;
             stopCameraBtn.disabled = false;
+            // Enable flip button if it exists
+            if (flipCameraBtn) flipCameraBtn.disabled = false;
 
             scanning = true;
             lastScannedQR = null;
@@ -1717,6 +1757,22 @@
 
           startCameraBtn.disabled = false;
           stopCameraBtn.disabled = true;
+        }
+
+        // NEW: Toggle Camera Function
+        function toggleCamera() {
+          // Toggle mode
+          currentFacingMode =
+            currentFacingMode === "environment" ? "user" : "environment";
+
+          // Stop current stream
+          stopCamera();
+
+          // Restart with new mode
+          // Small delay to ensure stream is fully stopped
+          setTimeout(() => {
+            startCamera();
+          }, 200);
         }
 
         // Start scanning for QR codes
@@ -1901,164 +1957,101 @@
           document.body.style.overflow = "";
         }
 
-        // Long Press Functions
+        // Long Press Functions - REWRITTEN TO FIX ISSUE
         function setupLongPress() {
-          // Only activate on mobile devices
-          if (window.innerWidth < 992) {
-            document.body.addEventListener("touchstart", handlePressStart, {
-              passive: false,
-            });
-            document.body.addEventListener("touchend", handlePressEnd, {
-              passive: false,
-            });
-            document.body.addEventListener("touchmove", handlePressMove, {
-              passive: false,
-            });
-            document.body.addEventListener("touchcancel", handlePressEnd, {
-              passive: false,
-            });
+          const body = document.body;
 
-            // Prevent context menu on long press
-            document.body.addEventListener("contextmenu", (e) =>
-              e.preventDefault()
-            );
-          }
+          // Only enable these checks for mobile if needed, or globally
+          // The CSS user-select:none handles the text selection prevention
+
+          body.addEventListener("touchstart", handlePressStart, {
+            passive: false,
+          });
+          body.addEventListener("touchend", handlePressEnd, { passive: false });
+          body.addEventListener("touchcancel", handlePressEnd, {
+            passive: false,
+          });
+
+          // Prevent context menu on right click
+          window.oncontextmenu = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+          };
         }
 
         function handlePressStart(e) {
-          // Only activate on mobile devices
-          if (window.innerWidth >= 992) return;
+          // Only trigger if 1 finger touch
+          if (e.touches.length > 1) return;
 
-          e.preventDefault();
+          // IMPORTANT: Prevent default to stop text selection / copy-paste menu
+          // But allow inputs to focus
+          if (
+            e.target.tagName !== "INPUT" &&
+            e.target.tagName !== "TEXTAREA" &&
+            e.target.tagName !== "BUTTON"
+          ) {
+            // We use a small check here: if we prevent default everywhere, scrolling might break
+            // But for a long press exit, user usually holds still.
+            // To allow scrolling but block selection, we rely on CSS user-select: none
+          }
 
-          // Get the touch position
+          // To ensure the long press isn't interrupted by system menus, we preventDefault
+          // Note: This disables scrolling while holding down
+          if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+            // e.preventDefault(); // Uncommenting this blocks scroll completely on touch
+          }
+
           const touch = e.touches[0];
           pressX = touch.clientX;
           pressY = touch.clientY;
 
-          startTime = Date.now();
-          isActivating = true;
           hasTriggered = false;
-          currentScale = 0;
 
-          // Show the long press elements at the touch position
-          showLongPress(pressX, pressY);
-
-          // Start the gradual expansion animation
-          animateGradualExpansion();
+          // Start the 3 second timer
+          pressTimer = setTimeout(() => {
+            // This runs only if 3 seconds pass without lifting finger
+            triggerAnimationAndExit(pressX, pressY);
+          }, pressDuration);
         }
 
         function handlePressEnd(e) {
-          if (!isActivating || hasTriggered) return;
-
-          const pressDuration = Date.now() - startTime;
-          console.log("Press duration:", pressDuration);
-
-          cleanup();
-
-          // Animate the circle shrinking back
-          if (pressDuration > 200) {
-            cancelLongPress();
-          } else {
-            hideLongPress();
+          // Clear the timer immediately so it doesn't fire if released early
+          if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
           }
         }
 
-        function handlePressMove(e) {
-          if (!isActivating || hasTriggered) return;
+        function triggerAnimationAndExit(x, y) {
+          hasTriggered = true;
 
-          // If user moves finger too much, cancel the long press
-          const touch = e.touches[0];
-          const x = touch.clientX;
-          const y = touch.clientY;
-
-          // Check if touch moved significantly from original position
-          const tolerance = 50;
-          const distance = Math.sqrt(
-            Math.pow(x - pressX, 2) + Math.pow(y - pressY, 2)
-          );
-
-          if (distance > tolerance) {
-            console.log("Touch moved too far, cancelling");
-            handlePressEnd(e);
-          }
-        }
-
-        function showLongPress(x, y) {
-          // Position the circle at the touch position
+          // Show the circle
           longPressCircle.style.left = x + "px";
           longPressCircle.style.top = y + "px";
           longPressCircle.style.transform = "translate(-50%, -50%) scale(0)";
-          longPressCircle.style.transition = "none";
+          longPressCircle.style.transition = "none"; // Reset for immediate placement
           longPressCircle.style.opacity = "1";
 
-          // Show elements
           longPressCircle.classList.add("active");
           longPressOverlay.classList.add("active");
           longPressOverlay.style.opacity = "1";
-        }
 
-        function animateGradualExpansion() {
-          // Calculate the maximum scale needed to cover the screen
-          const viewportWidth = window.innerWidth;
-          const viewportHeight = window.innerHeight;
-          const circleSize = 100; // initial circle size
-          const maxScale =
-            (Math.max(viewportWidth, viewportHeight) / circleSize) * 1.5;
-
-          const updateExpansion = () => {
-            if (!isActivating) return;
-
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / pressDuration, 1);
-
-            // Use easeInOutCubic for smooth acceleration and deceleration
-            const eased =
-              progress < 0.5
-                ? 4 * progress * progress * progress
-                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-            // Calculate current scale
-            currentScale = eased * maxScale;
-
-            // Apply the transform from the original touch position
-            longPressCircle.style.transform = `translate(-50%, -50%) scale(${currentScale})`;
-
-            // Update shadow intensity as it grows
-            const shadowIntensity = Math.min(eased * 50, 50);
-            longPressCircle.style.boxShadow = `0 0 ${shadowIntensity}px ${
-              shadowIntensity / 2
-            }px rgba(228, 151, 170, ${0.3 + eased * 0.2})`;
-
-            // Check if we've reached the end
-            if (progress >= 1) {
-              triggerExit();
-              return;
-            }
-
-            // Continue animation
-            animationFrame = requestAnimationFrame(updateExpansion);
-          };
-
-          animationFrame = requestAnimationFrame(updateExpansion);
-        }
-
-        function triggerExit() {
-          if (hasTriggered) return;
-
-          hasTriggered = true;
-
-          // Haptic feedback for completion
+          // Vibrate if available
           if (navigator.vibrate) {
-            navigator.vibrate([50, 30, 50]); // Success pattern
+            navigator.vibrate([50, 30, 50]);
           }
 
-          // Add expanding class for final animation
+          // Force reflow
+          void longPressCircle.offsetWidth;
+
+          // Start expansion animation
           longPressCircle.classList.add("expanding");
 
-          // Wait a bit for the animation to complete, then show exit screen
+          // Wait for animation then exit
           setTimeout(() => {
-            hideLongPress();
+            longPressCircle.classList.remove("active", "expanding");
+            longPressOverlay.classList.remove("active");
             showExitingCashierMode();
           }, 800);
         }
@@ -2069,61 +2062,6 @@
           setTimeout(() => {
             window.location.href = "admin.html";
           }, 2000);
-        }
-
-        function cancelLongPress() {
-          longPressCircle.style.transition =
-            "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease, box-shadow 0.4s ease";
-          longPressCircle.style.transform = "translate(-50%, -50%) scale(0)";
-          longPressCircle.style.opacity = "0";
-          longPressCircle.style.boxShadow = "0 0 0 0 rgba(228, 151, 170, 0)";
-
-          longPressOverlay.style.transition = "opacity 0.4s ease";
-          longPressOverlay.style.opacity = "0";
-
-          // Reset content opacity
-          longPressCircle.querySelector(".long-press-content").style.opacity =
-            "0";
-
-          setTimeout(() => {
-            hideLongPress();
-          }, 500);
-        }
-
-        function hideLongPress() {
-          console.log("Hiding long press");
-          longPressCircle.classList.remove("active", "expanding");
-          longPressOverlay.classList.remove("active");
-
-          // Reset styles
-          longPressCircle.style.transition = "";
-          longPressCircle.style.transform = "";
-          longPressCircle.style.left = "";
-          longPressCircle.style.top = "";
-          longPressCircle.style.opacity = "";
-          longPressCircle.style.boxShadow = "";
-          longPressOverlay.style.transition = "";
-          longPressOverlay.style.opacity = "";
-
-          const content = longPressCircle.querySelector(".long-press-content");
-          if (content) {
-            content.style.transition = "";
-            content.style.opacity = "0";
-          }
-        }
-
-        function cleanup() {
-          if (pressTimer) {
-            clearTimeout(pressTimer);
-            pressTimer = null;
-          }
-
-          if (animationFrame) {
-            cancelAnimationFrame(animationFrame);
-            animationFrame = null;
-          }
-
-          isActivating = false;
         }
 
         // Helper functions
@@ -2220,6 +2158,9 @@
           closeQrScannerBtn.addEventListener("click", closeQrScannerModal);
           startCameraBtn.addEventListener("click", startCamera);
           stopCameraBtn.addEventListener("click", stopCamera);
+
+          // NEW: Flip camera
+          flipCameraBtn.addEventListener("click", toggleCamera);
 
           // Close modal when clicking outside
           qrScannerModal.addEventListener("click", function (e) {
