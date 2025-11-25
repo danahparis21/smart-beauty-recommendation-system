@@ -1074,7 +1074,6 @@
 
         // Display order summary
         function displayOrderSummary() {
-     
           orderItemsEl.innerHTML =
             '<p style="text-align:center; color: var(--text-gray);">Loading order details...</p>';
 
@@ -1083,12 +1082,9 @@
             credentials: "same-origin",
           })
             .then((res) => {
-        
               return res.json();
             })
             .then((data) => {
-         
-
               if (!data.success) {
                 console.error("❌ API returned error:", data.message);
                 orderItemsEl.innerHTML = `<p style="text-align:center; color: var(--text-gray);">Failed to load order: ${
@@ -1104,7 +1100,6 @@
                 return;
               }
 
-          
               orderItemsEl.innerHTML = "";
 
               data.items.forEach((item) => {
@@ -1138,16 +1133,27 @@
               paymentAmount.textContent = formatPrice(data.order.total_price);
 
               // Show order ID in payment reference
-              paymentReference.textContent = `#${data.order.order_id}`;
-              orderRefNumber.textContent =
-                data.order.qr_code ||
-                `BB-${String(data.order.order_id).padStart(6, "0")}`;
+              // Show QR code from backend if available, otherwise generate it with PHP format
+              if (data.order.qr_code) {
+                paymentReference.textContent = data.order.qr_code;
+                orderRefNumber.textContent = data.order.qr_code;
+              } else {
+                // If no QR code from backend, use the same format as PHP
+                const today = new Date();
+                const dateString =
+                  today.getFullYear() +
+                  String(today.getMonth() + 1).padStart(2, "0") +
+                  String(today.getDate()).padStart(2, "0");
+                const qrCode = `BB-ORDER-${String(data.order.order_id).padStart(
+                  6,
+                  "0"
+                )}-${dateString}`;
+                paymentReference.textContent = qrCode;
+                orderRefNumber.textContent = qrCode;
+              }
               confirmationTotal.textContent = formatPrice(
                 data.order.total_price
               );
-
-          
-              
             })
             .catch((err) => {
               console.error("❌ Fetch error:", err);
@@ -1156,18 +1162,24 @@
         }
 
         // Generate REAL scannable QR Code using only order_id
+        // Generate REAL scannable QR Code with the exact PHP format
         function generateQRCode() {
-        
-          
+          console.log("🔄 Generating QR Code...");
 
-          // Use order ID as the QR data
-          const qrData = String(orderDetails.order_id);
+          // Get the current date in YYYYMMDD format (same as PHP)
+          const today = new Date();
+          const dateString =
+            today.getFullYear() +
+            String(today.getMonth() + 1).padStart(2, "0") +
+            String(today.getDate()).padStart(2, "0");
 
-          // Create container for QR code
-          const qrContainer = document.createElement("div");
-          qrContainer.style.padding = "10px";
-          qrContainer.style.background = "white";
-          qrContainer.style.display = "inline-block";
+          // Create QR data in the EXACT PHP format: BB-ORDER-000055-20251124
+          const qrData = `BB-ORDER-${String(orderDetails.order_id).padStart(
+            6,
+            "0"
+          )}-${dateString}`;
+
+          console.log("📦 QR Data:", qrData);
 
           // Generate QR code using QRCode.js library
           try {
@@ -1203,14 +1215,18 @@
               correctLevel: QRCode.CorrectLevel.H,
             });
 
-            // Add order ID label below QR code
+            // Add QR code label below QR code
             const label = document.createElement("div");
             label.style.textAlign = "center";
             label.style.marginTop = "10px";
             label.style.fontWeight = "bold";
             label.style.color = "#ff69b4";
-            label.textContent = `Order #${orderDetails.order_id}`;
+            label.textContent = qrData;
             qrPlaceholder.appendChild(label);
+
+            // Update payment reference in modal to show the QR code format
+            paymentReference.textContent = qrData;
+            orderRefNumber.textContent = qrData;
 
             generateQrBtn.innerHTML =
               '<i class="fas fa-check"></i> QR Code Generated';
@@ -1219,8 +1235,7 @@
 
             qrModal.classList.add("active");
 
-        
-            
+            console.log("✅ QR Code generated successfully with PHP format");
           } catch (error) {
             console.error("❌ QR generation error:", error);
             alert("Error generating QR code. Please refresh the page.");
@@ -1239,11 +1254,22 @@
               return;
             }
 
+            // Generate the QR code format for filename
+            const today = new Date();
+            const dateString =
+              today.getFullYear() +
+              String(today.getMonth() + 1).padStart(2, "0") +
+              String(today.getDate()).padStart(2, "0");
+            const qrCode = `BB-ORDER-${String(orderDetails.order_id).padStart(
+              6,
+              "0"
+            )}-${dateString}`;
+
             // Convert to blob and download
             canvas.toBlob(function (blob) {
               const url = URL.createObjectURL(blob);
               const link = document.createElement("a");
-              link.download = `beauty-blessed-order-${orderDetails.order_id}.png`;
+              link.download = `${qrCode}.png`;
               link.href = url;
               link.click();
               URL.revokeObjectURL(url);
@@ -1256,9 +1282,6 @@
         }
 
         async function showThankYouModal() {
-       
-          
-
           // Show thank you modal
           thankYouModal.classList.add("active");
 

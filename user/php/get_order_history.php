@@ -78,7 +78,7 @@ try {
             
             $currentOrderId = $row['order_id'];
             $currentOrder = [
-                'id' => 'BB-' . str_pad($row['order_id'], 6, '0', STR_PAD_LEFT),
+                'id' => $row['qr_code'] ?: 'BB-ORDER-' . str_pad($row['order_id'], 6, '0', STR_PAD_LEFT) . '-' . date('Ymd', strtotime($row['order_date'])),
                 'order_id' => $row['order_id'],
                 'date' => date('M j, Y', strtotime($row['order_date'])),
                 'status' => $row['status'],
