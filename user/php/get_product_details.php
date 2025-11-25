@@ -23,14 +23,26 @@ function getPublicProfilePhotoPath($dbPath)
     return '/uploads/profiles/' . $filename;
 }
 
-// Product image helper
+// Product image helper - UPDATED TO HANDLE BOTH OLD AND NEW PATHS
 function getPublicImagePath($dbPath)
 {
     if (empty($dbPath)) {
         return '';
     }
-    $filename = basename($dbPath);
-    return '/admin/uploads/product_images/' . $filename;
+    
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        // Convert ../uploads/... to /admin/uploads/...
+        return str_replace('../', '/admin/', $dbPath);
+    }
+    
+    // Handle new paths that already start with '/'
+    if (strpos($dbPath, '/') === 0) {
+        return $dbPath;
+    }
+    
+    // Fallback: add leading slash
+    return '/' . $dbPath;
 }
 
 try {
