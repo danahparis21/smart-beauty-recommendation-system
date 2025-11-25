@@ -1110,6 +1110,7 @@
         let lastScanTime = 0;
         // MODIFICATION: Camera Facing Mode
         let currentFacingMode = "environment";
+        let hasMultipleCameras = false;
         const SCAN_COOLDOWN = 3000; // 3 seconds cooldown between scans
 
         // NEW: Track payment method and order details
@@ -1119,7 +1120,7 @@
 
         // Long Press State
         let pressTimer = null;
-        let pressDuration = 3000; // 3 seconds wait time
+        let pressDuration = 5000; // 5 seconds wait time as requested
         let startX = 0;
         let startY = 0;
         let isLongPressing = false;
@@ -1702,6 +1703,9 @@
 
         async function startCamera() {
           try {
+            // Check for available cameras first
+            await checkAvailableCameras();
+
             const constraints = {
               video: {
                 facingMode: currentFacingMode,
@@ -1716,16 +1720,20 @@
             video.style.display = "block";
             cameraPlaceholder.style.display = "none";
 
-            // Hide Start Camera button
-            startCameraBtn.style.display = "none";
+            // Change Start Camera button to Flip Camera if multiple cameras available
+            if (hasMultipleCameras) {
+              startCameraBtn.innerHTML =
+                '<i class="fas fa-sync-alt"></i> Flip Camera';
+              startCameraBtn.id = "flipCameraBtn"; // Change ID for event listener
+              startCameraBtn.removeEventListener("click", startCamera);
+              startCameraBtn.addEventListener("click", toggleCamera);
+            } else {
+              // Hide flip button if only one camera
+              flipCameraBtn.style.display = "none";
+            }
+
             // Enable Stop Camera button
             stopCameraBtn.disabled = false;
-
-            // Check for multiple cameras (or if it's mobile/tablet size)
-            // If so, show flip button
-            if (window.innerWidth < 992 || (await hasMultipleCameras())) {
-              flipCameraBtn.style.display = "inline-block";
-            }
 
             scanning = true;
             lastScannedQR = null;
@@ -1744,15 +1752,18 @@
           }
         }
 
-        // Helper to check for cameras
-        async function hasMultipleCameras() {
+        // Check for available cameras
+        async function checkAvailableCameras() {
           try {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(
               (device) => device.kind === "videoinput"
             );
-            return videoDevices.length > 1;
+            hasMultipleCameras = videoDevices.length > 1;
+            return hasMultipleCameras;
           } catch (e) {
+            console.error("Error checking cameras:", e);
+            hasMultipleCameras = false;
             return false;
           }
         }
@@ -1774,14 +1785,17 @@
           }
 
           // Reset buttons
-          startCameraBtn.style.display = "inline-block";
-          startCameraBtn.disabled = false;
+          startCameraBtn.innerHTML =
+            '<i class="fas fa-camera"></i> Start Camera';
+          startCameraBtn.id = "startCamera";
+          startCameraBtn.removeEventListener("click", toggleCamera);
+          startCameraBtn.addEventListener("click", startCamera);
 
           flipCameraBtn.style.display = "none";
           stopCameraBtn.disabled = true;
         }
 
-        // NEW: Toggle Camera Function
+        // Toggle Camera Function
         function toggleCamera() {
           // Toggle mode
           currentFacingMode =
@@ -1990,6 +2004,7 @@
             return false;
           };
 
+          // Touch events for mobile/tablet
           body.addEventListener("touchstart", handlePressStart, {
             passive: false,
           });
@@ -2000,6 +2015,11 @@
           body.addEventListener("touchmove", handlePressMove, {
             passive: false,
           });
+
+          // Mouse events for desktop
+          body.addEventListener("mousedown", handleMousePressStart);
+          body.addEventListener("mouseup", handleMousePressEnd);
+          body.addEventListener("mouseleave", handleMousePressEnd);
         }
 
         function handlePressStart(e) {
@@ -2015,7 +2035,7 @@
           startY = touch.clientY;
           isLongPressing = true;
 
-          // Start the 3-second timer
+          // Start the 5-second timer
           pressTimer = setTimeout(() => {
             // If we are still here, trigger the exit
             triggerExit(startX, startY);
@@ -2029,15 +2049,40 @@
           const moveX = Math.abs(touch.clientX - startX);
           const moveY = Math.abs(touch.clientY - startY);
 
-          // If user moved more than 10 pixels, they are scrolling, not holding
-          if (moveX > 10 || moveY > 10) {
+          // If user moved more than 25 pixels, they are scrolling, not holding
+          if (moveX > 25 || moveY > 25) {
             clearTimeout(pressTimer);
             isLongPressing = false;
           }
         }
 
         function handlePressEnd(e) {
-          // Finger lifted before 3 seconds
+          // Finger lifted before 5 seconds
+          if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+          }
+          isLongPressing = false;
+        }
+
+        function handleMousePressStart(e) {
+          // If clicking an input, do nothing (allow typing)
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+            return;
+
+          startX = e.clientX;
+          startY = e.clientY;
+          isLongPressing = true;
+
+          // Start the 5-second timer
+          pressTimer = setTimeout(() => {
+            // If we are still here, trigger the exit
+            triggerExit(startX, startY);
+          }, pressDuration);
+        }
+
+        function handleMousePressEnd(e) {
+          // Mouse lifted before 5 seconds
           if (pressTimer) {
             clearTimeout(pressTimer);
             pressTimer = null;
@@ -2177,7 +2222,7 @@
           closeQrScannerBtn.addEventListener("click", closeQrScannerModal);
           startCameraBtn.addEventListener("click", startCamera);
           stopCameraBtn.addEventListener("click", stopCamera);
-          // NEW: Flip camera
+          // Flip camera
           flipCameraBtn.addEventListener("click", toggleCamera);
 
           // Close modal when clicking outside
