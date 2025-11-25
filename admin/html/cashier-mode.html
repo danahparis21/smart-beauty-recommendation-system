@@ -1097,25 +1097,14 @@
 
         // Load products from server
         function loadProducts() {
-        
-            
-
           fetch("../php/cashier-mode.php?action=get_products")
             .then((response) => {
-           
-                
               return response.json();
             })
             .then((data) => {
-            
-                
-
               if (data.success) {
                 products = data.products;
                 categories = data.categories;
-
-            
-                
 
                 renderProducts();
                 renderCategories();
@@ -1176,11 +1165,11 @@
                         }">
                             <img src="${
                               product.ImagePath ||
-                              "../images/placeholder-product.jpg"
+                              "/admin/images/placeholder-product.jpg"
                             }" 
-                                 class="product-image" 
-                                 alt="${product.Name}"
-                                 onerror="this.src='../images/placeholder-product.jpg'">
+     class="product-image" 
+     alt="${product.Name}"
+     onerror="this.src='/admin/images/placeholder-product.jpg'">
                             <div class="card-body">
                                 <div class="product-name">${product.Name}</div>
                                 <div class="product-category">${
@@ -1666,10 +1655,7 @@
         // Load jsQR library from CDN
         const script = document.createElement("script");
         script.src = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js";
-        script.onload = function () {
-         
-            
-        };
+        script.onload = function () {};
         script.onerror = function () {
           console.error("Failed to load jsQR library");
           scannerResults.textContent =
@@ -1780,10 +1766,6 @@
         function handleQRCode(qrData) {
           if (!scanning) return;
 
-        
-          
-
-
           // Show loading state
           scannerResults.innerHTML =
             '<div class="text-center"><i class="fas fa-spinner fa-spin me-2"></i>Loading order details...</div>';
@@ -1796,9 +1778,6 @@
         // Fetch order details from server
         async function fetchOrderDetails(qrCode) {
           try {
-       
-            
-
             const response = await fetch(
               `../php/qr-scanner.php?action=get_order&qr_code=${encodeURIComponent(
                 qrCode
@@ -1924,9 +1903,6 @@
 
         // Long Press Functions
         function setupLongPress() {
-        
-            
-
           // Only activate on mobile devices
           if (window.innerWidth < 992) {
             document.body.addEventListener("touchstart", handlePressStart, {
@@ -1953,8 +1929,6 @@
           // Only activate on mobile devices
           if (window.innerWidth >= 992) return;
 
-       
-          
           e.preventDefault();
 
           // Get the touch position
@@ -1977,8 +1951,6 @@
         function handlePressEnd(e) {
           if (!isActivating || hasTriggered) return;
 
-      
-          
           const pressDuration = Date.now() - startTime;
           console.log("Press duration:", pressDuration);
 
@@ -2013,9 +1985,6 @@
         }
 
         function showLongPress(x, y) {
-      
-            
-
           // Position the circle at the touch position
           longPressCircle.style.left = x + "px";
           longPressCircle.style.top = y + "px";
@@ -2036,9 +2005,6 @@
           const circleSize = 100; // initial circle size
           const maxScale =
             (Math.max(viewportWidth, viewportHeight) / circleSize) * 1.5;
-
-       
-            
 
           const updateExpansion = () => {
             if (!isActivating) return;
@@ -2080,8 +2046,6 @@
         function triggerExit() {
           if (hasTriggered) return;
 
-         
-          
           hasTriggered = true;
 
           // Haptic feedback for completion
@@ -2100,19 +2064,14 @@
         }
 
         function showExitingCashierMode() {
-        
-            
           exitingCashierMode.classList.add("active");
 
-          
           setTimeout(() => {
             window.location.href = "admin.html";
           }, 2000);
         }
 
         function cancelLongPress() {
-         
-            
           longPressCircle.style.transition =
             "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease, box-shadow 0.4s ease";
           longPressCircle.style.transform = "translate(-50%, -50%) scale(0)";
@@ -2268,54 +2227,53 @@
               closeQrScannerModal();
             }
           });
-        } 
-        // ================== ABSOLUTE BACK BUTTON BLOCK ==================
-(function () {
-    let allowAdminRedirect = false;
-
-    // Completely disable navigation
-    history.pushState(null, null, location.href);
-
-    window.onpopstate = function (event) {
-        history.go(1);
-        return false;
-    };
-
-    // Block any attempt to leave the page UNLESS it's the ADMIN shortcut
-    window.onbeforeunload = function (e) {
-        if (!allowAdminRedirect) {
-            e.preventDefault();
-            return "Cashier mode is active. Use Shift+ADMIN to exit.";
         }
-        // Allow the redirect if admin shortcut was used
-    };
+        // ================== ABSOLUTE BACK BUTTON BLOCK ==================
+        (function () {
+          let allowAdminRedirect = false;
 
-    // ================== ADMIN SHORTCUT ==================
-    let adminBuffer = "";
+          // Completely disable navigation
+          history.pushState(null, null, location.href);
 
-    document.addEventListener("keydown", function (e) {
-        // Only capture letters when Shift is held
-        if (e.shiftKey && e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
-            adminBuffer += e.key.toLowerCase();
+          window.onpopstate = function (event) {
+            history.go(1);
+            return false;
+          };
 
-            // Keep only last 5 characters
-            if (adminBuffer.length > 5) {
-                adminBuffer = adminBuffer.slice(-5);
+          // Block any attempt to leave the page UNLESS it's the ADMIN shortcut
+          window.onbeforeunload = function (e) {
+            if (!allowAdminRedirect) {
+              e.preventDefault();
+              return "Cashier mode is active. Use Shift+ADMIN to exit.";
             }
+            // Allow the redirect if admin shortcut was used
+          };
 
-            // ADMIN shortcut detected
-            if (adminBuffer === "admin") {
+          // ================== ADMIN SHORTCUT ==================
+          let adminBuffer = "";
+
+          document.addEventListener("keydown", function (e) {
+            // Only capture letters when Shift is held
+            if (e.shiftKey && e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
+              adminBuffer += e.key.toLowerCase();
+
+              // Keep only last 5 characters
+              if (adminBuffer.length > 5) {
+                adminBuffer = adminBuffer.slice(-5);
+              }
+
+              // ADMIN shortcut detected
+              if (adminBuffer === "admin") {
                 allowAdminRedirect = true; // Allow the redirect
                 // USE REPLACE INSTEAD OF HREF
                 window.location.replace("admin.html");
+              }
+            } else if (!e.shiftKey) {
+              // Reset if Shift is not held
+              adminBuffer = "";
             }
-        } else if (!e.shiftKey) {
-            // Reset if Shift is not held
-            adminBuffer = "";
-        }
-    });
-})();
-
+          });
+        })();
       });
     </script>
   </body>

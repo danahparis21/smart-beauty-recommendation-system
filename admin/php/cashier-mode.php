@@ -11,16 +11,7 @@ ini_set('display_errors', 1);
 
 header('Content-Type: application/json');
 
-class CashierMode
-{
-    private $conn;
-
-    public function __construct($conn)
-    {
-        $this->conn = $conn;
-    }
-
-    function getPublicImagePath($dbPath)
+function getPublicImagePath($dbPath)
 {
     if (empty($dbPath))
         return '';
@@ -39,6 +30,17 @@ class CashierMode
     // Fallback: add leading slash
     return '/' . $dbPath;
 }
+
+class CashierMode
+{
+    private $conn;
+
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+    }
+
+   
 
     // Get all available products for sale (including variants)
     public function getProducts()
