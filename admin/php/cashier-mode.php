@@ -20,6 +20,26 @@ class CashierMode
         $this->conn = $conn;
     }
 
+    function getPublicImagePath($dbPath)
+{
+    if (empty($dbPath))
+        return '';
+
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        // Convert ../uploads/... to /admin/uploads/...
+        return str_replace('../', '/admin/', $dbPath);
+    }
+
+    // Handle new paths that already start with '/'
+    if (strpos($dbPath, '/') === 0) {
+        return $dbPath;
+    }
+
+    // Fallback: add leading slash
+    return '/' . $dbPath;
+}
+
     // Get all available products for sale (including variants)
     public function getProducts()
     {
@@ -33,7 +53,7 @@ class CashierMode
                 p.Price,
                 p.Stocks,
                 p.Status,
-                COALESCE(pm.ImagePath, '../uploads/product_images/no-image.png') as ImagePath
+                COALESCE(pm.ImagePath, '/admin/uploads/product_images/no-image.png') as ImagePath
             FROM Products p
             LEFT JOIN ProductMedia pm ON p.ProductID = pm.VariantProductID 
                 AND pm.MediaType = 'VARIANT'
@@ -84,7 +104,7 @@ class CashierMode
             } else {
                 $row['DisplayName'] = $row['Name'];
             }
-            
+            $row['ImagePath'] = getPublicImagePath($row['ImagePath']);
             $products[] = $row;
         }
 
