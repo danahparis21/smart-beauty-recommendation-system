@@ -3759,9 +3759,7 @@
             );
           }
 
-          const response = await fetch(
-            "https://blessence.site:5000/analyze-lipstick",
-            {
+          const response = await fetch("/user/php/lipstick_analysis", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
