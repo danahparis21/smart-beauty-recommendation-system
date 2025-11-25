@@ -27,20 +27,26 @@
     />
 
     <style>
-      /* --- FIX: Disable text selection on mobile to prevent copy/paste popup --- */
+      /* --- MODIFICATION START: Fix Mobile Selection/Long Press --- */
       body {
-        -webkit-user-select: none; /* Safari */
-        -ms-user-select: none; /* IE 10 and IE 11 */
-        user-select: none; /* Standard syntax */
-        -webkit-touch-callout: none; /* iOS Safari */
+        /* Prevents the "Copy/Paste" menu and text highlighting on mobile */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
       }
-      /* Allow typing in inputs */
+
+      /* Allow typing in input fields */
       input,
       textarea {
         -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
         user-select: text;
         -webkit-touch-callout: default;
       }
+      /* --- MODIFICATION END --- */
 
       .cashier-container {
         max-width: 1400px;
@@ -468,7 +474,6 @@
         justify-content: center;
         gap: 15px;
         margin-top: 20px;
-        flex-wrap: wrap; /* Added for mobile wrapping */
       }
 
       .camera-btn {
@@ -517,18 +522,12 @@
         box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
       }
 
-      /* --- NEW: FLIP CAMERA BUTTON STYLES --- */
+      /* --- MODIFICATION START: Flip Camera Button (Initially Hidden) --- */
       #flipCamera {
         background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-        display: none; /* Default hidden on desktop */
+        display: none;
       }
-
-      /* Only show Flip Camera on mobile screens */
-      @media (max-width: 991px) {
-        #flipCamera {
-          display: flex;
-        }
-      }
+      /* --- MODIFICATION END --- */
 
       .scanner-results {
         margin-top: 20px;
@@ -1050,7 +1049,7 @@
             <i class="fas fa-camera"></i> Start Camera
           </button>
 
-          <!-- NEW: Flip Camera Button (Mobile Only) -->
+          <!-- MODIFICATION: Flip Camera Button (Added) -->
           <button class="camera-btn" id="flipCamera">
             <i class="fas fa-sync-alt"></i> Flip Camera
           </button>
@@ -1083,7 +1082,8 @@
         const cameraPlaceholder = document.getElementById("cameraPlaceholder");
         const startCameraBtn = document.getElementById("startCamera");
         const stopCameraBtn = document.getElementById("stopCamera");
-        const flipCameraBtn = document.getElementById("flipCamera"); // NEW BUTTON
+        // MODIFICATION: Add Flip Camera Button
+        const flipCameraBtn = document.getElementById("flipCamera");
         const scannerResults = document.getElementById("scannerResults");
         const closeQrScannerBtn = document.getElementById("closeQrScanner");
         const paymentMethodIndicator = document.getElementById(
@@ -1108,7 +1108,8 @@
         let scanInterval = null;
         let lastScannedQR = null;
         let lastScanTime = 0;
-        let currentFacingMode = "environment"; // NEW: Track camera direction
+        // MODIFICATION: Camera Facing Mode
+        let currentFacingMode = "environment";
         const SCAN_COOLDOWN = 3000; // 3 seconds cooldown between scans
 
         // NEW: Track payment method and order details
@@ -1119,13 +1120,9 @@
         // Long Press State
         let pressTimer = null;
         let pressDuration = 3000; // 3 seconds wait time
-        let startTime = 0;
-        let animationFrame = null;
-        let isActivating = false;
-        let hasTriggered = false;
-        let currentScale = 0;
-        let pressX = 0;
-        let pressY = 0;
+        let startX = 0;
+        let startY = 0;
+        let isLongPressing = false;
 
         // Initialize
         loadProducts();
@@ -1701,26 +1698,34 @@
         };
         document.head.appendChild(script);
 
-        // Start camera function - MODIFIED TO SUPPORT FACING MODE
+        // --- MODIFICATION START: Updated Camera Logic ---
+
         async function startCamera() {
           try {
-            // Use currentFacingMode (default 'environment')
-            stream = await navigator.mediaDevices.getUserMedia({
+            const constraints = {
               video: {
                 facingMode: currentFacingMode,
                 width: { ideal: 1280 },
                 height: { ideal: 720 },
               },
-            });
+            };
+
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
 
             video.srcObject = stream;
             video.style.display = "block";
             cameraPlaceholder.style.display = "none";
 
-            startCameraBtn.disabled = true;
+            // Hide Start Camera button
+            startCameraBtn.style.display = "none";
+            // Enable Stop Camera button
             stopCameraBtn.disabled = false;
-            // Enable flip button if it exists
-            if (flipCameraBtn) flipCameraBtn.disabled = false;
+
+            // Check for multiple cameras (or if it's mobile/tablet size)
+            // If so, show flip button
+            if (window.innerWidth < 992 || (await hasMultipleCameras())) {
+              flipCameraBtn.style.display = "inline-block";
+            }
 
             scanning = true;
             lastScannedQR = null;
@@ -1736,6 +1741,19 @@
             scannerResults.textContent =
               "Error: " + err.message + ". Please allow camera access.";
             scannerResults.className = "scanner-results error";
+          }
+        }
+
+        // Helper to check for cameras
+        async function hasMultipleCameras() {
+          try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(
+              (device) => device.kind === "videoinput"
+            );
+            return videoDevices.length > 1;
+          } catch (e) {
+            return false;
           }
         }
 
@@ -1755,7 +1773,11 @@
             scanInterval = null;
           }
 
+          // Reset buttons
+          startCameraBtn.style.display = "inline-block";
           startCameraBtn.disabled = false;
+
+          flipCameraBtn.style.display = "none";
           stopCameraBtn.disabled = true;
         }
 
@@ -1768,12 +1790,12 @@
           // Stop current stream
           stopCamera();
 
-          // Restart with new mode
-          // Small delay to ensure stream is fully stopped
+          // Restart with new mode after short delay
           setTimeout(() => {
             startCamera();
           }, 200);
         }
+        // --- MODIFICATION END ---
 
         // Start scanning for QR codes
         function startScanning() {
@@ -1957,12 +1979,16 @@
           document.body.style.overflow = "";
         }
 
-        // Long Press Functions - REWRITTEN TO FIX ISSUE
+        // --- MODIFICATION START: Updated Long Press Logic ---
         function setupLongPress() {
           const body = document.body;
 
-          // Only enable these checks for mobile if needed, or globally
-          // The CSS user-select:none handles the text selection prevention
+          // Prevent context menu to avoid copy/paste bubble
+          window.oncontextmenu = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+          };
 
           body.addEventListener("touchstart", handlePressStart, {
             passive: false,
@@ -1971,90 +1997,83 @@
           body.addEventListener("touchcancel", handlePressEnd, {
             passive: false,
           });
-
-          // Prevent context menu on right click
-          window.oncontextmenu = function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            return false;
-          };
+          body.addEventListener("touchmove", handlePressMove, {
+            passive: false,
+          });
         }
 
         function handlePressStart(e) {
           // Only trigger if 1 finger touch
           if (e.touches.length > 1) return;
 
-          // IMPORTANT: Prevent default to stop text selection / copy-paste menu
-          // But allow inputs to focus
-          if (
-            e.target.tagName !== "INPUT" &&
-            e.target.tagName !== "TEXTAREA" &&
-            e.target.tagName !== "BUTTON"
-          ) {
-            // We use a small check here: if we prevent default everywhere, scrolling might break
-            // But for a long press exit, user usually holds still.
-            // To allow scrolling but block selection, we rely on CSS user-select: none
-          }
-
-          // To ensure the long press isn't interrupted by system menus, we preventDefault
-          // Note: This disables scrolling while holding down
-          if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
-            // e.preventDefault(); // Uncommenting this blocks scroll completely on touch
-          }
+          // If touching an input, do nothing (allow typing)
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+            return;
 
           const touch = e.touches[0];
-          pressX = touch.clientX;
-          pressY = touch.clientY;
+          startX = touch.clientX;
+          startY = touch.clientY;
+          isLongPressing = true;
 
-          hasTriggered = false;
-
-          // Start the 3 second timer
+          // Start the 3-second timer
           pressTimer = setTimeout(() => {
-            // This runs only if 3 seconds pass without lifting finger
-            triggerAnimationAndExit(pressX, pressY);
+            // If we are still here, trigger the exit
+            triggerExit(startX, startY);
           }, pressDuration);
         }
 
+        function handlePressMove(e) {
+          if (!isLongPressing) return;
+
+          const touch = e.touches[0];
+          const moveX = Math.abs(touch.clientX - startX);
+          const moveY = Math.abs(touch.clientY - startY);
+
+          // If user moved more than 10 pixels, they are scrolling, not holding
+          if (moveX > 10 || moveY > 10) {
+            clearTimeout(pressTimer);
+            isLongPressing = false;
+          }
+        }
+
         function handlePressEnd(e) {
-          // Clear the timer immediately so it doesn't fire if released early
+          // Finger lifted before 3 seconds
           if (pressTimer) {
             clearTimeout(pressTimer);
             pressTimer = null;
           }
+          isLongPressing = false;
         }
 
-        function triggerAnimationAndExit(x, y) {
-          hasTriggered = true;
-
-          // Show the circle
-          longPressCircle.style.left = x + "px";
-          longPressCircle.style.top = y + "px";
-          longPressCircle.style.transform = "translate(-50%, -50%) scale(0)";
-          longPressCircle.style.transition = "none"; // Reset for immediate placement
-          longPressCircle.style.opacity = "1";
-
-          longPressCircle.classList.add("active");
-          longPressOverlay.classList.add("active");
-          longPressOverlay.style.opacity = "1";
-
-          // Vibrate if available
+        function triggerExit(x, y) {
+          // Haptic feedback
           if (navigator.vibrate) {
             navigator.vibrate([50, 30, 50]);
           }
 
+          // Position the circle
+          longPressCircle.style.left = x + "px";
+          longPressCircle.style.top = y + "px";
+          longPressCircle.style.transform = "translate(-50%, -50%) scale(0)";
+          longPressCircle.style.opacity = "1";
+
+          // Show overlay
+          longPressOverlay.classList.add("active");
+          longPressOverlay.style.opacity = "1";
+          longPressCircle.classList.add("active");
+
           // Force reflow
           void longPressCircle.offsetWidth;
 
-          // Start expansion animation
+          // Animate expansion
           longPressCircle.classList.add("expanding");
 
           // Wait for animation then exit
           setTimeout(() => {
-            longPressCircle.classList.remove("active", "expanding");
-            longPressOverlay.classList.remove("active");
             showExitingCashierMode();
           }, 800);
         }
+        // --- MODIFICATION END ---
 
         function showExitingCashierMode() {
           exitingCashierMode.classList.add("active");
@@ -2158,7 +2177,6 @@
           closeQrScannerBtn.addEventListener("click", closeQrScannerModal);
           startCameraBtn.addEventListener("click", startCamera);
           stopCameraBtn.addEventListener("click", stopCamera);
-
           // NEW: Flip camera
           flipCameraBtn.addEventListener("click", toggleCamera);
 
