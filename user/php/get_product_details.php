@@ -23,12 +23,10 @@ function getPublicProfilePhotoPath($dbPath)
     return '/uploads/profiles/' . $filename;
 }
 
-// Product image helper - UPDATED TO HANDLE BOTH OLD AND NEW PATHS
 function getPublicImagePath($dbPath)
 {
-    if (empty($dbPath)) {
+    if (empty($dbPath))
         return '';
-    }
     
     // Handle old paths with '../'
     if (strpos($dbPath, '../') === 0) {
