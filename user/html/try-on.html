@@ -2299,9 +2299,6 @@
 
         if (!currentUser) return; // Will redirect if not logged in
 
-      
-        
-
         const fileInput = document.getElementById("file-input");
         const uploadBtn = document.getElementById("upload-btn");
         const cameraBtn = document.getElementById("camera-btn");
@@ -2310,17 +2307,12 @@
         const canvas = document.getElementById("lipstick-canvas");
         const ctx = canvas.getContext("2d");
         const shadeOptions = document.querySelectorAll(".shade-option");
-    
-        
 
         let hasProcessedImage = false;
         let currentImageSource = null;
 
         // Test if shade buttons are clickable
-        shadeOptions.forEach((shade, index) => {
-        
-          
-        });
+        shadeOptions.forEach((shade, index) => {});
         const loading = document.getElementById("loading");
         const productsList = document.getElementById("tryon-products");
 
@@ -2383,8 +2375,6 @@
 
             hasProcessedImage = true;
             currentImageSource = "upload";
-      
-            
           };
 
           uploadedImage.src = lastUploadedImage;
@@ -2451,8 +2441,6 @@
 
                 hasProcessedImage = true;
                 currentImageSource = "upload";
-              
-                
               };
 
               uploadedImage.src = event.target.result;
@@ -2476,8 +2464,6 @@
             this.classList.add("active");
 
             currentShade = this.getAttribute("data-color");
-       
-            
 
             // Re-apply lipstick to current image
             if (canvas._lastLandmarks || canvas._displayInfo) {
@@ -2489,8 +2475,6 @@
           // RESET STATE WHEN OPENING CAMERA - this is the key fix!
           hasProcessedImage = false;
           currentImageSource = null;
-       
-          
 
           if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             startCamera();
@@ -2645,8 +2629,6 @@
 
             hasProcessedImage = true;
             currentImageSource = "camera";
-         
-            
           };
 
           uploadedImage.src = imageData;
@@ -2742,14 +2724,10 @@
             // Store landmarks for later use when changing shades
             canvas._lastLandmarks = landmarks;
             applyLipstickToLandmarks(landmarks);
-          
-            
 
             // Hide any error message
             hideFaceDetectionError();
           } else {
-          
-            
             // Clear stored landmarks
             canvas._lastLandmarks = null;
 
@@ -3044,15 +3022,10 @@
           isProcessing = true;
           loading.style.display = "block";
 
-       
-          
-
           // Process with FaceMesh directly on the image
           faceMesh
             .send({ image: image })
             .then(() => {
-            
-              
               onImageProcessedSuccessfully();
             })
             .catch((err) => {
@@ -3225,9 +3198,6 @@
                 return; // Stop here if no photo
               }
 
-            
-              
-
               // Remove active class from all shades
               document
                 .querySelectorAll(".shade-option")
@@ -3236,9 +3206,6 @@
 
               const clickedShade = this.getAttribute("data-color");
               const productId = this.getAttribute("data-product-id");
-
-           
-              
 
               // Update the global currentShade variable
               currentShade = clickedShade;
@@ -3255,13 +3222,8 @@
               // Analyze compatibility if image exists
               const canvas = document.getElementById("lipstick-canvas");
               if (canvas._displayInfo) {
-              
-                
                 const imageData = localStorage.getItem("lastUploadedImage");
                 if (imageData) {
-               
-                  
-
                   // PASS THE PRODUCT ID HERE
                   const analysis = await analyzeLipstickCompatibility(
                     imageData,
@@ -3270,8 +3232,6 @@
                   );
 
                   if (analysis) {
-                   
-                    
                     displayCompatibilityResult(analysis);
                   } else {
                     console.log("❌ No analysis result returned");
@@ -3300,8 +3260,6 @@
             };
             updateActionButtons();
           }
-
-       
         }
         function updateActionButtons() {
           const productNameElem = document.getElementById(
@@ -3595,8 +3553,6 @@
             });
           }
         } catch (error) {
-        
-          
           const cartCounts = document.querySelectorAll(".nav-cart-count");
           cartCounts.forEach((count) => {
             count.textContent = "0";
@@ -3783,8 +3739,6 @@
         productId = null
       ) {
         try {
-       
-          
           console.log(
             "Image data length:",
             imageData ? imageData.length : "No image data"
@@ -3799,8 +3753,6 @@
           // Add product_id if available
           if (productId) {
             payload.product_id = productId;
-          
-            
           } else {
             console.log(
               "⚠️ No product ID provided - using algorithmic approach"
@@ -3808,7 +3760,7 @@
           }
 
           const response = await fetch(
-            "http://localhost:5000/analyze-lipstick",
+            "http://blessence.site:5000/analyze-lipstick",
             {
               method: "POST",
               headers: {
@@ -3817,9 +3769,6 @@
               body: JSON.stringify(payload),
             }
           );
-
-       
-          
 
           if (!response.ok) {
             console.error(
@@ -3833,16 +3782,13 @@
           }
 
           const result = await response.json();
-    
-          
-          
+
           if (result.success) {
             console.log(
               "🎯 Compatibility score:",
               result.color_compatibility.compatibility_score + "%"
             );
-         
-            
+
             return result;
           } else {
             console.error("❌ Analysis failed:", result.message);
