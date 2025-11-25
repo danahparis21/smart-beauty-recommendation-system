@@ -116,7 +116,7 @@ $lastName = $userInfo['family_name'] ?? '';
 $username = explode('@', $email)[0] . '_' . substr($googleId, -4);
 
 // ===== CHECK IF USER EXISTS =====
-$stmt = $conn->prepare('SELECT UserID, username, first_name, last_name, Role, email_verified, google_id FROM users WHERE Email = ?');
+$stmt = $conn->prepare('SELECT UserID, username, first_name, last_name, Role, email_verified, google_id, verification_token FROM users WHERE Email = ?');
 if (!$stmt) {
     $redirectPage = $isLogin ? '/user/html/login.html' : '/user/html/signup.html';
     echo '<script>alert("Database error."); window.location.href="' . $redirectPage . '";</script>';
@@ -140,22 +140,136 @@ if ($result->num_rows > 0) {
         <head>
             <title>Account Not Verified</title>
             <style>
-                body { font-family: "Montserrat", Arial, sans-serif; background: linear-gradient(135deg, #ffe6f2, #fff); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-                .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(255, 105, 180, 0.25); text-align: center; max-width: 400px; }
+                body { font-family: "Montserrat", Arial, sans-serif; background: linear-gradient(135deg, #ffe6f2, #fff); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+                .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(255, 105, 180, 0.25); text-align: center; max-width: 450px; width: 100%; }
                 .warning { color: #e74c3c; font-size: 48px; margin-bottom: 20px; }
                 h1 { color: #333; margin-bottom: 20px; }
                 p { color: #666; line-height: 1.6; margin-bottom: 25px; }
-                .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 12px 30px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; text-decoration: none; }
-                .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
+                .email-display { background: #ffe6f2; padding: 10px; border-radius: 8px; margin: 15px 0; color: #ff69b4; font-weight: 600; word-break: break-all; }
+                .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 12px 30px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; text-decoration: none; margin: 5px; transition: all 0.3s ease; display: inline-block; }
+                .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
+                .btn:disabled { opacity: 0.5; cursor: not-allowed; background: linear-gradient(135deg, #ccc, #999); }
+                .btn-secondary { background: linear-gradient(135deg, #888, #666); }
+                .timer-text { color: #666; font-size: 14px; margin-top: 10px; min-height: 20px; }
+                .success-message { color: #2ecc71; font-weight: 600; margin-top: 15px; padding: 10px; background: #d4edda; border-radius: 8px; display: none; }
+                .error-message { color: #e74c3c; font-weight: 600; margin-top: 15px; padding: 10px; background: #f8d7da; border-radius: 8px; display: none; }
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="warning">⚠️</div>
                 <h1>Account Not Verified</h1>
-                <p>Your account exists but is not verified. Please check your email <strong>' . htmlspecialchars($email) . '</strong> for the verification link.</p>
-                <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Back to Login</button>
+                <p>Your account exists but is not verified. Please check your email for the verification link.</p>
+                <div class="email-display">' . htmlspecialchars($email) . '</div>
+                <p style="font-size: 14px; color: #888;">Didn\'t receive the email? Check your spam folder or click below to resend.</p>
+                
+                <button class="btn" id="resendBtn" onclick="resendVerification()">
+                    📧 Resend Verification Email
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href=\'/user/html/login.html\'">
+                    Back to Login
+                </button>
+                
+                <div class="timer-text" id="timerText"></div>
+                <div class="success-message" id="successMsg">✅ Verification email sent successfully!</div>
+                <div class="error-message" id="errorMsg">❌ Failed to send email. Please try again.</div>
             </div>
+            
+            <script>
+                let cooldownTimer = 0;
+                let timerInterval = null;
+                
+                const userEmail = ' . json_encode($email) . ';
+                const userToken = ' . json_encode($user['verification_token']) . ';
+                
+                // Check if there is an active cooldown in localStorage
+                const cooldownEnd = localStorage.getItem("resendCooldownEnd_" + userEmail);
+                if (cooldownEnd) {
+                    const remainingTime = Math.floor((parseInt(cooldownEnd) - Date.now()) / 1000);
+                    if (remainingTime > 0) {
+                        startTimer(remainingTime);
+                    } else {
+                        localStorage.removeItem("resendCooldownEnd_" + userEmail);
+                    }
+                }
+                
+                function startTimer(seconds) {
+                    cooldownTimer = seconds;
+                    document.getElementById("resendBtn").disabled = true;
+                    updateTimerDisplay();
+                    
+                    timerInterval = setInterval(() => {
+                        cooldownTimer--;
+                        updateTimerDisplay();
+                        
+                        if (cooldownTimer <= 0) {
+                            clearInterval(timerInterval);
+                            document.getElementById("resendBtn").disabled = false;
+                            document.getElementById("timerText").textContent = "";
+                            localStorage.removeItem("resendCooldownEnd_" + userEmail);
+                        }
+                    }, 1000);
+                }
+                
+                function updateTimerDisplay() {
+                    document.getElementById("timerText").textContent = 
+                        `Please wait ${cooldownTimer} second${cooldownTimer !== 1 ? "s" : ""} before resending...`;
+                }
+                
+                async function resendVerification() {
+                    // Hide previous messages
+                    document.getElementById("successMsg").style.display = "none";
+                    document.getElementById("errorMsg").style.display = "none";
+                    
+                    try {
+                        const resendUrl = "/user/php/resend-verification-ajax.php";
+                        
+                        console.log("Sending request to:", resendUrl);
+                        console.log("Email:", userEmail);
+                        console.log("Token:", userToken);
+                        
+                        const response = await fetch(resendUrl, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                email: userEmail,
+                                token: userToken
+                            })
+                        });
+                        
+                        console.log("Response status:", response.status);
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error("HTTP Error:", response.status, errorText);
+                            document.getElementById("errorMsg").textContent = "❌ Server error (" + response.status + "). Please try again.";
+                            document.getElementById("errorMsg").style.display = "block";
+                            return;
+                        }
+                        
+                        const result = await response.json();
+                        console.log("Response:", result);
+                        
+                        if (result.success) {
+                            document.getElementById("successMsg").style.display = "block";
+                            
+                            // Start 10-second cooldown
+                            const cooldownEndTime = Date.now() + (10 * 1000);
+                            localStorage.setItem("resendCooldownEnd_" + userEmail, cooldownEndTime);
+                            startTimer(10);
+                        } else {
+                            document.getElementById("errorMsg").textContent = "❌ " + (result.message || "Failed to send email. Please try again.");
+                            document.getElementById("errorMsg").style.display = "block";
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        document.getElementById("errorMsg").textContent = "❌ Network error: " + error.message;
+                        document.getElementById("errorMsg").style.display = "block";
+                    }
+                }
+            </script>
         </body>
         </html>';
         exit();
