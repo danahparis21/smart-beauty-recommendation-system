@@ -7,7 +7,7 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 
 try {
-    // Group by CreatedAt and Title so we see one entry per "Blast" sent
+    // Main query with corrected column names
     $sql = "SELECT 
                 n.Title, 
                 n.Message, 
@@ -15,12 +15,17 @@ try {
                 MAX(n.ExpirationDate) as ExpirationDate,
                 COUNT(n.UserID) as RecipientCount 
             FROM notifications n
-            INNER JOIN users u ON n.UserID = u.id
-            WHERE u.role = 'admin'
+            INNER JOIN users u ON n.UserID = u.UserID
+            WHERE u.Role = 'admin'  -- Use 'Role' with capital R as per your schema
             GROUP BY n.CreatedAt, n.Title, n.Message 
             ORDER BY n.CreatedAt DESC";
             
     $result = $conn->query($sql);
+    
+    if (!$result) {
+        throw new Exception("Query failed: " . $conn->error);
+    }
+    
     $history = [];
 
     while ($row = $result->fetch_assoc()) {
@@ -28,7 +33,7 @@ try {
             'title' => $row['Title'],
             'message' => $row['Message'],
             'date' => date('M d, Y h:i A', strtotime($row['CreatedAt'])),
-            'raw_date' => $row['CreatedAt'], // Used for deletion identification
+            'raw_date' => $row['CreatedAt'],
             'recipients' => $row['RecipientCount'],
             'status' => (empty($row['ExpirationDate']) || new DateTime($row['ExpirationDate']) > new DateTime()) ? 'Active' : 'Expired'
         ];

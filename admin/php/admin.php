@@ -119,41 +119,84 @@ class AdminDashboard
                 $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders FROM orders WHERE order_date BETWEEN '$start' AND DATE_ADD('$start', INTERVAL 6 DAY) AND status = 'completed' GROUP BY DATE(order_date)";
                 break;
             case 'Weekly':
-                $startOfMonth = date('Y-m-01');
-                $endOfMonth = date('Y-m-t');
-                $weeks = [];
-                $firstMonday = date('Y-m-d', strtotime('monday this month'));
-                if (date('j', strtotime($firstMonday)) > 7) {
-                    $firstMonday = date('Y-m-d', strtotime('monday last month'));
-                }
-                for ($i = 0; $i < 5; $i++) {
-                    $weekStart = date('Y-m-d', strtotime("$firstMonday +$i week"));
-                    $weekEnd = date('Y-m-d', strtotime("$weekStart +6 days"));
-                    if ($weekStart > $endOfMonth)
-                        break;
-                    $label = 'Week ' . ($i + 1);
-                    $weeks[$label] = ['start' => $weekStart, 'end' => min($weekEnd, $endOfMonth)];
-                    $data[$label] = ['sales' => 0, 'orders' => 0];
-                }
-                $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders FROM orders WHERE order_date BETWEEN '$startOfMonth' AND '$endOfMonth' AND status = 'completed' GROUP BY DATE(order_date) ORDER BY date";
-                $result = $this->conn->query($query);
-                $raw = [];
-                while ($row = $result->fetch_assoc())
-                    $raw[] = $row;
-                foreach ($raw as $row) {
-                    foreach ($weeks as $label => $range) {
-                        if ($row['date'] >= $range['start'] && $row['date'] <= $range['end']) {
-                            $data[$label]['sales'] += (float) $row['sales'];
-                            $data[$label]['orders'] += (int) $row['orders'];
-                            break;
-                        }
-                    }
-                }
-                $formatted = [];
-                foreach ($weeks as $label => $_) {
-                    $formatted[] = ['display_date' => $label, 'sales' => $data[$label]['sales'], 'orders' => $data[$label]['orders']];
-                }
-                return $formatted;
+    $startOfMonth = date('Y-m-01');
+    $endOfMonth = date('Y-m-t');
+    
+    // Create 4-5 weeks covering the entire month
+    $weeks = [];
+    $currentDate = $startOfMonth;
+    $weekNumber = 1;
+    
+    while ($currentDate <= $endOfMonth) {
+        $weekEnd = date('Y-m-d', strtotime($currentDate . ' +6 days'));
+        if ($weekEnd > $endOfMonth) {
+            $weekEnd = $endOfMonth;
+        }
+        
+        $label = 'Week ' . $weekNumber;
+        $weeks[$label] = ['start' => $currentDate, 'end' => $weekEnd];
+        
+        // Move to next week
+        $currentDate = date('Y-m-d', strtotime($weekEnd . ' +1 day'));
+        $weekNumber++;
+        
+        // Safety break
+        if ($weekNumber > 6) break;
+    }
+    
+    // Initialize data structure
+    $data = [];
+    foreach ($weeks as $label => $range) {
+        $data[$label] = ['sales' => 0, 'orders' => 0];
+    }
+    
+    // Debug: Check what weeks are being generated
+    error_log("Generated weeks: " . print_r($weeks, true));
+    
+    // Fetch orders for the entire month
+    $query = "SELECT DATE(order_date) as date, SUM(total_price) as sales, COUNT(*) as orders 
+              FROM orders 
+              WHERE order_date BETWEEN '$startOfMonth' AND '$endOfMonth 23:59:59' 
+              AND status = 'completed' 
+              GROUP BY DATE(order_date) 
+              ORDER BY date";
+    
+    $result = $this->conn->query($query);
+    
+    // Debug: Check query results
+    $rawData = [];
+    while ($row = $result->fetch_assoc()) {
+        $rawData[] = $row;
+    }
+    error_log("Raw order data: " . print_r($rawData, true));
+    
+    // Assign orders to weeks
+    foreach ($rawData as $row) {
+        $orderDate = $row['date'];
+        
+        foreach ($weeks as $label => $range) {
+            if ($orderDate >= $range['start'] && $orderDate <= $range['end']) {
+                $data[$label]['sales'] += (float) $row['sales'];
+                $data[$label]['orders'] += (int) $row['orders'];
+                break;
+            }
+        }
+    }
+    
+    // Format output
+    $formatted = [];
+    foreach ($data as $label => $stats) {
+        $formatted[] = [
+            'display_date' => $label,
+            'sales' => $stats['sales'],
+            'orders' => $stats['orders']
+        ];
+    }
+    
+    // Debug: Final output
+    error_log("Final weekly data: " . print_r($formatted, true));
+    
+    return $formatted;
             case 'Monthly':
                 $year = date('Y');
                 for ($m = 1; $m <= 12; $m++) {
@@ -421,28 +464,108 @@ class AdminDashboard
         return $customers;
     }
 
-    public function getDashboardData($period = 'All Time', $chartOnly = false)
+    public function getRecentAdminActivity()
     {
-        $data = ['chart_data' => $this->getSalesChartData($period)];
-
-        if (!$chartOnly) {
-            $data['stats'] = [
-                'orders_today' => $this->getOrdersToday($period),
-                'orders_week' => $this->getOrdersThisWeek($period),
-                'total_sales' => $this->getTotalSales($period),
-                'total_favorites' => $this->getTotalFavorites()
+        $query = "SELECT actor_type, actor_id, action, details, timestamp 
+                  FROM activitylog 
+                  WHERE actor_type = 'admin' 
+                  ORDER BY timestamp DESC 
+                  LIMIT 5";
+        
+        $result = $this->conn->query($query);
+        $activities = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $activities[] = [
+                'type' => $this->getActivityType($row['action']),
+                'title' => $this->getActivityTitle($row['action'], $row['details']),
+                'details' => $row['details'],
+                'timestamp' => $row['timestamp']
             ];
-            $data['best_sellers'] = $this->getBestSellingProducts();
-            $data['ratings'] = $this->getStoreRatings();
-            $data['ai_insights'] = $this->getAIInsights($period);
-            $data['top_customers'] = $this->getTopCustomers($period);
-            $data['category_sales'] = $this->getCategorySales($period);
-            $data['customer_demographics'] = $this->getCustomerDemographics($period);
-            $data['order_status_dist'] = $this->getOrderStatusDistribution($period);
         }
-
-        return $data;
+        
+        return $activities;
     }
+    
+    private function getActivityType($action)
+    {
+        if (strpos($action, 'review') !== false) return 'reviewed';
+        if (strpos($action, 'update') !== false) return 'updated';
+        if (strpos($action, 'create') !== false) return 'created';
+        if (strpos($action, 'cancel') !== false) return 'cancelled';
+        if (strpos($action, 'process') !== false) return 'processed';
+        return 'general';
+    }
+    
+    private function getActivityTitle($action, $details)
+    {
+        if (strpos($action, 'review') !== false) return 'Reviewed a request';
+        if (strpos($action, 'update') !== false) return 'Updated information';
+        if (strpos($action, 'create') !== false) return 'Created new entry';
+        if (strpos($action, 'cancel') !== false) return 'Cancelled booking';
+        if (strpos($action, 'process') !== false) return 'Processed transaction';
+        return 'Performed action';
+    }
+    
+    public function getExpiringProductsDates()
+{
+    $query = "SELECT ProductID, Name, Category, Stocks, ExpirationDate 
+              FROM Products 
+              WHERE ExpirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 60 DAY) 
+              AND Status = 'Available'
+              ORDER BY ExpirationDate ASC";
+    
+    $result = $this->conn->query($query);
+    $productsByDate = [];
+    
+    while ($row = $result->fetch_assoc()) {
+        $date = $row['ExpirationDate'];
+        // Format date to match JavaScript expectation (YYYY-MM-DD)
+        $formattedDate = date('Y-m-d', strtotime($date));
+        
+        if (!isset($productsByDate[$formattedDate])) {
+            $productsByDate[$formattedDate] = [];
+        }
+        
+        $productsByDate[$formattedDate][] = [
+            'ProductID' => $row['ProductID'],
+            'Name' => $row['Name'],
+            'Category' => $row['Category'],
+            'Stocks' => $row['Stocks'],
+            'ExpirationDate' => $formattedDate
+        ];
+    }
+    
+    return $productsByDate;
+}
+
+// Update the getDashboardData method to use the new function:
+public function getDashboardData($period = 'All Time', $chartOnly = false)
+{
+    $data = ['chart_data' => $this->getSalesChartData($period)];
+
+    if (!$chartOnly) {
+        $data['stats'] = [
+            'orders_today' => $this->getOrdersToday($period),
+            'orders_week' => $this->getOrdersThisWeek($period),
+            'total_sales' => $this->getTotalSales($period),
+            'total_favorites' => $this->getTotalFavorites()
+        ];
+        $data['best_sellers'] = $this->getBestSellingProducts();
+        $data['ratings'] = $this->getStoreRatings();
+        $data['ai_insights'] = $this->getAIInsights($period);
+        $data['top_customers'] = $this->getTopCustomers($period);
+        $data['category_sales'] = $this->getCategorySales($period);
+        $data['customer_demographics'] = $this->getCustomerDemographics($period);
+        $data['order_status_dist'] = $this->getOrderStatusDistribution($period);
+        
+        // NEW: Add recent activity and expiring products
+        $data['recent_activity'] = $this->getRecentAdminActivity();
+        $data['expiring_dates'] = $this->getExpiringProductsDates(); // FIXED: Changed to 'expiring_dates' to match JavaScript
+    }
+
+    return $data;
+}
 }
 
 try {

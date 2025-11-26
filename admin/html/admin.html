@@ -21,6 +21,11 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add this with your other scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- SortableJS (ADDED FOR DRAG AND DROP) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
     <script src="../../admin/styles/logout.js"></script>
 
     <!-- SweetAlert2 CSS & JS -->
@@ -247,6 +252,15 @@
         background: var(--primary-pink);
       }
 
+      /* --- NEW: Stats specific drag style --- */
+      .stat-wrapper {
+        cursor: grab;
+      }
+      .stat-wrapper:active {
+        cursor: grabbing;
+      }
+      /* ------------------------------------- */
+
       .stat-btn::before {
         content: "";
         position: absolute;
@@ -315,82 +329,86 @@
         background: linear-gradient(135deg, #b05a70 0%, #9d4e5f 100%);
       }
 
-      .chart-container {
+      /* --- NEW: UNIFIED DRAGGABLE WIDGET CLASS (Replaces chart-container/right-panel distinction) --- */
+      .draggable-widget {
         background: white;
         border-radius: 20px;
-        padding: 20px 30px 30px 30px;
-        margin-bottom: 25px;
+        padding: 30px 30px 1px 30px;
+        margin-bottom: 5px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         border: 1px solid rgba(228, 151, 170, 0.1);
-        height: 530px;
         position: relative;
-        overflow: hidden;
         display: flex;
         flex-direction: column;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%; /* Fill column height */
       }
 
-      .chart-container canvas {
+      /* Specific override for the big chart to maintain height */
+      .sales-chart-widget {
+        min-height: 530px;
+      }
+
+      .draggable-widget canvas {
         flex: 1 1 auto;
         width: 100% !important;
-        height: 75% !important;
         display: block;
       }
 
-      .chart-container:hover {
+      .draggable-widget:hover {
         box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        /* Scale effect on hover removed on widget to prevent layout jitter, kept shadow */
         transform: translateY(-4px);
       }
 
-      .chart-header {
+      /* Header inside widget */
+      .widget-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 25px;
         flex-wrap: wrap;
         gap: 15px;
+        cursor: grab; /* Drag handle area */
       }
 
-      .chart-header h5 {
+      .widget-header:active {
+        cursor: grabbing;
+      }
+
+      .widget-header h5,
+      .widget-header h6 {
         color: var(--dark-pink);
         font-weight: 700;
-        font-size: 1.3rem;
         margin: 0;
-      }
-
-      .right-panel {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        height: 100%;
-        overflow-y: auto;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        transition: all 0.4s ease;
-        border: 1px solid rgba(228, 151, 170, 0.1);
-      }
-
-      .right-panel:hover {
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-      }
-
-      .panel-section {
-        margin-bottom: 30px;
-      }
-
-      .panel-section:last-child {
-        margin-bottom: 0;
-      }
-
-      .panel-section h6 {
-        color: var(--dark-pink);
-        font-weight: 700;
-        margin-bottom: 18px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #f0f0f0;
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         display: flex;
         align-items: center;
         gap: 8px;
+        pointer-events: none; /* Let clicks pass to header for dragging */
+      }
+
+      /* --- SORTABLE JS CLASSES --- */
+      .sortable-ghost {
+        opacity: 0.4;
+        background-color: #fff0f5;
+        border: 2px dashed #e497aa;
+      }
+
+      .sortable-drag {
+        opacity: 0.9;
+        transform: scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+      }
+
+      /* --------------------------- */
+
+      .panel-section {
+        margin-bottom: 0; /* Remove margin since they are now individual cards */
+        height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       .panel-section h6 i {
@@ -439,6 +457,7 @@
         display: flex;
         gap: 6px;
         flex-wrap: wrap;
+        margin-right: 20px;
       }
 
       .btn-group .btn {
@@ -517,22 +536,200 @@
         transition: margin-left 0.3s ease;
       }
 
-      .right-panel::-webkit-scrollbar {
+      /* Scrollbar logic for lists within widgets */
+      .scrollable-list {
+        overflow-y: auto;
+        max-height: 400px;
+        padding-right: 5px;
+      }
+
+      .scrollable-list::-webkit-scrollbar {
         width: 6px;
       }
 
-      .right-panel::-webkit-scrollbar-track {
+      .scrollable-list::-webkit-scrollbar-track {
         background: #f1f1f1;
         border-radius: 10px;
       }
 
-      .right-panel::-webkit-scrollbar-thumb {
+      .scrollable-list::-webkit-scrollbar-thumb {
         background: var(--primary-pink);
         border-radius: 10px;
       }
 
-      .right-panel::-webkit-scrollbar-thumb:hover {
+      .scrollable-list::-webkit-scrollbar-thumb:hover {
         background: var(--secondary-pink);
+      }
+
+      /* Top Customers Table Styles */
+      .customers-table-wrapper {
+        overflow-x: hidden;
+        border-radius: 12px;
+      }
+
+      .customers-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+
+      .customers-table thead {
+        background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .customers-table thead th {
+        padding: 16px 20px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+      }
+
+      .customers-table thead th:first-child {
+        border-top-left-radius: 12px;
+        padding-left: 24px;
+      }
+
+      .customers-table thead th:last-child {
+        border-top-right-radius: 12px;
+        text-align: right;
+        padding-right: 24px;
+      }
+
+      .customers-table tbody tr {
+        background: white;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(228, 151, 170, 0.1);
+      }
+
+      .customers-table tbody tr:hover {
+        background: #fff5f9;
+        transform: scale(1.01);
+        box-shadow: 0 4px 12px rgba(228, 151, 170, 0.15);
+      }
+
+      .customers-table tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .customers-table tbody td {
+        padding: 18px 20px;
+        vertical-align: middle;
+        font-size: 0.95rem;
+        color: #333;
+      }
+
+      .customers-table tbody td:first-child {
+        padding-left: 24px;
+      }
+
+      .customers-table tbody td:last-child {
+        text-align: right;
+        padding-right: 24px;
+      }
+
+      .customer-rank {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-right: 16px;
+      }
+
+      .customer-rank.gold {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        color: #333;
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+      }
+
+      .customer-rank.silver {
+        background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+        color: #333;
+        box-shadow: 0 4px 12px rgba(192, 192, 192, 0.3);
+      }
+
+      .customer-rank.bronze {
+        background: linear-gradient(135deg, #cd7f32 0%, #d4a574 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+      }
+
+      .customer-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .customer-table-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-pink);
+        margin-right: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .customer-table-initial {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-right: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .customer-name {
+        font-weight: 600;
+        color: var(--dark-pink);
+        font-size: 1rem;
+      }
+
+      .customer-email {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 2px;
+      }
+
+      .customer-orders {
+        color: #666;
+        font-weight: 500;
+      }
+
+      .customer-orders .badge {
+        background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      .customer-spent {
+        font-weight: 700;
+        color: var(--dark-pink);
+        font-size: 1.1rem;
+      }
+
+      .customers-table tbody tr:nth-child(1) .customer-name::after {
+        content: " 👑";
       }
 
       .product-item {
@@ -606,33 +803,21 @@
       }
 
       .stat-btn,
-      .chart-container,
-      .right-panel {
+      .draggable-widget {
         animation: fadeInUp 0.6s ease forwards;
       }
 
       .stat-btn:nth-child(1) {
         animation-delay: 0.1s;
       }
-
       .stat-btn:nth-child(2) {
         animation-delay: 0.2s;
       }
-
       .stat-btn:nth-child(3) {
         animation-delay: 0.3s;
       }
-
       .stat-btn:nth-child(4) {
         animation-delay: 0.4s;
-      }
-
-      .chart-container {
-        animation-delay: 0.5s;
-      }
-
-      .right-panel {
-        animation-delay: 0.6s;
       }
 
       .product-item,
@@ -677,15 +862,11 @@
         transition: transform 0.3s ease;
       }
 
-      .analytics-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-      }
-
       .small-chart-container {
         height: 300px;
         position: relative;
         width: 100%;
+        margin-top: 30px;
       }
 
       /* --- NEW STYLES FOR PROFILE PICS & REVIEWS --- */
@@ -696,6 +877,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: color 0.3s;
+        margin-right: 20px;
       }
 
       .view-all-link:hover {
@@ -823,12 +1005,422 @@
         color: white;
       }
 
+      /* --- NEW STYLES FOR RECENT ACTIVITY AND CALENDAR --- */
+      .activity-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(228, 151, 170, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .activity-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-item:hover {
+        background-color: #fff5f9;
+        border-radius: 10px;
+        padding: 12px 10px;
+      }
+
+      .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+      }
+
+      .activity-content {
+        flex: 1;
+      }
+
+      .activity-title {
+        font-weight: 600;
+        color: var(--dark-pink);
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+
+      .activity-details {
+        font-size: 0.8rem;
+        color: #666;
+        line-height: 1.4;
+      }
+
+      .activity-time {
+        font-size: 0.75rem;
+        color: #999;
+        margin-top: 4px;
+      }
+
+      /* Calendar Styles */
+      .calendar-widget {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        height: 100%;
+      }
+
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .calendar-month {
+        font-weight: 700;
+        color: var(--dark-pink);
+        font-size: 1.2rem;
+      }
+
+      .calendar-nav {
+        display: flex;
+        gap: 8px;
+      }
+
+      .calendar-nav-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff0f5;
+        color: var(--dark-pink);
+        border: none;
+        transition: all 0.3s ease;
+      }
+
+      .calendar-nav-btn:hover {
+        background: var(--primary-pink);
+        color: white;
+      }
+
+      .calendar-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--dark-pink);
+        font-size: 0.8rem;
+      }
+
+      .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+      }
+
+      .calendar-day {
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .calendar-day:hover {
+        background: #fff0f5;
+      }
+
+      .calendar-day.other-month {
+        color: #ccc;
+      }
+
+      .calendar-day.today {
+        background: var(--primary-pink);
+        color: white;
+        font-weight: 600;
+      }
+
+      .calendar-day.expiring {
+        position: relative;
+      }
+
+      .calendar-day.expiring::after {
+        content: "";
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ff6b6b;
+      }
+
+      /* --- NEW: Calendar Hover Effects --- */
+      .calendar-day.expiring {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .calendar-day.expiring::after {
+        content: "";
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ff6b6b;
+        transition: all 0.3s ease;
+      }
+
+      .calendar-day.expiring:hover {
+        background: #fff0f0 !important;
+        border: 1px solid #ff6b6b;
+      }
+
+      .calendar-day.expiring:hover::after {
+        background: #ff4444;
+        transform: scale(1.2);
+      }
+
+      .calendar-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        pointer-events: none;
+      }
+
+      .calendar-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: #333;
+      }
+
+      .calendar-day.expiring:hover .calendar-tooltip {
+        opacity: 1;
+        visibility: visible;
+        bottom: calc(100% + 10px);
+      }
+
+      /* Expiration Modal Styles */
+      .expiration-product-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border: 1px solid rgba(228, 151, 170, 0.2);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+        background: #fff5f9;
+      }
+
+      .expiration-product-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(228, 151, 170, 0.15);
+        border-color: var(--primary-pink);
+      }
+
+      .expiration-product-info {
+        flex: 1;
+      }
+
+      .expiration-product-name {
+        font-weight: 600;
+        color: var(--dark-pink);
+        margin-bottom: 4px;
+      }
+
+      .expiration-product-details {
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      .expiration-product-stock {
+        font-size: 0.8rem;
+        color: #ff6b6b;
+        font-weight: 600;
+      }
+
+      .expiration-date-badge {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 10px;
+      }
+
+      .expiration-critical {
+        border-left: 4px solid #ff4444;
+      }
+
+      .expiration-warning {
+        border-left: 4px solid #ffa726;
+      }
+
+      .expiration-normal {
+        border-left: 4px solid #66bb6a;
+      }
+
+      /* Calendar day urgency indicators */
+      .calendar-day.expiring.critical::after {
+        background: #ff4444;
+        box-shadow: 0 0 6px rgba(255, 68, 68, 0.5);
+      }
+
+      .calendar-day.expiring.warning::after {
+        background: #ffa726;
+        box-shadow: 0 0 6px rgba(255, 167, 38, 0.5);
+      }
+
+      .calendar-day.expiring.normal::after {
+        background: #66bb6a;
+        box-shadow: 0 0 6px rgba(102, 187, 106, 0.5);
+      }
+
       /* --- RESPONSIVE STYLES (PRIORITIZED) --- */
       @media (max-width: 991px) {
-        .stats-buttons {
-          grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
-          gap: 15px;
+        /* Fix for mobile stats button uniformity */
+        @media (max-width: 991px) {
+          .stats-buttons {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 12px;
+          }
+
+          .stat-wrapper {
+            min-height: 120px;
+            display: flex;
+          }
+
+          .stat-btn {
+            flex: 1;
+            min-height: 120px;
+            height: 100% !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px 12px !important;
+            text-align: left;
+          }
+
+          .stat-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+          }
+
+          .stat-btn i {
+            font-size: 1.6rem !important;
+            margin-bottom: 8px !important;
+            flex-shrink: 0;
+          }
+
+          .stat-value {
+            font-size: 1.4rem !important;
+            margin: 4px 0 !important;
+            line-height: 1.2;
+            flex-shrink: 0;
+            font-weight: 700;
+          }
+
+          .stat-label {
+            font-size: 0.8rem !important;
+            line-height: 1.2;
+            flex-shrink: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            margin: 0 !important;
+          }
         }
+        .chart-wrapper-fix {
+          height: 300px !important; /* Reduced from 450px */
+        }
+
+        /* Adjust small charts */
+        .small-chart-container {
+          height: 250px !important; /* Reduced from 250px */
+          margin-top: 20px;
+        }
+
+        /* Adjust the sales chart widget minimum height */
+        .sales-chart-widget {
+          min-height: 380px !important; /* Reduced from 530px */
+        }
+        .top-customers-container {
+          overflow-x: auto !important;
+          margin: 0 -10px;
+          padding: 0 10px;
+        }
+
+        .customers-table-wrapper {
+          min-width: 600px; /* Minimum width to prevent squeezing */
+          overflow-x: visible;
+        }
+
+        .customers-table {
+          width: 100%;
+          min-width: 600px;
+        }
+
+        /* Adjust table cell padding for mobile */
+        .customers-table thead th {
+          padding: 12px 10px !important;
+          font-size: 0.8rem !important;
+        }
+
+        .customers-table tbody td {
+          padding: 10px 8px !important;
+          font-size: 0.85rem !important;
+        }
+
+        /* Make customer info more compact */
+        .customer-table-avatar,
+        .customer-table-initial {
+          width: 36px !important;
+          height: 36px !important;
+          margin-right: 10px !important;
+        }
+
+        .customer-name {
+          font-size: 0.9rem !important;
+        }
+
+        .customer-email {
+          font-size: 0.75rem !important;
+        }
+
+        .customer-rank {
+          width: 28px !important;
+          height: 28px !important;
+          font-size: 0.75rem !important;
+          margin-right: 10px !important;
+        }
+
         main {
           margin-left: 0 !important;
           width: 100% !important;
@@ -904,6 +1496,15 @@
         .custom-dropdown-menu {
           width: 100%;
         }
+
+        .calendar-widget {
+          padding: 15px;
+        }
+
+        .calendar-day {
+          height: 32px;
+          font-size: 0.75rem;
+        }
       }
 
       .animation-fix {
@@ -915,6 +1516,21 @@
         min-height: 250px;
       }
 
+      /* Visual cue for drag handle on charts/widgets */
+      .drag-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: #ddd;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+
+      .draggable-widget:hover .drag-indicator {
+        opacity: 1;
+      }
+
       @media (max-width: 768px) {
         .chart-container {
           min-height: 300px;
@@ -923,6 +1539,13 @@
         .small-chart-container {
           min-height: 200px;
         }
+      }
+      /* --- FIX FOR GROWING CHART --- */
+      .chart-wrapper-fix {
+        position: relative;
+        height: 450px; /* Give it a strict height */
+        width: 100%;
+        overflow: hidden;
       }
     </style>
   </head>
@@ -990,47 +1613,59 @@
 
         <!-- Main content -->
         <main class="col-md-10">
-          <!-- Stats Cards -->
-          <div class="stats-buttons">
-            <button class="stat-btn orders-today">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <div class="stat-content">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Orders</span>
-              </div>
-            </button>
+          <!-- Stats Cards (Draggable Row) -->
+          <div class="stats-buttons" id="stats-sortable">
+            <div class="stat-wrapper" data-id="stat-orders">
+              <button class="stat-btn orders-today w-100">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <div class="stat-content">
+                  <span class="stat-value">--</span>
+                  <span class="stat-label">Orders</span>
+                </div>
+              </button>
+            </div>
 
-            <button class="stat-btn this-week">
-              <i class="fa-solid fa-calendar-week"></i>
-              <div class="stat-content">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Sales Volume</span>
-              </div>
-            </button>
+            <div class="stat-wrapper" data-id="stat-sales-vol">
+              <button class="stat-btn this-week w-100">
+                <i class="fa-solid fa-calendar-week"></i>
+                <div class="stat-content">
+                  <span class="stat-value">--</span>
+                  <span class="stat-label">Sales Volume</span>
+                </div>
+              </button>
+            </div>
 
-            <button class="stat-btn total-sales">
-              <i class="fa-solid fa-coins"></i>
-              <div class="stat-content">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Revenue</span>
-              </div>
-            </button>
+            <div class="stat-wrapper" data-id="stat-revenue">
+              <button class="stat-btn total-sales w-100">
+                <i class="fa-solid fa-coins"></i>
+                <div class="stat-content">
+                  <span class="stat-value">--</span>
+                  <span class="stat-label">Revenue</span>
+                </div>
+              </button>
+            </div>
 
-            <button class="stat-btn favorites-count">
-              <i class="fa-solid fa-heart"></i>
-              <div class="stat-content">
-                <span class="stat-value" id="totalFavorites">--</span>
-                <span class="stat-label">Total Favorites</span>
-              </div>
-            </button>
+            <div class="stat-wrapper" data-id="stat-favorites">
+              <button class="stat-btn favorites-count w-100">
+                <i class="fa-solid fa-heart"></i>
+                <div class="stat-content">
+                  <span class="stat-value" id="totalFavorites">--</span>
+                  <span class="stat-label">Total Favorites</span>
+                </div>
+              </button>
+            </div>
           </div>
 
-          <div class="row">
-            <!-- Main Graph Section & New Analytics -->
-            <div class="col-md-8">
-              <!-- Sales Chart -->
-              <div class="chart-container">
-                <div class="chart-header">
+          <!-- Main Grid Section (Unified & Sortable) -->
+          <div class="row" id="dashboard-sortable">
+            <!-- 1. Sales Chart (Span 8) -->
+            <div
+              class="col-lg-8 col-md-12 mb-4 widget-item"
+              data-id="widget-sales-chart"
+            >
+              <div class="draggable-widget sales-chart-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
                   <h5><i class="fas fa-chart-line"></i> Sales Overview</h5>
                   <div class="btn-group" role="group">
                     <button
@@ -1065,137 +1700,247 @@
                     </button>
                   </div>
                 </div>
-                <canvas id="salesChart"></canvas>
-              </div>
 
-              <!-- Analytics Charts -->
-              <div class="row mt-4 mb-4">
-                <div class="col-md-6 mb-3">
-                  <div class="analytics-card">
-                    <div class="panel-section mb-0">
-                      <h6>
-                        <i class="fas fa-chart-pie"></i> Sales by Category
-                      </h6>
-                      <div class="small-chart-container">
-                        <canvas id="categoryChart"></canvas>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <div class="analytics-card">
-                    <div class="panel-section mb-0">
-                      <h6>
-                        <i class="fas fa-venus-mars"></i> Customer Demographics
-                        (Skin)
-                      </h6>
-                      <div class="small-chart-container">
-                        <canvas id="demographicsChart"></canvas>
-                      </div>
-                    </div>
-                  </div>
+                <!-- FIX: Added this wrapper div -->
+                <div class="chart-wrapper-fix">
+                  <canvas id="salesChart"></canvas>
                 </div>
               </div>
+            </div>
 
-              <!-- AI Insights and Top Customers -->
-              <div class="row mt-4">
-                <div class="col-md-6">
-                  <div class="panel-section">
-                    <h6><i class="fas fa-brain"></i> Smart AI Insights</h6>
-                    <div class="ai-insights-container">
-                      <div class="placeholder-box">
-                        <i
-                          class="fas fa-robot fa-2x mb-3"
-                          style="color: var(--primary-pink)"
-                        ></i>
-                        <div style="font-size: 1rem; margin-bottom: 6px">
-                          AI-Powered Recommendations
-                        </div>
-                        <small class="text-muted"
-                          >Insights and suggestions will appear here</small
-                        >
-                      </div>
+            <!-- 2. Recent Activity (NEW - Span 4) -->
+            <div
+              class="col-lg-4 col-md-12 mb-4 widget-item"
+              data-id="widget-recent-activity"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <h6><i class="fas fa-clock"></i> Recent Activity</h6>
+                </div>
+                <div class="recent-activity-container scrollable-list">
+                  <div class="placeholder-box">
+                    <i
+                      class="fas fa-clock fa-2x mb-3"
+                      style="color: var(--primary-pink)"
+                    ></i>
+                    <div style="font-size: 1rem; margin-bottom: 6px">
+                      Recent Admin Activities
                     </div>
+                    <small class="text-muted"
+                      >Recent admin actions will appear here</small
+                    >
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div class="col-md-6">
-                  <div class="panel-section">
-                    <h6><i class="fas fa-crown"></i> Top Customers</h6>
-                    <div class="top-customers-container">
-                      <div class="placeholder-box">
-                        <i
-                          class="fas fa-users fa-2x mb-3"
-                          style="color: var(--primary-pink)"
-                        ></i>
-                        <div style="font-size: 1rem; margin-bottom: 6px">
-                          Customer Performance Data
-                        </div>
-                        <small class="text-muted"
-                          >Top customers will be listed here</small
-                        >
+            <!-- 3. Calendar Widget (NEW - Span 4) -->
+            <div
+              class="col-lg-4 col-md-6 mb-4 widget-item"
+              data-id="widget-calendar"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <h6>
+                    <i class="fas fa-calendar-alt"></i> Product Expiration
+                    Calendar
+                  </h6>
+                </div>
+                <div class="calendar-container">
+                  <div class="calendar-widget">
+                    <div class="calendar-header">
+                      <div class="calendar-month" id="calendarMonth">
+                        March 2025
                       </div>
+                      <div class="calendar-nav">
+                        <button class="calendar-nav-btn" id="prevMonth">
+                          <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="calendar-nav-btn" id="nextMonth">
+                          <i class="fas fa-chevron-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="calendar-weekdays">
+                      <div>Su</div>
+                      <div>Mo</div>
+                      <div>Tu</div>
+                      <div>We</div>
+                      <div>Th</div>
+                      <div>Fr</div>
+                      <div>Sa</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays">
+                      <!-- Calendar days will be populated by JavaScript -->
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Right Panel -->
-            <div class="col-md-4">
-              <div class="right-panel">
-                <div class="panel-section">
+            <!-- 4. Best Selling Products (Extracted from Right Panel -> Span 4) -->
+            <div
+              class="col-lg-4 col-md-12 mb-4 widget-item"
+              data-id="widget-best-sellers"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
                   <h6><i class="fas fa-fire"></i> Best Selling Products</h6>
-                  <div class="best-sellers-container">
-                    <div class="placeholder-box">
-                      <i
-                        class="fas fa-cube fa-2x mb-3"
-                        style="color: var(--primary-pink)"
-                      ></i>
-                      <div style="font-size: 1rem; margin-bottom: 6px">
-                        Product Performance Data
-                      </div>
-                      <small class="text-muted"
-                        >Top products will be listed here</small
-                      >
+                </div>
+                <div class="best-sellers-container scrollable-list">
+                  <div class="placeholder-box">
+                    <i
+                      class="fas fa-cube fa-2x mb-3"
+                      style="color: var(--primary-pink)"
+                    ></i>
+                    <div style="font-size: 1rem; margin-bottom: 6px">
+                      Product Performance Data
                     </div>
-                  </div>
-                </div>
-
-                <div class="panel-section mt-4">
-                  <h6><i class="fas fa-clipboard-list"></i> Order Status</h6>
-                  <div class="small-chart-container" style="height: 200px">
-                    <canvas id="orderStatusChart"></canvas>
-                  </div>
-                </div>
-
-                <div class="panel-section">
-                  <!-- Updated Header with View All -->
-                  <div
-                    class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3"
-                    style="border-color: #f0f0f0 !important"
-                  >
-                    <h6 style="border: none; margin: 0; padding: 0">
-                      <i class="fas fa-star"></i> Store Ratings
-                    </h6>
-                    <span class="view-all-link" id="viewAllReviewsBtn"
-                      >View All</span
+                    <small class="text-muted"
+                      >Top products will be listed here</small
                     >
                   </div>
+                </div>
+              </div>
+            </div>
 
-                  <div class="ratings-container">
-                    <div class="placeholder-box">
-                      <i
-                        class="fas fa-star fa-2x mb-3"
-                        style="color: var(--primary-pink)"
-                      ></i>
-                      <div style="font-size: 1rem; margin-bottom: 6px">
-                        Customer Feedback & Ratings
-                      </div>
-                      <small class="text-muted"
-                        >Rating statistics will appear here</small
-                      >
+            <!-- 5. Sales by Category (Span 4) -->
+            <div
+              class="col-lg-4 col-md-6 mb-4 widget-item"
+              data-id="widget-category"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <h6><i class="fas fa-chart-pie"></i> Sales by Category</h6>
+                </div>
+                <div class="small-chart-container">
+                  <canvas id="categoryChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- 6. Customer Demographics (Span 4) -->
+            <div
+              class="col-lg-4 col-md-6 mb-4 widget-item"
+              data-id="widget-demographics"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <h6>
+                    <i class="fas fa-venus-mars"></i> Customer Demographics
+                    (Skin)
+                  </h6>
+                </div>
+                <div class="small-chart-container">
+                  <canvas id="demographicsChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7. Order Status (Extracted from Right Panel -> Span 4) -->
+            <div
+              class="col-lg-4 col-md-6 mb-4 widget-item"
+              data-id="widget-order-status"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <h6><i class="fas fa-clipboard-list"></i> Order Status</h6>
+                </div>
+                <div class="small-chart-container" style="height: 200px">
+                  <canvas id="orderStatusChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- 8. Smart AI Insights (Span 4) -->
+            <div
+              class="col-lg-4 col-md-6 mb-4 widget-item"
+              data-id="widget-ai-insights"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <h6><i class="fas fa-brain"></i> Smart AI Insights</h6>
+                </div>
+                <div class="ai-insights-container scrollable-list">
+                  <div class="placeholder-box">
+                    <i
+                      class="fas fa-robot fa-2x mb-3"
+                      style="color: var(--primary-pink)"
+                    ></i>
+                    <div style="font-size: 1rem; margin-bottom: 6px">
+                      AI-Powered Recommendations
                     </div>
+                    <small class="text-muted"
+                      >Insights and suggestions will appear here</small
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 9. Top Customers (Span 8 - Table Format) -->
+            <div
+              class="col-lg-8 col-md-12 mb-4 widget-item"
+              data-id="widget-top-customers"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <h6><i class="fas fa-crown"></i> Top Customers</h6>
+                </div>
+                <div class="top-customers-container">
+                  <div class="placeholder-box">
+                    <i
+                      class="fas fa-users fa-2x mb-3"
+                      style="color: var(--primary-pink)"
+                    ></i>
+                    <div style="font-size: 1rem; margin-bottom: 6px">
+                      Customer Performance Data
+                    </div>
+                    <small class="text-muted"
+                      >Top customers will be listed here</small
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 10. Store Ratings (Extracted from Right Panel -> Span 4) -->
+            <div
+              class="col-lg-4 col-md-6 mb-4 widget-item"
+              data-id="widget-store-ratings"
+            >
+              <div class="draggable-widget">
+                <i class="fas fa-grip-lines drag-indicator"></i>
+                <div class="widget-header">
+                  <div class="d-flex align-items-center gap-2">
+                    <h6 style="margin: 0">
+                      <i class="fas fa-star"></i> Store Ratings
+                    </h6>
+                  </div>
+                  <span class="view-all-link" id="viewAllReviewsBtn"
+                    >View All</span
+                  >
+                </div>
+                <div class="ratings-container scrollable-list">
+                  <div class="placeholder-box">
+                    <i
+                      class="fas fa-star fa-2x mb-3"
+                      style="color: var(--primary-pink)"
+                    ></i>
+                    <div style="font-size: 1rem; margin-bottom: 6px">
+                      Customer Feedback & Ratings
+                    </div>
+                    <small class="text-muted"
+                      >Rating statistics will appear here</small
+                    >
                   </div>
                 </div>
               </div>
@@ -1215,11 +1960,17 @@
             <h5 class="modal-title">
               <i class="fas fa-comments me-2"></i>All Store Reviews
             </h5>
+            <!-- Close button added for better UX -->
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
 
             <div class="filter-controls">
               <!-- Rating Filter Dropdown -->
               <div class="dropdown">
-                <!-- ADDED data-bs-boundary="viewport" HERE -->
                 <button
                   class="btn custom-dropdown-btn dropdown-toggle"
                   type="button"
@@ -1288,7 +2039,6 @@
 
               <!-- Sort Filter Dropdown -->
               <div class="dropdown">
-                <!-- ADDED data-bs-boundary="viewport" HERE -->
                 <button
                   class="btn custom-dropdown-btn dropdown-toggle"
                   type="button"
@@ -1334,6 +2084,33 @@
       </div>
     </div>
 
+    <!-- Add this modal for product expiration details -->
+    <div
+      class="modal fade"
+      id="expirationModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-calendar-exclamation me-2"></i>Expiring Products
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" id="expirationModalBody">
+            <!-- Content will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Reveal Overlay & Cashier Mode Elements -->
     <div class="reveal-overlay" id="revealOverlay"></div>
     <div class="fullscreen-reveal" id="fullscreenReveal">
@@ -1368,6 +2145,66 @@
         if (!currentAdmin) return;
 
         await updateAdminGreeting();
+
+        // ----------------------------------------------------
+        // DRAG AND DROP LOGIC (SORTABLE JS)
+        // ----------------------------------------------------
+
+        // Function to load saved layout
+
+        const loadLayout = (storageKey, containerId) => {
+          const savedOrder = localStorage.getItem(storageKey);
+          if (savedOrder) {
+            const container = document.getElementById(containerId);
+            const order = JSON.parse(savedOrder);
+            // Re-append children in the saved order
+            order.forEach((id) => {
+              const el = container.querySelector(`[data-id="${id}"]`);
+              if (el) container.appendChild(el);
+            });
+          }
+        };
+
+        // Function to save layout
+        const saveLayout = (storageKey, sortable) => {
+          const order = sortable.toArray(); // Returns array of data-ids
+          localStorage.setItem(storageKey, JSON.stringify(order));
+        };
+
+        // 1. Initialize Stats Row Sorting
+        const statsContainer = document.getElementById("stats-sortable");
+        loadLayout("admin_dashboard_stats_order", "stats-sortable");
+
+        new Sortable(statsContainer, {
+          animation: 150,
+          ghostClass: "sortable-ghost",
+          dragClass: "sortable-drag",
+          dataIdAttr: "data-id",
+          onEnd: function (evt) {
+            saveLayout("admin_dashboard_stats_order", this);
+          },
+        });
+
+        // 2. Initialize Main Dashboard Grid Sorting
+        const gridContainer = document.getElementById("dashboard-sortable");
+        loadLayout("admin_dashboard_grid_order", "dashboard-sortable");
+
+        new Sortable(gridContainer, {
+          animation: 150,
+          ghostClass: "sortable-ghost",
+          dragClass: "sortable-drag",
+          handle: ".widget-header", // Users must drag by the header
+          dataIdAttr: "data-id",
+          onEnd: function (evt) {
+            saveLayout("admin_dashboard_grid_order", this);
+            // Trigger chart resize in case layout shift occurred
+            Object.values(Chart.instances).forEach((chart) => chart.resize());
+          },
+        });
+
+        // ----------------------------------------------------
+        // END DRAG AND DROP LOGIC
+        // ----------------------------------------------------
 
         // ... [Previous sidebar and mobile logic kept the same] ...
         const hamburgerBtn = document.getElementById("hamburgerBtn");
@@ -1406,6 +2243,245 @@
         window.addEventListener("load", adjustContentForMobileHeader);
         window.addEventListener("resize", adjustContentForMobileHeader);
 
+        // --- NEW: Calendar Functionality with Hover Effects ---
+        let currentDate = new Date();
+        let expiringProducts = {}; // Will be populated from server data: { '2025-03-15': [{product}, ...] }
+
+        const renderCalendar = (year, month) => {
+          const calendarMonth = document.getElementById("calendarMonth");
+          const calendarDays = document.getElementById("calendarDays");
+
+          // Set month name
+          const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          calendarMonth.textContent = `${monthNames[month]} ${year}`;
+
+          // Get first day of month and number of days
+          const firstDay = new Date(year, month, 1).getDay();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+          // Clear calendar
+          calendarDays.innerHTML = "";
+
+          // Previous month days
+          for (let i = firstDay - 1; i >= 0; i--) {
+            const day = document.createElement("div");
+            day.className = "calendar-day other-month";
+            day.textContent = daysInPrevMonth - i;
+            calendarDays.appendChild(day);
+          }
+
+          // Current month days
+          const today = new Date();
+          for (let i = 1; i <= daysInMonth; i++) {
+            const day = document.createElement("div");
+            day.className = "calendar-day";
+            day.textContent = i;
+
+            // Check if today
+            if (
+              year === today.getFullYear() &&
+              month === today.getMonth() &&
+              i === today.getDate()
+            ) {
+              day.classList.add("today");
+            }
+
+            // Check if product expiration date
+            const dateStr = `${year}-${String(month + 1).padStart(
+              2,
+              "0"
+            )}-${String(i).padStart(2, "0")}`;
+            if (
+              expiringProducts[dateStr] &&
+              expiringProducts[dateStr].length > 0
+            ) {
+              day.classList.add("expiring");
+
+              // Add urgency class based on days until expiration
+              const expirationDate = new Date(dateStr);
+              const daysUntilExpiration = Math.ceil(
+                (expirationDate - today) / (1000 * 60 * 60 * 24)
+              );
+
+              if (daysUntilExpiration <= 7) {
+                day.classList.add("critical");
+              } else if (daysUntilExpiration <= 30) {
+                day.classList.add("warning");
+              } else {
+                day.classList.add("normal");
+              }
+
+              // Add tooltip with product count
+              const tooltip = document.createElement("div");
+              tooltip.className = "calendar-tooltip";
+              const productCount = expiringProducts[dateStr].length;
+              tooltip.textContent = `${productCount} product${
+                productCount > 1 ? "s" : ""
+              } expiring`;
+              day.appendChild(tooltip);
+
+              // Add click event to show details
+              day.addEventListener("click", () =>
+                showExpirationDetails(dateStr, expiringProducts[dateStr])
+              );
+            }
+
+            calendarDays.appendChild(day);
+          }
+
+          // Next month days
+          const totalCells = 42; // 6 rows * 7 days
+          const remainingCells = totalCells - (firstDay + daysInMonth);
+          for (let i = 1; i <= remainingCells; i++) {
+            const day = document.createElement("div");
+            day.className = "calendar-day other-month";
+            day.textContent = i;
+            calendarDays.appendChild(day);
+          }
+        };
+
+        // Show expiration details modal
+        const showExpirationDetails = (date, products) => {
+          const modalBody = document.getElementById("expirationModalBody");
+          const modal = new bootstrap.Modal(
+            document.getElementById("expirationModal")
+          );
+
+          const dateObj = new Date(date);
+          const formattedDate = dateObj.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          const today = new Date();
+          const daysUntilExpiration = Math.ceil(
+            (dateObj - today) / (1000 * 60 * 60 * 24)
+          );
+
+          let urgencyClass = "expiration-normal";
+          let urgencyText = "Expiring Soon";
+
+          if (daysUntilExpiration <= 7) {
+            urgencyClass = "expiration-critical";
+            urgencyText = "CRITICAL: Expiring Soon";
+          } else if (daysUntilExpiration <= 30) {
+            urgencyClass = "expiration-warning";
+            urgencyText = "Warning: Expiring Soon";
+          }
+
+          let html = `
+    <div class="mb-3">
+      <h6 class="mb-2" style="color: var(--dark-pink);">${formattedDate}</h6>
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="badge ${urgencyClass.replace(
+          "expiration-",
+          "bg-"
+        )}">${urgencyText}</span>
+        <small class="text-muted">${daysUntilExpiration} days remaining</small>
+      </div>
+    </div>
+    <div class="expiration-products-list">
+  `;
+
+          products.forEach((product) => {
+            const stockStatus = product.Stocks <= 5 ? "Low Stock" : "In Stock";
+            const stockClass =
+              product.Stocks <= 5 ? "expiration-critical" : "expiration-normal";
+
+            html += `
+      <div class="expiration-product-item ${stockClass}">
+        <div class="expiration-product-info">
+          <div class="expiration-product-name">${product.Name}</div>
+          <div class="expiration-product-details">
+            ${product.Category} • ${product.Stocks} units
+          </div>
+          <div class="expiration-product-stock">${stockStatus}</div>
+        </div>
+        <div class="expiration-date-badge">
+          ${product.Stocks} left
+        </div>
+      </div>
+    `;
+          });
+
+          html += `</div>`;
+
+          modalBody.innerHTML = html;
+          modal.show();
+        };
+
+        // Initialize calendar
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+
+        // Calendar navigation
+        document.getElementById("prevMonth").addEventListener("click", () => {
+          currentDate.setMonth(currentDate.getMonth() - 1);
+          renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        });
+
+        document.getElementById("nextMonth").addEventListener("click", () => {
+          currentDate.setMonth(currentDate.getMonth() + 1);
+          renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        });
+
+        // --- NEW: Recent Activity Functionality ---
+        const updateRecentActivity = (activities) => {
+          const container = document.querySelector(
+            ".recent-activity-container"
+          );
+          if (!activities || !activities.length) {
+            container.innerHTML = `<div class="placeholder-box"><i class="fas fa-clock fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No recent activity</div></div>`;
+            return;
+          }
+
+          container.innerHTML = activities
+            .map((activity) => {
+              const iconMap = {
+                reviewed: "fa-comment-check",
+                updated: "fa-edit",
+                created: "fa-plus-circle",
+                cancelled: "fa-times-circle",
+                processed: "fa-cash-register",
+              };
+
+              const icon = iconMap[activity.type] || "fa-circle";
+              const time = new Date(activity.timestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+
+              return `
+              <div class="activity-item">
+                <div class="activity-icon" style="background: #fff0f5; color: var(--primary-pink);">
+                  <i class="fas ${icon}"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">${activity.title}</div>
+                  <div class="activity-details">${activity.details}</div>
+                  <div class="activity-time">${time}</div>
+                </div>
+              </div>
+            `;
+            })
+            .join("");
+        };
+
         // --- Chart Instances ---
         let categoryChartInstance = null;
         let demographicsChartInstance = null;
@@ -1427,31 +2503,26 @@
 
           modalBody.innerHTML =
             '<div class="text-center py-4"><div class="spinner-border text-secondary" role="status"></div><p class="mt-2 text-muted">Loading reviews...</p></div>';
-          // --- NEW: Handle Custom Dropdown Selection ---
+          // --- Handle Custom Dropdown Selection ---
           window.selectFilter = function (type, value, text, element) {
-            // 1. Update the hidden input value
             const inputId = type === "rating" ? "reviewFilter" : "reviewSort";
             const input = document.getElementById(inputId);
             if (input) input.value = value;
 
-            // 2. Update the Button Text
             const btnId =
               type === "rating" ? "ratingDropdownBtn" : "sortDropdownBtn";
             const btn = document.getElementById(btnId);
             if (btn) btn.textContent = text;
 
-            // 3. Update Active State styling
             const menu = element.closest(".dropdown-menu");
             menu
               .querySelectorAll(".custom-dropdown-item")
               .forEach((item) => item.classList.remove("active"));
             element.classList.add("active");
 
-            // 4. Trigger Fetch
             fetchReviews();
           };
           try {
-            // Fetch just the reviews, not the whole dashboard
             const response = await fetch(
               `../php/admin.php?action=get_reviews&rating=${filter}&sort=${sort}`
             );
@@ -1477,12 +2548,10 @@
                     ? `../images/${review.user_image}`
                     : null;
 
-                // Image or Initial
                 let avatarHtml = "";
                 if (imgSrc) {
                   avatarHtml = `<img src="${imgSrc}" alt="User" style="width:40px; height:40px; border-radius:50%; object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">`;
                 }
-                // Fallback initial
                 avatarHtml += `<div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white fw-bold ${
                   imgSrc ? "d-none" : ""
                 }" style="width:40px; height:40px; min-width:40px;">${name
@@ -1533,7 +2602,6 @@
         // --- Update Functions ---
 
         const updateStats = (stats) => {
-          // ... [Kept same] ...
           const els = {
             orders_today: document.querySelector(".orders-today .stat-value"),
             orders_week: document.querySelector(".this-week .stat-value"),
@@ -1640,7 +2708,6 @@
         };
 
         const updateAIInsights = (insights) => {
-          // ... [Kept same] ...
           const container = document.querySelector(".ai-insights-container");
           if (!insights || !insights.length) {
             container.innerHTML = `<div class="placeholder-box"><i class="fas fa-robot fa-2x mb-3" style="color:var(--primary-pink)"></i><div>No insights yet</div></div>`;
@@ -1654,7 +2721,6 @@
             .join("");
         };
 
-        // --- UPDATED: Display Profile Picture ---
         const updateTopCustomers = (customers) => {
           const container = document.querySelector(".top-customers-container");
           if (!customers || !customers.length) {
@@ -1662,46 +2728,87 @@
             return;
           }
 
-          container.innerHTML = customers
-            .map((c) => {
-              const name =
-                c.first_name && c.last_name
-                  ? `${c.first_name} ${c.last_name}`
-                  : c.username || "Unknown";
+          let tableHTML = `
+    <div class="customers-table-wrapper">
+      <table class="customers-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Customer</th>
+            <th>Total Orders</th>
+            <th>Total Spent</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
 
-              let imageHtml = "";
-              // Check for profile_photo (not user_image)
-              if (
-                c.profile_photo &&
-                c.profile_photo.trim() !== "" &&
-                c.profile_photo !== "default.png"
-              ) {
-                imageHtml = `<img src="../../uploads/profiles/${c.profile_photo}" alt="${name}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:1rem;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
-                imageHtml += `<div class="me-3" style="width:40px; height:40px; background:var(--primary-pink); border-radius:50%; display:none; align-items:center; justify-content:center; color:white; font-weight:bold">${name
-                  .charAt(0)
-                  .toUpperCase()}</div>`;
-              } else {
-                imageHtml = `<div class="me-3" style="width:40px; height:40px; background:var(--primary-pink); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold">${name
-                  .charAt(0)
-                  .toUpperCase()}</div>`;
-              }
+          customers.forEach((c, index) => {
+            const name =
+              c.first_name && c.last_name
+                ? `${c.first_name} ${c.last_name}`
+                : c.username || "Unknown";
 
-              return `<div class="customer-item d-flex align-items-center justify-content-between p-3 mb-2" style="background:white; border-radius:10px;">
-              <div class="d-flex align-items-center">
-                  ${imageHtml}
-                  <div><div class="fw-bold" style="color:var(--dark-pink)">${name}</div><small class="text-muted">${
-                c.total_orders
-              } orders</small></div>
-              </div>
-              <div class="text-end"><div class="fw-bold" style="color:var(--dark-pink)">₱${parseFloat(
-                c.total_spent || 0
-              ).toFixed(2)}</div></div>
-          </div>`;
-            })
-            .join("");
+            const email = c.email || "";
+
+            // Determine rank class for top 3
+            let rankClass = "";
+            if (index === 0) rankClass = "gold";
+            else if (index === 1) rankClass = "silver";
+            else if (index === 2) rankClass = "bronze";
+
+            // Avatar or initial
+            let avatarHTML = "";
+            if (
+              c.profile_photo &&
+              c.profile_photo.trim() !== "" &&
+              c.profile_photo !== "default.png"
+            ) {
+              avatarHTML = `<img src="../../uploads/profiles/${c.profile_photo}" alt="${name}" class="customer-table-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+              avatarHTML += `<div class="customer-table-initial" style="display:none;">${name
+                .charAt(0)
+                .toUpperCase()}</div>`;
+            } else {
+              avatarHTML = `<div class="customer-table-initial">${name
+                .charAt(0)
+                .toUpperCase()}</div>`;
+            }
+
+            tableHTML += `
+      <tr>
+        <td>
+          <span class="customer-rank ${rankClass}">${index + 1}</span>
+        </td>
+        <td>
+          <div class="customer-info">
+            ${avatarHTML}
+            <div>
+              <div class="customer-name">${name}</div>
+              ${email ? `<div class="customer-email">${email}</div>` : ""}
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="customer-orders">
+            <span class="badge">${c.total_orders} orders</span>
+          </div>
+        </td>
+        <td>
+          <div class="customer-spent">₱${parseFloat(c.total_spent || 0).toFixed(
+            2
+          )}</div>
+        </td>
+      </tr>
+    `;
+          });
+
+          tableHTML += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+          container.innerHTML = tableHTML;
         };
-
-        // --- Render Charts Functions (Kept same as optimized versions in previous step) ---
         const renderCategoryChart = (data) => {
           const ctx = document.getElementById("categoryChart").getContext("2d");
           if (categoryChartInstance) categoryChartInstance.destroy();
@@ -1786,24 +2893,32 @@
             .getElementById("orderStatusChart")
             .getContext("2d");
           if (orderStatusChartInstance) orderStatusChartInstance.destroy();
+
           let labels = [],
             values = [],
-            bgColors = [];
+            bgColors = [],
+            totalOrders = 0;
+
           if (data && data.length > 0) {
             labels = data.map((d) => d.status.toUpperCase());
             values = data.map((d) => d.count);
+            totalOrders = values.reduce((sum, value) => sum + value, 0);
+
             const statusColors = {
               COMPLETED: "#28a745",
               PENDING: "#ffc107",
               CANCELLED: "#dc3545",
               PROCESSING: "#17a2b8",
             };
+
             bgColors = labels.map((l) => statusColors[l] || "#6c757d");
           } else {
             labels = ["No Data"];
             values = [1];
             bgColors = ["#f0f0f0"];
+            totalOrders = 1;
           }
+
           orderStatusChartInstance = new Chart(ctx, {
             type: "bar",
             data: {
@@ -1813,7 +2928,10 @@
                   label: "Orders",
                   data: values,
                   backgroundColor: bgColors,
+                  borderColor: bgColors.map((color) => color),
+                  borderWidth: 1,
                   borderRadius: 5,
+                  barPercentage: 0.6,
                 },
               ],
             },
@@ -1821,9 +2939,48 @@
               indexAxis: "y",
               responsive: true,
               maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: { x: { grid: { display: false }, beginAtZero: true } },
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                datalabels: {
+                  color: function (context) {
+                    // Use white text for dark bars, dark text for light bars
+                    const barColor =
+                      context.dataset.backgroundColor[context.dataIndex];
+                    return barColor === "#ffc107" || barColor === "#ffff00"
+                      ? "#333"
+                      : "white";
+                  },
+                  font: {
+                    weight: "bold",
+                    size: 11,
+                  },
+                  formatter: (value, context) => {
+                    const percentage = ((value / totalOrders) * 100).toFixed(1);
+                    return `${percentage}%`;
+                  },
+                  anchor: "center", // Center the label
+                  align: "center", // Center alignment
+                  offset: 0, // No offset - perfectly centered
+                  clip: false, // Allow labels to be visible
+                },
+              },
+              scales: {
+                x: {
+                  beginAtZero: true,
+                  grid: {
+                    display: false,
+                  },
+                },
+                y: {
+                  grid: {
+                    display: false,
+                  },
+                },
+              },
             },
+            plugins: [ChartDataLabels],
           });
         };
 
@@ -1980,6 +3137,11 @@
             updateStoreRatings(data.ratings);
             updateAIInsights(data.ai_insights);
             updateTopCustomers(data.top_customers);
+
+            // NEW: Update Recent Activity and Calendar
+            updateRecentActivity(data.recent_activity || []);
+            expiringProducts = data.expiring_dates || {};
+            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
           }
           ensureChartContainers() {
             const chartContainers = document.querySelectorAll(
