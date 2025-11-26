@@ -9,14 +9,16 @@ if (getenv('DOCKER_ENV') === 'true') {
 try {
     // Group by CreatedAt and Title so we see one entry per "Blast" sent
     $sql = "SELECT 
-                Title, 
-                Message, 
-                CreatedAt, 
-                MAX(ExpirationDate) as ExpirationDate,
-                COUNT(UserID) as RecipientCount 
-            FROM notifications 
-            GROUP BY CreatedAt, Title, Message 
-            ORDER BY CreatedAt DESC";
+                n.Title, 
+                n.Message, 
+                n.CreatedAt, 
+                MAX(n.ExpirationDate) as ExpirationDate,
+                COUNT(n.UserID) as RecipientCount 
+            FROM notifications n
+            INNER JOIN users u ON n.UserID = u.id
+            WHERE u.role = 'admin'
+            GROUP BY n.CreatedAt, n.Title, n.Message 
+            ORDER BY n.CreatedAt DESC";
             
     $result = $conn->query($sql);
     $history = [];

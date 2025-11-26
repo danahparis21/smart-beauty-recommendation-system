@@ -1,4 +1,4 @@
-<?php
+z<?php
 header('Content-Type: application/json');
 
 if (getenv('DOCKER_ENV') === 'true') {
