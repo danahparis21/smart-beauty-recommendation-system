@@ -9,7 +9,29 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
-function sendResponse($success, $message, $data = []) {
+// ==================== IMAGE PATH FIXER ==================== //
+function getPublicImagePath($dbPath)
+{
+    if (empty($dbPath))
+        return 'https://blessence.site/admin/uploads/product_images/no-image.png';
+
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        // Convert ../uploads/... to /admin/uploads/...
+        return str_replace('../', '/admin/', $dbPath);
+    }
+
+    // Handle new paths that already start with '/'
+    if (strpos($dbPath, '/') === 0) {
+        return 'https://blessence.site' . $dbPath;
+    }
+
+    // Fallback: add leading slash
+    return 'https://blessence.site/' . $dbPath;
+}
+
+function sendResponse($success, $message, $data = [])
+{
     echo json_encode(array_merge(['success' => $success, 'message' => $message], $data));
     exit();
 }
@@ -52,30 +74,24 @@ try {
         WHERE o.user_id = ?
         ORDER BY o.order_date DESC, o.order_id DESC
     ");
-    $stmt->bind_param("i", $userId);
+    $stmt->bind_param('i', $userId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $orders = [];
     $currentOrderId = null;
     $currentOrder = null;
-    
+
     while ($row = $result->fetch_assoc()) {
-        // FIX IMAGE PATH - MOVE THIS INSIDE THE LOOP
-        $imagePath = $row['product_image'];
-        if ($imagePath && !str_contains($imagePath, '/admin/')) {
-            // Extract just the filename and rebuild the correct path
-            $filename = basename($imagePath);
-            $imagePath = '/admin/uploads/product_images/' . $filename;
-        }
-        $row['product_image'] = $imagePath;
+        // FIX IMAGE PATH USING THE NEW FUNCTION
+        $row['product_image'] = getPublicImagePath($row['product_image']);
 
         // If this is a new order
         if ($currentOrderId !== $row['order_id']) {
             if ($currentOrder !== null) {
                 $orders[] = $currentOrder;
             }
-            
+
             $currentOrderId = $row['order_id'];
             $currentOrder = [
                 'id' => $row['qr_code'] ?: 'BB-ORDER-' . str_pad($row['order_id'], 6, '0', STR_PAD_LEFT) . '-' . date('Ymd', strtotime($row['order_date'])),
@@ -87,35 +103,34 @@ try {
                 'products' => []
             ];
         }
-        
+
         // Add product to current order if product exists
         if ($row['ProductID']) {
             $currentOrder['products'][] = [
                 'id' => $row['ProductID'],
                 'name' => $row['product_name'],
                 'description' => $row['product_description'],
-                'image' => $row['product_image'],
+                'image' => $row['product_image'],  // NOW USING FIXED PATH
                 'variant' => $row['ShadeOrVariant'] ? 'Shade: ' . $row['ShadeOrVariant'] : 'Standard',
                 'category' => $row['Category'],
                 'price' => $row['unit_price'],
                 'quantity' => $row['quantity'],
                 'total' => $row['unit_price'] * $row['quantity'],
-                'rated' => false, // You'll need to check reviews table for this
+                'rated' => false,  // You'll need to check reviews table for this
                 'quickRating' => 0
             ];
         }
     }
-    
+
     // Add the last order
     if ($currentOrder !== null) {
         $orders[] = $currentOrder;
     }
-    
+
     $stmt->close();
     $conn->close();
-    
+
     sendResponse(true, 'Orders fetched successfully', ['orders' => $orders]);
-    
 } catch (Exception $e) {
     sendResponse(false, 'Error fetching orders: ' . $e->getMessage());
 }
