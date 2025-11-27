@@ -2634,7 +2634,7 @@
               const img = document.createElement("img");
 
              
-              let imagePath = product.image;
+              // let imagePath = product.image;
 
         
               if (!imagePath.includes("/admin/")) {
@@ -2649,8 +2649,8 @@
 
          
 
-              img.src = imagePath;
-              img.alt = product.name;
+              img.src = product.image;
+    img.alt = product.name;
               img.onerror = function () {
                 console.error("Failed to load image from:", this.src);
                 this.style.display = "none";
