@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -1931,8 +1930,6 @@
       // Generate QR code for pending orders - USE SAME DATA AS CHECKOUT
       function generateOrderQRCode(orderId, qrCode, container) {
         try {
-         
-
           // Clear previous QR code
           container.innerHTML = "";
 
@@ -2218,8 +2215,6 @@
               .value.trim(),
           };
 
-         
-
           const response = await fetch("../php/submit_review.php", {
             method: "POST",
             headers: {
@@ -2228,9 +2223,7 @@
             body: JSON.stringify(reviewData),
           });
 
-      
           const responseText = await response.text();
-      
 
           // Try to parse as JSON
           let data;
@@ -2243,8 +2236,6 @@
               "Server returned invalid JSON: " + responseText.substring(0, 100)
             );
           }
-
-      
 
           if (data.success) {
             // Update local data to show as rated
@@ -2632,25 +2623,8 @@
 
             if (product.image && product.image !== "null") {
               const img = document.createElement("img");
-
-             
-              // let imagePath = product.image;
-
-        
-              if (!imagePath.includes("/admin/")) {
-             
-                imagePath = imagePath.replace(/^\/?uploads\//, "");
-                imagePath = `/admin/uploads/product_images/${imagePath}`;
-              }
-
-           
-              imagePath = imagePath.replace(/\\/g, "/"); 
-              imagePath = imagePath.replace(/(\/\/+)/g, "/");
-
-         
-
-              img.src = product.image;
-    img.alt = product.name;
+              img.src = product.image; // Use the path directly from PHP
+              img.alt = product.name;
               img.onerror = function () {
                 console.error("Failed to load image from:", this.src);
                 this.style.display = "none";
@@ -2659,14 +2633,10 @@
                 productImage.appendChild(icon);
               };
 
-              img.onload = function () {
-             
-              };
-
+              // ✅ ONLY ONE appendChild here
               productImage.appendChild(img);
             } else {
-         
-              
+              // No image - show icon
               const icon = document.createElement("i");
               icon.className = "fas fa-palette";
               productImage.appendChild(icon);
@@ -2741,8 +2711,6 @@
                 console.error("Missing product ID for:", product);
                 return;
               }
-
-            
 
               // Show loading state
               const originalText = buyAgainBtn.innerHTML;
@@ -2891,8 +2859,6 @@
       }
       async function addToCart(productId, quantity = 1) {
         try {
-         
-
           const response = await fetch("../php/cart.php", {
             method: "POST",
             headers: {
@@ -2908,8 +2874,6 @@
           }
 
           const result = await response.json();
-      
-          
 
           if (result.success) {
             showNotification(result.message || "Added to cart! 🛒");
