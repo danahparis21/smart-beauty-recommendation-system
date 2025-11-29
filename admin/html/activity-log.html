@@ -1,1053 +1,1105 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Activity Log - Blessence</title>
-  <link rel="icon" href="../images/mainlogo.png" type="image/png">
-
-  <link rel="stylesheet" href="../styles/styles.css">
-  <script src="../../admin/styles/logout.js"></script>
-
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- SweetAlert2 CSS & JS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
-  <style>
-    .activity-table thead.hidden {
-      display: none;
-    }
-
-    /* Empty state styling */
-    .activity-table-empty {
-      display: none;
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    /* Center the entire table container when empty */
-    .activity-table-container.empty {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 300px;
-      text-align: center;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #6c757d;
-      width: 100%;
-    }
-
-    .empty-state i {
-      font-size: 4rem;
-      margin-bottom: 20px;
-      color: #dee2e6;
-    }
-
-    .empty-state h4 {
-      color: #6c757d;
-      margin-bottom: 10px;
-      font-size: 1.5rem;
-    }
-
-    .empty-state p {
-      margin-bottom: 0;
-      font-size: 1rem;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    /* Custom dropdown adjustments for compact size */
-    .custom-dropdown {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-      color: #333333;
-    }
-
-    .custom-dropdown:focus-within::after {
-      transform: translateY(-50%) rotate(180deg);
-    }
-
-    .custom-dropdown .choices__placeholder {
-      color: #000000;
-    }
-
-    .custom-dropdown .choices__item--selectable {
-      color: #000000;
-    }
-
-    /* Choices.js inner container */
-    .custom-dropdown .choices__inner {
-      background-color: #ffffff;
-      border-radius: 12px;
-      border: 2px solid #e0e0e0;
-      padding: 6px 12px;
-      font-size: 0.85rem;
-    }
-
-    /* Dropdown options container */
-    .custom-dropdown .choices__list--dropdown {
-      width: auto;
-      min-width: 120px;
-      max-width: 200px;
-      max-height: none !important;
-      overflow: visible !important;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      font-size: 0.85rem;
-      margin-top: 4px;
-      background-color: white;
-      position: absolute !important;
-      z-index: 1050;
-    }
-
-    /* Option hover effect */
-    .custom-dropdown .choices__item--choice {
-      padding: 6px 12px;
-      font-size: 0.85rem;
-    }
-
-    .custom-dropdown .choices__item--choice:hover {
-      background-color: #fce4eb;
-      color: var(--dark-pink);
-    }
-
-    /* Custom Calendar Styling */
-    .date-picker-container {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .date-picker-input {
-      background-color: #ffffff;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 10px 15px 10px 40px;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      color: #333333;
-      min-height: 42px;
-      width: 100%;
-      position: relative;
-    }
-
-    .date-picker-input:focus {
-      border-color: var(--primary-pink);
-      box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
-      outline: none;
-    }
-
-    .date-picker-input:hover {
-      border-color: #c0c0c0;
-    }
-
-    .date-picker-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--primary-pink);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* Custom Calendar Dropdown */
-    .calendar-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 280px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      border: 1px solid #e0e0e0;
-      z-index: 1060;
-      padding: 15px;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .calendar-dropdown.active {
-      display: block;
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .calendar-nav {
-      background: none;
-      border: none;
-      color: var(--primary-pink);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 5px 10px;
-      border-radius: 6px;
-      transition: background-color 0.2s;
-    }
-
-    .calendar-nav:hover {
-      background-color: #fce4eb;
-    }
-
-    .calendar-month {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .calendar-weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .calendar-weekday {
-      text-align: center;
-      font-size: 0.8rem;
-      color: #6c757d;
-      font-weight: 500;
-    }
-
-    .calendar-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-    }
-
-    .calendar-day {
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-
-    .calendar-day:hover {
-      background-color: #fce4eb;
-    }
-
-    .calendar-day.selected {
-      background-color: var(--primary-pink);
-      color: white;
-    }
-
-    .calendar-day.other-month {
-      color: #adb5bd;
-    }
-
-    .calendar-day.today {
-      border: 1px solid var(--primary-pink);
-    }
-
-    /* Page header */
-    .page-header {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid rgba(228, 151, 170, 0.15);
-    }
-
-    .page-title {
-      color: var(--dark-pink);
-      font-weight: 700;
-      font-size: 2rem;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
-
-    .page-header p {
-      color: #6c757d;
-      font-size: 1rem;
-      margin: 0;
-    }
-
-    /* Main content padding */
-    main {
-      padding: 35px !important;
-      margin-left: 16.666667%;
-      width: calc(100% - 16.666667%);
-      transition: margin-left 0.3s ease;
-      background-color: var(--light-gray);
-      min-height: 100vh;
-    }
-
-    /* Filter Section */
-    .filter-section {
-      background: white;
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(228, 151, 170, 0.1);
-      margin-bottom: 25px;
-      z-index: 10;
-      transition: all 0.3s ease;
-    }
-
-    .filter-section.sticky {
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-      border-color: rgba(228, 151, 170, 0.3);
-    }
-
-    .filter-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .filter-title {
-      color: var(--dark-pink);
-      font-weight: 700;
-      font-size: 1.3rem;
-      margin: 0;
-    }
-
-    .filter-controls {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .form-control {
-      padding: 10px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-      border-color: var(--primary-pink);
-      box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
-      outline: none;
-    }
-
-    .search-btn {
-      background: var(--primary-pink);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 10px 20px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .search-btn:hover {
-      background: var(--secondary-pink);
-      transform: translateY(-2px);
-    }
-
-    .search-btn:disabled {
-      background: #adb5bd;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Activity Table */
-    .activity-table-container {
-      background: white;
-      border-radius: 20px;
-      padding: 0;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(228, 151, 170, 0.1);
-      overflow: hidden;
-      margin-bottom: 25px;
-    }
-
-    .activity-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0;
-    }
-
-    .activity-table thead {
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--secondary-pink));
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
-
-    .activity-table th {
-      padding: 20px;
-      text-align: left;
-      font-weight: 600;
-      color: white;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: none;
-    }
-
-    .activity-table th:first-child {
-      border-radius: 20px 0 0 0;
-    }
-
-    .activity-table th:last-child {
-      border-radius: 0 20px 0 0;
-    }
-
-    .activity-table td {
-      padding: 20px;
-      border-bottom: 1px solid #f0f0f0;
-      vertical-align: top;
-      color: #333;
-      width: 100px;
-    }
-
-    .activity-table tbody tr {
-      transition: all 0.3s ease;
-    }
-
-    .activity-table tbody tr:hover {
-      background: rgba(228, 151, 170, 0.03);
-    }
-
-    .activity-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* User Column */
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg,
-          var(--primary-pink),
-          var(--secondary-pink));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .user-details h5 {
-      margin: 0;
-      font-size: 1rem;
-      color: #333;
-      font-weight: 600;
-    }
-
-    .user-details p {
-      margin: 0;
-      font-size: 0.8rem;
-      color: #6c757d;
-    }
-
-    .system-user {
-      background: linear-gradient(135deg, #6c757d, #495057);
-    }
-
-    /* Action Column */
-    .action-badge {
-      display: inline-block;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .action-create {
-      background: rgba(40, 167, 69, 0.1);
-      color: #28a745;
-      border: 1px solid rgba(40, 167, 69, 0.2);
-    }
-
-    .action-update {
-      background: rgba(255, 193, 7, 0.1);
-      color: #ffc107;
-      border: 1px solid rgba(255, 193, 7, 0.2);
-    }
-
-    .action-delete {
-      background: rgba(220, 53, 69, 0.1);
-      color: #dc3545;
-      border: 1px solid rgba(220, 53, 69, 0.2);
-    }
-
-    .action-system {
-      background: rgba(108, 117, 125, 0.1);
-      color: #6c757d;
-      border: 1px solid rgba(108, 117, 125, 0.2);
-    }
-
-    /* Date Column */
-    .date-time {
-      color: #333;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    .date-relative {
-      color: #6c757d;
-      font-size: 0.8rem;
-    }
-
-    /* Changes Column */
-    .change-details {
-      font-size: 0.9rem;
-    }
-
-    .change-item {
-      margin-bottom: 8px;
-      padding: 8px 12px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      border-left: 3px solid var(--primary-pink);
-    }
-
-    .change-field {
-      font-weight: 600;
-      color: var(--dark-pink);
-    }
-
-    .change-before {
-      color: #dc3545;
-      text-decoration: line-through;
-      margin-right: 8px;
-    }
-
-    .change-after {
-      color: #28a745;
-      font-weight: 600;
-    }
-
-    .change-arrow {
-      color: #6c757d;
-      margin: 0 8px;
-    }
-
-    /* Pagination */
-    .pagination-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 25px;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(228, 151, 170, 0.1);
-    }
-
-    .pagination-info {
-      color: #6c757d;
-      font-size: 0.9rem;
-    }
-
-    .pagination {
-      margin: 0;
-      gap: 5px;
-    }
-
-    .page-link {
-      padding: 8px 16px;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      color: #6c757d;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .page-link:hover {
-      background-color: var(--light-pink);
-      border-color: var(--primary-pink);
-      color: var(--dark-pink);
-    }
-
-    .page-item.active .page-link {
-      background-color: var(--primary-pink);
-      border-color: var(--primary-pink);
-      color: white;
-    }
-
-    .page-item.disabled .page-link {
-      color: #adb5bd;
-      background-color: #f8f9fa;
-      border-color: #e0e0e0;
-    }
-
-    /* Loading States */
-    .loading-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 991px) {
-      .choices__list--dropdown {
-        left: auto !important;
-        right: 0 !important;
-        width: auto !important;
-        min-width: 150px;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Activity Log - Blessence</title>
+    <link rel="icon" href="../images/mainlogo.png" type="image/png" />
+
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <script src="../../admin/styles/logout.js"></script>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- SweetAlert2 CSS & JS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+    <style>
+      .activity-table thead.hidden {
+        display: none;
       }
 
-      .mobile-header {
-        display: block;
+      /* Empty state styling */
+      .activity-table-empty {
+        display: none;
+        text-align: center;
+        padding: 60px 20px;
       }
 
-      .sidebar {
-        position: fixed;
-        top: 0;
+      /* Center the entire table container when empty */
+      .activity-table-container.empty {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 300px;
+        text-align: center;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6c757d;
+        width: 100%;
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: #dee2e6;
+      }
+
+      .empty-state h4 {
+        color: #6c757d;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+      }
+
+      .empty-state p {
+        margin-bottom: 0;
+        font-size: 1rem;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      /* Custom dropdown adjustments for compact size */
+      .custom-dropdown {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        color: #333333;
+      }
+
+      .custom-dropdown:focus-within::after {
+        transform: translateY(-50%) rotate(180deg);
+      }
+
+      .custom-dropdown .choices__placeholder {
+        color: #000000;
+      }
+
+      .custom-dropdown .choices__item--selectable {
+        color: #000000;
+      }
+
+      /* Choices.js inner container */
+      .custom-dropdown .choices__inner {
+        background-color: #ffffff;
+        border-radius: 12px;
+        border: 2px solid #e0e0e0;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+
+      /* Dropdown options container */
+      .custom-dropdown .choices__list--dropdown {
+        width: auto;
+        min-width: 120px;
+        max-width: 200px;
+        max-height: none !important;
+        overflow: visible !important;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 0.85rem;
+        margin-top: 4px;
+        background-color: white;
+        position: absolute !important;
+        z-index: 1050;
+      }
+
+      /* Option hover effect */
+      .custom-dropdown .choices__item--choice {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+
+      .custom-dropdown .choices__item--choice:hover {
+        background-color: #fce4eb;
+        color: var(--dark-pink);
+      }
+
+      /* Custom Calendar Styling */
+      .date-picker-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .date-picker-input {
+        background-color: #ffffff;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 10px 15px 10px 40px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        color: #333333;
+        min-height: 42px;
+        width: 100%;
+        position: relative;
+      }
+
+      .date-picker-input:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
+        outline: none;
+      }
+
+      .date-picker-input:hover {
+        border-color: #c0c0c0;
+      }
+
+      .date-picker-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-pink);
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* Custom Calendar Dropdown */
+      .calendar-dropdown {
+        position: absolute;
+        top: 100%;
         left: 0;
-        height: 100%;
         width: 280px;
-        transform: translateX(-100%);
-        z-index: 100;
-        padding-top: 60px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e0e0;
+        z-index: 1060;
+        padding: 15px;
+        margin-top: 5px;
+        display: none;
       }
 
-      .sidebar.mobile-open {
-        transform: translateX(0);
-      }
-
-      .sidebar-overlay.active {
+      .calendar-dropdown.active {
         display: block;
       }
 
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .calendar-nav {
+        background: none;
+        border: none;
+        color: var(--primary-pink);
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+      }
+
+      .calendar-nav:hover {
+        background-color: #fce4eb;
+      }
+
+      .calendar-month {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .calendar-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+
+      .calendar-weekday {
+        text-align: center;
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+      }
+
+      .calendar-day {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+      }
+
+      .calendar-day:hover {
+        background-color: #fce4eb;
+      }
+
+      .calendar-day.selected {
+        background-color: var(--primary-pink);
+        color: white;
+      }
+
+      .calendar-day.other-month {
+        color: #adb5bd;
+      }
+
+      .calendar-day.today {
+        border: 1px solid var(--primary-pink);
+      }
+
+      /* Page header */
+      .page-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(228, 151, 170, 0.15);
+      }
+
+      .page-title {
+        color: var(--dark-pink);
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+      }
+
+      .page-header p {
+        color: #6c757d;
+        font-size: 1rem;
+        margin: 0;
+      }
+
+      /* Main content padding */
       main {
-        margin-left: 0 !important;
-        width: 100% !important;
-        margin-top: 70px;
-        padding: 20px !important;
+        padding: 35px !important;
+        margin-left: 16.666667%;
+        width: calc(100% - 16.666667%);
+        transition: margin-left 0.3s ease;
+        background-color: var(--light-gray);
+        min-height: 100vh;
+      }
+
+      /* Filter Section */
+      .filter-section {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        margin-bottom: 25px;
+        z-index: 10;
+        transition: all 0.3s ease;
+      }
+
+      .filter-section.sticky {
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        border-color: rgba(228, 151, 170, 0.3);
       }
 
       .filter-header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-      }
-
-      .filter-controls {
-        width: 100%;
+        display: flex;
         justify-content: space-between;
-        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 20px;
       }
 
-      .date-picker-container {
-        width: 48%;
-      }
-
-      .calendar-dropdown {
-        width: 260px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .activity-table {
-        display: block;
-        overflow-x: auto;
-      }
-
-      .pagination-container {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch;
-      }
-
-      .pagination {
-        justify-content: center;
-      }
-
-      /* Adjust top position for mobile to account for fixed header */
-      .filter-section {
-        top: 80px;
-      }
-
-      .activity-table thead {
-        top: 0px;
-      }
-
-      .activity-table th {
-        padding: 12px 8px !important;
-        font-size: 0.75rem !important;
-        white-space: nowrap;
-      }
-
-      .activity-table td {
-        padding: 12px 8px !important;
-        font-size: 0.8rem !important;
-      }
-
-      .user-avatar {
-        width: 32px !important;
-        height: 32px !important;
-        font-size: 0.8rem !important;
-      }
-
-      .user-details h5 {
-        font-size: 0.9rem !important;
-      }
-
-      .user-details p {
-        font-size: 0.75rem !important;
-      }
-
-      .action-badge {
-        padding: 6px 10px !important;
-        font-size: 0.7rem !important;
-      }
-
-      .date-time {
-        font-size: 0.85rem !important;
-      }
-
-      .date-relative {
-        font-size: 0.75rem !important;
-      }
-
-      .change-details {
-        font-size: 0.8rem !important;
-      }
-
-      .change-item {
-        padding: 6px 8px !important;
-        margin-bottom: 6px !important;
-      }
-    }
-
-    @media (max-width: 575px) {
-      .activity-table thead {
-        top: 0px !important;
+      .filter-title {
+        color: var(--dark-pink);
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin: 0;
       }
 
       .filter-controls {
-        flex-direction: column;
-        width: 100%;
-      }
-
-      .date-picker-container {
-        width: 100%;
+        display: flex;
+        gap: 15px;
+        align-items: center;
       }
 
       .form-control {
-        width: 100%;
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 3px rgba(228, 151, 170, 0.1);
+        outline: none;
       }
 
       .search-btn {
+        background: var(--primary-pink);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .search-btn:hover {
+        background: var(--secondary-pink);
+        transform: translateY(-2px);
+      }
+
+      .search-btn:disabled {
+        background: #adb5bd;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* Activity Table */
+      .activity-table-container {
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        overflow: hidden;
+        margin-bottom: 25px;
+      }
+
+      .activity-table {
         width: 100%;
-        justify-content: center;
-      }
-
-      .activity-table th,
-      .activity-table td {
-        padding: 12px 8px;
-        font-size: 0.8rem;
-      }
-
-      .pagination {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      /* Adjust for smaller screens */
-      .filter-section {
-        top: 70px;
+        border-collapse: collapse;
+        margin: 0;
       }
 
       .activity-table thead {
-        top: 0px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+        position: sticky;
+        top: 0;
+        z-index: 5;
       }
 
-      .calendar-dropdown {
-        width: 240px;
+      .activity-table th {
+        padding: 20px;
+        text-align: left;
+        font-weight: 600;
+        color: white;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: none;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <!-- Mobile Header -->
-  <div class="mobile-header">
-    <div class="mobile-header-content">
-      <button class="hamburger-btn" id="hamburgerBtn">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="mobile-logo">
-        <img src="../images/mainlogo.png" alt="Store Logo" />
-      </div>
-    </div>
-  </div>
+      .activity-table th:first-child {
+        border-radius: 20px 0 0 0;
+      }
 
-  <!-- Sidebar Overlay -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+      .activity-table th:last-child {
+        border-radius: 0 20px 0 0;
+      }
 
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <nav class="col-md-2 d-md-block sidebar" id="sidebar">
-        <div class="logo-container">
-          <a href="admin.html">
-            <img src="../images/mainlogo1.png" alt="Store Logo" class="logo" />
-          </a>
-          <div class="store-name">Blessence</div>
-        </div>
-        <div class="nav flex-column">
-          <a href="admin.html" class="nav-link">
-            <i class="fa-solid fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-          </a>
-          <a href="product-management.html" class="nav-link">
-            <i class="fa-solid fa-box"></i>
-            <span>Product Management</span>
-          </a>
-          <a href="recommendation-insights.html" class="nav-link">
-            <i class="fa-solid fa-lightbulb"></i>
-            <span>Recommendation Insights</span>
-          </a>
-          <a href="customer-managemnet.html" class="nav-link">
-            <i class="fa-solid fa-users"></i>
-            <span>Customer Management</span>
-          </a>
-          <a href="order-transactions.html" class="nav-link">
-            <i class="fa-solid fa-credit-card"></i>
-            <span>Order Transaction</span>
-          </a>
-          <a href="activity-log.html" class="nav-link">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>Activity Log</span>
-          </a>
-          <!-- New Cashier Mode Link -->
-          <a href="javascript:void(0)" class="nav-link cashier-mode-link" id="cashierModeLink">
-            <i class="fa-solid fa-cash-register"></i>
-            <span>Cashier Mode</span>
-          </a>
+      .activity-table td {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: top;
+        color: #333;
+        width: 100px;
+      }
 
-          <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Log Out</span>
-          </a>
-        </div>
-      </nav>
+      .activity-table tbody tr {
+        transition: all 0.3s ease;
+      }
 
-      <!-- Main content -->
-      <main class="col-md-10">
+      .activity-table tbody tr:hover {
+        background: rgba(228, 151, 170, 0.03);
+      }
 
-        <!-- Filter Section -->
-        <div class="filter-section" id="filterSection">
-          <div class="filter-header">
-            <h3 class="filter-title">Filter Activities</h3>
-            <div class="filter-controls">
-              <!-- Custom Date Picker for From Date -->
-              <div class="date-picker-container">
-                <i class="fas fa-calendar-alt date-picker-icon"></i>
-                <input type="text" class="date-picker-input" id="dateFrom" placeholder="From Date" readonly />
-                <div class="calendar-dropdown" id="calendarFrom">
-                  <!-- Calendar will be generated by JavaScript -->
-                </div>
-              </div>
+      .activity-table tbody tr:last-child td {
+        border-bottom: none;
+      }
 
-              <!-- Custom Date Picker for To Date -->
-              <div class="date-picker-container">
-                <i class="fas fa-calendar-alt date-picker-icon"></i>
-                <input type="text" class="date-picker-input" id="dateTo" placeholder="To Date" readonly />
-                <div class="calendar-dropdown" id="calendarTo">
-                  <!-- Calendar will be generated by JavaScript -->
-                </div>
-              </div>
+      /* User Column */
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
-              <div class="custom-dropdown">
-                <select id="actionType">
-                  <option value="">All Actions</option>
-                  <option value="create">Created</option>
-                  <option value="update">Updated</option>
-                  <option value="delete">Deleted</option>
-                  <option value="system">System</option>
-                </select>
-              </div>
-              <button class="search-btn" id="searchBtn">
-                <i class="fas fa-search"></i>
-                <span id="searchText">Search</span>
-                <span id="searchLoading" class="loading-spinner" style="display: none;"></span>
-              </button>
-            </div>
-          </div>
-        </div>
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
 
-        <!-- Activity Table -->
-        <div class="activity-table-container">
-          <table class="activity-table">
-            <thead id="activityTableHeader">
-              <tr>
-                <th>User</th>
-                <th>Actions</th>
-                <th>Date</th>
-                <th>Changes</th>
-              </tr>
-            </thead>
-            <tbody id="activityTableBody">
-              <!-- Activities will be loaded here -->
-            </tbody>
-          </table>
+      .user-details h5 {
+        margin: 0;
+        font-size: 1rem;
+        color: #333;
+        font-weight: 600;
+      }
 
-          <!-- Empty State (initially hidden) -->
-          <div class="activity-table-empty" id="activityTableEmpty">
-            <div class="empty-state">
-              <i class="fas fa-clipboard-list"></i>
-              <h4>No Activities Found</h4>
-              <p>No activities match your current filters. Try adjusting your search criteria.</p>
-            </div>
-          </div>
-        </div>
+      .user-details p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
 
-        <!-- Pagination -->
-        <div class="pagination-container">
-          <div class="pagination-info" id="paginationInfo">
-            Loading activities...
-          </div>
-          <nav aria-label="Activity log pagination">
-            <ul class="pagination" id="pagination">
-              <!-- Pagination will be generated here -->
-            </ul>
-          </nav>
-        </div>
-      </main>
-    </div>
-  </div>
+      .system-user {
+        background: linear-gradient(135deg, #6c757d, #495057);
+      }
 
-  <!-- Before closing </body> tag -->
-  <div class="reveal-overlay" id="revealOverlay"></div>
-  <div class="fullscreen-reveal" id="fullscreenReveal">
-    <div class="reveal-progress" id="revealProgress"></div>
-    <div class="fullscreen-reveal-content">
-      <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
-    </div>
-  </div>
+      /* Action Column */
+      .action-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-  <div class="cashier-mode-entry" id="cashierModeEntry">
-    <div class="cashier-logo-container">
-      <div class="cashier-logo">
-        <img src="../images/mainlogo1.png" alt="Store Logo">
-      </div>
-      <div class="cashier-title">Entering Cashier Mode</div>
-      <div class="cashier-subtitle">Blessence Point of Sale</div>
-    </div>
-    <div class="cashier-loading">
-      <div class="cashier-loading-dot"></div>
-      <div class="cashier-loading-dot"></div>
-      <div class="cashier-loading-dot"></div>
-    </div>
-  </div>
+      .action-create {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.2);
+      }
 
-  <div class="cashier-tap-counter" id="cashierTapCounter"></div>
+      .action-update {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.2);
+      }
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      .action-delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border: 1px solid rgba(220, 53, 69, 0.2);
+      }
 
-  <script>
-    // Mobile menu functionality
-    const hamburgerBtn = document.getElementById("hamburgerBtn");
-    const sidebar = document.getElementById("sidebar");
-    const sidebarOverlay = document.getElementById("sidebarOverlay");
+      .action-system {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+        border: 1px solid rgba(108, 117, 125, 0.2);
+      }
 
-    // Toggle sidebar on hamburger click
-    hamburgerBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("mobile-open");
-      sidebarOverlay.classList.toggle("active");
-    });
+      /* Date Column */
+      .date-time {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
 
-    // Close sidebar when overlay is clicked
-    sidebarOverlay.addEventListener("click", function () {
-      sidebar.classList.remove("mobile-open");
-      sidebarOverlay.classList.remove("active");
-    });
+      .date-relative {
+        color: #6c757d;
+        font-size: 0.8rem;
+      }
 
-    // Close sidebar when a nav link is clicked (on mobile)
-    const navLinks = document.querySelectorAll(".sidebar .nav-link");
-    navLinks.forEach((link) => {
-      link.addEventListener("click", function () {
-        if (window.innerWidth < 992) {
-          sidebar.classList.remove("mobile-open");
-          sidebarOverlay.classList.remove("active");
+      /* Changes Column */
+      .change-details {
+        font-size: 0.9rem;
+      }
+
+      .change-item {
+        margin-bottom: 8px;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid var(--primary-pink);
+      }
+
+      .change-field {
+        font-weight: 600;
+        color: var(--dark-pink);
+      }
+
+      .change-before {
+        color: #dc3545;
+        text-decoration: line-through;
+        margin-right: 8px;
+      }
+
+      .change-after {
+        color: #28a745;
+        font-weight: 600;
+      }
+
+      .change-arrow {
+        color: #6c757d;
+        margin: 0 8px;
+      }
+
+      /* Pagination */
+      .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(228, 151, 170, 0.1);
+      }
+
+      .pagination-info {
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+
+      .pagination {
+        margin: 0;
+        gap: 5px;
+      }
+
+      .page-link {
+        padding: 8px 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        color: #6c757d;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .page-link:hover {
+        background-color: var(--light-pink);
+        border-color: var(--primary-pink);
+        color: var(--dark-pink);
+      }
+
+      .page-item.active .page-link {
+        background-color: var(--primary-pink);
+        border-color: var(--primary-pink);
+        color: white;
+      }
+
+      .page-item.disabled .page-link {
+        color: #adb5bd;
+        background-color: #f8f9fa;
+        border-color: #e0e0e0;
+      }
+
+      /* Loading States */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 991px) {
+        .choices__list--dropdown {
+          left: auto !important;
+          right: 0 !important;
+          width: auto !important;
+          min-width: 150px;
+        }
+
+        .mobile-header {
+          display: block;
+        }
+
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 280px;
+          transform: translateX(-100%);
+          z-index: 100;
+          padding-top: 60px;
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .sidebar-overlay.active {
+          display: block;
+        }
+
+        main {
+          margin-left: 0 !important;
+          width: 100% !important;
+          margin-top: 70px;
+          padding: 20px !important;
+        }
+
+        .filter-header {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start;
+        }
+
+        .filter-controls {
+          width: 100%;
+          justify-content: space-between;
+          flex-wrap: wrap;
+        }
+
+        .date-picker-container {
+          width: 48%;
+        }
+
+        .calendar-dropdown {
+          width: 260px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .activity-table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .pagination-container {
+          flex-direction: column;
+          gap: 15px;
+          align-items: stretch;
+        }
+
+        .pagination {
+          justify-content: center;
+        }
+
+        /* Adjust top position for mobile to account for fixed header */
+        .filter-section {
+          top: 80px;
+        }
+
+        .activity-table thead {
+          top: 0px;
+        }
+
+        .activity-table th {
+          padding: 12px 8px !important;
+          font-size: 0.75rem !important;
+          white-space: nowrap;
+        }
+
+        .activity-table td {
+          padding: 12px 8px !important;
+          font-size: 0.8rem !important;
+        }
+
+        .user-avatar {
+          width: 32px !important;
+          height: 32px !important;
+          font-size: 0.8rem !important;
+        }
+
+        .user-details h5 {
+          font-size: 0.9rem !important;
+        }
+
+        .user-details p {
+          font-size: 0.75rem !important;
+        }
+
+        .action-badge {
+          padding: 6px 10px !important;
+          font-size: 0.7rem !important;
+        }
+
+        .date-time {
+          font-size: 0.85rem !important;
+        }
+
+        .date-relative {
+          font-size: 0.75rem !important;
+        }
+
+        .change-details {
+          font-size: 0.8rem !important;
+        }
+
+        .change-item {
+          padding: 6px 8px !important;
+          margin-bottom: 6px !important;
+        }
+      }
+
+      @media (max-width: 575px) {
+        .activity-table thead {
+          top: 0px !important;
+        }
+
+        .filter-controls {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .date-picker-container {
+          width: 100%;
+        }
+
+        .form-control {
+          width: 100%;
+        }
+
+        .search-btn {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .activity-table th,
+        .activity-table td {
+          padding: 12px 8px;
+          font-size: 0.8rem;
+        }
+
+        .pagination {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        /* Adjust for smaller screens */
+        .filter-section {
+          top: 70px;
+        }
+
+        .activity-table thead {
+          top: 0px;
+        }
+
+        .calendar-dropdown {
+          width: 240px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="mobile-header-content">
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="mobile-logo">
+          <img src="../images/mainlogo.png" alt="Store Logo" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-md-block sidebar" id="sidebar">
+          <div class="logo-container">
+            <a href="admin.html">
+              <img
+                src="../images/mainlogo1.png"
+                alt="Store Logo"
+                class="logo"
+              />
+            </a>
+            <div class="store-name">Blessence</div>
+          </div>
+          <div class="nav flex-column">
+            <a href="admin.html" class="nav-link">
+              <i class="fa-solid fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+            <a href="product-management.html" class="nav-link">
+              <i class="fa-solid fa-box"></i>
+              <span>Product Management</span>
+            </a>
+            <a href="recommendation-insights.html" class="nav-link">
+              <i class="fa-solid fa-lightbulb"></i>
+              <span>Recommendation Insights</span>
+            </a>
+            <a href="customer-managemnet.html" class="nav-link">
+              <i class="fa-solid fa-users"></i>
+              <span>Customer Management</span>
+            </a>
+            <a href="order-transactions.html" class="nav-link">
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Order Transaction</span>
+            </a>
+            <a href="activity-log.html" class="nav-link">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <span>Activity Log</span>
+            </a>
+            <!-- New Cashier Mode Link -->
+            <a
+              href="javascript:void(0)"
+              class="nav-link cashier-mode-link"
+              id="cashierModeLink"
+            >
+              <i class="fa-solid fa-cash-register"></i>
+              <span>Cashier Mode</span>
+            </a>
+
+            <a id="logoutBtn" href="javascript:void(0)" class="nav-link">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Log Out</span>
+            </a>
+          </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-10">
+          <!-- Filter Section -->
+          <div class="filter-section" id="filterSection">
+            <div class="filter-header">
+              <h3 class="filter-title">Filter Activities</h3>
+              <div class="filter-controls">
+                <!-- Custom Date Picker for From Date -->
+                <div class="date-picker-container">
+                  <i class="fas fa-calendar-alt date-picker-icon"></i>
+                  <input
+                    type="text"
+                    class="date-picker-input"
+                    id="dateFrom"
+                    placeholder="From Date"
+                    readonly
+                  />
+                  <div class="calendar-dropdown" id="calendarFrom">
+                    <!-- Calendar will be generated by JavaScript -->
+                  </div>
+                </div>
+
+                <!-- Custom Date Picker for To Date -->
+                <div class="date-picker-container">
+                  <i class="fas fa-calendar-alt date-picker-icon"></i>
+                  <input
+                    type="text"
+                    class="date-picker-input"
+                    id="dateTo"
+                    placeholder="To Date"
+                    readonly
+                  />
+                  <div class="calendar-dropdown" id="calendarTo">
+                    <!-- Calendar will be generated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="custom-dropdown">
+                  <select id="actionType">
+                    <option value="">All Actions</option>
+                    <option value="create">Created</option>
+                    <option value="update">Updated</option>
+                    <option value="delete">Deleted</option>
+                    <option value="system">System</option>
+                  </select>
+                </div>
+                <button class="search-btn" id="searchBtn">
+                  <i class="fas fa-search"></i>
+                  <span id="searchText">Search</span>
+                  <span
+                    id="searchLoading"
+                    class="loading-spinner"
+                    style="display: none"
+                  ></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Table -->
+          <div class="activity-table-container">
+            <table class="activity-table">
+              <thead id="activityTableHeader">
+                <tr>
+                  <th>User</th>
+                  <th>Actions</th>
+                  <th>Date</th>
+                  <th>Changes</th>
+                </tr>
+              </thead>
+              <tbody id="activityTableBody">
+                <!-- Activities will be loaded here -->
+              </tbody>
+            </table>
+
+            <!-- Empty State (initially hidden) -->
+            <div class="activity-table-empty" id="activityTableEmpty">
+              <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h4>No Activities Found</h4>
+                <p>
+                  No activities match your current filters. Try adjusting your
+                  search criteria.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-container">
+            <div class="pagination-info" id="paginationInfo">
+              Loading activities...
+            </div>
+            <nav aria-label="Activity log pagination">
+              <ul class="pagination" id="pagination">
+                <!-- Pagination will be generated here -->
+              </ul>
+            </nav>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Before closing </body> tag -->
+    <div class="reveal-overlay" id="revealOverlay"></div>
+    <div class="fullscreen-reveal" id="fullscreenReveal">
+      <div class="reveal-progress" id="revealProgress"></div>
+      <div class="fullscreen-reveal-content">
+        <div class="fullscreen-reveal-content">Entering Cashier Mode…</div>
+      </div>
+    </div>
+
+    <div class="cashier-mode-entry" id="cashierModeEntry">
+      <div class="cashier-logo-container">
+        <div class="cashier-logo">
+          <img src="../images/mainlogo1.png" alt="Store Logo" />
+        </div>
+        <div class="cashier-title">Entering Cashier Mode</div>
+        <div class="cashier-subtitle">Blessence Point of Sale</div>
+      </div>
+      <div class="cashier-loading">
+        <div class="cashier-loading-dot"></div>
+        <div class="cashier-loading-dot"></div>
+        <div class="cashier-loading-dot"></div>
+      </div>
+    </div>
+
+    <div class="cashier-tap-counter" id="cashierTapCounter"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Mobile menu functionality
+      const hamburgerBtn = document.getElementById("hamburgerBtn");
+      const sidebar = document.getElementById("sidebar");
+      const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+      // Toggle sidebar on hamburger click
+      hamburgerBtn.addEventListener("click", function () {
+        sidebar.classList.toggle("mobile-open");
+        sidebarOverlay.classList.toggle("active");
       });
-    });
 
-    // Pagination state
-    let currentPage = 1;
-    const itemsPerPage = 10;
-    let totalActivities = 0;
-    let allActivities = [];
+      // Close sidebar when overlay is clicked
+      sidebarOverlay.addEventListener("click", function () {
+        sidebar.classList.remove("mobile-open");
+        sidebarOverlay.classList.remove("active");
+      });
 
-    // Calendar functionality
-    // Calendar functionality
-    class CustomCalendar {
-      constructor(inputElement, calendarElement) {
-        this.input = inputElement;
-        this.calendar = calendarElement;
-        this.currentDate = new Date();
-        this.selectedDate = null;
+      // Close sidebar when a nav link is clicked (on mobile)
+      const navLinks = document.querySelectorAll(".sidebar .nav-link");
+      navLinks.forEach((link) => {
+        link.addEventListener("click", function () {
+          if (window.innerWidth < 992) {
+            sidebar.classList.remove("mobile-open");
+            sidebarOverlay.classList.remove("active");
+          }
+        });
+      });
 
-        this.init();
-      }
+      // Pagination state
+      let currentPage = 1;
+      const itemsPerPage = 10;
+      let totalActivities = 0;
+      let allActivities = [];
 
-      init() {
-        this.renderCalendar();
-        this.attachEventListeners();
-      }
+      // Calendar functionality
+      // Calendar functionality
+      class CustomCalendar {
+        constructor(inputElement, calendarElement) {
+          this.input = inputElement;
+          this.calendar = calendarElement;
+          this.currentDate = new Date();
+          this.selectedDate = null;
 
-      renderCalendar() {
-        const year = this.currentDate.getFullYear();
-        const month = this.currentDate.getMonth();
+          this.init();
+        }
 
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const daysInMonth = lastDay.getDate();
-        const startingDay = firstDay.getDay();
+        init() {
+          this.renderCalendar();
+          this.attachEventListeners();
+        }
 
-        const monthNames = [
-          "January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"
-        ];
+        renderCalendar() {
+          const year = this.currentDate.getFullYear();
+          const month = this.currentDate.getMonth();
 
-        // Calendar header
-        this.calendar.innerHTML = `
+          const firstDay = new Date(year, month, 1);
+          const lastDay = new Date(year, month + 1, 0);
+          const daysInMonth = lastDay.getDate();
+          const startingDay = firstDay.getDay();
+
+          const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+
+          // Calendar header
+          this.calendar.innerHTML = `
     <div class="calendar-header">
       <button type="button" class="calendar-nav prev-month">
         <i class="fas fa-chevron-left"></i>
@@ -1069,183 +1121,200 @@
     <div class="calendar-days"></div>
     `;
 
-        const daysContainer = this.calendar.querySelector('.calendar-days');
-        daysContainer.innerHTML = '';
+          const daysContainer = this.calendar.querySelector(".calendar-days");
+          daysContainer.innerHTML = "";
 
-        // Previous month days
-        const prevMonthLastDay = new Date(year, month, 0).getDate();
-        for (let i = startingDay - 1; i >= 0; i--) {
-          const dayElement = document.createElement('div');
-          dayElement.className = 'calendar-day other-month';
-          dayElement.textContent = prevMonthLastDay - i;
-          daysContainer.appendChild(dayElement);
-        }
-
-        // Current month days
-        const today = new Date();
-        for (let i = 1; i <= daysInMonth; i++) {
-          const dayElement = document.createElement('div');
-          dayElement.className = 'calendar-day';
-          dayElement.textContent = i;
-
-          // Check if this is today
-          if (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year) {
-            dayElement.classList.add('today');
+          // Previous month days
+          const prevMonthLastDay = new Date(year, month, 0).getDate();
+          for (let i = startingDay - 1; i >= 0; i--) {
+            const dayElement = document.createElement("div");
+            dayElement.className = "calendar-day other-month";
+            dayElement.textContent = prevMonthLastDay - i;
+            daysContainer.appendChild(dayElement);
           }
 
-          // Check if this is the selected date
-          if (this.selectedDate &&
-            this.selectedDate.getDate() === i &&
-            this.selectedDate.getMonth() === month &&
-            this.selectedDate.getFullYear() === year) {
-            dayElement.classList.add('selected');
-          }
+          // Current month days
+          const today = new Date();
+          for (let i = 1; i <= daysInMonth; i++) {
+            const dayElement = document.createElement("div");
+            dayElement.className = "calendar-day";
+            dayElement.textContent = i;
 
-          daysContainer.appendChild(dayElement);
-        }
-
-        // Next month days
-        const totalCells = 42; // 6 rows * 7 days
-        const remainingCells = totalCells - (startingDay + daysInMonth);
-        for (let i = 1; i <= remainingCells; i++) {
-          const dayElement = document.createElement('div');
-          dayElement.className = 'calendar-day other-month';
-          dayElement.textContent = i;
-          daysContainer.appendChild(dayElement);
-        }
-      }
-
-      attachEventListeners() {
-        // USE EVENT DELEGATION (One listener for the whole calendar container)
-        this.calendar.addEventListener('click', (e) => {
-          e.stopPropagation(); // Prevent the document click listener from firing (FIXES CLOSING ISSUE)
-
-          // Handle Navigation Buttons (Prev/Next)
-          const navBtn = e.target.closest('.calendar-nav');
-          if (navBtn) {
-            if (navBtn.classList.contains('prev-month')) {
-              this.currentDate.setMonth(this.currentDate.getMonth() - 1);
-            } else if (navBtn.classList.contains('next-month')) {
-              this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+            // Check if this is today
+            if (
+              today.getDate() === i &&
+              today.getMonth() === month &&
+              today.getFullYear() === year
+            ) {
+              dayElement.classList.add("today");
             }
-            this.renderCalendar();
-            return;
+
+            // Check if this is the selected date
+            if (
+              this.selectedDate &&
+              this.selectedDate.getDate() === i &&
+              this.selectedDate.getMonth() === month &&
+              this.selectedDate.getFullYear() === year
+            ) {
+              dayElement.classList.add("selected");
+            }
+
+            daysContainer.appendChild(dayElement);
           }
 
-          // Handle Day Selection
-          if (e.target.classList.contains('calendar-day') && !e.target.classList.contains('other-month')) {
-            const day = parseInt(e.target.textContent);
-            this.selectDate(day);
+          // Next month days
+          const totalCells = 42; // 6 rows * 7 days
+          const remainingCells = totalCells - (startingDay + daysInMonth);
+          for (let i = 1; i <= remainingCells; i++) {
+            const dayElement = document.createElement("div");
+            dayElement.className = "calendar-day other-month";
+            dayElement.textContent = i;
+            daysContainer.appendChild(dayElement);
           }
-        });
-
-        // Close calendar when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!this.input.contains(e.target) && !this.calendar.contains(e.target)) {
-            this.calendar.classList.remove('active');
-          }
-        });
-      }
-
-      selectDate(day) {
-        this.selectedDate = new Date(
-          this.currentDate.getFullYear(),
-          this.currentDate.getMonth(),
-          day
-        );
-
-        // Adjust for timezone offset to ensure correct date string
-        const offset = this.selectedDate.getTimezoneOffset();
-        const adjustedDate = new Date(this.selectedDate.getTime() - (offset * 60 * 1000));
-        const formattedDate = adjustedDate.toISOString().split('T')[0];
-
-        this.input.value = formattedDate;
-
-        // Close calendar
-        this.calendar.classList.remove('active');
-
-        // Re-render to show selected state
-        this.renderCalendar();
-      }
-
-      toggle() {
-        this.calendar.classList.toggle('active');
-      }
-    }
-
-    // Initialize the activity log
-    document.addEventListener('DOMContentLoaded', function () {
-      loadActivities();
-      setupEventListeners();
-
-      // Initialize custom calendars
-      const dateFromInput = document.getElementById('dateFrom');
-      const calendarFrom = document.getElementById('calendarFrom');
-      const dateToInput = document.getElementById('dateTo');
-      const calendarTo = document.getElementById('calendarTo');
-
-      const calendarFromInstance = new CustomCalendar(dateFromInput, calendarFrom);
-      const calendarToInstance = new CustomCalendar(dateToInput, calendarTo);
-
-      // Toggle calendars on input click
-      dateFromInput.addEventListener('click', () => {
-        calendarFromInstance.toggle();
-        calendarTo.classList.remove('active');
-      });
-
-      dateToInput.addEventListener('click', () => {
-        calendarToInstance.toggle();
-        calendarFrom.classList.remove('active');
-      });
-    });
-
-    function setupEventListeners() {
-      const searchBtn = document.getElementById("searchBtn");
-
-      // Filter functionality
-      searchBtn.addEventListener("click", function () {
-        currentPage = 1;
-        loadActivities();
-      });
-
-      // Also load on Enter key in filter fields
-      document.querySelectorAll('.form-control').forEach(input => {
-        input.addEventListener('keypress', function (e) {
-          if (e.key === 'Enter') {
-            currentPage = 1;
-            loadActivities();
-          }
-        });
-      });
-
-      // Add visual feedback when filter section becomes sticky
-      window.addEventListener("scroll", function () {
-        const filterSection = document.getElementById("filterSection");
-        const scrollPosition = window.scrollY;
-
-        if (scrollPosition > 100) {
-          filterSection.classList.add("sticky");
-        } else {
-          filterSection.classList.remove("sticky");
         }
+
+        attachEventListeners() {
+          // USE EVENT DELEGATION (One listener for the whole calendar container)
+          this.calendar.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent the document click listener from firing (FIXES CLOSING ISSUE)
+
+            // Handle Navigation Buttons (Prev/Next)
+            const navBtn = e.target.closest(".calendar-nav");
+            if (navBtn) {
+              if (navBtn.classList.contains("prev-month")) {
+                this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+              } else if (navBtn.classList.contains("next-month")) {
+                this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+              }
+              this.renderCalendar();
+              return;
+            }
+
+            // Handle Day Selection
+            if (
+              e.target.classList.contains("calendar-day") &&
+              !e.target.classList.contains("other-month")
+            ) {
+              const day = parseInt(e.target.textContent);
+              this.selectDate(day);
+            }
+          });
+
+          // Close calendar when clicking outside
+          document.addEventListener("click", (e) => {
+            if (
+              !this.input.contains(e.target) &&
+              !this.calendar.contains(e.target)
+            ) {
+              this.calendar.classList.remove("active");
+            }
+          });
+        }
+
+        selectDate(day) {
+          this.selectedDate = new Date(
+            this.currentDate.getFullYear(),
+            this.currentDate.getMonth(),
+            day
+          );
+
+          // Adjust for timezone offset to ensure correct date string
+          const offset = this.selectedDate.getTimezoneOffset();
+          const adjustedDate = new Date(
+            this.selectedDate.getTime() - offset * 60 * 1000
+          );
+          const formattedDate = adjustedDate.toISOString().split("T")[0];
+
+          this.input.value = formattedDate;
+
+          // Close calendar
+          this.calendar.classList.remove("active");
+
+          // Re-render to show selected state
+          this.renderCalendar();
+        }
+
+        toggle() {
+          this.calendar.classList.toggle("active");
+        }
+      }
+
+      // Initialize the activity log
+      document.addEventListener("DOMContentLoaded", function () {
+        loadActivities();
+        setupEventListeners();
+
+        // Initialize custom calendars
+        const dateFromInput = document.getElementById("dateFrom");
+        const calendarFrom = document.getElementById("calendarFrom");
+        const dateToInput = document.getElementById("dateTo");
+        const calendarTo = document.getElementById("calendarTo");
+
+        const calendarFromInstance = new CustomCalendar(
+          dateFromInput,
+          calendarFrom
+        );
+        const calendarToInstance = new CustomCalendar(dateToInput, calendarTo);
+
+        // Toggle calendars on input click
+        dateFromInput.addEventListener("click", () => {
+          calendarFromInstance.toggle();
+          calendarTo.classList.remove("active");
+        });
+
+        dateToInput.addEventListener("click", () => {
+          calendarToInstance.toggle();
+          calendarFrom.classList.remove("active");
+        });
       });
-    }
 
-    function loadActivities() {
-      const dateFrom = document.getElementById("dateFrom").value;
-      const dateTo = document.getElementById("dateTo").value;
-      const actionType = document.getElementById("actionType").value;
-      const searchBtn = document.getElementById("searchBtn");
-      const searchText = document.getElementById("searchText");
-      const searchLoading = document.getElementById("searchLoading");
+      function setupEventListeners() {
+        const searchBtn = document.getElementById("searchBtn");
 
-      // Show loading state
-      searchBtn.disabled = true;
-      searchText.style.display = 'none';
-      searchLoading.style.display = 'inline-block';
+        // Filter functionality
+        searchBtn.addEventListener("click", function () {
+          currentPage = 1;
+          loadActivities();
+        });
 
-      const tableBody = document.getElementById('activityTableBody');
-      tableBody.innerHTML = `
+        // Also load on Enter key in filter fields
+        document.querySelectorAll(".form-control").forEach((input) => {
+          input.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              currentPage = 1;
+              loadActivities();
+            }
+          });
+        });
+
+        // Add visual feedback when filter section becomes sticky
+        window.addEventListener("scroll", function () {
+          const filterSection = document.getElementById("filterSection");
+          const scrollPosition = window.scrollY;
+
+          if (scrollPosition > 100) {
+            filterSection.classList.add("sticky");
+          } else {
+            filterSection.classList.remove("sticky");
+          }
+        });
+      }
+
+      function loadActivities() {
+        const dateFrom = document.getElementById("dateFrom").value;
+        const dateTo = document.getElementById("dateTo").value;
+        const actionType = document.getElementById("actionType").value;
+        const searchBtn = document.getElementById("searchBtn");
+        const searchText = document.getElementById("searchText");
+        const searchLoading = document.getElementById("searchLoading");
+
+        // Show loading state
+        searchBtn.disabled = true;
+        searchText.style.display = "none";
+        searchLoading.style.display = "inline-block";
+
+        const tableBody = document.getElementById("activityTableBody");
+        tableBody.innerHTML = `
         <tr>
           <td colspan="4" class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
@@ -1256,28 +1325,28 @@
         </tr>
       `;
 
-      // Build query string
-      const params = new URLSearchParams();
-      if (dateFrom) params.append('dateFrom', dateFrom);
-      if (dateTo) params.append('dateTo', dateTo);
-      if (actionType) params.append('actionType', actionType);
+        // Build query string
+        const params = new URLSearchParams();
+        if (dateFrom) params.append("dateFrom", dateFrom);
+        if (dateTo) params.append("dateTo", dateTo);
+        if (actionType) params.append("actionType", actionType);
 
-      fetch(`../php/activity-log.php?${params.toString()}`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data.success) {
-            throw new Error(data.error || 'Failed to load activities');
-          }
+        fetch(`../php/activity-log.php?${params.toString()}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.success) {
+              throw new Error(data.error || "Failed to load activities");
+            }
 
-          allActivities = data.activities;
-          totalActivities = allActivities.length;
+            allActivities = data.activities;
+            totalActivities = allActivities.length;
 
-          renderActivities();
-          renderPagination();
-        })
-        .catch(err => {
-          console.error('Error loading activities:', err);
-          tableBody.innerHTML = `
+            renderActivities();
+            renderPagination();
+          })
+          .catch((err) => {
+            console.error("Error loading activities:", err);
+            tableBody.innerHTML = `
             <tr>
               <td colspan="4" class="text-center py-4 text-danger">
                 <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
@@ -1286,44 +1355,45 @@
               </td>
             </tr>
           `;
-          renderPagination();
-        })
-        .finally(() => {
-          // Reset loading state
-          searchBtn.disabled = false;
-          searchText.style.display = 'inline';
-          searchLoading.style.display = 'none';
-        });
-    }
-
-    function renderActivities() {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const activitiesToShow = allActivities.slice(startIndex, endIndex);
-      const tableBody = document.getElementById('activityTableBody');
-      const tableHeader = document.getElementById('activityTableHeader');
-      const emptyState = document.getElementById('activityTableEmpty');
-
-      if (activitiesToShow.length === 0) {
-        // Hide table header and show empty state
-        tableHeader.classList.add('hidden');
-        emptyState.classList.add('show');
-
-        tableBody.innerHTML = '';
-        return;
+            renderPagination();
+          })
+          .finally(() => {
+            // Reset loading state
+            searchBtn.disabled = false;
+            searchText.style.display = "inline";
+            searchLoading.style.display = "none";
+          });
       }
 
-      // Show table header and hide empty state
-      tableHeader.classList.remove('hidden');
-      emptyState.classList.remove('show');
+      function renderActivities() {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const activitiesToShow = allActivities.slice(startIndex, endIndex);
+        const tableBody = document.getElementById("activityTableBody");
+        const tableHeader = document.getElementById("activityTableHeader");
+        const emptyState = document.getElementById("activityTableEmpty");
 
-      tableBody.innerHTML = activitiesToShow.map(activity => {
-        const userInfo = getUserInfo(activity);
-        const actionBadge = getActionBadge(activity.action);
-        const formattedDate = formatDateTime(activity.timestamp);
-        const changeDetails = parseActivityDetails(activity);
+        if (activitiesToShow.length === 0) {
+          // Hide table header and show empty state
+          tableHeader.classList.add("hidden");
+          emptyState.classList.add("show");
 
-        return `
+          tableBody.innerHTML = "";
+          return;
+        }
+
+        // Show table header and hide empty state
+        tableHeader.classList.remove("hidden");
+        emptyState.classList.remove("show");
+
+        tableBody.innerHTML = activitiesToShow
+          .map((activity) => {
+            const userInfo = getUserInfo(activity);
+            const actionBadge = getActionBadge(activity.action);
+            const formattedDate = formatDateTime(activity.timestamp);
+            const changeDetails = parseActivityDetails(activity);
+
+            return `
       <tr>
         <td data-label="User">
           <div class="user-info">
@@ -1348,95 +1418,167 @@
         </td>
       </tr>
     `;
-      }).join('');
-    }
+          })
+          .join("");
+      }
 
-    function getUserInfo(activity) {
-      if (activity.actor_type === 'system' || !activity.username) {
+      function getUserInfo(activity) {
+        // Check if it's a system activity first (actor_id = 0, null, or actor_type = 'system')
+        const actorId = activity.actor_id;
+        const isSystem =
+          actorId === 0 ||
+          actorId === "0" ||
+          actorId === null ||
+          actorId === undefined ||
+          activity.actor_type === "system";
+
+        if (isSystem) {
+          return {
+            avatar:
+              '<div class="user-avatar system-user"><i class="fas fa-robot"></i></div>',
+            name: "System",
+            role: "Automated Process",
+          };
+        }
+
+        // For admin/user actors, check if we have user data
+        if (activity.actor_type === "admin" || activity.actor_type === "user") {
+          // Check if we have username or email to determine if user data exists
+          const hasUserData =
+            activity.username ||
+            activity.email ||
+            (activity.first_name && activity.last_name);
+
+          if (!hasUserData) {
+            // User data not found in join, show generic user
+            const roleDisplay =
+              activity.actor_type === "admin" ? "Administrator" : "Customer";
+            return {
+              avatar: `<div class="user-avatar"><i class="fas fa-user"></i></div>`,
+              name: `User #${activity.actor_id}`,
+              role: roleDisplay,
+            };
+          }
+
+          // We have user data, format it properly
+          const initials =
+            (activity.first_name?.charAt(0) || "") +
+              (activity.last_name?.charAt(0) || "") ||
+            activity.username?.substring(0, 2).toUpperCase() ||
+            "U";
+
+          const fullName =
+            activity.first_name && activity.last_name
+              ? `${activity.first_name} ${activity.last_name}`
+              : activity.username || `User #${activity.actor_id}`;
+
+          const role =
+            activity.role === "admin"
+              ? "Store Admin"
+              : activity.role === "customer"
+              ? "Customer"
+              : activity.actor_type === "admin"
+              ? "Administrator"
+              : "Customer";
+
+          return {
+            avatar: `<div class="user-avatar">${initials}</div>`,
+            name: fullName,
+            role: role,
+          };
+        }
+
+        // Fallback for unknown actor types
         return {
-          avatar: '<div class="user-avatar system-user"><i class="fas fa-robot"></i></div>',
-          name: 'System',
-          role: 'Automated Process'
+          avatar: '<div class="user-avatar"><i class="fas fa-user"></i></div>',
+          name: `User #${activity.actor_id}`,
+          role: "Unknown",
         };
       }
 
-      const initials = (activity.first_name?.charAt(0) || '') + (activity.last_name?.charAt(0) || '') || activity.username?.substring(0, 2).toUpperCase() || 'U';
-      const fullName = activity.first_name && activity.last_name
-        ? `${activity.first_name} ${activity.last_name}`
-        : activity.username || 'Unknown User';
+      function getActionBadge(action) {
+        const actionLower = action.toLowerCase();
 
-      const role = activity.role === 'admin'
-        ? activity.actor_type === 'admin' ? 'Store Admin' : 'Administrator'
-        : 'Customer';
-
-      return {
-        avatar: `<div class="user-avatar">${initials}</div>`,
-        name: fullName,
-        role: role
-      };
-    }
-
-    function getActionBadge(action) {
-      const actionLower = action.toLowerCase();
-
-      if (actionLower.includes('added') || actionLower.includes('created') || actionLower.includes('placed')) {
-        return { class: 'action-create', text: 'Created' };
-      } else if (actionLower.includes('updated') || actionLower.includes('modified') || actionLower.includes('changed')) {
-        return { class: 'action-update', text: 'Updated' };
-      } else if (actionLower.includes('deleted') || actionLower.includes('removed') || actionLower.includes('cancelled')) {
-        return { class: 'action-delete', text: 'Deleted' };
-      } else {
-        return { class: 'action-system', text: 'System' };
-      }
-    }
-
-    function formatDateTime(timestamp) {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diffMs = now - date;
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-      const diffMinutes = Math.floor(diffMs / (1000 * 60));
-
-      let relativeTime;
-      if (diffDays > 0) {
-        relativeTime = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-      } else if (diffHours > 0) {
-        relativeTime = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-      } else if (diffMinutes > 0) {
-        relativeTime = `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
-      } else {
-        relativeTime = 'Just now';
+        if (
+          actionLower.includes("added") ||
+          actionLower.includes("created") ||
+          actionLower.includes("placed")
+        ) {
+          return { class: "action-create", text: "Created" };
+        } else if (
+          actionLower.includes("updated") ||
+          actionLower.includes("modified") ||
+          actionLower.includes("changed")
+        ) {
+          return { class: "action-update", text: "Updated" };
+        } else if (
+          actionLower.includes("deleted") ||
+          actionLower.includes("removed") ||
+          actionLower.includes("cancelled")
+        ) {
+          return { class: "action-delete", text: "Deleted" };
+        } else {
+          return { class: "action-system", text: "System" };
+        }
       }
 
-      return {
-        date: date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        }) + ' - ' + date.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-        }),
-        relative: relativeTime
-      };
-    }
+      function formatDateTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    function parseActivityDetails(activity) {
-      if (!activity.details) {
-        return `<div class="change-item">
+        let relativeTime;
+        if (diffDays > 0) {
+          relativeTime = `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        } else if (diffHours > 0) {
+          relativeTime = `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+        } else if (diffMinutes > 0) {
+          relativeTime = `${diffMinutes} minute${
+            diffMinutes > 1 ? "s" : ""
+          } ago`;
+        } else {
+          relativeTime = "Just now";
+        }
+
+        return {
+          date:
+            date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            }) +
+            " - " +
+            date.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            }),
+          relative: relativeTime,
+        };
+      }
+
+      function parseActivityDetails(activity) {
+        if (!activity.details) {
+          return `<div class="change-item">
           <span class="change-field">Action:</span> ${activity.action}
         </div>`;
-      }
+        }
 
-      try {
-        // Try to parse JSON details
-        const details = JSON.parse(activity.details);
-        if (typeof details === 'object') {
-          return Object.entries(details).map(([key, value]) => {
-            if (typeof value === 'object' && value.before !== undefined && value.after !== undefined) {
-              return `
+        try {
+          // Try to parse JSON details
+          const details = JSON.parse(activity.details);
+          if (typeof details === "object") {
+            return Object.entries(details)
+              .map(([key, value]) => {
+                if (
+                  typeof value === "object" &&
+                  value.before !== undefined &&
+                  value.after !== undefined
+                ) {
+                  return `
                 <div class="change-item">
                   <span class="change-field">${key}:</span>
                   <span class="change-before">${value.before}</span>
@@ -1444,159 +1586,169 @@
                   <span class="change-after">${value.after}</span>
                 </div>
               `;
-            } else {
-              return `
+                } else {
+                  return `
                 <div class="change-item">
                   <span class="change-field">${key}:</span> ${value}
                 </div>
               `;
-            }
-          }).join('');
-        }
-      } catch (e) {
-        // If not JSON, display as plain text
-        return `<div class="change-item">
+                }
+              })
+              .join("");
+          }
+        } catch (e) {
+          // If not JSON, display as plain text
+          return `<div class="change-item">
           <span class="change-field">Details:</span> ${activity.details}
         </div>`;
-      }
+        }
 
-      return `<div class="change-item">
+        return `<div class="change-item">
         <span class="change-field">Action:</span> ${activity.action}
       </div>`;
-    }
-
-    function renderPagination() {
-      const totalPages = Math.ceil(totalActivities / itemsPerPage);
-      const pagination = document.getElementById('pagination');
-      const paginationInfo = document.getElementById('paginationInfo');
-
-      // Update pagination info
-      const startItem = totalActivities > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
-      const endItem = Math.min(currentPage * itemsPerPage, totalActivities);
-      paginationInfo.textContent = totalActivities > 0
-        ? `Showing ${startItem}-${endItem} of ${totalActivities} activities`
-        : 'No activities found';
-
-      // Don't show pagination if no activities
-      if (totalPages <= 1) {
-        pagination.innerHTML = '';
-        return;
       }
 
-      // Generate pagination buttons
-      let paginationHTML = '';
+      function renderPagination() {
+        const totalPages = Math.ceil(totalActivities / itemsPerPage);
+        const pagination = document.getElementById("pagination");
+        const paginationInfo = document.getElementById("paginationInfo");
 
-      // Previous button
-      paginationHTML += `
-        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-          <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+        // Update pagination info
+        const startItem =
+          totalActivities > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+        const endItem = Math.min(currentPage * itemsPerPage, totalActivities);
+        paginationInfo.textContent =
+          totalActivities > 0
+            ? `Showing ${startItem}-${endItem} of ${totalActivities} activities`
+            : "No activities found";
+
+        // Don't show pagination if no activities
+        if (totalPages <= 1) {
+          pagination.innerHTML = "";
+          return;
+        }
+
+        // Generate pagination buttons
+        let paginationHTML = "";
+
+        // Previous button
+        paginationHTML += `
+        <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+          <a class="page-link" href="#" data-page="${
+            currentPage - 1
+          }">Previous</a>
         </li>
       `;
 
-      // Page numbers
-      const maxVisiblePages = 5;
-      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(
+          1,
+          currentPage - Math.floor(maxVisiblePages / 2)
+        );
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-      // Adjust start page if we're near the end
-      if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-      }
+        // Adjust start page if we're near the end
+        if (endPage - startPage + 1 < maxVisiblePages) {
+          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
 
-      // First page and ellipsis if needed
-      if (startPage > 1) {
-        paginationHTML += `
+        // First page and ellipsis if needed
+        if (startPage > 1) {
+          paginationHTML += `
           <li class="page-item">
             <a class="page-link" href="#" data-page="1">1</a>
           </li>
         `;
-        if (startPage > 2) {
-          paginationHTML += `
+          if (startPage > 2) {
+            paginationHTML += `
             <li class="page-item disabled">
               <span class="page-link">...</span>
             </li>
           `;
+          }
         }
-      }
 
-      // Page numbers
-      for (let i = startPage; i <= endPage; i++) {
-        paginationHTML += `
-          <li class="page-item ${i === currentPage ? 'active' : ''}">
+        // Page numbers
+        for (let i = startPage; i <= endPage; i++) {
+          paginationHTML += `
+          <li class="page-item ${i === currentPage ? "active" : ""}">
             <a class="page-link" href="#" data-page="${i}">${i}</a>
           </li>
         `;
-      }
+        }
 
-      // Last page and ellipsis if needed
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-          paginationHTML += `
+        // Last page and ellipsis if needed
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) {
+            paginationHTML += `
             <li class="page-item disabled">
               <span class="page-link">...</span>
             </li>
           `;
-        }
-        paginationHTML += `
+          }
+          paginationHTML += `
           <li class="page-item">
             <a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a>
           </li>
         `;
-      }
+        }
 
-      // Next button
-      paginationHTML += `
-        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        // Next button
+        paginationHTML += `
+        <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
           <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
         </li>
       `;
 
-      pagination.innerHTML = paginationHTML;
+        pagination.innerHTML = paginationHTML;
 
-      // Add event listeners to pagination buttons
-      pagination.querySelectorAll('.page-link').forEach(link => {
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          if (!this.parentElement.classList.contains('disabled') &&
-            !this.parentElement.classList.contains('active')) {
-            currentPage = parseInt(this.getAttribute('data-page'));
-            renderActivities();
-            renderPagination();
+        // Add event listeners to pagination buttons
+        pagination.querySelectorAll(".page-link").forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (
+              !this.parentElement.classList.contains("disabled") &&
+              !this.parentElement.classList.contains("active")
+            ) {
+              currentPage = parseInt(this.getAttribute("data-page"));
+              renderActivities();
+              renderPagination();
 
-            // Scroll to top of table
-            document.querySelector('.activity-table-container').scrollIntoView({
-              behavior: 'smooth'
-            });
+              // Scroll to top of table
+              document
+                .querySelector(".activity-table-container")
+                .scrollIntoView({
+                  behavior: "smooth",
+                });
+            }
+          });
+        });
+      }
+      // Highlight active sidebar link based on current URL
+      const highlightActiveNavLink = () => {
+        const navLinks = document.querySelectorAll(".sidebar .nav-link");
+        const currentPath = window.location.pathname.split("/").pop();
+
+        navLinks.forEach((link) => {
+          const linkPath = link.getAttribute("href");
+          if (linkPath === currentPath) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
           }
         });
+      };
+
+      highlightActiveNavLink();
+
+      const dropdown = new Choices("#actionType", {
+        searchEnabled: false,
+        itemSelectText: "",
+        shouldSort: false,
+        position: "bottom",
+        appendTo: document.body, // <- this fixes the clipping
       });
-    }
-    // Highlight active sidebar link based on current URL
-    const highlightActiveNavLink = () => {
-      const navLinks = document.querySelectorAll('.sidebar .nav-link');
-      const currentPath = window.location.pathname.split('/').pop();
-
-      navLinks.forEach(link => {
-        const linkPath = link.getAttribute('href');
-        if (linkPath === currentPath) {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
-        }
-      });
-    };
-
-    highlightActiveNavLink();
-
-    const dropdown = new Choices('#actionType', {
-      searchEnabled: false,
-      itemSelectText: '',
-      shouldSort: false,
-      position: 'bottom',
-      appendTo: document.body  // <- this fixes the clipping
-    });
-
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>

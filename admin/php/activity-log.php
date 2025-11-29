@@ -6,65 +6,27 @@ if (getenv('DOCKER_ENV') === 'true') {
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
-// Get filter parameters
-$dateFrom = isset($_GET['dateFrom']) ? $_GET['dateFrom'] : '';
-$dateTo = isset($_GET['dateTo']) ? $_GET['dateTo'] : '';
-$actionType = isset($_GET['actionType']) ? $_GET['actionType'] : '';
 
 try {
-    // Build WHERE conditions
-    $whereConditions = ['1=1'];
-
-    // Date range filter
-    if (!empty($dateFrom)) {
-        $whereConditions[] = "DATE(a.timestamp) >= '" . $conn->real_escape_string($dateFrom) . "'";
-    }
-    if (!empty($dateTo)) {
-        $whereConditions[] = "DATE(a.timestamp) <= '" . $conn->real_escape_string($dateTo) . "'";
-    }
-
-    // Action type filter
-    if (!empty($actionType)) {
-        switch ($actionType) {
-            case 'create':
-                $whereConditions[] = "a.action LIKE '%added%' OR a.action LIKE '%created%' OR a.action LIKE '%placed%'";
-                break;
-            case 'update':
-                $whereConditions[] = "a.action LIKE '%updated%' OR a.action LIKE '%modified%' OR a.action LIKE '%changed%'";
-                break;
-            case 'delete':
-                $whereConditions[] = "a.action LIKE '%deleted%' OR a.action LIKE '%removed%' OR a.action LIKE '%cancelled%'";
-                break;
-            case 'system':
-                $whereConditions[] = "a.actor_type = 'system' OR a.action LIKE '%system%'";
-                break;
-        }
-    }
-
-    $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
-
-    // Main query to fetch activity logs
+    // Simple query to get all activity logs with user information
     $query = "
-        SELECT 
-            a.log_id,
-            a.actor_type,
-            a.actor_id,
-            a.action,
-            a.timestamp,
-            a.details,
-            u.username,
-            u.first_name,
-            u.last_name,
-            u.Email,
-            u.Role
-        FROM activitylog a
-        LEFT JOIN users u ON a.actor_id = u.UserID AND a.actor_type IN ('admin', 'customer')
-        $whereClause
-        ORDER BY a.timestamp DESC
-        LIMIT 100
-    ";
-
-    error_log('Activity Log Query: ' . $query);  // Debug logging
+    SELECT 
+        a.log_id,
+        a.actor_type,
+        a.actor_id,
+        a.action,
+        a.timestamp,
+        a.details,
+        u.username,
+        u.first_name,
+        u.last_name,
+        u.Email,
+        u.Role
+    FROM activitylog a
+    LEFT JOIN users u ON a.actor_id = u.UserID
+    ORDER BY a.timestamp DESC
+    LIMIT 100
+";
 
     $result = $conn->query($query);
 
@@ -93,11 +55,7 @@ try {
     echo json_encode([
         'success' => true,
         'activities' => $activities,
-        'filters' => [
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
-            'actionType' => $actionType
-        ]
+        'total' => count($activities)
     ]);
 } catch (Exception $e) {
     error_log('Error in activity-log.php: ' . $e->getMessage());
