@@ -915,6 +915,100 @@
           justify-content: center;
         }
       }
+      /* Filter Section Styles */
+      .history-filter-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(228, 151, 170, 0.2);
+      }
+
+      .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: flex-end;
+      }
+
+      .filter-group {
+        flex: 1;
+        min-width: 180px;
+      }
+
+      .filter-label {
+        font-weight: 600;
+        color: var(--dark-pink);
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+      }
+
+      .filter-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+
+      .filter-control:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 2px rgba(228, 151, 170, 0.2);
+        outline: none;
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .btn-filter {
+        background: var(--primary-pink);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-filter:hover {
+        background: var(--dark-pink);
+        color: white;
+      }
+
+      .btn-reset {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-reset:hover {
+        background: #5a6268;
+        color: white;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 30px;
+        color: #6c757d;
+      }
+
+      @media (max-width: 768px) {
+        .filter-row {
+          flex-direction: column;
+        }
+
+        .filter-group {
+          width: 100%;
+        }
+      }
     </style>
   </head>
 
@@ -1273,6 +1367,56 @@
             ></button>
           </div>
           <div class="modal-body">
+            <!-- Filter Section -->
+            <div class="history-filter-section">
+              <div class="filter-row">
+                <div class="filter-group">
+                  <div class="filter-label">Date Range</div>
+                  <input
+                    type="text"
+                    class="filter-control"
+                    id="filterDateFrom"
+                    placeholder="From Date"
+                  />
+                </div>
+                <div class="filter-group">
+                  <div class="filter-label">&nbsp;</div>
+                  <input
+                    type="text"
+                    class="filter-control"
+                    id="filterDateTo"
+                    placeholder="To Date"
+                  />
+                </div>
+                <div class="filter-group">
+                  <div class="filter-label">Status</div>
+                  <select class="filter-control" id="filterStatus">
+                    <option value="all">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Expired">Expired</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <div class="filter-label">Search Title</div>
+                  <input
+                    type="text"
+                    class="filter-control"
+                    id="filterSearch"
+                    placeholder="Search by title..."
+                  />
+                </div>
+              </div>
+              <div class="filter-actions">
+                <button class="btn-filter" id="applyFilters">
+                  <i class="fas fa-filter me-1"></i> Apply Filters
+                </button>
+                <button class="btn-reset" id="resetFilters">
+                  <i class="fas fa-redo me-1"></i> Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- History Table -->
             <div class="table-responsive">
               <table class="table history-table table-hover">
                 <thead>
@@ -1337,6 +1481,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+      // Complete JavaScript - Replace everything in the <script> tag at the bottom of customer-management.html
+
       document.addEventListener("DOMContentLoaded", async function () {
         // First, verify admin session
         setupAdminPageProtection();
@@ -1345,11 +1491,12 @@
 
         await updateAdminGreeting();
 
+        // Initialize calendar pickers for announcement modal
         flatpickr("#annSchedule", {
           enableTime: true,
           dateFormat: "Y-m-d H:i",
           minDate: "today",
-          disableMobile: "true", // Forces the custom theme on mobile instead of native picker
+          disableMobile: "true",
           time_24hr: false,
         });
 
@@ -1360,10 +1507,21 @@
           disableMobile: "true",
           time_24hr: false,
         });
-        // ---------------------------------------------------
 
-        // Load customer data (Existing Logic)
-        loadCustomerData("all", "", 1);
+        // Initialize date pickers for history filter
+        dateFromPicker = flatpickr("#filterDateFrom", {
+          enableTime: false,
+          dateFormat: "Y-m-d",
+          disableMobile: "true",
+          time_24hr: false,
+        });
+
+        dateToPicker = flatpickr("#filterDateTo", {
+          enableTime: false,
+          dateFormat: "Y-m-d",
+          disableMobile: "true",
+          time_24hr: false,
+        });
 
         // Load users for the announcement modal
         loadUsersForModal();
@@ -1374,20 +1532,51 @@
         let searchTimeout;
         let currentPage = 1;
 
-        // Filter buttons
-        filterButtons.forEach((button) => {
-          button.addEventListener("click", function () {
+        // Load initial customer data
+        console.log("Loading initial customer data...");
+        loadCustomerData(currentFilter, "", currentPage);
+
+        // Filter buttons - FIXED VERSION
+        filterButtons.forEach((button, index) => {
+          button.addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("=== Filter Button Clicked ===");
+            console.log("Button index:", index);
+            console.log("Button text:", this.textContent.trim());
+
+            // Remove active class from all buttons
             filterButtons.forEach((btn) => btn.classList.remove("active"));
+
+            // Add active class to clicked button
             this.classList.add("active");
 
-            let filter = this.textContent.trim().toLowerCase();
-            if (filter === "all customers") filter = "all";
-            if (filter === "new customers") filter = "new";
-            if (filter === "with feedback") filter = "feedback";
-            if (filter === "inactive") filter = "inactive";
+            // Determine filter based on button index
+            // Order: All Customers (0), New Customers (1), With Feedback (2), Inactive (3)
+            let filter = "all";
+
+            switch (index) {
+              case 0:
+                filter = "all";
+                break;
+              case 1:
+                filter = "new";
+                break;
+              case 2:
+                filter = "feedback";
+                break;
+              case 3:
+                filter = "inactive";
+                break;
+              default:
+                filter = "all";
+            }
+
+            console.log("Filter determined:", filter);
 
             currentFilter = filter;
             currentPage = 1;
+
+            console.log("Calling loadCustomerData with filter:", filter);
             loadCustomerData(
               currentFilter,
               searchBox.value.trim(),
@@ -1401,6 +1590,7 @@
           clearTimeout(searchTimeout);
           searchTimeout = setTimeout(() => {
             const query = searchBox.value.trim();
+            console.log("Search triggered:", query);
             currentPage = 1;
             loadCustomerData(currentFilter, query, currentPage);
           }, 400);
@@ -1409,6 +1599,7 @@
         // Also allow pressing Enter to trigger search immediately
         searchBox.addEventListener("keypress", (e) => {
           if (e.key === "Enter") {
+            console.log("Search Enter pressed");
             currentPage = 1;
             loadCustomerData(
               currentFilter,
@@ -1417,6 +1608,29 @@
             );
           }
         });
+
+        // Apply filters button for history modal
+        document
+          .getElementById("applyFilters")
+          .addEventListener("click", function () {
+            loadAnnouncementHistory();
+          });
+
+        // Reset filters button for history modal
+        document
+          .getElementById("resetFilters")
+          .addEventListener("click", function () {
+            resetHistoryFilters();
+          });
+
+        // Allow Enter key to apply filters in search field
+        document
+          .getElementById("filterSearch")
+          .addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              loadAnnouncementHistory();
+            }
+          });
       });
 
       // --- Mobile Sidebar Toggle Logic ---
@@ -1466,15 +1680,15 @@
         let html = "";
         users.forEach((user) => {
           html += `
-                <div class="user-checkbox-item">
-                    <input type="checkbox" class="user-select-cb" value="${user.id}" data-role="${user.role}">
-                    <div style="flex-grow:1">
-                        <div class="fw-bold small">${user.name}</div>
-                        <div class="small text-muted">${user.email}</div>
-                    </div>
-                    <span class="user-role-badge">${user.role}</span>
+            <div class="user-checkbox-item">
+                <input type="checkbox" class="user-select-cb" value="${user.id}" data-role="${user.role}">
+                <div style="flex-grow:1">
+                    <div class="fw-bold small">${user.name}</div>
+                    <div class="small text-muted">${user.email}</div>
                 </div>
-            `;
+                <span class="user-role-badge">${user.role}</span>
+            </div>
+        `;
         });
         container.innerHTML = html;
         updateSelectedCount();
@@ -1650,19 +1864,39 @@
           });
       }
 
-      // --- NEW: HISTORY & DELETE LOGIC ---
+      // --- HISTORY & DELETE LOGIC ---
       function loadAnnouncementHistory() {
         const tbody = document.getElementById("historyTableBody");
         tbody.innerHTML =
           '<tr><td colspan="5" class="text-center py-4">Loading history...</td></tr>';
 
-        fetch("../php/get-announcement-history.php")
+        // Get filter values
+        const dateFrom = document.getElementById("filterDateFrom").value;
+        const dateTo = document.getElementById("filterDateTo").value;
+        const status = document.getElementById("filterStatus").value;
+        const search = document.getElementById("filterSearch").value;
+
+        // Build query string with filters
+        let queryString = "";
+        if (dateFrom) queryString += `&dateFrom=${dateFrom}`;
+        if (dateTo) queryString += `&dateTo=${dateTo}`;
+        if (status !== "all") queryString += `&status=${status}`;
+        if (search) queryString += `&search=${encodeURIComponent(search)}`;
+
+        fetch(`../php/get-announcement-history.php?${queryString}`)
           .then((res) => res.json())
           .then((data) => {
             if (data.success) {
               if (data.data.length === 0) {
-                tbody.innerHTML =
-                  '<tr><td colspan="5" class="text-center py-4 text-muted">No announcements found.</td></tr>';
+                tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                <div class="no-results">
+                                    <i class="fas fa-search fa-2x mb-3"></i>
+                                    <p>No announcements match your filters.</p>
+                                </div>
+                            </td>
+                        </tr>`;
                 return;
               }
 
@@ -1671,23 +1905,23 @@
                 const statusClass =
                   item.status === "Active" ? "bg-active" : "bg-expired";
                 html += `
-                            <tr>
-                                <td>${item.date}</td>
-                                <td class="fw-bold text-dark">${item.title}</td>
-                                <td>${item.recipients} users</td>
-                                <td><span class="status-badge ${statusClass}">${
+                        <tr>
+                            <td>${item.date}</td>
+                            <td class="fw-bold text-dark">${item.title}</td>
+                            <td>${item.recipients} users</td>
+                            <td><span class="status-badge ${statusClass}">${
                   item.status
                 }</span></td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${item.title.replace(
-                                      /'/g,
-                                      "\\'"
-                                    )}', '${item.raw_date}')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${item.title.replace(
+                                  /'/g,
+                                  "\\'"
+                                )}', '${item.raw_date}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
               });
               tbody.innerHTML = html;
             } else {
@@ -1698,6 +1932,15 @@
             tbody.innerHTML =
               '<tr><td colspan="5" class="text-center text-danger">Failed to load history.</td></tr>';
           });
+      }
+
+      // Reset history filters
+      function resetHistoryFilters() {
+        dateFromPicker.clear();
+        dateToPicker.clear();
+        document.getElementById("filterStatus").value = "all";
+        document.getElementById("filterSearch").value = "";
+        loadAnnouncementHistory();
       }
 
       function deleteAnnouncement(title, date) {
@@ -1724,7 +1967,7 @@
                     "The announcement has been removed.",
                     "success"
                   );
-                  loadAnnouncementHistory(); // Refresh list
+                  loadAnnouncementHistory();
                 } else {
                   Swal.fire("Error", response.error, "error");
                 }
@@ -1734,14 +1977,28 @@
       }
 
       // --- EXISTING FUNCTION: loadCustomerData ---
-      function loadCustomerData(filter = "all", search = "") {
-        fetch(
-          `../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(
-            search
-          )}`
-        )
-          .then((response) => response.json())
+      function loadCustomerData(filter = "all", search = "", page = 1) {
+        console.log("=== loadCustomerData called ===");
+        console.log("Filter:", filter);
+        console.log("Search:", search);
+        console.log("Page:", page);
+
+        const url = `../php/customer-management.php?filter=${filter}&search=${encodeURIComponent(
+          search
+        )}&page=${page}`;
+        console.log("Fetching URL:", url);
+
+        fetch(url)
+          .then((response) => {
+            console.log("Response status:", response.status);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
           .then((data) => {
+            console.log("Response data:", data);
+
             const contentArea = document.querySelector(".scrollable-content");
 
             if (data.success) {
@@ -1761,6 +2018,9 @@
                 ).textContent = data.stats.feedback_received;
               }
 
+              console.log("Number of customers:", data.customers.length);
+              console.log("Filter applied:", data.filter_applied);
+
               // Populate all customers
               if (data.customers.length > 0) {
                 let customersHTML = '<div class="customers-grid">';
@@ -1777,7 +2037,7 @@
                     c.has_feedback
                   );
 
-                  // ✅ Generate Profile Picture or Fallback
+                  // Generate Profile Picture or Fallback
                   let avatarHTML = "";
                   if (
                     c.profile_photo &&
@@ -1795,51 +2055,49 @@
                   }
 
                   customersHTML += `
-          <div class="customer-card">
-            <div class="text-center">
-              ${avatarHTML}
-            </div>
-            <div class="customer-header">
-              <div>
-                <div class="customer-name">${c.display_name}</div>
-                <div class="customer-username">${c.username}</div>
-              </div>
-              <div class="customer-status ${statusClass}">${c.status}</div>
-            </div>
-            <div class="customer-details">
-              <div class="customer-detail">
-                <i class="fas fa-envelope"></i>
-                <span>${c.email}</span>
-              </div>
-              <div class="customer-detail">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Joined: ${c.join_date}</span>
-              </div>
-              <div class="customer-detail">
-                <i class="fas fa-shopping-bag"></i>
-                <span>${c.total_orders} orders</span>
-              </div>
-              <div class="customer-detail">
-                <i class="fas fa-star"></i>
-                <span>${starRatingHTML}</span>
-              </div>
-            </div>
-            <div class="customer-stats">
-              <div class="stat-item">
-                <div class="stat-number">${c.total_orders}</div>
-                <div class="stat-label">Orders</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-number">₱${c.total_spent}</div>
-                <div class="stat-label">Total Spent</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-number">${c.rating_count}</div>
-                <div class="stat-label">Ratings</div>
-              </div>
-            </div>
-          </div>
-        `;
+                            <div class="customer-card">
+                                <div class="text-center">${avatarHTML}</div>
+                                <div class="customer-header">
+                                    <div>
+                                        <div class="customer-name">${c.display_name}</div>
+                                        <div class="customer-username">${c.username}</div>
+                                    </div>
+                                    <div class="customer-status ${statusClass}">${c.status}</div>
+                                </div>
+                                <div class="customer-details">
+                                    <div class="customer-detail">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>${c.email}</span>
+                                    </div>
+                                    <div class="customer-detail">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span>Joined: ${c.join_date}</span>
+                                    </div>
+                                    <div class="customer-detail">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <span>${c.total_orders} orders</span>
+                                    </div>
+                                    <div class="customer-detail">
+                                        <i class="fas fa-star"></i>
+                                        <span>${starRatingHTML}</span>
+                                    </div>
+                                </div>
+                                <div class="customer-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-number">${c.total_orders}</div>
+                                        <div class="stat-label">Orders</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">₱${c.total_spent}</div>
+                                        <div class="stat-label">Total Spent</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">${c.rating_count}</div>
+                                        <div class="stat-label">Ratings</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                 });
 
                 customersHTML += "</div>";
@@ -1853,21 +2111,35 @@
                 }
 
                 contentArea.innerHTML = customersHTML;
+
+                // Add event listeners to pagination links
+                document
+                  .querySelectorAll(".page-link[data-page]")
+                  .forEach((link) => {
+                    link.addEventListener("click", function (e) {
+                      e.preventDefault();
+                      const page = parseInt(this.getAttribute("data-page"));
+                      loadCustomerData(filter, search, page);
+                    });
+                  });
               } else {
+                console.log("No customers found for this filter");
                 contentArea.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-users"></i>
-          <h4>No Customers Found</h4>
-          <p>No results match your current filter or search.</p>
-        </div>`;
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <h4>No Customers Found</h4>
+                            <p>No results match your current filter or search.</p>
+                        </div>`;
               }
             } else {
               console.error("Server error:", data.error);
-              contentArea.innerHTML = `<div class="empty-state"><h4>Server Error</h4></div>`;
+              contentArea.innerHTML = `<div class="empty-state"><h4>Server Error: ${data.error}</h4></div>`;
             }
           })
           .catch((err) => {
             console.error("Fetch error:", err);
+            const contentArea = document.querySelector(".scrollable-content");
+            contentArea.innerHTML = `<div class="empty-state"><h4>Network Error</h4><p>${err.message}</p></div>`;
           });
       }
 
