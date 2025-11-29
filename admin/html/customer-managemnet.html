@@ -1481,7 +1481,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Complete JavaScript - Replace everything in the <script> tag at the bottom of customer-management.html
+      let dateFromPicker, dateToPicker;
 
       document.addEventListener("DOMContentLoaded", async function () {
         // First, verify admin session
@@ -1514,6 +1514,9 @@
           dateFormat: "Y-m-d",
           disableMobile: "true",
           time_24hr: false,
+          onChange: function (selectedDates, dateStr, instance) {
+            console.log("Date From changed:", dateStr);
+          },
         });
 
         dateToPicker = flatpickr("#filterDateTo", {
@@ -1521,6 +1524,9 @@
           dateFormat: "Y-m-d",
           disableMobile: "true",
           time_24hr: false,
+          onChange: function (selectedDates, dateStr, instance) {
+            console.log("Date To changed:", dateStr);
+          },
         });
 
         // Load users for the announcement modal
@@ -1610,27 +1616,41 @@
         });
 
         // Apply filters button for history modal
-        document
-          .getElementById("applyFilters")
-          .addEventListener("click", function () {
+        const applyFiltersBtn = document.getElementById("applyFilters");
+        if (applyFiltersBtn) {
+          applyFiltersBtn.addEventListener("click", function () {
+            console.log("Apply Filters clicked");
             loadAnnouncementHistory();
           });
+        }
 
         // Reset filters button for history modal
-        document
-          .getElementById("resetFilters")
-          .addEventListener("click", function () {
+        const resetFiltersBtn = document.getElementById("resetFilters");
+        if (resetFiltersBtn) {
+          resetFiltersBtn.addEventListener("click", function () {
+            console.log("Reset Filters clicked");
             resetHistoryFilters();
           });
+        }
 
         // Allow Enter key to apply filters in search field
-        document
-          .getElementById("filterSearch")
-          .addEventListener("keypress", function (e) {
+        const filterSearchInput = document.getElementById("filterSearch");
+        if (filterSearchInput) {
+          filterSearchInput.addEventListener("keypress", function (e) {
             if (e.key === "Enter") {
+              console.log("Enter pressed in search");
               loadAnnouncementHistory();
             }
           });
+        }
+
+        // Status dropdown change
+        const filterStatusSelect = document.getElementById("filterStatus");
+        if (filterStatusSelect) {
+          filterStatusSelect.addEventListener("change", function () {
+            console.log("Status filter changed:", this.value);
+          });
+        }
       });
 
       // --- Mobile Sidebar Toggle Logic ---
@@ -1866,6 +1886,8 @@
 
       // --- HISTORY & DELETE LOGIC ---
       function loadAnnouncementHistory() {
+        console.log("=== Loading Announcement History ===");
+
         const tbody = document.getElementById("historyTableBody");
         tbody.innerHTML =
           '<tr><td colspan="5" class="text-center py-4">Loading history...</td></tr>';
@@ -1876,16 +1898,29 @@
         const status = document.getElementById("filterStatus").value;
         const search = document.getElementById("filterSearch").value;
 
-        // Build query string with filters
-        let queryString = "";
-        if (dateFrom) queryString += `&dateFrom=${dateFrom}`;
-        if (dateTo) queryString += `&dateTo=${dateTo}`;
-        if (status !== "all") queryString += `&status=${status}`;
-        if (search) queryString += `&search=${encodeURIComponent(search)}`;
+        console.log("Filters:", { dateFrom, dateTo, status, search });
 
-        fetch(`../php/get-announcement-history.php?${queryString}`)
-          .then((res) => res.json())
+        // Build query string with filters
+        let queryParams = [];
+        if (dateFrom) queryParams.push(`dateFrom=${dateFrom}`);
+        if (dateTo) queryParams.push(`dateTo=${dateTo}`);
+        if (status !== "all") queryParams.push(`status=${status}`);
+        if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
+
+        const queryString =
+          queryParams.length > 0 ? "?" + queryParams.join("&") : "";
+        const url = `../php/get-announcement-history.php${queryString}`;
+
+        console.log("Fetching URL:", url);
+
+        fetch(url)
+          .then((res) => {
+            console.log("Response status:", res.status);
+            return res.json();
+          })
           .then((data) => {
+            console.log("Response data:", data);
+
             if (data.success) {
               if (data.data.length === 0) {
                 tbody.innerHTML = `
@@ -1924,11 +1959,14 @@
                     `;
               });
               tbody.innerHTML = html;
+              console.log(`Displayed ${data.data.length} announcements`);
             } else {
+              console.error("Server error:", data.error);
               tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${data.error}</td></tr>`;
             }
           })
           .catch((err) => {
+            console.error("Fetch error:", err);
             tbody.innerHTML =
               '<tr><td colspan="5" class="text-center text-danger">Failed to load history.</td></tr>';
           });
@@ -1936,10 +1974,14 @@
 
       // Reset history filters
       function resetHistoryFilters() {
-        dateFromPicker.clear();
-        dateToPicker.clear();
+        console.log("Resetting filters");
+
+        if (dateFromPicker) dateFromPicker.clear();
+        if (dateToPicker) dateToPicker.clear();
+
         document.getElementById("filterStatus").value = "all";
         document.getElementById("filterSearch").value = "";
+
         loadAnnouncementHistory();
       }
 
@@ -1971,12 +2013,16 @@
                 } else {
                   Swal.fire("Error", response.error, "error");
                 }
+              })
+              .catch((err) => {
+                console.error("Delete error:", err);
+                Swal.fire("Error", "Failed to delete announcement.", "error");
               });
           }
         });
       }
 
-      // --- EXISTING FUNCTION: loadCustomerData ---
+      // --- CUSTOMER DATA LOADING ---
       function loadCustomerData(filter = "all", search = "", page = 1) {
         console.log("=== loadCustomerData called ===");
         console.log("Filter:", filter);

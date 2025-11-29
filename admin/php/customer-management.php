@@ -33,8 +33,7 @@ $filter = $_GET['filter'] ?? 'all';
 $search = trim($_GET['search'] ?? '');
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Debug output
-error_log("=== NEW REQUEST ===");
+// Debug output - remove this after testing
 error_log("Filter received: " . $filter);
 error_log("Search received: " . $search);
 error_log("Page received: " . $page);
@@ -42,7 +41,6 @@ error_log("Page received: " . $page);
 // Validate filter value
 $validFilters = ['all', 'new', 'feedback', 'inactive'];
 if (!in_array($filter, $validFilters)) {
-    error_log("Invalid filter '$filter', defaulting to 'all'");
     $filter = 'all';
 }
 
@@ -51,141 +49,94 @@ if ($page < 1) {
 }
 
 try {
-    // Stats - these are always the same regardless of filter
+    // Stats
     $totalCustomers = $conn->query("SELECT COUNT(*) as total FROM users WHERE Role = 'customer'")->fetch_assoc()['total'];
     $newThisMonth = $conn->query("SELECT COUNT(*) as total FROM users WHERE Role='customer' AND CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 MONTH)")->fetch_assoc()['total'];
     $activeCustomers = $conn->query("SELECT COUNT(DISTINCT user_id) as total FROM orders WHERE order_date >= DATE_SUB(NOW(), INTERVAL 1 MONTH)")->fetch_assoc()['total'];
     $feedbackReceived = $conn->query("SELECT COUNT(*) as total FROM store_ratings")->fetch_assoc()['total'];
 
-    // Base query condition
+    // Base query
     $where = ["u.Role = 'customer'"];
-
-    // Apply filters based on the filter parameter
+    
+    // Debug: Log which filter is being applied
+    error_log("Applying filter: " . $filter);
+    
+    // Apply filters
     if ($filter === 'new') {
         $where[] = "u.CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 MONTH)";
-        error_log("Applied NEW filter: customers from last month");
-        
     } elseif ($filter === 'feedback') {
-        // Only customers who have given feedback
-        $where[] = "EXISTS (SELECT 1 FROM store_ratings sr2 WHERE sr2.user_id = u.UserID)";
-        error_log("Applied FEEDBACK filter: customers with ratings");
-        
+        $where[] = "sr.store_rating_id IS NOT NULL";
     } elseif ($filter === 'inactive') {
-        // Customers with no orders OR last order more than 3 months ago
-        $where[] = "(
-            NOT EXISTS (SELECT 1 FROM orders o2 WHERE o2.user_id = u.UserID)
-            OR 
-            NOT EXISTS (
-                SELECT 1 FROM orders o3 
-                WHERE o3.user_id = u.UserID 
-                AND o3.order_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
-            )
+        // Customers with no orders or last order more than 3 months ago
+        $where[] = "u.UserID NOT IN (
+            SELECT DISTINCT user_id FROM orders 
+            WHERE order_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
         )";
-        error_log("Applied INACTIVE filter: no orders or no orders in 3 months");
-        
-    } else {
-        error_log("Applied ALL filter: showing all customers");
     }
 
-    // Apply search filter if provided
+    // Apply search filter
     if ($search !== '') {
         $search = $conn->real_escape_string($search);
-        $where[] = "(
-            u.username LIKE '%$search%' OR 
-            u.first_name LIKE '%$search%' OR 
-            u.last_name LIKE '%$search%' OR 
-            u.Email LIKE '%$search%'
-        )";
-        error_log("Applied SEARCH filter: " . $search);
+        $where[] = "(u.username LIKE '%$search%' OR u.first_name LIKE '%$search%' OR u.last_name LIKE '%$search%' OR u.Email LIKE '%$search%')";
     }
 
-    // Build WHERE clause
     $whereClause = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+
+    // Debug: Log the final WHERE clause
     error_log("Final WHERE clause: " . $whereClause);
 
     // Count total results for pagination
     $countSql = "
         SELECT COUNT(DISTINCT u.UserID) as total
         FROM users u
+        LEFT JOIN orders o ON u.UserID = o.user_id
+        LEFT JOIN store_ratings sr ON u.UserID = sr.user_id
         $whereClause
     ";
     
     error_log("Count SQL: " . $countSql);
     
     $countResult = $conn->query($countSql);
-    if (!$countResult) {
-        error_log("Count query failed: " . $conn->error);
-        throw new Exception("Count query failed: " . $conn->error);
-    }
-    
     $totalCustomersFiltered = $countResult->fetch_assoc()['total'];
-    error_log("Total customers matching filter: " . $totalCustomersFiltered);
     
     // Calculate pagination
     $limit = 12;
     $offset = ($page - 1) * $limit;
     $totalPages = ceil($totalCustomersFiltered / $limit);
 
-    // Main query with all customer details
+    // Main query
     $sql = "
         SELECT 
-            u.UserID, 
-            u.username, 
-            u.first_name, 
-            u.last_name, 
-            u.Email, 
-            u.CreatedAt, 
-            u.profile_photo,
+            u.UserID, u.username, u.first_name, u.last_name, u.Email, u.CreatedAt, u.profile_photo,
             COUNT(DISTINCT o.order_id) as total_orders,
-            COALESCE(SUM(o.total_price), 0) as total_spent,
+            COALESCE(SUM(o.total_price),0) as total_spent,
             MAX(o.order_date) as last_order_date,
             COALESCE(AVG(sr.rating), 0) as avg_rating,
-            COUNT(DISTINCT sr.store_rating_id) as rating_count
+            COUNT(sr.store_rating_id) as rating_count
         FROM users u
         LEFT JOIN orders o ON u.UserID = o.user_id
         LEFT JOIN store_ratings sr ON u.UserID = sr.user_id
         $whereClause
-        GROUP BY u.UserID, u.username, u.first_name, u.last_name, u.Email, u.CreatedAt, u.profile_photo
+        GROUP BY u.UserID
         ORDER BY u.CreatedAt DESC
         LIMIT $limit OFFSET $offset
     ";
 
-    error_log("Main SQL query prepared");
-    error_log("Query: " . $sql);
+    error_log("Main SQL: " . $sql);
 
     $result = $conn->query($sql);
-    
-    if (!$result) {
-        error_log("Main query failed: " . $conn->error);
-        throw new Exception("Database query failed: " . $conn->error);
-    }
-
-    error_log("Query executed successfully. Rows returned: " . $result->num_rows);
-
     $customers = [];
 
     while ($row = $result->fetch_assoc()) {
-        // Determine customer status based on last order
         $status = 'inactive';
         if ($row['last_order_date']) {
             $last = new DateTime($row['last_order_date']);
             $days = (new DateTime())->diff($last)->days;
-            if ($days <= 30) {
-                $status = 'active';
-            } elseif ($days <= 90) {
-                $status = 'moderate';
-            }
-        }
-
-        // Check if this is a new customer (joined within last month)
-        $joinedDate = new DateTime($row['CreatedAt']);
-        $daysSinceJoined = (new DateTime())->diff($joinedDate)->days;
-        if ($daysSinceJoined <= 30) {
-            $status = 'new';
+            if ($days <= 30) $status = 'active';
+            elseif ($days <= 90) $status = 'moderate';
         }
 
         $fullName = trim($row['first_name'] . ' ' . $row['last_name']);
-        
         $customers[] = [
             'user_id' => $row['UserID'],
             'username' => $row['username'],
@@ -202,10 +153,10 @@ try {
         ];
     }
 
-    error_log("Processed " . count($customers) . " customer records");
+    // Debug: Log results count
+    error_log("Customers found: " . count($customers));
 
-    // Return response
-    $response = [
+    echo json_encode([
         'success' => true,
         'stats' => [
             'total_customers' => $totalCustomers,
@@ -214,26 +165,22 @@ try {
             'feedback_received' => $feedbackReceived
         ],
         'customers' => $customers,
-        'current_page' => $page,
-        'total_pages' => $totalPages,
-        'total_customers' => $totalCustomersFiltered,
-        'per_page' => $limit,
-        'filter_applied' => $filter,
-        'search_applied' => $search
-    ];
-
-    error_log("Sending response with " . count($customers) . " customers");
-    echo json_encode($response);
-
-} catch (Exception $e) {
-    error_log("ERROR in customer-management.php: " . $e->getMessage());
-    error_log("Stack trace: " . $e->getTraceAsString());
-    echo json_encode([
-        'success' => false, 
-        'error' => $e->getMessage(),
-        'filter' => $filter,
-        'search' => $search
+        'pagination' => [
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'total_customers' => $totalCustomersFiltered,
+            'per_page' => $limit
+        ],
+        'debug' => [ // Remove this in production
+            'filter_applied' => $filter,
+            'search_applied' => $search,
+            'where_clause' => $whereClause,
+            'sql_query' => $sql
+        ]
     ]);
+} catch (Exception $e) {
+    error_log("Error in customer-management.php: " . $e->getMessage());
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 
 $conn->close();
