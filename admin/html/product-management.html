@@ -1459,7 +1459,7 @@
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         position: relative;
         overflow: hidden;
-        background: var(--primary-pink);
+        min-height: 140px;
       }
 
       .stat-btn::before {
@@ -1489,8 +1489,8 @@
       }
 
       .stat-btn i {
-        font-size: 2.5rem;
-        margin-bottom: 15px;
+        font-size: 2.2rem;
+        margin-bottom: 12px;
         opacity: 0.95;
         position: relative;
         z-index: 1;
@@ -1498,23 +1498,25 @@
       }
 
       .stat-value {
-        font-size: 2.2rem;
-        margin: 10px 0 5px 0;
+        font-size: 2rem;
+        margin: 8px 0 4px 0;
         display: block;
         position: relative;
         z-index: 1;
         font-weight: 700;
         letter-spacing: -0.5px;
         color: white;
+        line-height: 1.1;
       }
 
       .stat-label {
         position: relative;
         z-index: 1;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         opacity: 0.9;
         font-weight: 500;
         color: rgba(255, 255, 255, 0.9);
+        line-height: 1.2;
       }
 
       /* Product-specific gradient colors - Pink Theme */
@@ -1544,29 +1546,86 @@
         box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
       }
 
-      /* Mobile responsive */
+      /* === IMPROVED MOBILE RESPONSIVE === */
       @media (max-width: 768px) {
         .stats-buttons {
-          grid-template-columns: repeat(2, 1fr);
-          gap: 15px;
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 12px;
+          margin-bottom: 20px;
         }
 
         .stat-btn {
-          padding: 20px 16px;
-        }
-
-        .stat-value {
-          font-size: 1.8rem;
+          padding: 16px 12px !important;
+          min-height: 110px;
+          border-radius: 12px;
         }
 
         .stat-btn i {
-          font-size: 2rem;
+          font-size: 1.8rem !important;
+          margin-bottom: 8px !important;
+        }
+
+        .stat-value {
+          font-size: 1.6rem !important;
+          margin: 4px 0 2px 0 !important;
+        }
+
+        .stat-label {
+          font-size: 0.75rem !important;
+          line-height: 1.1;
         }
       }
 
+      /* Extra small devices */
       @media (max-width: 480px) {
         .stats-buttons {
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 10px;
+        }
+
+        .stat-btn {
+          padding: 14px 10px !important;
+          min-height: 100px;
+          border-radius: 10px;
+        }
+
+        .stat-btn i {
+          font-size: 1.6rem !important;
+          margin-bottom: 6px !important;
+        }
+
+        .stat-value {
+          font-size: 1.4rem !important;
+          margin: 2px 0 1px 0 !important;
+        }
+
+        .stat-label {
+          font-size: 0.7rem !important;
+        }
+      }
+
+      /* Very small devices (like iPhone SE) */
+      @media (max-width: 375px) {
+        .stats-buttons {
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 8px;
+        }
+
+        .stat-btn {
+          padding: 12px 8px !important;
+          min-height: 90px;
+        }
+
+        .stat-btn i {
+          font-size: 1.4rem !important;
+        }
+
+        .stat-value {
+          font-size: 1.3rem !important;
+        }
+
+        .stat-label {
+          font-size: 0.65rem !important;
         }
       }
     </style>
