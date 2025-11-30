@@ -57,13 +57,26 @@ try {
     {
         if (empty($dbPath))
             return '';
-        $filename = basename($dbPath);
-        return '/admin/uploads/product_images/' . $filename;
+
+        // Handle old paths with '../'
+        if (strpos($dbPath, '../') === 0) {
+            // Convert ../uploads/... to /admin/uploads/...
+            return str_replace('../', '/admin/', $dbPath);
+        }
+
+        // Handle new paths that already start with '/'
+        if (strpos($dbPath, '/') === 0) {
+            return $dbPath;
+        }
+
+        // Fallback: add leading slash
+        return '/' . $dbPath;
     }
 
     // Clean product name function
-    $cleanName = function($name) {
-        if (empty($name)) return '';
+    $cleanName = function ($name) {
+        if (empty($name))
+            return '';
         return trim(str_ireplace(['Parent Record:', 'Product Record:', ':'], '', $name));
     };
 
@@ -108,7 +121,7 @@ try {
             $stmtDelete->execute();
 
             $affectedRows = $stmtDelete->affected_rows;
-            
+
             // ✅ LOG FAVORITE REMOVAL
             if ($affectedRows > 0) {
                 $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
@@ -123,19 +136,19 @@ try {
         } else {
             // ✅ OPTIONAL: Use PHP date if you change to DATETIME
             $currentDateTime = date('Y-m-d H:i:s');
-            
+
             // 4. Add favorite for the single product
-            // If using DATETIME: 
+            // If using DATETIME:
             // $stmtInsert = $conn->prepare('INSERT INTO favorites (user_id, product_id, created_at) VALUES (?, ?, ?)');
             // $stmtInsert->bind_param('iss', $user_id, $product_id, $currentDateTime);
-            
+
             // If keeping TIMESTAMP (uses MySQL NOW()):
             $stmtInsert = $conn->prepare('INSERT INTO favorites (user_id, product_id) VALUES (?, ?)');
             $stmtInsert->bind_param('is', $user_id, $product_id);
             $stmtInsert->execute();
 
             $affectedRows = $stmtInsert->affected_rows;
-            
+
             // ✅ LOG FAVORITE ADDITION
             if ($affectedRows > 0) {
                 $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
@@ -183,9 +196,13 @@ try {
     LEFT JOIN ProductMedia pm_v 
         ON pm_v.VariantProductID = p.ProductID 
         AND pm_v.MediaType = 'VARIANT'
+        AND pm_v.ImagePath IS NOT NULL
+        AND pm_v.ImagePath != ''
     LEFT JOIN ProductMedia pm_p 
         ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
         AND pm_p.MediaType = 'PREVIEW'
+        AND pm_p.ImagePath IS NOT NULL
+        AND pm_p.ImagePath != ''
     LEFT JOIN Products parent 
         ON p.ParentProductID = parent.ProductID
     WHERE 
@@ -194,15 +211,15 @@ try {
         AND p.Stocks > 0
         AND (p.ExpirationDate IS NULL OR p.ExpirationDate > CURDATE())
     ORDER BY 
-        f.created_at DESC  -- ✅ Order by favorite date
-";
+        f.created_at DESC
+    ";
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         throw new Exception('Prepare failed: ' . $conn->error);
     }
-    
-    $stmt->bind_param("i", $user_id);
+
+    $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -217,12 +234,21 @@ try {
         $parentID = $row['parentID'];
         $isParent = ($parentID === null || $parentID === $row['id']);
 
-        // Convert image paths
+        // Convert image paths using the corrected function
         $row['variantImage'] = getPublicImagePath($row['variantImage'] ?? '');
         $row['previewImage'] = getPublicImagePath($row['previewImage'] ?? '');
+
+        // Choose the best available image
+        $displayImage = '';
+        if (!empty($row['variantImage'])) {
+            $displayImage = $row['variantImage'];
+        } elseif (!empty($row['previewImage'])) {
+            $displayImage = $row['previewImage'];
+        }
+
         $row['name'] = $cleanName($row['name']);
         $row['parentName'] = $cleanName($row['parentName'] ?? '');
-        
+
         // Ratings data - use the highest rating among all variants
         $variantRating = floatval($row['product_rating']);
         $parentRating = floatval($row['parent_rating']);
@@ -237,9 +263,9 @@ try {
                     'price' => floatval($row['price']),
                     'status' => $row['status'],
                     'stockQuantity' => intval($row['stockQuantity']),
-                    'image' => $row['previewImage'],
-                    'previewImage' => $row['previewImage'],
-                    'liked' => true, // All are favorites
+                    'image' => $displayImage,
+                    'previewImage' => $displayImage,
+                    'liked' => true,  // All are favorites
                     'average_rating' => $parentRating,
                     'variants' => []
                 ];
@@ -253,16 +279,16 @@ try {
             // Only create parent if it has at least one available variant
             if (!isset($groupedProducts[$parentKey])) {
                 // Fetch the actual parent product details for the name
-                $parentSql = "SELECT Name, Category FROM Products WHERE ProductID = ?";
+                $parentSql = 'SELECT Name, Category FROM Products WHERE ProductID = ?';
                 $parentStmt = $conn->prepare($parentSql);
                 $parentStmt->bind_param('s', $parentKey);
                 $parentStmt->execute();
                 $parentResult = $parentStmt->get_result();
                 $actualParent = $parentResult->fetch_assoc();
                 $parentStmt->close();
-                
+
                 $actualParentName = $actualParent ? $cleanName($actualParent['Name']) : $parentName;
-                
+
                 $groupedProducts[$parentKey] = [
                     'id' => $parentKey,
                     'name' => $actualParentName,
@@ -270,9 +296,9 @@ try {
                     'price' => floatval($row['price']),
                     'status' => $row['parentStatus'] ?? 'Available',
                     'stockQuantity' => 0,
-                    'image' => $row['previewImage'],
-                    'previewImage' => $row['previewImage'],
-                    'liked' => true, // All are favorites
+                    'image' => $displayImage,  // ← CHANGED THIS
+                    'previewImage' => $displayImage,  // ← AND THIS
+                    'liked' => true,  // All are favorites
                     'average_rating' => $variantRating,
                     'variants' => []
                 ];
@@ -353,7 +379,7 @@ try {
 
     // ✅ LOG FAVORITES VIEW
     $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-    $logDetails = "Viewed favorites list. Total items: " . count($finalProducts) . ", IP: {$userIP}";
+    $logDetails = 'Viewed favorites list. Total items: ' . count($finalProducts) . ", IP: {$userIP}";
     logUserActivity($conn, $user_id, 'View favorites', $logDetails);
 
     echo json_encode([
@@ -371,10 +397,10 @@ try {
     // ✅ LOG ERROR
     if (isset($user_id)) {
         $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-        $errorDetails = "Error: " . $e->getMessage() . ", Action: {$action}, IP: {$userIP}";
+        $errorDetails = 'Error: ' . $e->getMessage() . ", Action: {$action}, IP: {$userIP}";
         logUserActivity($conn, $user_id, 'Favorites error', $errorDetails);
     }
-    
+
     ob_clean();
     http_response_code(500);
     echo json_encode([
