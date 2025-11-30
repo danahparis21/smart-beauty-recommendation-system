@@ -1622,6 +1622,162 @@
         background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
         color: white;
       }
+
+      /* --- NEW STYLES FOR INDEPENDENT FILTER --- */
+      .global-filter-container {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        padding-bottom: 0px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(228, 151, 170, 0.1);
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+      }
+
+      .global-filter-container:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .filter-header h5 {
+        color: var(--dark-pink);
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn-group {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn-group .btn {
+        border-radius: 10px !important;
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        border: 2px solid #e0e0e0;
+        background: white;
+        color: #666;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .filter-btn-group .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(228, 151, 170, 0.1);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+      }
+
+      .filter-btn-group .btn:active::before {
+        width: 100px;
+        height: 100px;
+      }
+
+      .filter-btn-group .btn:hover {
+        border-color: var(--primary-pink);
+        color: var(--dark-pink);
+        background: rgba(228, 151, 170, 0.05);
+        transform: translateY(-2px);
+      }
+
+      .filter-btn-group .btn.active {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--secondary-pink)
+        );
+        border-color: var(--primary-pink);
+        color: white;
+        box-shadow: 0 4px 12px rgba(228, 151, 170, 0.3);
+      }
+
+      .filter-extra-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .filter-extra-actions .btn {
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+      }
+
+      
+
+      /* Responsive styles for the filter */
+      @media (max-width: 768px) {
+        .global-filter-container {
+          padding: 20px;
+        }
+
+        .filter-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .filter-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .filter-btn-group {
+          width: 100%;
+          justify-content: space-between;
+          margin-bottom: 15px;
+        }
+
+        .filter-btn-group .btn {
+          flex: 1;
+          text-align: center;
+          margin: 2px;
+        }
+
+        .filter-extra-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .filter-btn-group {
+          flex-direction: column;
+        }
+
+        .filter-btn-group .btn {
+          width: 100%;
+        }
+      }
     </style>
   </head>
 
@@ -1705,7 +1861,7 @@
                 <i class="fa-solid fa-calendar-week"></i>
                 <div class="stat-content">
                   <span class="stat-value">--</span>
-                  <span class="stat-label">Sales Volume</span>
+                  <span class="stat-label">Product Sales Volume</span>
                 </div>
               </button>
             </div>
@@ -1770,6 +1926,47 @@
             </div>
           </div>
 
+          <!-- NEW: Independent Global Filter -->
+          <div class="global-filter-container">
+            <div class="filter-header">
+              <h5><i class="fas fa-filter"></i> Dashboard Filter</h5>
+              <div class="filter-actions">
+                <div class="filter-btn-group" role="group">
+                  <button
+                    class="btn btn-outline-secondary btn-sm active"
+                    data-period="All Time"
+                  >
+                    All Time
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary btn-sm"
+                    data-period="Daily"
+                  >
+                    Daily
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary btn-sm"
+                    data-period="Weekly"
+                  >
+                    Weekly
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary btn-sm"
+                    data-period="Monthly"
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary btn-sm"
+                    data-period="Annually"
+                  >
+                    Annually
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Main Grid Section (Unified & Sortable) -->
           <div class="row" id="dashboard-sortable">
             <!-- 1. Sales Chart (Span 8) -->
@@ -1781,38 +1978,6 @@
                 <i class="fas fa-grip-lines drag-indicator"></i>
                 <div class="widget-header">
                   <h5><i class="fas fa-chart-line"></i> Sales Overview</h5>
-                  <div class="btn-group" role="group">
-                    <button
-                      class="btn btn-outline-secondary btn-sm active"
-                      data-period="All Time"
-                    >
-                      All Time
-                    </button>
-                    <button
-                      class="btn btn-outline-secondary btn-sm"
-                      data-period="Daily"
-                    >
-                      Daily
-                    </button>
-                    <button
-                      class="btn btn-outline-secondary btn-sm"
-                      data-period="Weekly"
-                    >
-                      Weekly
-                    </button>
-                    <button
-                      class="btn btn-outline-secondary btn-sm"
-                      data-period="Monthly"
-                    >
-                      Monthly
-                    </button>
-                    <button
-                      class="btn btn-outline-secondary btn-sm"
-                      data-period="Annually"
-                    >
-                      Annually
-                    </button>
-                  </div>
                 </div>
 
                 <!-- FIX: Added this wrapper div -->
@@ -2297,7 +2462,7 @@
 
         async function exportToCSV() {
           try {
-            const activeBtn = document.querySelector(".btn-group .btn.active");
+            const activeBtn = document.querySelector(".filter-btn-group .btn.active");
             const period = activeBtn ? activeBtn.dataset.period : "All Time";
 
             const originalText = exportCsvBtn.innerHTML;
@@ -2329,7 +2494,7 @@
 
         async function exportToPDF() {
           try {
-            const activeBtn = document.querySelector(".btn-group .btn.active");
+            const activeBtn = document.querySelector(".filter-btn-group .btn.active");
             const period = activeBtn ? activeBtn.dataset.period : "All Time";
 
             const originalText = exportPdfBtn.innerHTML;
@@ -3386,7 +3551,8 @@
             this.fetchAndRefreshDashboard(this.currentPeriod);
           }
           bindEvents() {
-            document.querySelectorAll(".btn-group .btn").forEach((btn) => {
+            // Update to use the new filter buttons
+            document.querySelectorAll(".filter-btn-group .btn").forEach((btn) => {
               btn.addEventListener("click", (e) => {
                 const period = e.target.dataset.period;
                 if (
@@ -3396,7 +3562,7 @@
                 ) {
                   this.currentPeriod = period;
                   document
-                    .querySelectorAll(".btn-group .btn")
+                    .querySelectorAll(".filter-btn-group .btn")
                     .forEach((b) =>
                       b.classList.toggle("active", b.dataset.period === period)
                     );
@@ -3404,6 +3570,30 @@
                 }
               });
             });
+
+            // Apply and Reset buttons
+            const applyFilterBtn = document.getElementById("applyFilterBtn");
+            const resetFilterBtn = document.getElementById("resetFilterBtn");
+
+            if (applyFilterBtn) {
+              applyFilterBtn.addEventListener("click", () => {
+                const activeBtn = document.querySelector(".filter-btn-group .btn.active");
+                const period = activeBtn ? activeBtn.dataset.period : "All Time";
+                this.fetchAndRefreshDashboard(period);
+              });
+            }
+
+            if (resetFilterBtn) {
+              resetFilterBtn.addEventListener("click", () => {
+                this.currentPeriod = "All Time";
+                document
+                  .querySelectorAll(".filter-btn-group .btn")
+                  .forEach((b) =>
+                    b.classList.toggle("active", b.dataset.period === "All Time")
+                  );
+                this.fetchAndRefreshDashboard("All Time");
+              });
+            }
 
             // Handle resize to fix chart scaling
             let resizeTimeout;
@@ -3469,7 +3659,7 @@
         // 11. FIXED AUTO-REFRESH INTERVAL
         // ----------------------------------------------------
         setInterval(() => {
-          const activeBtn = document.querySelector(".btn-group .btn.active");
+          const activeBtn = document.querySelector(".filter-btn-group .btn.active");
           const period = activeBtn ? activeBtn.dataset.period : "All Time";
           console.log(`Auto-refreshing dashboard for: ${period}`);
           dashboardManager.fetchAndRefreshDashboard(period);
