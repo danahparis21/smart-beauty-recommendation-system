@@ -37,42 +37,30 @@ class AdminDashboard
     }
 
     public function getOrdersToday($period = 'All Time')
-    {
-        if ($period === 'All Time') {
-            $query = "SELECT COUNT(*) as count FROM orders WHERE DATE(order_date) = CURDATE() AND status = 'completed'";
-        } else {
-            $dateFilter = $this->getDateFilterForPeriod($period);
-            $query = "SELECT COUNT(*) as count FROM orders WHERE $dateFilter AND status = 'completed'";
-        }
-        $result = $this->conn->query($query);
-        return $result->fetch_assoc()['count'];
-    }
+{
+    $dateFilter = $this->getDateFilterForPeriod($period);
+    $query = "SELECT COUNT(*) as count FROM orders WHERE $dateFilter AND status = 'completed'";
+    $result = $this->conn->query($query);
+    return $result->fetch_assoc()['count'];
+}
 
-    public function getOrdersThisWeek($period = 'All Time')
-    {
-        if ($period === 'All Time') {
-            $query = "SELECT COUNT(*) as count FROM orders WHERE YEARWEEK(order_date, 1) = YEARWEEK(CURDATE(), 1) AND status = 'completed'";
-        } else {
-            $dateFilter = $this->getDateFilterForPeriod($period);
-            $query = "SELECT COUNT(*) as count FROM orders WHERE $dateFilter AND status = 'completed'";
-        }
-        $result = $this->conn->query($query);
-        return $result->fetch_assoc()['count'];
-    }
+public function getOrdersThisWeek($period = 'All Time')
+{
+    $dateFilter = $this->getDateFilterForPeriod($period);
+    $query = "SELECT COUNT(*) as count FROM orders WHERE $dateFilter AND status = 'completed'";
+    $result = $this->conn->query($query);
+    return $result->fetch_assoc()['count'];
+}
 
-    public function getTotalSales($period = 'All Time')
-    {
-        if ($period === 'All Time') {
-            $query = "SELECT COALESCE(SUM(total_price), 0) AS total FROM orders WHERE status = 'completed'";
-        } else {
-            $dateFilter = $this->getDateFilterForPeriod($period);
-            $query = "SELECT COALESCE(SUM(total_price), 0) AS total FROM orders WHERE $dateFilter AND status = 'completed'";
-        }
-        $result = $this->conn->query($query);
-        $row = $result->fetch_assoc();
-        $clean = str_replace(',', '.', $row['total']);
-        return number_format((float) $clean, 2, '.', '');
-    }
+public function getTotalSales($period = 'All Time')
+{
+    $dateFilter = $this->getDateFilterForPeriod($period);
+    $query = "SELECT COALESCE(SUM(total_price), 0) AS total FROM orders WHERE $dateFilter AND status = 'completed'";
+    $result = $this->conn->query($query);
+    $row = $result->fetch_assoc();
+    $clean = str_replace(',', '.', $row['total']);
+    return number_format((float) $clean, 2, '.', '');
+}
 
     private function getDateFilterForPeriod($period)
     {
