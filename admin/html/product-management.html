@@ -1517,25 +1517,25 @@
         color: rgba(255, 255, 255, 0.9);
       }
 
-      /* Product-specific gradient colors */
+      /* Product-specific gradient colors - Pink Theme */
       .total-products {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #e497aa 0%, #db8299 100%);
       }
 
       .available-products {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #db8299 0%, #c36c82 100%);
       }
 
       .low-stock-products {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background: linear-gradient(135deg, #c36c82 0%, #b05a70 100%);
       }
 
       .expired-products {
-        background: linear-gradient(135deg, #fd746c 0%, #ff9068 100%);
+        background: linear-gradient(135deg, #b05a70 0%, #9d4e5f 100%);
       }
 
       .no-stock-products {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        background: linear-gradient(135deg, #9d4e5f 0%, #8c4455 100%);
       }
 
       /* Active state for filter buttons */
@@ -2605,8 +2605,6 @@
           });
       }
 
-     
-
       // Function to apply product filter
       function applyProductFilter(filter) {
         // Update your status filter dropdown
@@ -2615,7 +2613,6 @@
         // Trigger your existing filter function
         filterProducts(); // This should be your existing filter function
       }
-
 
       let currentSearch = "";
       let currentSort = "name-asc";
@@ -2866,7 +2863,6 @@
           return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
-
         const hamburgerBtn = document.getElementById("hamburgerBtn");
         const sidebar = document.getElementById("sidebar");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
@@ -2906,23 +2902,6 @@
 
         loadProductStats();
 
-         // Add click handlers for filter buttons
-      document.querySelectorAll(".stat-btn").forEach((button) => {
-        button.addEventListener("click", function () {
-          const filter = this.getAttribute("data-filter");
-
-          // Remove active class from all buttons
-          document.querySelectorAll(".stat-btn").forEach((btn) => {
-            btn.classList.remove("active");
-          });
-
-          // Add active class to clicked button
-          this.classList.add("active");
-
-          // Apply filter to product table
-          applyProductFilter(filter);
-        });
-      });
         function handleStatusChange(e) {
           currentStatus = e.target.value;
 
