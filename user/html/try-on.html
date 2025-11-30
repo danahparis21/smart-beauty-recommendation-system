@@ -27,24 +27,39 @@
 
     <style>
       :root {
-        --primary-pink: #ff7eb9;
-        --dark-pink: #ff5c8d;
-        --light-pink: #ffc2d6;
-        --light-gray: #f8f8f8;
+        --primary-pink: #ff69b4;
+        --light-pink: #ffb6c1;
+        --dark-pink: #ff1493;
+        --gold: #d4af37;
+        --light-gold: #f7e8c4;
+        --soft-white: #fefefe;
+        --light-gray: #f5f5f5;
         --medium-gray: #e0e0e0;
-        --dark-gray: #888;
-        --white: #ffffff;
-        --gradient-card: linear-gradient(135deg, #fff5f7, #ffe6f2);
-        --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        --text-gray: #888;
+        --dark-gray: #555;
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --gradient-bg: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #fff5f9 30%,
+          #ffe6f2 70%,
+          #ffd1dc 100%
+        );
+        --gradient-header: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(255, 249, 252, 0.95) 100%
+        );
+        --gradient-card: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(255, 249, 252, 0.95) 100%
+        );
 
         /* Add these missing variables */
-        --primary-color: #ff7eb9; /* Same as primary-pink */
-        --primary-dark: #ff5c8d; /* Same as dark-pink */
         --success-color: #ff7eb9;
         --error-color: #f44336;
-        --accent-color: #ff7eb9; /* Same as primary-pink */
-        --text-color: #333333;
-        --light-text: #666666;
+        --text-color: #888;
         --dark-text: #000000;
         --light-bg: #f8f8f8; /* Same as light-gray */
         --border-color: #e0e0e0; /* Same as medium-gray */
@@ -611,11 +626,11 @@
         font-size: 14px;
         font-weight: 500;
         margin-bottom: 3px;
-        /* Limit product name length and wrap to next line */
         word-wrap: break-word;
         overflow-wrap: break-word;
         max-width: 180px;
         line-height: 1.3;
+        color: #000000;
       }
 
       .product-brand {
@@ -1730,7 +1745,7 @@
         font-size: 14px;
         font-weight: 600;
         margin-bottom: 4px;
-        color: var(--text-color);
+        color: #292828;
         word-wrap: break-word;
         overflow-wrap: break-word;
         max-width: 180px;
