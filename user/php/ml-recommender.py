@@ -11,11 +11,15 @@ import traceback
 def check_skin_type_match(row, user_input):
     product_type = str(row['skin_type']).strip().title()
     user_type = user_input['Skin_Type'].strip().title()
-    return (
-        product_type == user_type or 
-        product_type in ['Any', 'All', 'None', 'N/A'] or
-        user_type in ["Don't Care", "Any"] # FIXED: Check for "Don't Care"
-    )
+    
+    # Handle "Don't Care" or "Any" cases first
+    if (product_type in ['Any', 'All', 'None', 'N/A'] or
+        user_type in ["Don't Care", "Any"]):
+        return True
+    
+    # Split product types by comma and check if user type matches any of them
+    product_types = [tone.strip().title() for tone in product_type.split(',')]
+    return user_type in product_types
 
 def check_skin_tone_match(row, user_input):
     product_tone = str(row['skin_tone']).strip().title()
@@ -202,16 +206,19 @@ def analyze_attribute_matches(product, user_input):
     # Skin Type match
     product_skin_type = str(product.get('skin_type', 'Any')).strip().title()
     user_skin_type = user_input['Skin_Type'].strip().title()
-    
-    skin_type_match = (
-        product_skin_type == user_skin_type or 
-        product_skin_type in ['Any', 'All', 'None', 'N/A'] or
-        user_skin_type in ["Don't Care", "Any"] # FIXED: Check for "Don't Care"
-    )
-    
+
+    # Use the same logic as check_skin_type_match
+    skin_type_match = False
+    if (product_skin_type in ['Any', 'All', 'None', 'N/A'] or
+        user_skin_type in ["Don't Care", "Any"]):
+        skin_type_match = True
+    else:
+        # Split product types and check if user type matches any
+        product_types = [tone.strip().title() for tone in product_skin_type.split(',')]
+        skin_type_match = user_skin_type in product_types
+
     matches['skin_type'] = {
         'match': skin_type_match,
-        # FIXED: Use 'All' if product_skin_type is an empty string
         'product_value': product_skin_type if product_skin_type else 'All',
         'user_value': user_skin_type
     }
