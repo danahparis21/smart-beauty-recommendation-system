@@ -901,7 +901,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     margin-top: 60px;
 }
 
-.feature-card:hover {
+.feature-card:hover, .feature-card.mobile-active {
     transform: translateY(-10px);
     box-shadow: 0 25px 0px rgba(255, 105, 180, 0.15);
     border-color: var(--pink-light);
@@ -932,8 +932,9 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Move icon to top-right corner when hovered */
-.feature-card:hover .feature-icon {
+/* Move icon to top-right corner when hovered OR active on mobile */
+.feature-card:hover .feature-icon,
+.feature-card.mobile-active .feature-icon {
     transform: translate(120px, -30px) scale(0.8); /* Moves right and up */
     box-shadow: 0 15px 35px rgba(255, 105, 180, 0.4);
 }
@@ -984,12 +985,13 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
 }
 
 /* Hover States - Preview becomes more visible */
-.feature-card:hover .feature-preview {
+.feature-card:hover .feature-preview,
+.feature-card.mobile-active .feature-preview {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) scale(1);
-    top: -180px;
-    z-index: 3;
+    transform: translateX(-50%) scale(0.9);
+    top: -100px;
+    z-index: 5;
 }
 
 /* Feature Card Content */
@@ -1012,7 +1014,9 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
 
 /* Adjust text position when icon moves */
 .feature-card:hover h3,
-.feature-card:hover p {
+.feature-card.mobile-active h3,
+.feature-card:hover p,
+.feature-card.mobile-active p {
     transform: translateY(-10px); /* Lift text slightly when icon moves */
 }
 
@@ -1096,9 +1100,10 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
         height: 280px;
     }
     
-    .feature-card:hover .feature-preview {
+    .feature-card:hover .feature-preview,
+    .feature-card.mobile-active .feature-preview {
         transform: translateX(-50%) scale(0.9);
-        top: -150px;
+        top: -170px;
     }
     
     .feature-preview-container {
@@ -1112,7 +1117,8 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     }
     
     /* Smaller movement on mobile */
-    .feature-card:hover .feature-icon {
+    .feature-card:hover .feature-icon,
+    .feature-card.mobile-active .feature-icon {
         transform: translate(80px, -20px) scale(0.8);
     }
 }
@@ -1171,7 +1177,6 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     text-align: center;
     margin-bottom: 60px;
     position: relative;
-    z-index: 2;
 }
 
 .section-title {
@@ -1251,12 +1256,12 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     width: 100%;
     overflow: hidden;
     position: relative;
-    cursor: default;
+    cursor: grab;
     user-select: none;
 }
 
 .products-grid-wrapper:active {
-    cursor: default;
+    cursor: grabbing;
 }
 
 .products-grid {
@@ -1650,8 +1655,9 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     }
     
     .popular-product-card {
-        min-width: 260px;
-        max-width: 260px;
+        /* UPDATED: Dynamic width for mobile to look less "crampy" */
+        min-width: 85vw;
+        max-width: 85vw;
     }
     
     .product-image-container {
@@ -1670,8 +1676,9 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     }
     
     .popular-product-card {
-        min-width: 240px;
-        max-width: 240px;
+        /* UPDATED: Dynamic width for mobile to look less "crampy" */
+        min-width: 85vw;
+        max-width: 85vw;
     }
 }
 
@@ -2833,6 +2840,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     let currentIndex = 0;
 let isDragging = false;
 let startPos = 0;
+let startPosY = 0; // Added for vertical scroll check
 let currentTranslate = 0;
 let prevTranslate = 0;
 let animationID = 0;
@@ -2847,6 +2855,7 @@ let totalSpotlightSlides = 0;
         initSparkles();
         initStoreCarousel();
         initSpotlightCarousel();
+        initFeaturesIntersectionObserver(); // Added new observer for mobile features
         
         // Fetch products first, THEN initialize the carousel
         fetchPopularProducts().then(() => {
@@ -2857,6 +2866,24 @@ let totalSpotlightSlides = 0;
             initProductsCarousel();
         });
     });
+
+    // NEW FUNCTION: Activates hover effect when features are scrolled into view on mobile
+    function initFeaturesIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('mobile-active');
+                } else {
+                    entry.target.classList.remove('mobile-active');
+                }
+            });
+        }, {
+            threshold: 0.6 // Trigger when 60% of the card is visible
+        });
+
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(card => observer.observe(card));
+    }
 
     function initSpotlightCarousel() {
     updateSpotlightItemsPerView();
@@ -3259,22 +3286,37 @@ function setupDragAndSwipe() {
 function dragStart(event) {
     isDragging = true;
     startPos = getPositionX(event);
+    // Capture Y to detect vertical scrolling intention
+    startPosY = getPositionY(event);
+    
     animationID = requestAnimationFrame(animation);
     
     const wrapper = document.getElementById('productsGridWrapper');
-    wrapper.style.cursor = 'default';
+    wrapper.style.cursor = 'grabbing';
 }
 
 function drag(event) {
     if (!isDragging) return;
     
     const currentPosition = getPositionX(event);
-    currentTranslate = prevTranslate + currentPosition - startPos;
+    const currentPositionY = getPositionY(event);
     
-    // Prevent default on touch to avoid scrolling
+    // UPDATED: Allow vertical scrolling to happen naturally
+    // If movement is more vertical than horizontal, do not lock.
+    const xDiff = Math.abs(currentPosition - startPos);
+    const yDiff = Math.abs(currentPositionY - startPosY);
+
     if (event.type === 'touchmove') {
-        event.preventDefault();
+        // If swiping horizontally, prevent default to stop page scroll
+        if (xDiff > yDiff) {
+            event.preventDefault();
+        } else {
+            // If scrolling vertically, return early so page scrolls
+            return;
+        }
     }
+    
+    currentTranslate = prevTranslate + currentPosition - startPos;
 }
 
 function dragEnd() {
@@ -3282,18 +3324,20 @@ function dragEnd() {
     cancelAnimationFrame(animationID);
     
     const wrapper = document.getElementById('productsGridWrapper');
-    wrapper.style.cursor = 'default';
+    wrapper.style.cursor = 'grab';
     
     // Calculate how far we've moved
     const movedBy = currentTranslate - prevTranslate;
     
     // Determine if we should move to next/prev slide
-    const cardWidth = 320 + 25; // card width + gap
+    // UPDATED: Use dynamic card width for calculation
+    const cardWidth = getCardWidth();
     
-    if (movedBy < -100) {
+    // If moved more than 20% of card width
+    if (movedBy < -cardWidth * 0.2) {
         // Swiped left - go to next
         currentIndex++;
-    } else if (movedBy > 100) {
+    } else if (movedBy > cardWidth * 0.2) {
         // Swiped right - go to previous
         currentIndex--;
     }
@@ -3304,8 +3348,25 @@ function dragEnd() {
     setSliderPosition();
 }
 
+// Helper to get card width dynamically (essential for mobile responsiveness)
+function getCardWidth() {
+    const card = document.querySelector('.popular-product-card');
+    if (!card) return 345; // Default fallback
+    
+    // Get the computed style of the grid to find the gap
+    const grid = document.getElementById('productsGrid');
+    const style = window.getComputedStyle(grid);
+    const gap = parseFloat(style.gap) || 25;
+    
+    return card.offsetWidth + gap;
+}
+
 function getPositionX(event) {
     return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+}
+
+function getPositionY(event) {
+    return event.type.includes('mouse') ? event.pageY : event.touches[0].clientY;
 }
 
 function animation() {
@@ -3317,7 +3378,8 @@ function setSliderPosition() {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
     
-    const cardWidth = 320 + 25; // card width + gap
+    // UPDATED: Calculate exact width dynamically
+    const cardWidth = getCardWidth();
     currentTranslate = currentIndex * -cardWidth;
     prevTranslate = currentTranslate;
     
