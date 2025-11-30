@@ -3538,15 +3538,15 @@
 
           if (filtered.length === 0) {
             tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center py-5">
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <h5>No Products Found</h5>
-                        <p>Try adjusting your search or filters</p>
-                    </div>
-                </td>
-            </tr>`;
+        <tr>
+            <td colspan="6" class="text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h5>No Products Found</h5>
+                    <p>Try adjusting your search or filters</p>
+                </div>
+            </td>
+        </tr>`;
             productCountSpan.textContent = "0";
             if (paginationContainer) paginationContainer.innerHTML = "";
             return;
@@ -3575,6 +3575,13 @@
               ? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width80px;height:80px;object-fit:cover;border-radius:6px;">`
               : `<div class="text-muted small">No Image</div>`;
 
+            // Determine badge color based on variant availability
+            const hasVariants = variants.length > 0;
+            const badgeColor = hasVariants ? "success" : "danger";
+            const badgeText = hasVariants
+              ? `${variants.length} variant(s)`
+              : "No variants";
+
             // Parent Row
             const parentRow = document.createElement("tr");
             parentRow.classList.add("parent-product-row");
@@ -3588,55 +3595,55 @@
             parentRow.style.cursor = "pointer";
 
             parentRow.innerHTML = `
-            <td style="vertical-align: middle;">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-chevron-right me-2 collapse-icon text-muted"></i>
-                    ${parentImage}
-                </div>
-            </td>
-            <td style="vertical-align: middle;">
-                <span style="font-size: 14px; color: #333;">
-                    ${(parent.ParentName || parent.Name).replace(
-                      "Parent Record: ",
-                      ""
-                    )}
-                </span>
-            </td>
-            <td style="vertical-align: middle;">${parent.Category || "N/A"}</td>
-            <td style="vertical-align: middle;">
-                <div style="
-                    max-height: 50px;
-                    overflow-y: auto;
-                    white-space: normal;
-                    font-size: 13px;
-                    padding-right: 4px;
-                ">
-                    ${parent.Description || "N/A"}
-                </div>
-            </td>
-            <td style="vertical-align: middle;">
-                <!-- Show variant count instead of parent status -->
-                <span class="badge bg-primary">
-                    ${variants.length} variant(s)
-                </span>
-            </td>
-            <td class="text-nowrap" style="vertical-align: middle;">
-                <div class="d-flex flex-column align-items-start gap-1">
-                    <button class="btn btn-sm btn-primary edit-parent-btn" data-id="${
-                      parent.ProductID
-                    }"
-                        style="padding: 2px 8px; font-size: 12px; width: 70px;">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="btn btn-sm btn-danger delete-parent-btn" data-id="${
-                      parent.ProductID
-                    }"
-                        style="padding: 2px 8px; font-size: 12px; width: 70px;">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
-                </div>
-            </td>
-        `;
+        <td style="vertical-align: middle;">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-chevron-right me-2 collapse-icon text-muted"></i>
+                ${parentImage}
+            </div>
+        </td>
+        <td style="vertical-align: middle;">
+            <span style="font-size: 14px; color: #333;">
+                ${(parent.ParentName || parent.Name).replace(
+                  "Parent Record: ",
+                  ""
+                )}
+            </span>
+        </td>
+        <td style="vertical-align: middle;">${parent.Category || "N/A"}</td>
+        <td style="vertical-align: middle;">
+            <div style="
+                max-height: 50px;
+                overflow-y: auto;
+                white-space: normal;
+                font-size: 13px;
+                padding-right: 4px;
+            ">
+                ${parent.Description || "N/A"}
+            </div>
+        </td>
+        <td style="vertical-align: middle;">
+            <!-- Show variant count with color coding -->
+            <span class="badge bg-${badgeColor}">
+                ${badgeText}
+            </span>
+        </td>
+        <td class="text-nowrap" style="vertical-align: middle;">
+            <div class="d-flex flex-column align-items-start gap-1">
+                <button class="btn btn-sm btn-primary edit-parent-btn" data-id="${
+                  parent.ProductID
+                }"
+                    style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-sm btn-danger delete-parent-btn" data-id="${
+                  parent.ProductID
+                }"
+                    style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+            </div>
+        </td>
+    `;
             tableBody.appendChild(parentRow);
 
             // Variants - only show filtered variants
@@ -3717,25 +3724,25 @@
             const variantsRow = document.createElement("tr");
             variantsRow.classList.add("collapse-row");
             variantsRow.innerHTML = `
-            <td colspan="6" class="p-0 border-0">
-                <div class="collapse" id="variants-${parent.ProductID}">
-                    <table class="table table-sm table-nested mb-0">
-                        <thead>
-                            <tr class="table-light">
-                                <th>Shade Name</th>
-                                <th>Attributes</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-group-divider">
-                            ${variantsTableRows}
-                        </tbody>
-                    </table>
-                </div>
-            </td>`;
+        <td colspan="6" class="p-0 border-0">
+            <div class="collapse" id="variants-${parent.ProductID}">
+                <table class="table table-sm table-nested mb-0">
+                    <thead>
+                        <tr class="table-light">
+                            <th>Shade Name</th>
+                            <th>Attributes</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        ${variantsTableRows}
+                    </tbody>
+                </table>
+            </div>
+        </td>`;
             tableBody.appendChild(variantsRow);
           });
 
