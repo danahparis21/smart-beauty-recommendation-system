@@ -3263,6 +3263,9 @@
 
         loadProductStats();
 
+         // Export to CSV functionality
+         document.getElementById("exportCsvBtn").addEventListener("click", exportToCSV);
+
         function handleStatusChange(e) {
           currentStatus = e.target.value;
 
@@ -5502,9 +5505,7 @@
               addBtn.disabled = false;
             });
         });
-        // Highlight active sidebar link based on current URL
-        document.addEventListener("DOMContentLoaded", () => {
-          const navLinks = document.querySelectorAll(".sidebar .nav-link");
+       
           const currentPath = window.location.pathname.split("/").pop();
 
           navLinks.forEach((link) => {
@@ -5553,12 +5554,7 @@
               }
             });
 
-          // Export to CSV functionality
-          document
-            .getElementById("exportCsvBtn")
-            .addEventListener("click", function () {
-              exportToCSV();
-            });
+         
 
           // Helper function to clean product names
           function cleanProductName(name) {
@@ -5566,8 +5562,9 @@
             const cleaned = name.replace(/^Parent Record:\s*/i, "").trim();
             return cleaned || name;
           }
-        });
+     
       });
+    
     </script>
   </body>
 </html>
