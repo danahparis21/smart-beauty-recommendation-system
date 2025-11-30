@@ -2185,7 +2185,7 @@
                       <option value="No Stock">No Stock</option>
                       <option value="Expired">Expired</option>
                       <option value="Deleted">Deleted</option>
-                  </select>
+                    </select>
                   </div>
                 </div>
 
@@ -2402,22 +2402,22 @@
       }
       let currentSearch = "";
       let currentSort = "name-asc";
-      let currentStatus = '';
+      let currentStatus = "";
       let currentCategory = "";
       let filteredProducts = [];
 
       function handleStatusChange(e) {
-    currentStatus = e.target.value;
+        currentStatus = e.target.value;
+
+        if (currentStatus === "") {
+          // If "All Status" is selected, refresh to standard server pagination
+          fetchAndRenderProducts(1);
+        } else {
+          // For specific status, use client-side filtering (no pagination)
+          renderFilteredProducts();
+        }
+      }
     
-    if (currentStatus === "") {
-        // If "All Status" is selected, refresh to standard server pagination
-        fetchAndRenderProducts(1);
-    } else {
-        // For specific status, use client-side filtering (no pagination)
-        renderFilteredProducts();
-    }
-}
-document.getElementById('statusFilter').addEventListener('change', handleStatusChange);
 
       async function deleteProduct(id, isParent) {
         try {
@@ -2627,6 +2627,9 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
 
         const hexCodeColor = document.getElementById("hexCodeColor");
         const hexCodeText = document.getElementById("hexCodeText");
+        document
+        .getElementById("statusFilter")
+        .addEventListener("change", handleStatusChange);
 
         if (hexCodeColor && hexCodeText) {
           // Sync from color picker to text input
@@ -2753,46 +2756,48 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
 
         // Filter and render products based on current filters
         function filterAndRenderProducts() {
-    if (!allProducts || allProducts.length === 0) return;
+          if (!allProducts || allProducts.length === 0) return;
 
-    // Apply search filter
-    let filtered = allProducts;
+          // Apply search filter
+          let filtered = allProducts;
 
-    if (currentSearch) {
-        filtered = filtered.filter(
-            (product) =>
+          if (currentSearch) {
+            filtered = filtered.filter(
+              (product) =>
                 product.ParentName.toLowerCase().includes(currentSearch) ||
                 (product.Description &&
-                    product.Description.toLowerCase().includes(currentSearch)) ||
+                  product.Description.toLowerCase().includes(currentSearch)) ||
                 (product.Category &&
-                    product.Category.toLowerCase().includes(currentSearch))
-        );
-    }
-
-    // Apply category filter
-    if (currentCategory) {
-        filtered = filtered.filter(
-            (product) => product.Category === currentCategory
-        );
-    }
-
-    // Apply STATUS FILTER - Filter by variant status
-    if (currentStatus) {
-        filtered = filtered.filter((parent) => {
-            // Check if any variant matches the selected status
-            const hasMatchingVariant = parent.Variants && parent.Variants.some(
-                variant => variant.Status === currentStatus
+                  product.Category.toLowerCase().includes(currentSearch))
             );
-            return hasMatchingVariant;
-        });
-    }
+          }
 
-    // Apply sorting (you can keep your existing sorting or modify it)
-    filtered = sortProducts(filtered, currentSort);
+          // Apply category filter
+          if (currentCategory) {
+            filtered = filtered.filter(
+              (product) => product.Category === currentCategory
+            );
+          }
 
-    filteredProducts = filtered;
-    renderProducts(currentPage);
-}
+          // Apply STATUS FILTER - Filter by variant status
+          if (currentStatus) {
+            filtered = filtered.filter((parent) => {
+              // Check if any variant matches the selected status
+              const hasMatchingVariant =
+                parent.Variants &&
+                parent.Variants.some(
+                  (variant) => variant.Status === currentStatus
+                );
+              return hasMatchingVariant;
+            });
+          }
+
+          // Apply sorting (you can keep your existing sorting or modify it)
+          filtered = sortProducts(filtered, currentSort);
+
+          filteredProducts = filtered;
+          renderProducts(currentPage);
+        }
 
         // Sort products based on current sort setting
         function sortProducts(products, sortSetting) {
@@ -3486,51 +3491,53 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
         });
 
         function renderFilteredProducts() {
-    if (!allProducts || allProducts.length === 0) return;
+          if (!allProducts || allProducts.length === 0) return;
 
-    const tableBody = document.getElementById("productTableBody");
-    const productCountSpan = document.getElementById("productCount");
-    const paginationContainer = document.querySelector(".pagination");
+          const tableBody = document.getElementById("productTableBody");
+          const productCountSpan = document.getElementById("productCount");
+          const paginationContainer = document.querySelector(".pagination");
 
-    // Apply filters
-    let filtered = allProducts;
+          // Apply filters
+          let filtered = allProducts;
 
-    // Search filter
-    if (currentSearch) {
-        filtered = filtered.filter(
-            (product) =>
+          // Search filter
+          if (currentSearch) {
+            filtered = filtered.filter(
+              (product) =>
                 (product.ParentName &&
-                    product.ParentName.toLowerCase().includes(currentSearch)) ||
+                  product.ParentName.toLowerCase().includes(currentSearch)) ||
                 (product.Description &&
-                    product.Description.toLowerCase().includes(currentSearch)) ||
+                  product.Description.toLowerCase().includes(currentSearch)) ||
                 (product.Category &&
-                    product.Category.toLowerCase().includes(currentSearch))
-        );
-    }
-
-    // Category filter
-    if (currentCategory) {
-        filtered = filtered.filter(
-            (product) => product.Category === currentCategory
-        );
-    }
-
-    // STATUS FILTER - Filter by variant status
-    if (currentStatus) {
-        filtered = filtered.filter((parent) => {
-            // Check if any variant matches the selected status
-            const hasMatchingVariant = parent.Variants && parent.Variants.some(
-                variant => variant.Status === currentStatus
+                  product.Category.toLowerCase().includes(currentSearch))
             );
-            return hasMatchingVariant;
-        });
-    }
+          }
 
-    // Sorting
-    filtered = sortProducts(filtered, currentSort);
+          // Category filter
+          if (currentCategory) {
+            filtered = filtered.filter(
+              (product) => product.Category === currentCategory
+            );
+          }
 
-    if (filtered.length === 0) {
-        tableBody.innerHTML = `
+          // STATUS FILTER - Filter by variant status
+          if (currentStatus) {
+            filtered = filtered.filter((parent) => {
+              // Check if any variant matches the selected status
+              const hasMatchingVariant =
+                parent.Variants &&
+                parent.Variants.some(
+                  (variant) => variant.Status === currentStatus
+                );
+              return hasMatchingVariant;
+            });
+          }
+
+          // Sorting
+          filtered = sortProducts(filtered, currentSort);
+
+          if (filtered.length === 0) {
+            tableBody.innerHTML = `
             <tr>
                 <td colspan="6" class="text-center py-5">
                     <div class="empty-state">
@@ -3540,45 +3547,47 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
                     </div>
                 </td>
             </tr>`;
-        productCountSpan.textContent = "0";
-        if (paginationContainer) paginationContainer.innerHTML = "";
-        return;
-    }
+            productCountSpan.textContent = "0";
+            if (paginationContainer) paginationContainer.innerHTML = "";
+            return;
+          }
 
-    // Show ALL filtered results (no pagination for filtered results)
-    productCountSpan.textContent = filtered.length;
+          // Show ALL filtered results (no pagination for filtered results)
+          productCountSpan.textContent = filtered.length;
 
-    // Render the products
-    tableBody.innerHTML = "";
-    let totalVariants = 0;
+          // Render the products
+          tableBody.innerHTML = "";
+          let totalVariants = 0;
 
-    filtered.forEach((parent) => {
-        // Filter variants based on status if status filter is active
-        let variants = parent.Variants || [];
-        
-        if (currentStatus) {
-            variants = variants.filter(variant => variant.Status === currentStatus);
-        }
-        
-        totalVariants += variants.length;
+          filtered.forEach((parent) => {
+            // Filter variants based on status if status filter is active
+            let variants = parent.Variants || [];
 
-        const parentImage = parent.Image
-            ? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width80px;height:80px;object-fit:cover;border-radius:6px;">`
-            : `<div class="text-muted small">No Image</div>`;
+            if (currentStatus) {
+              variants = variants.filter(
+                (variant) => variant.Status === currentStatus
+              );
+            }
 
-        // Parent Row
-        const parentRow = document.createElement("tr");
-        parentRow.classList.add("parent-product-row");
-        parentRow.setAttribute("data-product-id", parent.ProductID);
-        parentRow.setAttribute("data-bs-toggle", "collapse");
-        parentRow.setAttribute(
-            "data-bs-target",
-            `#variants-${parent.ProductID}`
-        );
-        parentRow.setAttribute("aria-expanded", "false");
-        parentRow.style.cursor = "pointer";
+            totalVariants += variants.length;
 
-        parentRow.innerHTML = `
+            const parentImage = parent.Image
+              ? `<img src="${parent.Image}" alt="${parent.ParentName}" style="width80px;height:80px;object-fit:cover;border-radius:6px;">`
+              : `<div class="text-muted small">No Image</div>`;
+
+            // Parent Row
+            const parentRow = document.createElement("tr");
+            parentRow.classList.add("parent-product-row");
+            parentRow.setAttribute("data-product-id", parent.ProductID);
+            parentRow.setAttribute("data-bs-toggle", "collapse");
+            parentRow.setAttribute(
+              "data-bs-target",
+              `#variants-${parent.ProductID}`
+            );
+            parentRow.setAttribute("aria-expanded", "false");
+            parentRow.style.cursor = "pointer";
+
+            parentRow.innerHTML = `
             <td style="vertical-align: middle;">
                 <div class="d-flex align-items-center">
                     <i class="fas fa-chevron-right me-2 collapse-icon text-muted"></i>
@@ -3588,8 +3597,8 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
             <td style="vertical-align: middle;">
                 <span style="font-size: 14px; color: #333;">
                     ${(parent.ParentName || parent.Name).replace(
-                        "Parent Record: ",
-                        ""
+                      "Parent Record: ",
+                      ""
                     )}
                 </span>
             </td>
@@ -3613,49 +3622,71 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
             </td>
             <td class="text-nowrap" style="vertical-align: middle;">
                 <div class="d-flex flex-column align-items-start gap-1">
-                    <button class="btn btn-sm btn-primary edit-parent-btn" data-id="${parent.ProductID}"
+                    <button class="btn btn-sm btn-primary edit-parent-btn" data-id="${
+                      parent.ProductID
+                    }"
                         style="padding: 2px 8px; font-size: 12px; width: 70px;">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <button class="btn btn-sm btn-danger delete-parent-btn" data-id="${parent.ProductID}"
+                    <button class="btn btn-sm btn-danger delete-parent-btn" data-id="${
+                      parent.ProductID
+                    }"
                         style="padding: 2px 8px; font-size: 12px; width: 70px;">
                         <i class="fas fa-trash-alt"></i> Delete
                     </button>
                 </div>
             </td>
         `;
-        tableBody.appendChild(parentRow);
+            tableBody.appendChild(parentRow);
 
-        // Variants - only show filtered variants
-        const variantsTableRows = variants
-            .filter((v) => v.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP")
-            .map((variant) => {
+            // Variants - only show filtered variants
+            const variantsTableRows = variants
+              .filter((v) => v.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP")
+              .map((variant) => {
                 const variantImage = variant.Image
-                    ? `<img src="${variant.Image}" alt="${variant.ShadeOrVariant || variant.Name}"
+                  ? `<img src="${variant.Image}" alt="${
+                      variant.ShadeOrVariant || variant.Name
+                    }"
                             style="width:80px;height:80px;object-fit:cover;border-radius:4px;">`
-                    : `<div class="text-muted small">No Image</div>`;
+                  : `<div class="text-muted small">No Image</div>`;
 
                 const attributesHtml = `
-                    <span class="d-block text-muted small">Skin Type: <strong class="text-dark">${variant["Skin Type"] || "N/A"}</strong></span>
-                    <span class="d-block text-muted small">Skin Tone: <strong class="text-dark">${variant["Skin Tone"] || "N/A"}</strong></span>
-                    <span class="d-block text-muted small">Undertone: <strong class="text-dark">${variant["Undertone"] || "N/A"}</strong></span>
-                    <span class="d-block text-muted small">Skin Concern: <strong class="text-dark">${variant["Skin Concern"] || "N/A"}</strong></span>
-                    <span class="d-block text-muted small">Finish: <strong class="text-dark">${variant["Finish"] || "N/A"}</strong></span>
+                    <span class="d-block text-muted small">Skin Type: <strong class="text-dark">${
+                      variant["Skin Type"] || "N/A"
+                    }</strong></span>
+                    <span class="d-block text-muted small">Skin Tone: <strong class="text-dark">${
+                      variant["Skin Tone"] || "N/A"
+                    }</strong></span>
+                    <span class="d-block text-muted small">Undertone: <strong class="text-dark">${
+                      variant["Undertone"] || "N/A"
+                    }</strong></span>
+                    <span class="d-block text-muted small">Skin Concern: <strong class="text-dark">${
+                      variant["Skin Concern"] || "N/A"
+                    }</strong></span>
+                    <span class="d-block text-muted small">Finish: <strong class="text-dark">${
+                      variant["Finish"] || "N/A"
+                    }</strong></span>
                 `;
 
                 const statusColor =
-                    {
-                        Available: "success",
-                        "Low Stock": "warning",
-                        "No Stock": "danger",
-                        Expired: "secondary",
-                        Deleted: "dark",
-                    }[variant.Status] || "secondary";
+                  {
+                    Available: "success",
+                    "Low Stock": "warning",
+                    "No Stock": "danger",
+                    Expired: "secondary",
+                    Deleted: "dark",
+                  }[variant.Status] || "secondary";
 
                 return `
-                    <tr class="variant-row" data-product-id="${variant.ProductID}">
+                    <tr class="variant-row" data-product-id="${
+                      variant.ProductID
+                    }">
                         <td>${variantImage}
-                            <strong>${variant.ShadeOrVariant || variant.Name || "Unnamed Variant"}</strong>
+                            <strong>${
+                              variant.ShadeOrVariant ||
+                              variant.Name ||
+                              "Unnamed Variant"
+                            }</strong>
                         </td>
                         <td>${attributesHtml}</td>
                         <td>₱${parseFloat(variant.Price || 0).toFixed(2)}</td>
@@ -3667,21 +3698,25 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
                         </td>
                         <td class="text-nowrap">
                             <div class="d-flex flex-column align-items-start gap-1">
-                                <button class="btn btn-sm btn-primary edit-variant-btn" data-id="${variant.ProductID}" style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                                <button class="btn btn-sm btn-primary edit-variant-btn" data-id="${
+                                  variant.ProductID
+                                }" style="padding: 2px 8px; font-size: 12px; width: 70px;">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button class="btn btn-sm btn-danger delete-variant-btn" data-id="${variant.ProductID}" style="padding: 2px 8px; font-size: 12px; width: 70px;">
+                                <button class="btn btn-sm btn-danger delete-variant-btn" data-id="${
+                                  variant.ProductID
+                                }" style="padding: 2px 8px; font-size: 12px; width: 70px;">
                                     <i class="fas fa-trash-alt"></i> Delete
                                 </button>
                             </div>
                         </td>
                     </tr>`;
-            })
-            .join("");
+              })
+              .join("");
 
-        const variantsRow = document.createElement("tr");
-        variantsRow.classList.add("collapse-row");
-        variantsRow.innerHTML = `
+            const variantsRow = document.createElement("tr");
+            variantsRow.classList.add("collapse-row");
+            variantsRow.innerHTML = `
             <td colspan="6" class="p-0 border-0">
                 <div class="collapse" id="variants-${parent.ProductID}">
                     <table class="table table-sm table-nested mb-0">
@@ -3701,36 +3736,50 @@ document.getElementById('statusFilter').addEventListener('change', handleStatusC
                     </table>
                 </div>
             </td>`;
-        tableBody.appendChild(variantsRow);
-    });
+            tableBody.appendChild(variantsRow);
+          });
 
-    productCountSpan.textContent = totalVariants;
+          productCountSpan.textContent = totalVariants;
 
-    // Hide pagination for filtered results
-    if (paginationContainer) paginationContainer.innerHTML = "";
+          // Hide pagination for filtered results
+          if (paginationContainer) paginationContainer.innerHTML = "";
 
-    // Re-attach collapse event listeners
-    const productTableBody = document.getElementById("productTableBody");
-    if (productTableBody) {
-        productTableBody.querySelectorAll(".collapse").forEach((collapseEl) => {
-            collapseEl.addEventListener("show.bs.collapse", function () {
-                const parentRow = document.querySelector(`[data-bs-target="#${this.id}"]`);
-                if (parentRow) {
+          // Re-attach collapse event listeners
+          const productTableBody = document.getElementById("productTableBody");
+          if (productTableBody) {
+            productTableBody
+              .querySelectorAll(".collapse")
+              .forEach((collapseEl) => {
+                collapseEl.addEventListener("show.bs.collapse", function () {
+                  const parentRow = document.querySelector(
+                    `[data-bs-target="#${this.id}"]`
+                  );
+                  if (parentRow) {
                     const icon = parentRow.querySelector(".collapse-icon");
-                    if (icon) icon.classList.replace("fa-chevron-right", "fa-chevron-down");
-                }
-            });
+                    if (icon)
+                      icon.classList.replace(
+                        "fa-chevron-right",
+                        "fa-chevron-down"
+                      );
+                  }
+                });
 
-            collapseEl.addEventListener("hide.bs.collapse", function () {
-                const parentRow = document.querySelector(`[data-bs-target="#${this.id}"]`);
-                if (parentRow) {
+                collapseEl.addEventListener("hide.bs.collapse", function () {
+                  const parentRow = document.querySelector(
+                    `[data-bs-target="#${this.id}"]`
+                  );
+                  if (parentRow) {
                     const icon = parentRow.querySelector(".collapse-icon");
-                    if (icon) icon.classList.replace("fa-chevron-down", "fa-chevron-right");
-                }
-            });
-        });
-    }
-}
+                    if (icon)
+                      icon.classList.replace(
+                        "fa-chevron-down",
+                        "fa-chevron-right"
+                      );
+                  }
+                });
+              });
+          }
+        }
 
         function setupImagePreview(
           fileInput,
