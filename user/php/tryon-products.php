@@ -8,13 +8,25 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
-// Use the same function as your other file
+// Use the same function as your other file with path conversion
 function getPublicImagePath($dbPath) {
     if (empty($dbPath)) {
         return '';
     }
-    $filename = basename($dbPath);
-    return '/admin/uploads/product_images/' . $filename;
+    
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        // Convert ../uploads/... to /admin/uploads/...
+        return str_replace('../', '/admin/', $dbPath);
+    }
+    
+    // Handle new paths that already start with '/'
+    if (strpos($dbPath, '/') === 0) {
+        return $dbPath;
+    }
+    
+    // Fallback: add leading slash
+    return '/' . $dbPath;
 }
 
 try {
@@ -51,7 +63,7 @@ try {
         $cleanName = preg_replace('/^Parent Record:\s*/i', '', $row['Name']);
         $cleanParentName = preg_replace('/^Parent Record:\s*/i', '', $row['ParentName']);
 
-        // Convert image path to public path
+        // Convert image path to public path using the fixed function
         $publicImagePath = getPublicImagePath($row['variant_image']);
 
         if (empty($row['ParentProductID'])) {
@@ -60,7 +72,7 @@ try {
                 'id' => $row['ProductID'],
                 'name' => $cleanName,
                 'parentName' => $cleanParentName,
-                'variantImage' => $publicImagePath, // Use variant image
+                'variantImage' => $publicImagePath, // Use converted variant image
                 'shades' => []
             ];
         } else {
@@ -72,7 +84,7 @@ try {
                     'id' => $parentId,
                     'name' => $cleanParentName,
                     'parentName' => $cleanParentName,
-                    'variantImage' => $publicImagePath, // Use variant image
+                    'variantImage' => $publicImagePath, // Use converted variant image
                     'shades' => []
                 ];
             }
@@ -82,7 +94,7 @@ try {
                 'shadeName' => $row['ShadeOrVariant'],
                 'price' => $row['Price'],
                 'hexCode' => $row['HexCode'] ?: '#D42F6E',
-                'variantImage' => $publicImagePath // Also store variant image for each shade
+                'variantImage' => $publicImagePath // Also store converted variant image for each shade
             ];
         }
     }
