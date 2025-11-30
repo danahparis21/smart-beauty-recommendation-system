@@ -9,6 +9,48 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// Add the image path conversion function
+function getPublicImagePath($dbPath) {
+    if (empty($dbPath)) {
+        return '';
+    }
+    
+    // If it's already the correct admin path, return as-is
+    if (strpos($dbPath, '/admin/uploads/product_images/') === 0) {
+        return $dbPath;
+    }
+    
+    // If it's a user path, convert to admin path
+    if (strpos($dbPath, '/user/uploads/product_images/') === 0) {
+        return str_replace('/user/uploads/product_images/', '/admin/uploads/product_images/', $dbPath);
+    }
+    
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        return str_replace('../', '/admin/', $dbPath);
+    }
+    
+    // If it starts with any other slash, assume it's already a public path
+    if (strpos($dbPath, '/') === 0) {
+        return $dbPath;
+    }
+    
+    // For everything else (just filenames), add the correct path
+    return '/admin/uploads/product_images/' . $dbPath;
+}
+
+/**
+ * Clean product name - remove "Parent Record:" prefix
+ */
+function cleanProductName($name) {
+    return trim(preg_replace([
+        '/Parent Record:\s*/i',
+        '/Product Record:\s*/i',
+        '/:\s*/',
+        '/\s+/'
+    ], ['', '', '', ' '], $name ?? ''));
+}
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Please login']);
@@ -79,9 +121,9 @@ try {
         // Clean product name
         $row['name'] = cleanProductName($row['name']);
         
-        // Ensure proper image path
+        // FIX: Use the getPublicImagePath function for proper image path conversion
         if (!empty($row['image']) && $row['image'] !== '/admin/uploads/product_images/no-image.png') {
-            $row['image'] = '/admin/uploads/product_images/' . basename($row['image']);
+            $row['image'] = getPublicImagePath($row['image']);
         }
         
         $items[] = $row;
@@ -108,16 +150,4 @@ try {
 }
 
 $conn->close();
-
-/**
- * Clean product name - remove "Parent Record:" prefix
- */
-function cleanProductName($name) {
-    return trim(preg_replace([
-        '/Parent Record:\s*/i',
-        '/Product Record:\s*/i',
-        '/:\s*/',
-        '/\s+/'
-    ], ['', '', '', ' '], $name ?? ''));
-}
 ?>
