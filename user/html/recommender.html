@@ -1638,7 +1638,7 @@
         margin-right: 4px;
       }
 
-    /* ===== ATTRIBUTE MATCHES STYLES - COMPACT ===== */
+   /* ===== ATTRIBUTE MATCHES STYLES - ULTRA COMPACT ===== */
 .attribute-summary {
   margin: 10px 0;
   position: relative;
@@ -1647,7 +1647,6 @@
 .attribute-header {
   display: flex;
   align-items: center;
-  gap: 8px;
   padding: 10px 14px;
   background: rgba(59, 130, 246, 0.1);
   border: 1px solid rgba(59, 130, 246, 0.2);
@@ -1662,66 +1661,77 @@
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   
-  /* EMERGENCY: Prevent wrapping at all costs */
+  /* ULTRA AGGRESSIVE: Prevent wrapping at all costs */
   flex-wrap: nowrap !important;
-  min-width: 0; /* Allow shrinking */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .attribute-text {
   flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0; /* Allow text truncation */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  min-width: 0 !important;
+  /* Force text to stay on one line */
+  display: inline-block !important;
+  max-width: calc(100% - 30px) !important; /* Reserve space for toggle */
 }
 
 .attribute-toggle {
   font-weight: bold;
   opacity: 0.7;
   font-size: 1em;
-  flex-shrink: 0; /* Never shrink the icon */
-  margin-left: 2px; /* Reduce space between text and icon */
+  flex-shrink: 0 !important;
+  margin-left: 4px;
+  min-width: 16px !important; /* Fixed width for icon */
 }
 
-/* MOBILE OPTIMIZATION - TIGHTER SPACING */
+/* MOBILE OPTIMIZATION - EXTREME COMPACT */
 @media (max-width: 768px) {
   .attribute-summary {
     margin: 6px 0;
   }
   
   .attribute-header {
-    padding: 6px 8px !important; /* Reduced padding */
-    font-size: 0.7em !important; /* Smaller font */
-    gap: 3px !important; /* Tighter gap */
+    padding: 6px 8px !important;
+    font-size: 0.7em !important;
     min-height: 28px;
+    gap: 0 !important; /* Remove gap completely */
   }
   
   .attribute-text {
     font-size: 0.75em;
-    letter-spacing: -0.1px; /* Tighter letter spacing */
+    letter-spacing: -0.1px;
+    max-width: calc(100% - 20px) !important; /* Less space for smaller toggle */
   }
   
   .attribute-toggle {
     font-size: 0.8em !important;
-    margin-left: 1px; /* Even less space on mobile */
+    margin-left: 2px;
+    min-width: 14px !important;
   }
 }
 
 /* EXTRA SMALL MOBILE - ULTRA COMPACT */
 @media (max-width: 400px) {
   .attribute-header {
-    padding: 4px 6px !important; /* Even smaller padding */
-    font-size: 0.65em !important; /* Even smaller font */
-    gap: 2px !important; /* Minimal gap */
+    padding: 4px 6px !important;
+    font-size: 0.65em !important;
     min-height: 24px;
   }
   
   .attribute-text {
     font-size: 0.7em;
+    max-width: calc(100% - 18px) !important;
   }
   
   .attribute-toggle {
     font-size: 0.75em !important;
+    min-width: 12px !important;
   }
 }
 
@@ -1733,13 +1743,24 @@
   }
   
   .attribute-text {
-    /* Shorten the text if needed */
-    max-width: 80px;
+    font-size: 0.65em;
+    max-width: calc(100% - 16px) !important;
   }
   
   .attribute-toggle {
     font-size: 0.7em !important;
+    min-width: 10px !important;
   }
+}
+
+/* NUCLEAR OPTION - FORCE SINGLE LINE NO MATTER WHAT */
+.attribute-header.force-single-line,
+.attribute-header * {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: inline !important;
+  line-height: 1.2 !important;
 }
 
 /* DESKTOP HOVER EFFECTS */
@@ -1752,7 +1773,7 @@
 
 .attribute-header:active {
   transform: translateY(0);
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(59, 246, 0.2);
 }
 
       /* EXTERNAL FLOATING CARD - SINGLE SOURCE OF TRUTH */
