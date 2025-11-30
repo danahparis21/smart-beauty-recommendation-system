@@ -1638,7 +1638,7 @@
         margin-right: 4px;
       }
 
-     /* ===== ATTRIBUTE MATCHES STYLES - COMPACT ===== */
+    /* ===== ATTRIBUTE MATCHES STYLES - COMPACT ===== */
 .attribute-summary {
   margin: 10px 0;
   position: relative;
@@ -1658,9 +1658,13 @@
   font-weight: 600;
   color: #1e40af;
   text-align: left;
-  justify-content: space-between; /* This keeps them side by side */
+  justify-content: space-between;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  
+  /* EMERGENCY: Prevent wrapping at all costs */
+  flex-wrap: nowrap !important;
+  min-width: 0; /* Allow shrinking */
 }
 
 .attribute-text {
@@ -1668,52 +1672,73 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0; /* Allow text truncation */
 }
 
 .attribute-toggle {
   font-weight: bold;
   opacity: 0.7;
   font-size: 1em;
-  flex-shrink: 0; /* Prevents the icon from shrinking */
+  flex-shrink: 0; /* Never shrink the icon */
+  margin-left: 2px; /* Reduce space between text and icon */
 }
 
-/* MOBILE OPTIMIZATION */
+/* MOBILE OPTIMIZATION - TIGHTER SPACING */
 @media (max-width: 768px) {
   .attribute-summary {
     margin: 6px 0;
   }
   
   .attribute-header {
-    padding: 6px 10px;
-    font-size: 0.75em;
-    gap: 6px;
-    min-height: 32px;
-  }
-  
-  .attribute-text {
-    font-size: 0.8em;
-  }
-  
-  .attribute-toggle {
-    font-size: 0.9em;
-  }
-}
-
-/* EXTRA SMALL MOBILE */
-@media (max-width: 400px) {
-  .attribute-header {
-    padding: 5px 8px;
-    font-size: 0.7em;
-    gap: 4px;
+    padding: 6px 8px !important; /* Reduced padding */
+    font-size: 0.7em !important; /* Smaller font */
+    gap: 3px !important; /* Tighter gap */
     min-height: 28px;
   }
   
   .attribute-text {
     font-size: 0.75em;
+    letter-spacing: -0.1px; /* Tighter letter spacing */
   }
   
   .attribute-toggle {
-    font-size: 0.8em;
+    font-size: 0.8em !important;
+    margin-left: 1px; /* Even less space on mobile */
+  }
+}
+
+/* EXTRA SMALL MOBILE - ULTRA COMPACT */
+@media (max-width: 400px) {
+  .attribute-header {
+    padding: 4px 6px !important; /* Even smaller padding */
+    font-size: 0.65em !important; /* Even smaller font */
+    gap: 2px !important; /* Minimal gap */
+    min-height: 24px;
+  }
+  
+  .attribute-text {
+    font-size: 0.7em;
+  }
+  
+  .attribute-toggle {
+    font-size: 0.75em !important;
+  }
+}
+
+/* EMERGENCY FIX FOR VERY NARROW CONTAINERS */
+@media (max-width: 350px) {
+  .attribute-header {
+    padding: 3px 4px !important;
+    font-size: 0.6em !important;
+  }
+  
+  .attribute-text {
+    /* Shorten the text if needed */
+    max-width: 80px;
+  }
+  
+  .attribute-toggle {
+    font-size: 0.7em !important;
   }
 }
 
