@@ -11,47 +11,6 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
-// FIXED: Improved image path conversion function
-function getPublicImagePath($dbPath) {
-    if (empty($dbPath)) {
-        return '';
-    }
-    
-    // If the path already contains the correct public path, return as-is
-    if (strpos($dbPath, '/admin/uploads/product_images/') === 0) {
-        return $dbPath;
-    }
-    
-    // If the path already starts with correct path but has double slashes, fix them
-    if (strpos($dbPath, '//admin/uploads/product_images/') === 0) {
-        return str_replace('//admin/', '/admin/', $dbPath);
-    }
-    
-    // Handle old paths with '../'
-    if (strpos($dbPath, '../') === 0) {
-        // Convert ../uploads/... to /admin/uploads/...
-        return str_replace('../', '/admin/', $dbPath);
-    }
-    
-    // Handle paths that already start with '/uploads/'
-    if (strpos($dbPath, '/uploads/') === 0) {
-        return '/admin' . $dbPath;
-    }
-    
-    // Handle paths that are just filenames
-    if (strpos($dbPath, '/') === false) {
-        return '/admin/uploads/product_images/' . $dbPath;
-    }
-    
-    // For any other paths starting with '/', return as-is
-    if (strpos($dbPath, '/') === 0) {
-        return $dbPath;
-    }
-    
-    // Fallback: assume it's a filename in the product_images directory
-    return '/admin/uploads/product_images/' . $dbPath;
-}
-
 // Get user preferences from POST
 $input = json_decode(file_get_contents('php://input'), true);
 $user_id = $_SESSION['user_id'] ?? null;
@@ -343,11 +302,6 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
                 continue; // Skip unavailable products
             }
             
-            // FIX: Convert image path to public URL using the improved function
-            if (!empty($details['image'])) {
-                $details['image'] = getPublicImagePath($details['image']);
-            }
-            
             // Add user feedback if exists (for frontend display)
             if (isset($user_feedback[$rec['id']])) {
                 $rec['user_feedback'] = $user_feedback[$rec['id']];
@@ -410,11 +364,6 @@ function getFallbackRecommendations($conn, $input, $user_id)
 
     // Add mock ML data for fallback + real user feedback
     foreach ($products as &$product) {
-        // FIX: Convert image path to public URL using the improved function
-        if (!empty($product['image'])) {
-            $product['image'] = getPublicImagePath($product['image']);
-        }
-        
         $product['Predicted_Score'] = rand(35, 50) / 10;  // 3.5-5.0
         $product['Match_Type'] = '🌸 FALLBACK MATCH';
         $product['Initial_Fit_Score'] = rand(5, 10) / 10;  // 0.5-1.0

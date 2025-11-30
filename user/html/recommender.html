@@ -5750,16 +5750,10 @@
         const productRating =
           product.productrating || product.ProductRating || 0;
 
-        let imagePath = "/admin/uploads/product_images/no-image.png";
-        if (product.image && product.image !== "null") {
-          let cleanImagePath = product.image;
-          cleanImagePath = cleanImagePath.replace(
-            /^\.\.\\?\/uploads\\?\/product_images\\?\//,
-            ""
-          );
-          cleanImagePath = cleanImagePath.replace(/\\\//g, "");
-          imagePath = `/admin/uploads/product_images/${cleanImagePath}`;
-        }
+        let imagePath =
+          product.image && product.image !== "null"
+            ? product.image
+            : "/admin/uploads/product_images/no-image.png";
 
         const attributeHTML = generateAttributeMatchesHTML(
           attributeMatches,
