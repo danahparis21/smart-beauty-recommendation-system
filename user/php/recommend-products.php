@@ -11,6 +11,38 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
+// FIXED: Handle both /admin/uploads/ and /user/uploads/ paths
+function getPublicImagePath($dbPath)
+{
+    if (empty($dbPath)) {
+        return '';
+    }
+
+    // If it's already a correct public path, return as-is
+    if (strpos($dbPath, '/admin/uploads/product_images/') === 0) {
+        return $dbPath;
+    }
+
+    // If it's a /user/uploads/ path, convert to /admin/uploads/
+    if (strpos($dbPath, '/user/uploads/product_images/') === 0) {
+        return str_replace('/user/uploads/product_images/', '/admin/uploads/product_images/', $dbPath);
+    }
+
+    // Handle old paths with '../'
+    if (strpos($dbPath, '../') === 0) {
+        return str_replace('../', '/admin/', $dbPath);
+    }
+
+    // Handle paths that are just filenames
+    if (strpos($dbPath, '/') === false) {
+        return '/admin/uploads/product_images/' . $dbPath;
+    }
+
+    // For any other case, assume it needs the correct path
+    $filename = basename($dbPath);
+    return '/admin/uploads/product_images/' . $filename;
+}
+
 // Get user preferences from POST
 $input = json_decode(file_get_contents('php://input'), true);
 $user_id = $_SESSION['user_id'] ?? null;
@@ -36,7 +68,7 @@ try {
 
     // NEW: Get user's feedback for ALL products BEFORE calling Python
     $user_feedback = getUserFeedback($user_id, $conn);
-    
+
     // Add user feedback to each product for Python processing
     foreach ($products as &$product) {
         $product_id = $product['id'];
@@ -47,17 +79,17 @@ try {
 
     // NEW: Get collaborative data for current user
     $collaborative_data = getCollaborativeData($user_id, $conn);
-    
+
     // Prepare data for Python ML - NOW INCLUDES USER FEEDBACK
     $ml_data = [
         'user_input' => [
             'Skin_Type' => $input['skinType'] ?? 'Normal',
-            'Skin_Tone' => $input['skinTone'] ?? 'Medium', 
+            'Skin_Tone' => $input['skinTone'] ?? 'Medium',
             'Undertone' => $input['undertone'] ?? 'Neutral',
             'Skin_Concerns' => $input['concerns'] ?? [],
             'Preference' => $input['finish'] ?? 'Dewy'
         ],
-        'products' => $products, // NOW includes user_feedback for each product
+        'products' => $products,  // NOW includes user_feedback for each product
         'collaborative_data' => $collaborative_data,
         'current_user_id' => $user_id
     ];
@@ -92,8 +124,8 @@ try {
 
     if (json_last_error() !== JSON_ERROR_NONE) {
         $json_error = json_last_error_msg();
-        error_log("JSON decode error: " . $json_error);
-        error_log("Raw output: " . $output);
+        error_log('JSON decode error: ' . $json_error);
+        error_log('Raw output: ' . $output);
         throw new Exception('Python output is not valid JSON: ' . $json_error);
     }
 
@@ -114,19 +146,20 @@ try {
 }
 
 // NEW: Function to get user feedback for ALL products
-function getUserFeedback($user_id, $conn) {
-    $feedback_query = "
+function getUserFeedback($user_id, $conn)
+{
+    $feedback_query = '
         SELECT ProductID, UserRating, RecommendationFeedback, CreatedAt 
         FROM productfeedback 
         WHERE UserID = ?
-    ";
-    
+    ';
+
     $feedback_stmt = $conn->prepare($feedback_query);
-    $feedback_stmt->bind_param("i", $user_id);
+    $feedback_stmt->bind_param('i', $user_id);
     $feedback_stmt->execute();
     $feedback_result = $feedback_stmt->get_result();
     $user_feedback = $feedback_result->fetch_all(MYSQLI_ASSOC);
-    
+
     // Convert to associative array for easy lookup
     $feedback_lookup = [];
     foreach ($user_feedback as $feedback) {
@@ -136,14 +169,15 @@ function getUserFeedback($user_id, $conn) {
             'CreatedAt' => $feedback['CreatedAt']
         ];
     }
-    
+
     return $feedback_lookup;
 }
 
 // NEW: Function to get collaborative data
-function getCollaborativeData($user_id, $conn) {
+function getCollaborativeData($user_id, $conn)
+{
     $collaborative_data = [];
-    
+
     // Get similar users and their ratings
     $query = "
         SELECT 
@@ -175,12 +209,12 @@ function getCollaborativeData($user_id, $conn) {
         GROUP BY pf.ProductID
         HAVING total_similar_ratings >= 2
     ";
-    
+
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     while ($row = $result->fetch_assoc()) {
         // FIX: Use ProductID as the key, not numeric index
         $collaborative_data[$row['ProductID']] = [
@@ -189,7 +223,7 @@ function getCollaborativeData($user_id, $conn) {
             'total_ratings' => $row['total_similar_ratings']
         ];
     }
-    
+
     // Get global popularity as fallback
     $global_query = "
         SELECT 
@@ -206,11 +240,11 @@ function getCollaborativeData($user_id, $conn) {
         GROUP BY ProductID
         HAVING total_ratings >= 3
     ";
-    
+
     $global_stmt = $conn->prepare($global_query);
     $global_stmt->execute();
     $global_result = $global_stmt->get_result();
-    
+
     while ($row = $global_result->fetch_assoc()) {
         $product_id = $row['ProductID'];
         // FIX: Use ProductID as the key
@@ -221,7 +255,7 @@ function getCollaborativeData($user_id, $conn) {
             ];
         }
     }
-    
+
     return $collaborative_data;
 }
 
@@ -288,30 +322,35 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
 
         if (!empty($details)) {
             $details = reset($details);
-            
+
             // Double-check availability (should already be filtered by SQL, but just in case)
             $stock = intval($details['Stocks'] ?? 0);
             $status = $details['Status'] ?? '';
             $expiration = $details['ExpirationDate'] ?? null;
-            
-            $isAvailable = $stock > 0 && 
-                          in_array($status, ['Available', 'Low Stock']) &&
-                          ($expiration === null || strtotime($expiration) > time());
-            
+
+            $isAvailable = $stock > 0 &&
+                in_array($status, ['Available', 'Low Stock']) &&
+                ($expiration === null || strtotime($expiration) > time());
+
             if (!$isAvailable) {
-                continue; // Skip unavailable products
+                continue;  // Skip unavailable products
             }
-            
+
+            // FIX: Convert image path to public URL using the improved function
+            if (!empty($details['image'])) {
+                $details['image'] = getPublicImagePath($details['image']);
+            }
+
             // Add user feedback if exists (for frontend display)
             if (isset($user_feedback[$rec['id']])) {
                 $rec['user_feedback'] = $user_feedback[$rec['id']];
             }
-            
+
             // Add collaborative data if exists
             if (isset($collaborative_data[$rec['id']])) {
                 $rec = array_merge($rec, $collaborative_data[$rec['id']]);
             }
-            
+
             $enhanced[] = array_merge($rec, $details);
         }
     }
@@ -364,10 +403,15 @@ function getFallbackRecommendations($conn, $input, $user_id)
 
     // Add mock ML data for fallback + real user feedback
     foreach ($products as &$product) {
+        // FIX: Convert image path to public URL using the improved function
+        if (!empty($product['image'])) {
+            $product['image'] = getPublicImagePath($product['image']);
+        }
+
         $product['Predicted_Score'] = rand(35, 50) / 10;  // 3.5-5.0
         $product['Match_Type'] = '🌸 FALLBACK MATCH';
         $product['Initial_Fit_Score'] = rand(5, 10) / 10;  // 0.5-1.0
-        
+
         // Add real user feedback if exists
         if (isset($user_feedback[$product['id']])) {
             $product['user_feedback'] = $user_feedback[$product['id']];
