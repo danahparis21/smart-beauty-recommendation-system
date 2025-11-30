@@ -962,7 +962,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
 .feature-preview::before {
     content: '';
     position: absolute;
-    top: -10px; /* Reduced from -20px */
+    top: -40px; /* Reduced from -20px */
     left: -10px; /* Reduced from -20px */
     right: -10px;
     bottom: -10px;
@@ -990,7 +990,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) scale(0.9);
-    top: -100px;
+    top: -220px;
     z-index: 5;
 }
 
@@ -2867,10 +2867,18 @@ let totalSpotlightSlides = 0;
         });
     });
 
-    // NEW FUNCTION: Activates hover effect when features are scrolled into view on mobile
     function initFeaturesIntersectionObserver() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                // MODIFICATION HERE: 
+                // If screen is wider than 768px (Desktop), remove the class and do nothing.
+                // This forces Desktop to use the CSS :hover state instead.
+                if (window.innerWidth > 768) {
+                    entry.target.classList.remove('mobile-active');
+                    return;
+                }
+
+                // Existing logic for Mobile
                 if (entry.isIntersecting) {
                     entry.target.classList.add('mobile-active');
                 } else {
