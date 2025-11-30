@@ -24,7 +24,8 @@
         --primary-pink: #ec4899;
         --dark-pink: #db2777;
         --light-pink: #fbcfe8;
-        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
       }
 
       .nav-item {
@@ -135,7 +136,8 @@
         position: relative;
       }
 
-      .filter-btn:hover, .filter-btn.active {
+      .filter-btn:hover,
+      .filter-btn.active {
         color: var(--primary-pink);
         transform: translateY(-1px);
         box-shadow: 0 5px 15px rgba(236, 72, 153, 0.15);
@@ -163,9 +165,15 @@
       }
 
       @keyframes bounceIn {
-        0% { transform: scale(0); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
 
       .filter-dropdown {
@@ -174,7 +182,7 @@
         right: 0;
         background: white;
         border-radius: 15px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         width: 200px;
         padding: 8px 0;
         opacity: 0;
@@ -215,11 +223,11 @@
       }
 
       .filter-option.selected::after {
-        content: '✓';
+        content: "✓";
         font-weight: bold;
         margin-left: 8px;
       }
-      
+
       .filter-option.remove-filter {
         border-top: 1px solid #eee;
         color: #ef4444;
@@ -247,7 +255,11 @@
       }
 
       .filter-tag {
-        background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         color: white;
         padding: 6px 12px;
         border-radius: 20px;
@@ -556,6 +568,102 @@
         z-index: 10;
       }
 
+      /* Empty Favorites State */
+      .empty-favorites {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-gray);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 70vh;
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .empty-favorites i {
+        font-size: 80px;
+        margin-bottom: 20px;
+        color: var(--light-pink);
+      }
+
+      .empty-favorites p {
+        margin-bottom: 25px;
+        font-size: 16px;
+      }
+
+      .continue-shopping {
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .continue-shopping:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+      }
+
+      /* Empty Search State */
+      .empty-search {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6b7280;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 70vh;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .empty-search i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #d1d5db;
+      }
+
+      .empty-search p {
+        margin-bottom: 20px;
+        font-size: 16px;
+        color: #6b7280;
+      }
+
+      .empty-search .continue-shopping {
+        background: linear-gradient(135deg, #ff69b4, #ff1493);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .empty-search .continue-shopping:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+      }
+
       /* Notification Box */
       #notification-box {
         position: fixed;
@@ -629,6 +737,9 @@
       }
 
       @media (max-width: 767px) {
+        .empty-favorites {
+          top: 50%;
+        }
         .products-grid {
           grid-template-columns: repeat(2, 1fr);
           gap: 15px;
@@ -879,7 +990,11 @@
         border-radius: 10px;
       }
       .categories::-webkit-scrollbar-thumb {
-        background: linear-gradient(90deg, var(--primary-pink), var(--dark-pink));
+        background: linear-gradient(
+          90deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         border-radius: 10px;
       }
       #categories-container {
@@ -912,13 +1027,18 @@
         justify-content: center;
       }
       .category-btn:before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.6),
+          transparent
+        );
         transition: left 0.7s;
       }
       .category-btn:hover:before {
@@ -930,7 +1050,11 @@
         color: var(--primary-pink);
       }
       .category-btn.active {
-        background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         color: white;
         box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
         transform: translateY(-1px);
@@ -953,6 +1077,9 @@
         .category-btn i {
           margin-right: 5px;
           font-size: 13px;
+        }
+        .empty-favorites {
+          top: 50%;
         }
       }
     </style>
@@ -1034,22 +1161,30 @@
     <div class="search-container">
       <div class="search-bar">
         <i class="fas fa-search"></i>
-        <input type="text" id="search-input" placeholder="Search favorites..." />
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search favorites..."
+        />
       </div>
-      
+
       <div class="filter-wrapper">
         <button class="filter-btn" id="filter-toggle">
-            <i class="fas fa-filter"></i>
-            <span>Sort</span>
-            <span class="filter-badge" id="filter-badge">0</span>
+          <i class="fas fa-filter"></i>
+          <span>Sort</span>
+          <span class="filter-badge" id="filter-badge">0</span>
         </button>
         <div class="filter-dropdown" id="filter-options">
-            <div class="filter-option" data-sort="az">A-Z Name</div>
-            <div class="filter-option" data-sort="za">Z-A Name</div>
-            <div class="filter-option" data-sort="price_asc">Lowest Price</div>
-            <div class="filter-option" data-sort="price_desc">Highest Price</div>
-            <div class="filter-option" data-sort="rating_desc">Highest Rating</div>
-            <div class="filter-option remove-filter" data-sort="none">Remove Sort</div>
+          <div class="filter-option" data-sort="az">A-Z Name</div>
+          <div class="filter-option" data-sort="za">Z-A Name</div>
+          <div class="filter-option" data-sort="price_asc">Lowest Price</div>
+          <div class="filter-option" data-sort="price_desc">Highest Price</div>
+          <div class="filter-option" data-sort="rating_desc">
+            Highest Rating
+          </div>
+          <div class="filter-option remove-filter" data-sort="none">
+            Remove Sort
+          </div>
         </div>
       </div>
     </div>
@@ -1069,9 +1204,7 @@
       <section id="favorites" class="page-content">
         <div class="products-container">
           <div class="products-grid" id="favorites-grid">
-            <p class="text-center p-4 text-gray-500">
-              Loading your favorites...
-            </p>
+            <!-- Products will be dynamically added here -->
           </div>
         </div>
       </section>
@@ -1127,24 +1260,24 @@
       let currentUserId = null;
       let selectedCategories = []; // Array for multiple categories
       let currentSort = null;
-      let currentSearchTerm = '';
+      let currentSearchTerm = "";
 
       const normalizeCategory = (cat) => (cat || "").toLowerCase();
 
       // --- FILTER & DISPLAY FUNCTIONS ---
       function updateActiveFiltersDisplay() {
-        const container = document.getElementById('active-filters');
-        const filterBadge = document.getElementById('filter-badge');
+        const container = document.getElementById("active-filters");
+        const filterBadge = document.getElementById("filter-badge");
         if (!container) return;
 
-        container.innerHTML = '';
+        container.innerHTML = "";
         let filterCount = 0;
 
         // Display selected categories
-        selectedCategories.forEach(cat => {
+        selectedCategories.forEach((cat) => {
           filterCount++;
-          const tag = document.createElement('div');
-          tag.className = 'filter-tag';
+          const tag = document.createElement("div");
+          tag.className = "filter-tag";
           tag.innerHTML = `
             <i class="fas fa-tag"></i>
             <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
@@ -1157,14 +1290,14 @@
         if (currentSort) {
           filterCount++;
           const sortLabels = {
-            'az': 'A-Z',
-            'za': 'Z-A',
-            'price_asc': 'Price: Low to High',
-            'price_desc': 'Price: High to Low',
-            'rating_desc': 'Top Rated'
+            az: "A-Z",
+            za: "Z-A",
+            price_asc: "Price: Low to High",
+            price_desc: "Price: High to Low",
+            rating_desc: "Top Rated",
           };
-          const tag = document.createElement('div');
-          tag.className = 'filter-tag';
+          const tag = document.createElement("div");
+          tag.className = "filter-tag";
           tag.innerHTML = `
             <i class="fas fa-sort"></i>
             <span>${sortLabels[currentSort]}</span>
@@ -1176,8 +1309,8 @@
         // Display search term
         if (currentSearchTerm) {
           filterCount++;
-          const tag = document.createElement('div');
-          tag.className = 'filter-tag';
+          const tag = document.createElement("div");
+          tag.className = "filter-tag";
           tag.innerHTML = `
             <i class="fas fa-search"></i>
             <span>"${currentSearchTerm}"</span>
@@ -1188,8 +1321,8 @@
 
         // Clear all button
         if (filterCount > 0) {
-          const clearBtn = document.createElement('button');
-          clearBtn.className = 'clear-all-filters';
+          const clearBtn = document.createElement("button");
+          clearBtn.className = "clear-all-filters";
           clearBtn.innerHTML = '<i class="fas fa-times-circle"></i> Clear All';
           clearBtn.onclick = clearAllFilters;
           container.appendChild(clearBtn);
@@ -1199,15 +1332,15 @@
         if (filterBadge) {
           filterBadge.textContent = filterCount;
           if (filterCount > 0) {
-            filterBadge.classList.add('show');
+            filterBadge.classList.add("show");
           } else {
-            filterBadge.classList.remove('show');
+            filterBadge.classList.remove("show");
           }
         }
       }
 
       function removeCategory(category) {
-        selectedCategories = selectedCategories.filter(c => c !== category);
+        selectedCategories = selectedCategories.filter((c) => c !== category);
         updateCategoryButtons();
         updateActiveFiltersDisplay();
         applyFilters();
@@ -1215,15 +1348,17 @@
 
       function removeSort() {
         currentSort = null;
-        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        document
+          .querySelectorAll(".filter-option")
+          .forEach((o) => o.classList.remove("selected"));
         updateActiveFiltersDisplay();
         applyFilters();
       }
 
       function clearSearch() {
-        currentSearchTerm = '';
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) searchInput.value = '';
+        currentSearchTerm = "";
+        const searchInput = document.getElementById("search-input");
+        if (searchInput) searchInput.value = "";
         updateActiveFiltersDisplay();
         applyFilters();
       }
@@ -1231,10 +1366,12 @@
       function clearAllFilters() {
         selectedCategories = [];
         currentSort = null;
-        currentSearchTerm = '';
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) searchInput.value = '';
-        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        currentSearchTerm = "";
+        const searchInput = document.getElementById("search-input");
+        if (searchInput) searchInput.value = "";
+        document
+          .querySelectorAll(".filter-option")
+          .forEach((o) => o.classList.remove("selected"));
         updateCategoryButtons();
         updateActiveFiltersDisplay();
         applyFilters();
@@ -1245,18 +1382,20 @@
 
         // 1. Filter by Categories (multiple selection)
         if (selectedCategories.length > 0) {
-          result = result.filter(p => 
+          result = result.filter((p) =>
             selectedCategories.includes(normalizeCategory(p.category))
           );
         }
 
         // 2. Filter by Search Term
         if (currentSearchTerm) {
-          result = result.filter(p => {
+          result = result.filter((p) => {
             const term = currentSearchTerm.toLowerCase();
-            const inName = (p.name || '').toLowerCase().includes(term);
-            const inCat = (p.category || '').toLowerCase().includes(term);
-            const inVariants = p.variants && p.variants.some(v => v.name.toLowerCase().includes(term));
+            const inName = (p.name || "").toLowerCase().includes(term);
+            const inCat = (p.category || "").toLowerCase().includes(term);
+            const inVariants =
+              p.variants &&
+              p.variants.some((v) => v.name.toLowerCase().includes(term));
             return inName || inCat || inVariants;
           });
         }
@@ -1264,18 +1403,22 @@
         // 2. Apply Sort
         if (currentSort) {
           result.sort((a, b) => {
-            switch(currentSort) {
-              case 'az': 
+            switch (currentSort) {
+              case "az":
                 return a.name.localeCompare(b.name);
-              case 'za': 
+              case "za":
                 return b.name.localeCompare(a.name);
-              case 'price_asc': 
+              case "price_asc":
                 return parseFloat(a.price) - parseFloat(b.price);
-              case 'price_desc': 
+              case "price_desc":
                 return parseFloat(b.price) - parseFloat(a.price);
-              case 'rating_desc': 
-                return (parseFloat(b.average_rating) || 0) - (parseFloat(a.average_rating) || 0);
-              default: return 0;
+              case "rating_desc":
+                return (
+                  (parseFloat(b.average_rating) || 0) -
+                  (parseFloat(a.average_rating) || 0)
+                );
+              default:
+                return 0;
             }
           });
         }
@@ -1287,8 +1430,8 @@
       // --- CATEGORY FILTER (MULTI-SELECT) ---
       function handleCategoryClick(category) {
         const normalizedCat = normalizeCategory(category);
-        
-        if (normalizedCat === 'all') {
+
+        if (normalizedCat === "all") {
           // Reset all categories
           selectedCategories = [];
         } else {
@@ -1300,7 +1443,7 @@
             selectedCategories.push(normalizedCat);
           }
         }
-        
+
         updateCategoryButtons();
         updateActiveFiltersDisplay();
         applyFilters();
@@ -1309,7 +1452,7 @@
       function updateCategoryButtons() {
         document.querySelectorAll(".category-btn").forEach((btn) => {
           const cat = btn.getAttribute("data-category");
-          if (cat === 'all') {
+          if (cat === "all") {
             // "All" button is active only when no categories are selected
             if (selectedCategories.length === 0) {
               btn.classList.add("active");
@@ -1328,13 +1471,17 @@
       }
 
       function updateResultsCounter(count) {
-        const counter = document.getElementById('results-counter');
+        const counter = document.getElementById("results-counter");
         if (!counter) return;
-        
+
         if (count === allFavorites.length) {
-          counter.textContent = `Showing all ${count} favorite${count !== 1 ? 's' : ''}`;
+          counter.textContent = `Showing all ${count} favorite${
+            count !== 1 ? "s" : ""
+          }`;
         } else {
-          counter.textContent = `Found ${count} of ${allFavorites.length} favorite${allFavorites.length !== 1 ? 's' : ''}`;
+          counter.textContent = `Found ${count} of ${
+            allFavorites.length
+          } favorite${allFavorites.length !== 1 ? "s" : ""}`;
         }
       }
 
@@ -1344,10 +1491,28 @@
         favoritesGrid.innerHTML = "";
 
         if (filteredFavorites.length === 0) {
-          if (currentSearchTerm || currentSort) {
-            favoritesGrid.innerHTML = '<p class="text-center p-4 text-gray-500">No favorites match your filters.</p>';
+          if (
+            currentSearchTerm ||
+            currentSort ||
+            selectedCategories.length > 0
+          ) {
+            // Empty search/filter state
+            favoritesGrid.innerHTML = `
+              <div class="empty-search">
+                <i class="fas fa-search"></i>
+                <p>No favorites found matching your filters.</p>
+                <button class="continue-shopping" onclick="clearAllFilters()">Clear Filters</button>
+              </div>
+            `;
           } else {
-            favoritesGrid.innerHTML = '<p class="text-center p-4 text-gray-500">You have no favorite products yet.</p>';
+            // Empty favorites state (no favorites at all)
+            favoritesGrid.innerHTML = `
+              <div class="empty-favorites">
+                <i class="fas fa-heart"></i>
+                <p>No favorite products yet.</p>
+                <button class="continue-shopping" onclick="window.location.href='home.html'">Continue Shopping</button>
+              </div>
+            `;
           }
           return;
         }
@@ -1358,41 +1523,41 @@
       }
 
       function initFilterDropdown() {
-        const btn = document.getElementById('filter-toggle');
-        const dropdown = document.getElementById('filter-options');
-        const options = document.querySelectorAll('.filter-option');
+        const btn = document.getElementById("filter-toggle");
+        const dropdown = document.getElementById("filter-options");
+        const options = document.querySelectorAll(".filter-option");
 
-        if(!btn || !dropdown) return;
+        if (!btn || !dropdown) return;
 
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          dropdown.classList.toggle('show');
-          btn.classList.toggle('active');
+          dropdown.classList.toggle("show");
+          btn.classList.toggle("active");
         });
 
-        document.addEventListener('click', (e) => {
+        document.addEventListener("click", (e) => {
           if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('show');
-            btn.classList.remove('active');
+            dropdown.classList.remove("show");
+            btn.classList.remove("active");
           }
         });
 
-        options.forEach(option => {
-          option.addEventListener('click', () => {
-            const sortType = option.getAttribute('data-sort');
-            
-            if (sortType === 'none') {
+        options.forEach((option) => {
+          option.addEventListener("click", () => {
+            const sortType = option.getAttribute("data-sort");
+
+            if (sortType === "none") {
               currentSort = null;
-              options.forEach(o => o.classList.remove('selected'));
+              options.forEach((o) => o.classList.remove("selected"));
             } else {
               currentSort = sortType;
-              options.forEach(o => o.classList.remove('selected'));
-              option.classList.add('selected');
+              options.forEach((o) => o.classList.remove("selected"));
+              option.classList.add("selected");
             }
 
-            dropdown.classList.remove('show');
-            btn.classList.remove('active');
-            
+            dropdown.classList.remove("show");
+            btn.classList.remove("active");
+
             updateActiveFiltersDisplay();
             applyFilters();
           });
@@ -1415,10 +1580,10 @@
           clearTimeout(debounceTimer);
           debounceTimer = setTimeout(performSearch, 300);
         });
-        
-        if(searchIcon) searchIcon.addEventListener("click", performSearch);
-        searchInput.addEventListener("keypress", (e) => { 
-          if (e.key === "Enter") performSearch(); 
+
+        if (searchIcon) searchIcon.addEventListener("click", performSearch);
+        searchInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") performSearch();
         });
       }
 
@@ -1610,8 +1775,10 @@
 
             if (data.success && data.action === "unliked") {
               // Remove from allFavorites array
-              allFavorites = allFavorites.filter(p => p.id !== currentProductId);
-              
+              allFavorites = allFavorites.filter(
+                (p) => p.id !== currentProductId
+              );
+
               if (card) {
                 card.style.transition = "all 0.3s ease";
                 card.style.opacity = "0";
@@ -1651,7 +1818,7 @@
           if (data.success) {
             const cartCounts = document.querySelectorAll(".nav-cart-count");
             cartCounts.forEach((count) => {
-              if(count.id === 'notif-badge') return;
+              if (count.id === "notif-badge") return;
               count.textContent = data.count;
               if (data.count > 0) {
                 count.classList.add("show");
@@ -1661,10 +1828,9 @@
             });
           }
         } catch (error) {
-      
           const cartCounts = document.querySelectorAll(".nav-cart-count");
           cartCounts.forEach((count) => {
-            if(count.id === 'notif-badge') return;
+            if (count.id === "notif-badge") return;
             count.textContent = "0";
             count.classList.remove("show");
           });
@@ -1688,8 +1854,13 @@
         const favoritesGrid = document.getElementById("favorites-grid");
 
         if (!currentUser) {
-          favoritesGrid.innerHTML =
-            "<p class='text-center p-4 text-gray-500'>Please log in to view your favorites.</p>";
+          favoritesGrid.innerHTML = `
+            <div class="empty-favorites">
+              <i class="fas fa-heart"></i>
+              <p>Please log in to view your favorites.</p>
+              <button class="continue-shopping" onclick="window.location.href='login.html'">Log In</button>
+            </div>
+          `;
           return;
         }
 
@@ -1698,10 +1869,15 @@
             credentials: "same-origin",
           });
           const data = await res.json();
-          
+
           if (!data.success || !data.products?.length) {
-            favoritesGrid.innerHTML =
-              "<p class='text-center p-4 text-gray-500'>You have no favorite products yet. 💔</p>";
+            favoritesGrid.innerHTML = `
+              <div class="empty-favorites">
+                <i class="fas fa-heart"></i>
+                <p>You have no favorite products yet. </p>
+                <button class="continue-shopping" onclick="window.location.href='home.html'">Continue Shopping</button>
+              </div>
+            `;
             return;
           }
 
@@ -1709,24 +1885,32 @@
           applyFilters(); // Initial render with filters
         } catch (err) {
           console.error(err);
-          favoritesGrid.innerHTML = `<p class='text-center text-red-500'>Error loading favorites: ${err.message}</p>`;
+          favoritesGrid.innerHTML = `
+            <div class="empty-favorites">
+              <i class="fas fa-exclamation-circle"></i>
+              <p>Error loading favorites: ${err.message}</p>
+              <button class="continue-shopping" onclick="window.location.href='home.html'">Continue Shopping</button>
+            </div>
+          `;
         }
-        
+
         setupCartHoverListeners();
       });
 
       // Load categories function
       async function loadCategories() {
-        const categoriesContainer = document.getElementById("categories-container");
+        const categoriesContainer = document.getElementById(
+          "categories-container"
+        );
         if (!categoriesContainer) return;
 
         try {
           const response = await fetch("../php/categories.php");
           const data = await response.json();
-          
+
           if (data.success) {
             categoriesContainer.innerHTML = "";
-            
+
             // All Button
             const allBtn = document.createElement("button");
             allBtn.className = "category-btn active";
@@ -1737,26 +1921,29 @@
 
             // Category Icons Map
             const categoryIcons = {
-              'lips': 'fa-kiss-wink-heart',
-              'eyes': 'fa-eye',
-              'face': 'fa-smile',
-              'cheeks': 'fa-grin-hearts',
-              'nails': 'fa-hand-sparkles',
-              'tools': 'fa-tools',
-              'skincare': 'fa-spa',
-              'brushes': 'fa-paint-brush'
+              lips: "fa-kiss-wink-heart",
+              eyes: "fa-eye",
+              face: "fa-smile",
+              cheeks: "fa-grin-hearts",
+              nails: "fa-hand-sparkles",
+              tools: "fa-tools",
+              skincare: "fa-spa",
+              brushes: "fa-paint-brush",
             };
 
             // Other Categories
-            data.categories.filter((c) => normalizeCategory(c) !== "all").forEach((cat) => {
-              const btn = document.createElement("button");
-              btn.className = "category-btn";
-              const iconClass = categoryIcons[normalizeCategory(cat)] || 'fa-star';
-              btn.innerHTML = `<i class="fas ${iconClass}"></i> ${cat}`;
-              btn.setAttribute("data-category", normalizeCategory(cat));
-              categoriesContainer.appendChild(btn);
-              btn.addEventListener("click", () => handleCategoryClick(cat));
-            });
+            data.categories
+              .filter((c) => normalizeCategory(c) !== "all")
+              .forEach((cat) => {
+                const btn = document.createElement("button");
+                btn.className = "category-btn";
+                const iconClass =
+                  categoryIcons[normalizeCategory(cat)] || "fa-star";
+                btn.innerHTML = `<i class="fas ${iconClass}"></i> ${cat}`;
+                btn.setAttribute("data-category", normalizeCategory(cat));
+                categoriesContainer.appendChild(btn);
+                btn.addEventListener("click", () => handleCategoryClick(cat));
+              });
           }
         } catch (error) {
           console.error("Error loading categories:", error);

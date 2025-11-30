@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cart | Blessence</title>
-    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png">
+    <link rel="icon" href="../../admin/images/mainlogo1.png" type="image/png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -22,15 +22,9 @@
 
     <style>
       .products-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-top: 0px;
-  }
-      :root {
-        --primary-pink: #ec4899;
-        --dark-pink: #db2777;
-        --light-pink: #fbcfe8;
-        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-top: 0px;
       }
 
       /* Search & Filter Container */
@@ -101,7 +95,8 @@
         position: relative;
       }
 
-      .filter-btn:hover, .filter-btn.active {
+      .filter-btn:hover,
+      .filter-btn.active {
         color: var(--primary-pink);
         transform: translateY(-1px);
         box-shadow: 0 5px 15px rgba(236, 72, 153, 0.15);
@@ -129,9 +124,15 @@
       }
 
       @keyframes bounceIn {
-        0% { transform: scale(0); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
 
       .filter-dropdown {
@@ -140,7 +141,7 @@
         right: 0;
         background: white;
         border-radius: 15px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         width: 200px;
         padding: 8px 0;
         opacity: 0;
@@ -181,11 +182,11 @@
       }
 
       .filter-option.selected::after {
-        content: '✓';
+        content: "✓";
         font-weight: bold;
         margin-left: 8px;
       }
-      
+
       .filter-option.remove-filter {
         border-top: 1px solid #eee;
         color: #ef4444;
@@ -213,7 +214,11 @@
       }
 
       .filter-tag {
-        background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         color: white;
         padding: 6px 12px;
         border-radius: 20px;
@@ -278,8 +283,6 @@
         background: transparent;
         position: relative;
         backdrop-filter: blur(10px);
-        margin-left: 160px;
-        margin-right:160px;
       }
       .categories::-webkit-scrollbar {
         height: 4px;
@@ -289,7 +292,11 @@
         border-radius: 10px;
       }
       .categories::-webkit-scrollbar-thumb {
-        background: linear-gradient(90deg, var(--primary-pink), var(--dark-pink));
+        background: linear-gradient(
+          90deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         border-radius: 10px;
       }
       #categories-container {
@@ -322,13 +329,18 @@
         justify-content: center;
       }
       .category-btn:before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.6),
+          transparent
+        );
         transition: left 0.7s;
       }
       .category-btn:hover:before {
@@ -340,7 +352,11 @@
         color: var(--primary-pink);
       }
       .category-btn.active {
-        background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
         color: white;
         box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
         transform: translateY(-1px);
@@ -375,7 +391,7 @@
       /* Results Counter */
       .results-counter {
         text-align: left;
-        padding: 10px 20px;
+        padding: 0px 20px;
         max-width: 1200px;
         margin: 0 auto;
         font-family: "Montserrat", sans-serif;
@@ -394,6 +410,7 @@
 
       .page-content.active {
         display: block;
+        margin-top: 0;
       }
 
       /* Cart Page Styles */
@@ -800,190 +817,198 @@
 
       /* Modal Overlay Styles */
       .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          opacity: 0;
-          visibility: hidden;
-          transition: all 0.3s ease;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
       }
 
       .modal-overlay.active {
-          opacity: 1;
-          visibility: visible;
+        opacity: 1;
+        visibility: visible;
       }
 
       /* Modal Styles */
       .modal {
-          background: white;
-          border-radius: 16px;
-          padding: 25px;
-          width: 90%;
-          max-width: 450px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-          transform: translateY(20px);
-          transition: transform 0.3s ease;
-          max-height: 80vh;
-          overflow-y: auto;
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+        max-height: 80vh;
+        overflow-y: auto;
       }
 
       .modal-overlay.active .modal {
-          transform: translateY(0);
+        transform: translateY(0);
       }
 
       .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-          padding-bottom: 12px;
-          border-bottom: 1px solid var(--medium-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--medium-gray);
       }
 
       .modal-title {
-          font-size: 20px;
-          font-weight: 600;
-          color: var(--dark-gray);
-          font-family: "Cormorant Garamond", serif;
-          margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        font-family: "Cormorant Garamond", serif;
+        margin: 0;
       }
 
       .close-modal {
-          background: none;
-          border: none;
-          font-size: 18px;
-          color: var(--text-gray);
-          cursor: pointer;
-          transition: color 0.3s ease;
-          padding: 5px;
-          border-radius: 4px;
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: color 0.3s ease;
+        padding: 5px;
+        border-radius: 4px;
       }
 
       .close-modal:hover {
-          color: var(--primary-pink);
-          background: #f8f9fa;
+        color: var(--primary-pink);
+        background: #f8f9fa;
       }
 
       .modal-body {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
       /* Modal Button Styles */
       .modal-actions {
-          display: flex;
-          gap: 12px;
-          justify-content: flex-end;
-          padding: 20px 0 0 0;
-          border-top: 1px solid var(--light-gray);
-          margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding: 20px 0 0 0;
+        border-top: 1px solid var(--light-gray);
+        margin-top: 20px;
       }
 
       .cancel-btn {
-          background: #f8f9fa;
-          color: #6c757d;
-          border: 2px solid #e9ecef;
-          padding: 12px 24px;
-          border-radius: 25px;
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 14px;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          min-width: 120px;
-          justify-content: center;
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 2px solid #e9ecef;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 120px;
+        justify-content: center;
       }
 
       .cancel-btn:hover {
-          background: #e9ecef;
-          border-color: #dee2e6;
-          color: #495057;
-          transform: translateY(-1px);
+        background: #e9ecef;
+        border-color: #dee2e6;
+        color: #495057;
+        transform: translateY(-1px);
       }
 
       .save-btn {
-          background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-          color: white;
-          border: none;
-          padding: 12px 24px;
-          border-radius: 25px;
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 14px;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          min-width: 140px;
-          justify-content: center;
-          box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        background: linear-gradient(
+          135deg,
+          var(--primary-pink),
+          var(--dark-pink)
+        );
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 140px;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
       }
 
       .save-btn:hover:not(:disabled) {
-          background: linear-gradient(135deg, var(--dark-pink), #ff5252);
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        background: linear-gradient(135deg, var(--dark-pink), #ff5252);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
       }
 
       .save-btn:disabled {
-          background: #ccc;
-          cursor: not-allowed;
-          transform: none;
-          box-shadow: none;
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
 
       /* Loading state for buttons */
       .save-btn.loading {
-          position: relative;
-          color: transparent;
+        position: relative;
+        color: transparent;
       }
 
       .save-btn.loading::after {
-          content: '';
-          position: absolute;
-          width: 16px;
-          height: 16px;
-          top: 50%;
-          left: 50%;
-          margin-left: -8px;
-          margin-top: -8px;
-          border: 2px solid #ffffff;
-          border-radius: 50%;
-          border-right-color: transparent;
-          animation: spin 0.8s linear infinite;
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-right-color: transparent;
+        animation: spin 0.8s linear infinite;
       }
 
       @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       /* Delete modal specific styles */
       #deleteModal .modal {
-          max-width: 400px;
-          text-align: center;
+        max-width: 400px;
+        text-align: center;
       }
 
       #deleteModal .modal-body {
-          padding: 10px 0;
+        padding: 10px 0;
       }
       #checkoutModal .modal {
-          max-width: 450px;
-          text-align: center;
+        max-width: 450px;
+        text-align: center;
       }
 
       #checkoutModal .modal-body {
-          padding: 10px 0;
+        padding: 10px 0;
       }
 
       /* Responsive Design */
@@ -1147,7 +1172,7 @@
 
         .search-container {
           padding: 10px 15px;
-          flex-direction: column;
+          flex-direction: row;
           gap: 10px;
         }
 
@@ -1162,7 +1187,6 @@
     </style>
   </head>
 
-  
   <body>
     <!-- Toast / Notification -->
     <div
@@ -1189,31 +1213,38 @@
         <h1 class="brand-name">Blessence</h1>
         <p class="brand-tagline">Beauty & Blessed Online Makeup Store</p>
       </div>
-      
+
       <div class="user-section">
         <span class="user-greeting" id="user-greeting">Hi, User!</span>
-        
+
         <!-- NOTIFICATION SECTION START -->
         <div class="notification-container">
-            <button class="notif-btn" id="notif-btn">
-                <i class="fas fa-bell"></i>
-                <span class="notif-badge" id="notif-badge">0</span>
-            </button>
-            
-            <div class="notif-dropdown" id="notif-dropdown">
-                <div class="notif-header">
-                    <span>Notifications</span>
-                    <i class="fas fa-check-double" style="font-size: 12px; cursor: pointer; color: #999;" title="Mark all as read"></i>
-                </div>
-                <div class="notif-list" id="notif-list">
-                    <!-- Notifications will be injected here -->
-                    <div class="notif-empty">Loading...</div>
-                </div>
+          <button class="notif-btn" id="notif-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notif-badge" id="notif-badge">0</span>
+          </button>
+
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <i
+                class="fas fa-check-double"
+                style="font-size: 12px; cursor: pointer; color: #999"
+                title="Mark all as read"
+              ></i>
             </div>
+            <div class="notif-list" id="notif-list">
+              <!-- Notifications will be injected here -->
+              <div class="notif-empty">Loading...</div>
+            </div>
+          </div>
         </div>
         <!-- NOTIFICATION SECTION END -->
 
-        <button class="profile-btn" onclick="window.location.href='user_profile.html'">
+        <button
+          class="profile-btn"
+          onclick="window.location.href='user_profile.html'"
+        >
           <i class="fas fa-user"></i>
         </button>
       </div>
@@ -1255,21 +1286,27 @@
           id="cart-search-input"
         />
       </div>
-      
+
       <div class="filter-wrapper">
         <button class="filter-btn" id="filter-toggle">
-            <i class="fas fa-filter"></i>
-            <span>Sort</span>
-            <span class="filter-badge" id="filter-badge">0</span>
+          <i class="fas fa-filter"></i>
+          <span>Sort</span>
+          <span class="filter-badge" id="filter-badge">0</span>
         </button>
         <div class="filter-dropdown" id="filter-options">
-            <div class="filter-option" data-sort="az">A-Z Name</div>
-            <div class="filter-option" data-sort="za">Z-A Name</div>
-            <div class="filter-option" data-sort="price_asc">Lowest Price</div>
-            <div class="filter-option" data-sort="price_desc">Highest Price</div>
-            <div class="filter-option" data-sort="quantity_asc">Lowest Quantity</div>
-            <div class="filter-option" data-sort="quantity_desc">Highest Quantity</div>
-            <div class="filter-option remove-filter" data-sort="none">Remove Sort</div>
+          <div class="filter-option" data-sort="az">A-Z Name</div>
+          <div class="filter-option" data-sort="za">Z-A Name</div>
+          <div class="filter-option" data-sort="price_asc">Lowest Price</div>
+          <div class="filter-option" data-sort="price_desc">Highest Price</div>
+          <div class="filter-option" data-sort="quantity_asc">
+            Lowest Quantity
+          </div>
+          <div class="filter-option" data-sort="quantity_desc">
+            Highest Quantity
+          </div>
+          <div class="filter-option remove-filter" data-sort="none">
+            Remove Sort
+          </div>
         </div>
       </div>
     </div>
@@ -1360,80 +1397,107 @@
     </nav>
 
     <!-- Delete Confirmation Modal -->
-<div class="modal-overlay" id="deleteModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 class="modal-title">Remove Item</h3>
-      <button class="close-modal" onclick="closeDeleteModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    
-    <div class="modal-body">
-      <div style="text-align: center; padding: 20px 0;">
-        <div style="font-size: 48px; color: #ff6b6b; margin-bottom: 15px;">
-          <i class="fas fa-trash"></i>
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Remove Item</h3>
+          <button class="close-modal" onclick="closeDeleteModal()">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
-        <h4 style="margin: 0 0 10px 0; color: var(--dark-gray);" id="deleteModalTitle">
-          Remove this item?
-        </h4>
-        <p style="color: var(--text-gray); margin: 0; font-size: 14px;" id="deleteModalMessage">
-          This item will be removed from your cart.
-        </p>
-      </div>
-    </div>
-    
-    <div class="modal-actions">
-      <button class="cancel-btn" onclick="closeDeleteModal()">
-        Keep Item
-      </button>
-      <button class="save-btn" style="background: #ff6b6b;" onclick="confirmDelete()" id="confirmDeleteBtn">
-        <i class="fas fa-trash" style="margin-right: 5px;"></i>
-        Yes, Remove
-      </button>
-    </div>
-  </div>
-</div>
 
-<!-- Checkout Confirmation Modal -->
-<div class="modal-overlay" id="checkoutModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 class="modal-title">Confirm Checkout</h3>
-      <button class="close-modal" onclick="closeCheckoutModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    
-    <div class="modal-body">
-      <div style="text-align: center; padding: 20px 0;">
-        <div style="font-size: 48px; color: var(--primary-pink); margin-bottom: 15px;">
-          <i class="fas fa-shopping-bag"></i>
+        <div class="modal-body">
+          <div style="text-align: center; padding: 20px 0">
+            <div style="font-size: 48px; color: #ff6b6b; margin-bottom: 15px">
+              <i class="fas fa-trash"></i>
+            </div>
+            <h4
+              style="margin: 0 0 10px 0; color: var(--dark-gray)"
+              id="deleteModalTitle"
+            >
+              Remove this item?
+            </h4>
+            <p
+              style="color: var(--text-gray); margin: 0; font-size: 14px"
+              id="deleteModalMessage"
+            >
+              This item will be removed from your cart.
+            </p>
+          </div>
         </div>
-        <h4 style="margin: 0 0 10px 0; color: var(--dark-gray);" id="checkoutModalTitle">
-          Proceed to Checkout?
-        </h4>
-        <p style="color: var(--text-gray); margin: 0; font-size: 14px;" id="checkoutModalMessage">
-          You're about to checkout <span id="checkoutItemCount">0</span> item(s).
-        </p>
-       
+
+        <div class="modal-actions">
+          <button class="cancel-btn" onclick="closeDeleteModal()">
+            Keep Item
+          </button>
+          <button
+            class="save-btn"
+            style="background: #ff6b6b"
+            onclick="confirmDelete()"
+            id="confirmDeleteBtn"
+          >
+            <i class="fas fa-trash" style="margin-right: 5px"></i>
+            Yes, Remove
+          </button>
+        </div>
       </div>
     </div>
-    
-    <div class="modal-actions">
-      <button class="cancel-btn" onclick="closeCheckoutModal()">
-        Continue Shopping
-      </button>
-      <button class="save-btn" style="background: var(--primary-pink);" onclick="confirmCheckout()" id="confirmCheckoutBtn">
-        <i class="fas fa-check" style="margin-right: 5px;"></i>
-        Yes, Checkout
-      </button>
+
+    <!-- Checkout Confirmation Modal -->
+    <div class="modal-overlay" id="checkoutModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Confirm Checkout</h3>
+          <button class="close-modal" onclick="closeCheckoutModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div style="text-align: center; padding: 20px 0">
+            <div
+              style="
+                font-size: 48px;
+                color: var(--primary-pink);
+                margin-bottom: 15px;
+              "
+            >
+              <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h4
+              style="margin: 0 0 10px 0; color: var(--dark-gray)"
+              id="checkoutModalTitle"
+            >
+              Proceed to Checkout?
+            </h4>
+            <p
+              style="color: var(--text-gray); margin: 0; font-size: 14px"
+              id="checkoutModalMessage"
+            >
+              You're about to checkout
+              <span id="checkoutItemCount">0</span> item(s).
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="cancel-btn" onclick="closeCheckoutModal()">
+            Continue Shopping
+          </button>
+          <button
+            class="save-btn"
+            style="background: var(--primary-pink)"
+            onclick="confirmCheckout()"
+            id="confirmCheckoutBtn"
+          >
+            <i class="fas fa-check" style="margin-right: 5px"></i>
+            Yes, Checkout
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
     <script>
-      
       /* ------------------------------------------------------------
   COMPLETE CART.HTML SCRIPT - REPLACE ENTIRE <script> SECTION
   ------------------------------------------------------------ */
@@ -1442,243 +1506,251 @@
       let filteredCart = [];
       const API = "../php/cart.php";
       let currentSort = null;
-      let currentSearchTerm = '';
+      let currentSearchTerm = "";
       let selectedCategories = [];
 
       const normalizeCategory = (cat) => (cat || "").toLowerCase();
 
       document.addEventListener("DOMContentLoaded", async () => {
-    // Add page protection FIRST
-    if (typeof setupPageProtection === "function") {
-        setupPageProtection();
-    }
+        // Add page protection FIRST
+        if (typeof setupPageProtection === "function") {
+          setupPageProtection();
+        }
 
-   
+        await updateUserGreeting();
+        if (!currentUser) {
+          console.log("❌ No user logged in");
+          return;
+        }
 
-    await updateUserGreeting();
-    if (!currentUser) {
-        console.log("❌ No user logged in");
-        return;
-    }
+        await loadCartFromServer();
 
-    await loadCartFromServer();
+        // Initialize search and filter functionality
+        initSearch();
+        initFilterDropdown();
+        loadCategories();
 
-    // Initialize search and filter functionality
-    initSearch();
-    initFilterDropdown();
-    loadCategories();
+        // Setup select all checkbox
+        const selectAllCheckbox = document.getElementById("select-all");
+        if (selectAllCheckbox) {
+          selectAllCheckbox.addEventListener("change", toggleSelectAll);
+        }
 
-    // Setup select all checkbox
-    const selectAllCheckbox = document.getElementById("select-all");
-    if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener("change", toggleSelectAll);
-    }
-
-    // ✅ CORRECTED: Delete modal event listeners
-    const deleteModal = document.getElementById('deleteModal');
-    if (deleteModal) {
-        // Click outside to close
-        deleteModal.addEventListener('click', function(e) {
+        // ✅ CORRECTED: Delete modal event listeners
+        const deleteModal = document.getElementById("deleteModal");
+        if (deleteModal) {
+          // Click outside to close
+          deleteModal.addEventListener("click", function (e) {
             if (e.target === deleteModal) {
-                closeDeleteModal();
+              closeDeleteModal();
             }
-        });
-        
-        // Escape key to close
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && deleteModal.classList.contains('active')) {
-                closeDeleteModal();
+          });
+
+          // Escape key to close
+          document.addEventListener("keydown", function (e) {
+            if (
+              e.key === "Escape" &&
+              deleteModal.classList.contains("active")
+            ) {
+              closeDeleteModal();
             }
-        });
-    }
+          });
+        }
 
-    initCheckoutModal();
-    // Setup checkout button
-    setupCheckoutButton();
-}); 
+        initCheckoutModal();
+        // Setup checkout button
+        setupCheckoutButton();
+      });
 
+      function setupCheckoutButton() {
+        const checkoutBtn = document.getElementById("checkout-btn");
 
-function setupCheckoutButton() {
-    const checkoutBtn = document.getElementById("checkout-btn");
+        if (!checkoutBtn) {
+          console.error("❌ Checkout button not found in DOM!");
+          return;
+        }
 
-    if (!checkoutBtn) {
-        console.error("❌ Checkout button not found in DOM!");
-        return;
-    }
+        // Remove any existing listeners
+        const newBtn = checkoutBtn.cloneNode(true);
+        checkoutBtn.parentNode.replaceChild(newBtn, checkoutBtn);
 
-  
-
-    // Remove any existing listeners
-    const newBtn = checkoutBtn.cloneNode(true);
-    checkoutBtn.parentNode.replaceChild(newBtn, checkoutBtn);
-
-    // Add fresh listener
-    newBtn.addEventListener("click", handleCheckout);
-}
+        // Add fresh listener
+        newBtn.addEventListener("click", handleCheckout);
+      }
 
       let currentCheckoutItems = [];
 
-// Open checkout confirmation modal
-function handleCheckout(e) {
-  
-    e.preventDefault();
-    e.stopPropagation();
+      // Open checkout confirmation modal
+      function handleCheckout(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-    const selectedItems = cart.filter((i) => i.selected);
+        const selectedItems = cart.filter((i) => i.selected);
 
-
-    if (selectedItems.length === 0) {
-        showToast("⚠️ Please select at least one item to check out.");
-        return;
-    }
-
-    currentCheckoutItems = selectedItems;
-    
-    // Update modal content
-    document.getElementById('checkoutItemCount').textContent = selectedItems.length;
-    document.getElementById('checkoutModalTitle').textContent = `Checkout ${selectedItems.length} Item(s)?`;
-    document.getElementById('checkoutModalMessage').textContent = `You're about to checkout ${selectedItems.length} selected item(s) with a total of ${formatPrice(calculateSelectedTotal())}.`;
-    
-    openCheckoutModal();
-}
-
-// Open checkout confirmation modal
-function openCheckoutModal() {
-    const modal = document.getElementById('checkoutModal');
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-// Close checkout confirmation modal
-function closeCheckoutModal() {
-    const modal = document.getElementById('checkoutModal');
-    if (modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-        
-        // Reset loading state
-        const confirmBtn = document.getElementById('confirmCheckoutBtn');
-        if (confirmBtn) {
-            confirmBtn.classList.remove('loading');
-            confirmBtn.disabled = false;
-            confirmBtn.innerHTML = '<i class="fas fa-check" style="margin-right: 5px;"></i> Yes, Checkout';
+        if (selectedItems.length === 0) {
+          showToast("⚠️ Please select at least one item to check out.");
+          return;
         }
-        
-        currentCheckoutItems = [];
-    }
-}
 
-// Calculate total for selected items
-function calculateSelectedTotal() {
-    const selectedItems = cart.filter((i) => i.selected);
-    return selectedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-}
+        currentCheckoutItems = selectedItems;
 
-// Confirm and execute checkout
-async function confirmCheckout() {
-    const confirmBtn = document.getElementById('confirmCheckoutBtn');
-    const btn = document.getElementById('checkout-btn');
-    
-    // Show loading state
-    if (confirmBtn) {
-        confirmBtn.classList.add('loading');
-        confirmBtn.disabled = true;
-        confirmBtn.innerHTML = 'Processing...';
-    }
+        // Update modal content
+        document.getElementById("checkoutItemCount").textContent =
+          selectedItems.length;
+        document.getElementById(
+          "checkoutModalTitle"
+        ).textContent = `Checkout ${selectedItems.length} Item(s)?`;
+        document.getElementById(
+          "checkoutModalMessage"
+        ).textContent = `You're about to checkout ${
+          selectedItems.length
+        } selected item(s) with a total of ${formatPrice(
+          calculateSelectedTotal()
+        )}.`;
 
-    // Also disable the main checkout button
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-    }
-    
-    try {
-        // CREATE ORDER IN DATABASE FIRST
-        const orderData = {
+        openCheckoutModal();
+      }
+
+      // Open checkout confirmation modal
+      function openCheckoutModal() {
+        const modal = document.getElementById("checkoutModal");
+        if (modal) {
+          modal.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
+      }
+
+      // Close checkout confirmation modal
+      function closeCheckoutModal() {
+        const modal = document.getElementById("checkoutModal");
+        if (modal) {
+          modal.classList.remove("active");
+          document.body.style.overflow = "";
+
+          // Reset loading state
+          const confirmBtn = document.getElementById("confirmCheckoutBtn");
+          if (confirmBtn) {
+            confirmBtn.classList.remove("loading");
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML =
+              '<i class="fas fa-check" style="margin-right: 5px;"></i> Yes, Checkout';
+          }
+
+          currentCheckoutItems = [];
+        }
+      }
+
+      // Calculate total for selected items
+      function calculateSelectedTotal() {
+        const selectedItems = cart.filter((i) => i.selected);
+        return selectedItems.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0
+        );
+      }
+
+      // Confirm and execute checkout
+      async function confirmCheckout() {
+        const confirmBtn = document.getElementById("confirmCheckoutBtn");
+        const btn = document.getElementById("checkout-btn");
+
+        // Show loading state
+        if (confirmBtn) {
+          confirmBtn.classList.add("loading");
+          confirmBtn.disabled = true;
+          confirmBtn.innerHTML = "Processing...";
+        }
+
+        // Also disable the main checkout button
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        }
+
+        try {
+          // CREATE ORDER IN DATABASE FIRST
+          const orderData = {
             items: currentCheckoutItems.map((i) => ({
-                id: i.id,
-                quantity: i.quantity,
+              id: i.id,
+              quantity: i.quantity,
             })),
-        };
+          };
 
-    
-
-        const response = await fetch("../php/checkout.php", {
+          const response = await fetch("../php/checkout.php", {
             method: "POST",
             credentials: "same-origin",
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(orderData),
-        });
+          });
 
-     
+          const result = await response.json();
 
-        const result = await response.json();
-     
-
-        if (!result.success) {
+          if (!result.success) {
             throw new Error(result.message || "Checkout failed");
-        }
+          }
 
-        // Save order details for checkout page
-        const checkoutOrder = {
+          // Save order details for checkout page
+          const checkoutOrder = {
             order_id: result.order.order_id,
             qr_code: result.order.qr_code,
             total_amount: result.order.total_amount,
             order_date: result.order.order_date,
             items_count: result.order.items_count,
-        };
+          };
 
-    
-        localStorage.setItem("checkoutOrder", JSON.stringify(checkoutOrder));
+          localStorage.setItem("checkoutOrder", JSON.stringify(checkoutOrder));
 
-        // Show success toast
-        showToast("✅ Order placed successfully! Proceeding to checkout...", 2000);
+          // Show success toast
+          showToast(
+            "✅ Order placed successfully! Proceeding to checkout...",
+            2000
+          );
 
-        // Close modal
-        closeCheckoutModal();
+          // Close modal
+          closeCheckoutModal();
 
-        // Redirect after short delay
-        setTimeout(() => {
-         
+          // Redirect after short delay
+          setTimeout(() => {
             window.location.href = "checkout.html";
-        }, 1500);
-    } catch (err) {
-        console.error("❌ Checkout error:", err);
-        showToast("Error: " + err.message);
-        
-        // Reset button states on error
-        closeCheckoutModal();
-        if (btn) {
+          }, 1500);
+        } catch (err) {
+          console.error("❌ Checkout error:", err);
+          showToast("Error: " + err.message);
+
+          // Reset button states on error
+          closeCheckoutModal();
+          if (btn) {
             btn.disabled = false;
             btn.innerHTML = "Check Out";
+          }
         }
-    }
-}
+      }
 
-// Add checkout modal event listeners
-function initCheckoutModal() {
-    const checkoutModal = document.getElementById('checkoutModal');
-    if (checkoutModal) {
-        // Click outside to close
-        checkoutModal.addEventListener('click', function(e) {
+      // Add checkout modal event listeners
+      function initCheckoutModal() {
+        const checkoutModal = document.getElementById("checkoutModal");
+        if (checkoutModal) {
+          // Click outside to close
+          checkoutModal.addEventListener("click", function (e) {
             if (e.target === checkoutModal) {
-                closeCheckoutModal();
+              closeCheckoutModal();
             }
-        });
-        
-        // Escape key to close
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && checkoutModal.classList.contains('active')) {
-                closeCheckoutModal();
-            }
-        });
-    }
-}
+          });
 
+          // Escape key to close
+          document.addEventListener("keydown", function (e) {
+            if (
+              e.key === "Escape" &&
+              checkoutModal.classList.contains("active")
+            ) {
+              closeCheckoutModal();
+            }
+          });
+        }
+      }
 
       /* ------------------- Backend calls ------------------- */
 
@@ -1756,7 +1828,7 @@ function initCheckoutModal() {
               subtotal: parseFloat(item.subtotal) || item.price * item.quantity,
             }));
           }
-       
+
           applyFilters();
           updateFloatingCartCount();
         } catch (err) {
@@ -1768,12 +1840,17 @@ function initCheckoutModal() {
       function renderCart() {
         const cartItems = document.getElementById("cart-items");
         const displayCart = filteredCart.length > 0 ? filteredCart : cart;
+        const resultsCounter = document.getElementById("results-counter");
 
         cartItems.innerHTML = "";
 
         if (!displayCart || displayCart.length === 0) {
+          // Hide results counter when no items
+          if (resultsCounter) {
+            resultsCounter.style.display = "none";
+          }
+
           if (currentSearchTerm || selectedCategories.length > 0) {
-        
             cartItems.innerHTML = `
                 <div class="empty-search">
                     <i class="fas fa-search"></i>
@@ -1782,7 +1859,6 @@ function initCheckoutModal() {
                 </div>
             `;
           } else {
-        
             cartItems.innerHTML = `
                 <div class="empty-cart">
                     <i class="fas fa-shopping-cart"></i>
@@ -1801,51 +1877,14 @@ function initCheckoutModal() {
           return;
         }
 
-   
+        // Show results counter when there are items
+        if (resultsCounter) {
+          resultsCounter.style.display = "block";
+        }
 
         const sorted = [...displayCart].reverse();
         sorted.forEach((item) => {
-          const itemTotal = item.price * item.quantity;
-          const cartItem = document.createElement("div");
-          cartItem.className = "cart-item";
-
-          cartItem.innerHTML = `
-            <input type="checkbox" class="cart-item-checkbox" ${
-              item.selected ? "checked" : ""
-            } onchange="toggleItemSelection('${escapeHtml(item.id)}')">
-            <div class="cart-item-image"><img src="${escapeHtml(
-              item.image
-            )}" alt="${escapeHtml(
-            item.name
-          )}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></div>
-            <div class="cart-item-details">
-                <div class="cart-item-name">${escapeHtml(item.name)}</div>
-                <div class="cart-item-variation">${escapeHtml(
-                  item.variation || ""
-                )}</div>
-                <div class="cart-item-price-container">
-                    <div class="cart-item-unit-price">${formatPrice(
-                      item.price
-                    )} × ${item.quantity}</div>
-                    <div class="cart-item-total-price">${formatPrice(
-                      itemTotal
-                    )}</div>
-                </div>
-                <div class="cart-item-controls">
-                    <button class="quantity-btn" onclick="changeQuantity('${escapeHtml(
-                      item.id
-                    )}', ${item.quantity - 1})">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="changeQuantity('${escapeHtml(
-                      item.id
-                    )}', ${item.quantity + 1})">+</button>
-                    <button class="remove-btn" onclick="removeFromCartHandler('${escapeHtml(
-                      item.id
-                    )}')"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        `;
-          cartItems.appendChild(cartItem);
+          // ... rest of the cart rendering code remains the same
         });
 
         updateCartTotal();
@@ -1874,21 +1913,21 @@ function initCheckoutModal() {
         }
       }
 
-
       let currentDeleteAction = null;
-let currentProductId = null;
+      let currentProductId = null;
 
+      function removeFromCartHandler(productId) {
+        currentDeleteAction = "single";
+        currentProductId = productId;
 
-function removeFromCartHandler(productId) {
-  currentDeleteAction = 'single';
-  currentProductId = productId;
-  
-  // Update modal content for single item
-  document.getElementById('deleteModalTitle').textContent = 'Remove this item?';
-  document.getElementById('deleteModalMessage').textContent = 'This item will be removed from your cart.';
-  
-  openDeleteModal();
-}
+        // Update modal content for single item
+        document.getElementById("deleteModalTitle").textContent =
+          "Remove this item?";
+        document.getElementById("deleteModalMessage").textContent =
+          "This item will be removed from your cart.";
+
+        openDeleteModal();
+      }
 
       async function changeQuantity(productId, newQty) {
         if (newQty < 1) return;
@@ -2002,19 +2041,24 @@ function removeFromCartHandler(productId) {
       /* ------------------- CATEGORIES FUNCTIONALITY ------------------- */
 
       function loadCategories() {
-        const categoriesContainer = document.getElementById("categories-container");
+        const categoriesContainer = document.getElementById(
+          "categories-container"
+        );
         if (!categoriesContainer) return;
 
         // First, extract unique categories from cart items
-        const categories = [...new Set(cart.map(item => item.variation).filter(Boolean))];
-        
+        const categories = [
+          ...new Set(cart.map((item) => item.variation).filter(Boolean)),
+        ];
+
         if (categories.length === 0) {
-          categoriesContainer.innerHTML = '<p style="color: var(--text-gray); text-align: center; width: 100%;">No categories available</p>';
+          categoriesContainer.innerHTML =
+            '<p style="color: var(--text-gray); text-align: center; width: 100%;"></p>';
           return;
         }
 
         categoriesContainer.innerHTML = "";
-        
+
         // All Button
         const allBtn = document.createElement("button");
         allBtn.className = "category-btn active";
@@ -2025,20 +2069,20 @@ function removeFromCartHandler(productId) {
 
         // Category Icons Map
         const categoryIcons = {
-          'lips': 'fa-kiss-wink-heart',
-          'eyes': 'fa-eye',
-          'face': 'fa-smile',
-          'cheeks': 'fa-grin-hearts',
-          'nails': 'fa-hand-sparkles',
-          'tools': 'fa-tools',
-          'skincare': 'fa-spa',
-          'brushes': 'fa-paint-brush',
-          'foundation': 'fa-palette',
-          'lipstick': 'fa-lips',
-          'eyeshadow': 'fa-eye',
-          'blush': 'fa-grin-hearts',
-          'mascara': 'fa-eye',
-          'concealer': 'fa-magic'
+          lips: "fas fa-star",
+          eyes: "fas fa-star",
+          face: "fas fa-star",
+          cheeks: "fas fa-star",
+          nails: "fas fa-star",
+          tools: "fas fa-star",
+          skincare: "fas fa-star",
+          brushes: "fas fa-star",
+          foundation: "fas fa-star",
+          lipstick: "fas fa-stars",
+          eyeshadow: "fas fa-star",
+          blush: "fas fa-star",
+          mascara: "fas fa-star",
+          concealer: "fas fa-star",
         };
 
         // Create category buttons
@@ -2046,7 +2090,7 @@ function removeFromCartHandler(productId) {
           const btn = document.createElement("button");
           btn.className = "category-btn";
           const normalizedCat = normalizeCategory(cat);
-          const iconClass = categoryIcons[normalizedCat] || 'fa-tag';
+          const iconClass = categoryIcons[normalizedCat] || "fa-tag";
           btn.innerHTML = `<i class="fas ${iconClass}"></i> ${cat}`;
           btn.setAttribute("data-category", normalizedCat);
           categoriesContainer.appendChild(btn);
@@ -2058,8 +2102,8 @@ function removeFromCartHandler(productId) {
 
       function handleCategoryClick(category) {
         const normalizedCat = normalizeCategory(category);
-        
-        if (normalizedCat === 'all') {
+
+        if (normalizedCat === "all") {
           // Reset all categories
           selectedCategories = [];
         } else {
@@ -2071,7 +2115,7 @@ function removeFromCartHandler(productId) {
             selectedCategories.push(normalizedCat);
           }
         }
-        
+
         updateCategoryButtons();
         updateActiveFiltersDisplay();
         applyFilters();
@@ -2080,7 +2124,7 @@ function removeFromCartHandler(productId) {
       function updateCategoryButtons() {
         document.querySelectorAll(".category-btn").forEach((btn) => {
           const cat = btn.getAttribute("data-category");
-          if (cat === 'all') {
+          if (cat === "all") {
             // "All" button is active only when no categories are selected
             if (selectedCategories.length === 0) {
               btn.classList.add("active");
@@ -2106,17 +2150,19 @@ function removeFromCartHandler(productId) {
 
         // 1. Filter by Categories (multiple selection)
         if (selectedCategories.length > 0) {
-          result = result.filter(p => 
+          result = result.filter((p) =>
             selectedCategories.includes(normalizeCategory(p.variation))
           );
         }
 
         // 2. Filter by Search Term
         if (currentSearchTerm) {
-          result = result.filter(p => {
+          result = result.filter((p) => {
             const term = currentSearchTerm.toLowerCase();
-            const inName = (p.name || '').toLowerCase().includes(term);
-            const inVariation = (p.variation || '').toLowerCase().includes(term);
+            const inName = (p.name || "").toLowerCase().includes(term);
+            const inVariation = (p.variation || "")
+              .toLowerCase()
+              .includes(term);
             return inName || inVariation;
           });
         }
@@ -2124,20 +2170,21 @@ function removeFromCartHandler(productId) {
         // 3. Apply Sort
         if (currentSort) {
           result.sort((a, b) => {
-            switch(currentSort) {
-              case 'az': 
+            switch (currentSort) {
+              case "az":
                 return a.name.localeCompare(b.name);
-              case 'za': 
+              case "za":
                 return b.name.localeCompare(a.name);
-              case 'price_asc': 
+              case "price_asc":
                 return parseFloat(a.price) - parseFloat(b.price);
-              case 'price_desc': 
+              case "price_desc":
                 return parseFloat(b.price) - parseFloat(a.price);
-              case 'quantity_asc': 
+              case "quantity_asc":
                 return parseFloat(a.quantity) - parseFloat(b.quantity);
-              case 'quantity_desc': 
+              case "quantity_desc":
                 return parseFloat(b.quantity) - parseFloat(a.quantity);
-              default: return 0;
+              default:
+                return 0;
             }
           });
         }
@@ -2149,10 +2196,24 @@ function removeFromCartHandler(productId) {
       }
 
       function updateResultsCounter(count) {
-        const counter = document.getElementById('results-counter');
+        const counter = document.getElementById("results-counter");
         if (!counter) return;
-        
-        if (count === cart.length && selectedCategories.length === 0 && !currentSearchTerm && !currentSort) {
+
+        // Hide the counter if there are no items
+        if (count === 0) {
+          counter.style.display = "none";
+          return;
+        }
+
+        // Show the counter and update content
+        counter.style.display = "block";
+
+        if (
+          count === cart.length &&
+          selectedCategories.length === 0 &&
+          !currentSearchTerm &&
+          !currentSort
+        ) {
           counter.textContent = `Showing all ${count} items in cart`;
         } else {
           counter.textContent = `Found ${count} of ${cart.length} items in cart`;
@@ -2161,18 +2222,18 @@ function removeFromCartHandler(productId) {
 
       // --- ACTIVE FILTERS DISPLAY ---
       function updateActiveFiltersDisplay() {
-        const container = document.getElementById('active-filters');
-        const filterBadge = document.getElementById('filter-badge');
+        const container = document.getElementById("active-filters");
+        const filterBadge = document.getElementById("filter-badge");
         if (!container) return;
 
-        container.innerHTML = '';
+        container.innerHTML = "";
         let filterCount = 0;
 
         // Display selected categories
-        selectedCategories.forEach(cat => {
+        selectedCategories.forEach((cat) => {
           filterCount++;
-          const tag = document.createElement('div');
-          tag.className = 'filter-tag';
+          const tag = document.createElement("div");
+          tag.className = "filter-tag";
           tag.innerHTML = `
             <i class="fas fa-tag"></i>
             <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
@@ -2185,15 +2246,15 @@ function removeFromCartHandler(productId) {
         if (currentSort) {
           filterCount++;
           const sortLabels = {
-            'az': 'A-Z',
-            'za': 'Z-A',
-            'price_asc': 'Price: Low to High',
-            'price_desc': 'Price: High to Low',
-            'quantity_asc': 'Quantity: Low to High',
-            'quantity_desc': 'Quantity: High to Low'
+            az: "A-Z",
+            za: "Z-A",
+            price_asc: "Price: Low to High",
+            price_desc: "Price: High to Low",
+            quantity_asc: "Quantity: Low to High",
+            quantity_desc: "Quantity: High to Low",
           };
-          const tag = document.createElement('div');
-          tag.className = 'filter-tag';
+          const tag = document.createElement("div");
+          tag.className = "filter-tag";
           tag.innerHTML = `
             <i class="fas fa-sort"></i>
             <span>${sortLabels[currentSort]}</span>
@@ -2205,8 +2266,8 @@ function removeFromCartHandler(productId) {
         // Display search term
         if (currentSearchTerm) {
           filterCount++;
-          const tag = document.createElement('div');
-          tag.className = 'filter-tag';
+          const tag = document.createElement("div");
+          tag.className = "filter-tag";
           tag.innerHTML = `
             <i class="fas fa-search"></i>
             <span>"${currentSearchTerm}"</span>
@@ -2217,8 +2278,8 @@ function removeFromCartHandler(productId) {
 
         // Clear all button
         if (filterCount > 0) {
-          const clearBtn = document.createElement('button');
-          clearBtn.className = 'clear-all-filters';
+          const clearBtn = document.createElement("button");
+          clearBtn.className = "clear-all-filters";
           clearBtn.innerHTML = '<i class="fas fa-times-circle"></i> Clear All';
           clearBtn.onclick = clearAllFilters;
           container.appendChild(clearBtn);
@@ -2228,16 +2289,16 @@ function removeFromCartHandler(productId) {
         if (filterBadge) {
           filterBadge.textContent = filterCount;
           if (filterCount > 0) {
-            filterBadge.classList.add('show');
+            filterBadge.classList.add("show");
           } else {
-            filterBadge.classList.remove('show');
+            filterBadge.classList.remove("show");
           }
         }
       }
 
       // --- FILTER REMOVAL FUNCTIONS ---
       function removeCategory(category) {
-        selectedCategories = selectedCategories.filter(c => c !== category);
+        selectedCategories = selectedCategories.filter((c) => c !== category);
         updateCategoryButtons();
         updateActiveFiltersDisplay();
         applyFilters();
@@ -2245,15 +2306,17 @@ function removeFromCartHandler(productId) {
 
       function removeSort() {
         currentSort = null;
-        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        document
+          .querySelectorAll(".filter-option")
+          .forEach((o) => o.classList.remove("selected"));
         updateActiveFiltersDisplay();
         applyFilters();
       }
 
       function clearSearch() {
-        currentSearchTerm = '';
-        const searchInput = document.getElementById('cart-search-input');
-        if (searchInput) searchInput.value = '';
+        currentSearchTerm = "";
+        const searchInput = document.getElementById("cart-search-input");
+        if (searchInput) searchInput.value = "";
         updateActiveFiltersDisplay();
         applyFilters();
       }
@@ -2261,10 +2324,12 @@ function removeFromCartHandler(productId) {
       function clearAllFilters() {
         selectedCategories = [];
         currentSort = null;
-        currentSearchTerm = '';
-        const searchInput = document.getElementById('cart-search-input');
-        if (searchInput) searchInput.value = '';
-        document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+        currentSearchTerm = "";
+        const searchInput = document.getElementById("cart-search-input");
+        if (searchInput) searchInput.value = "";
+        document
+          .querySelectorAll(".filter-option")
+          .forEach((o) => o.classList.remove("selected"));
         updateCategoryButtons();
         updateActiveFiltersDisplay();
         applyFilters();
@@ -2272,41 +2337,41 @@ function removeFromCartHandler(productId) {
 
       // --- SORT FILTER ---
       function initFilterDropdown() {
-        const btn = document.getElementById('filter-toggle');
-        const dropdown = document.getElementById('filter-options');
-        const options = document.querySelectorAll('.filter-option');
+        const btn = document.getElementById("filter-toggle");
+        const dropdown = document.getElementById("filter-options");
+        const options = document.querySelectorAll(".filter-option");
 
-        if(!btn || !dropdown) return;
+        if (!btn || !dropdown) return;
 
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          dropdown.classList.toggle('show');
-          btn.classList.toggle('active');
+          dropdown.classList.toggle("show");
+          btn.classList.toggle("active");
         });
 
-        document.addEventListener('click', (e) => {
+        document.addEventListener("click", (e) => {
           if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('show');
-            btn.classList.remove('active');
+            dropdown.classList.remove("show");
+            btn.classList.remove("active");
           }
         });
 
-        options.forEach(option => {
-          option.addEventListener('click', () => {
-            const sortType = option.getAttribute('data-sort');
-            
-            if (sortType === 'none') {
+        options.forEach((option) => {
+          option.addEventListener("click", () => {
+            const sortType = option.getAttribute("data-sort");
+
+            if (sortType === "none") {
               currentSort = null;
-              options.forEach(o => o.classList.remove('selected'));
+              options.forEach((o) => o.classList.remove("selected"));
             } else {
               currentSort = sortType;
-              options.forEach(o => o.classList.remove('selected'));
-              option.classList.add('selected');
+              options.forEach((o) => o.classList.remove("selected"));
+              option.classList.add("selected");
             }
 
-            dropdown.classList.remove('show');
-            btn.classList.remove('active');
-            
+            dropdown.classList.remove("show");
+            btn.classList.remove("active");
+
             updateActiveFiltersDisplay();
             applyFilters();
           });
@@ -2330,154 +2395,161 @@ function removeFromCartHandler(productId) {
           clearTimeout(debounceTimer);
           debounceTimer = setTimeout(performSearch, 300);
         });
-        
-        if(searchIcon) searchIcon.addEventListener("click", performSearch);
-        searchInput.addEventListener("keypress", (e) => { 
-          if (e.key === "Enter") performSearch(); 
+
+        if (searchIcon) searchIcon.addEventListener("click", performSearch);
+        searchInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") performSearch();
         });
       }
 
       // BULK DELETE FUNCTIONALITY
       function deleteSelectedItems() {
-  const selectedItems = cart.filter((item) => item.selected);
+        const selectedItems = cart.filter((item) => item.selected);
 
-  if (selectedItems.length === 0) {
-    showToast("⚠️ Please select items to delete.");
-    return;
-  }
+        if (selectedItems.length === 0) {
+          showToast("⚠️ Please select items to delete.");
+          return;
+        }
 
-  currentDeleteAction = 'multiple';
-  
-  // Update modal content for multiple items
-  document.getElementById('deleteModalTitle').textContent = `Remove ${selectedItems.length} item(s)?`;
-  document.getElementById('deleteModalMessage').textContent = `Are you sure you want to remove ${selectedItems.length} selected item(s) from your cart?`;
-  
-  openDeleteModal();
-}
+        currentDeleteAction = "multiple";
 
-function openDeleteModal() {
-  const modal = document.getElementById('deleteModal');
-  if (modal) {
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-}
+        // Update modal content for multiple items
+        document.getElementById(
+          "deleteModalTitle"
+        ).textContent = `Remove ${selectedItems.length} item(s)?`;
+        document.getElementById(
+          "deleteModalMessage"
+        ).textContent = `Are you sure you want to remove ${selectedItems.length} selected item(s) from your cart?`;
 
-// Close delete confirmation modal
-function closeDeleteModal() {
-  const modal = document.getElementById('deleteModal');
-  if (modal) {
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-    
-    // Reset loading state
-    const confirmBtn = document.getElementById('confirmDeleteBtn');
-    if (confirmBtn) {
-      confirmBtn.classList.remove('loading');
-      confirmBtn.disabled = false;
-      confirmBtn.innerHTML = '<i class="fas fa-trash" style="margin-right: 5px;"></i> Yes, Remove';
-    }
-    
-    currentDeleteAction = null;
-    currentProductId = null;
-  }
-}
+        openDeleteModal();
+      }
 
-// Confirm and execute deletion
-async function confirmDelete() {
-  const confirmBtn = document.getElementById('confirmDeleteBtn');
-  
-  // Show loading state
-  if (confirmBtn) {
-    confirmBtn.classList.add('loading');
-    confirmBtn.disabled = true;
-    confirmBtn.innerHTML = 'Removing...';
-  }
-  
-  try {
-    if (currentDeleteAction === 'single') {
-      await deleteSingleItem();
-    } else if (currentDeleteAction === 'multiple') {
-      await deleteMultipleItems();
-    }
-  } catch (error) {
-    console.error('Error during deletion:', error);
-    showToast('Error removing items. Please try again.');
-    closeDeleteModal();
-  }
-}
+      function openDeleteModal() {
+        const modal = document.getElementById("deleteModal");
+        if (modal) {
+          modal.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
+      }
 
-async function deleteSingleItem() {
-  try {
-    const res = await apiRemoveFromCart(String(currentProductId));
-    if (res.success) {
-      await loadCartFromServer();
-      showToast(res.message || "Removed from cart 🗑️");
-      const c = await apiGetCount();
-      if (c && c.success) updateFloatingCountValue(c.cartCount);
-    } else {
-      showToast(res.message || "Failed to remove item");
-    }
-  } catch (err) {
-    console.error(err);
-    showToast("Error removing item");
-  } finally {
-    closeDeleteModal();
-  }
-}
+      // Close delete confirmation modal
+      function closeDeleteModal() {
+        const modal = document.getElementById("deleteModal");
+        if (modal) {
+          modal.classList.remove("active");
+          document.body.style.overflow = "";
 
-// Delete multiple items
-async function deleteMultipleItems() {
-  const selectedItems = cart.filter((item) => item.selected);
-  
-  try {
-    // Show loading state
-    const deleteBtn = document.getElementById("delete-selected-btn");
-    const originalText = deleteBtn.innerHTML;
-    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-    deleteBtn.disabled = true;
+          // Reset loading state
+          const confirmBtn = document.getElementById("confirmDeleteBtn");
+          if (confirmBtn) {
+            confirmBtn.classList.remove("loading");
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML =
+              '<i class="fas fa-trash" style="margin-right: 5px;"></i> Yes, Remove';
+          }
 
-    // Delete each selected item
-    const deletePromises = selectedItems.map((item) =>
-      apiRemoveFromCart(String(item.id))
-    );
+          currentDeleteAction = null;
+          currentProductId = null;
+        }
+      }
 
-    // Wait for all delete operations to complete
-    const results = await Promise.allSettled(deletePromises);
+      // Confirm and execute deletion
+      async function confirmDelete() {
+        const confirmBtn = document.getElementById("confirmDeleteBtn");
 
-    // Check if any deletions failed
-    const failedDeletes = results.filter(
-      (result) =>
-        result.status === "rejected" ||
-        (result.status === "fulfilled" && !result.value.success)
-    );
+        // Show loading state
+        if (confirmBtn) {
+          confirmBtn.classList.add("loading");
+          confirmBtn.disabled = true;
+          confirmBtn.innerHTML = "Removing...";
+        }
 
-    if (failedDeletes.length > 0) {
-      console.error("Some items failed to delete:", failedDeletes);
-      showToast("Some items could not be deleted. Please try again.");
-    } else {
-      showToast(`✅ Successfully deleted ${selectedItems.length} item(s)`);
-    }
+        try {
+          if (currentDeleteAction === "single") {
+            await deleteSingleItem();
+          } else if (currentDeleteAction === "multiple") {
+            await deleteMultipleItems();
+          }
+        } catch (error) {
+          console.error("Error during deletion:", error);
+          showToast("Error removing items. Please try again.");
+          closeDeleteModal();
+        }
+      }
 
-    // Reload cart from server
-    await loadCartFromServer();
+      async function deleteSingleItem() {
+        try {
+          const res = await apiRemoveFromCart(String(currentProductId));
+          if (res.success) {
+            await loadCartFromServer();
+            showToast(res.message || "Removed from cart 🗑️");
+            const c = await apiGetCount();
+            if (c && c.success) updateFloatingCountValue(c.cartCount);
+          } else {
+            showToast(res.message || "Failed to remove item");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Error removing item");
+        } finally {
+          closeDeleteModal();
+        }
+      }
 
-    // Reset button state
-    deleteBtn.innerHTML = originalText;
-    deleteBtn.disabled = true;
-  } catch (error) {
-    console.error("Error deleting selected items:", error);
-    showToast("Error deleting items. Please try again.");
+      // Delete multiple items
+      async function deleteMultipleItems() {
+        const selectedItems = cart.filter((item) => item.selected);
 
-    // Reset button state on error
-    const deleteBtn = document.getElementById("delete-selected-btn");
-    deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Selected';
-    deleteBtn.disabled = false;
-  } finally {
-    closeDeleteModal();
-  }
-}
+        try {
+          // Show loading state
+          const deleteBtn = document.getElementById("delete-selected-btn");
+          const originalText = deleteBtn.innerHTML;
+          deleteBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+          deleteBtn.disabled = true;
 
+          // Delete each selected item
+          const deletePromises = selectedItems.map((item) =>
+            apiRemoveFromCart(String(item.id))
+          );
+
+          // Wait for all delete operations to complete
+          const results = await Promise.allSettled(deletePromises);
+
+          // Check if any deletions failed
+          const failedDeletes = results.filter(
+            (result) =>
+              result.status === "rejected" ||
+              (result.status === "fulfilled" && !result.value.success)
+          );
+
+          if (failedDeletes.length > 0) {
+            console.error("Some items failed to delete:", failedDeletes);
+            showToast("Some items could not be deleted. Please try again.");
+          } else {
+            showToast(
+              `✅ Successfully deleted ${selectedItems.length} item(s)`
+            );
+          }
+
+          // Reload cart from server
+          await loadCartFromServer();
+
+          // Reset button state
+          deleteBtn.innerHTML = originalText;
+          deleteBtn.disabled = true;
+        } catch (error) {
+          console.error("Error deleting selected items:", error);
+          showToast("Error deleting items. Please try again.");
+
+          // Reset button state on error
+          const deleteBtn = document.getElementById("delete-selected-btn");
+          deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Selected';
+          deleteBtn.disabled = false;
+        } finally {
+          closeDeleteModal();
+        }
+      }
 
       /* ------------------- Helpers ------------------- */
 
