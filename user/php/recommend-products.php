@@ -10,37 +10,33 @@ if (getenv('DOCKER_ENV') === 'true') {
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
-
-// FIXED: Handle both /admin/uploads/ and /user/uploads/ paths
-function getPublicImagePath($dbPath)
-{
+function getPublicImagePath($dbPath) {
     if (empty($dbPath)) {
         return '';
     }
-
-    // If it's already a correct public path, return as-is
+    
+    // If it's already the correct admin path, return as-is
     if (strpos($dbPath, '/admin/uploads/product_images/') === 0) {
         return $dbPath;
     }
-
-    // If it's a /user/uploads/ path, convert to /admin/uploads/
+    
+    // If it's a user path, convert to admin path
     if (strpos($dbPath, '/user/uploads/product_images/') === 0) {
         return str_replace('/user/uploads/product_images/', '/admin/uploads/product_images/', $dbPath);
     }
-
+    
     // Handle old paths with '../'
     if (strpos($dbPath, '../') === 0) {
         return str_replace('../', '/admin/', $dbPath);
     }
-
-    // Handle paths that are just filenames
-    if (strpos($dbPath, '/') === false) {
-        return '/admin/uploads/product_images/' . $dbPath;
+    
+    // If it starts with any other slash, assume it's already a public path
+    if (strpos($dbPath, '/') === 0) {
+        return $dbPath;
     }
-
-    // For any other case, assume it needs the correct path
-    $filename = basename($dbPath);
-    return '/admin/uploads/product_images/' . $filename;
+    
+    // For everything else (just filenames), add the correct path
+    return '/admin/uploads/product_images/' . $dbPath;
 }
 
 // Get user preferences from POST
