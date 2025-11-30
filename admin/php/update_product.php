@@ -39,7 +39,26 @@ if ($conn->connect_error) {
     die(json_encode(['error' => 'Connection failed: ' . $conn->connect_error]));
 }
 
-// Ensure ProductID is present
+
+function calculateProductStatus($stocks, $expirationDate) {
+    $today = date('Y-m-d');
+    
+
+    if ($expirationDate && $expirationDate < $today) {
+        return 'Expired';
+    }
+    
+
+    if ($stocks <= 0) {
+        return 'No Stock';
+    } elseif ($stocks <= 5) { 
+        return 'Low Stock';
+    } else {
+        return 'Available';
+    }
+}
+
+
 $productID = $_POST['ProductID'] ?? null;
 $isParentUpdate = filter_var($_POST['isParentUpdate'] ?? 'false', FILTER_VALIDATE_BOOLEAN);
 
@@ -48,20 +67,20 @@ if (!$productID) {
     die(json_encode(['error' => 'Missing Product ID for update.']));
 }
 
-// Start Transaction to ensure data integrity
+
 $conn->begin_transaction();
 
 try {
     // --- Collect ALL necessary data first ---
 
-    // Data common to BOTH tables (or used in decision making)
+    
     $name = $_POST['productName'] ?? '';
     $description = $_POST['productDescription'] ?? '';
     $ingredients = $_POST['productIngredients'] ?? '';
     $stocks = $_POST['productStock'] ?? 0;
     $price = $_POST['productPrice'] ?? 0.0;
 
-    // FIX: Convert empty date string '' to NULL for MySQL
+  
     $expirationDate = $_POST['productExpiration'] ?? null;
     if ($expirationDate && $expirationDate !== '') {
         $today = date('Y-m-d');
@@ -70,11 +89,12 @@ try {
             die(json_encode(['error' => 'Expiration date cannot be in the past']));
         }
     }
-
-    // Convert empty string to NULL for MySQL
+ 
     if ($expirationDate === '') {
         $expirationDate = null;
     }
+
+    $newStatus = calculateProductStatus($stocks, $expirationDate);
     // Category is only updated for the Parent product
     $category = $isParentUpdate ? ($_POST['productCategory'] ?? null) : null;
 
@@ -129,53 +149,54 @@ try {
     // --- 1. BASE PRODUCT UPDATE (Applies to Parent AND Variant via dynamic SQL) ---
     // ----------------------------------------------------------------------
 
-    // Build the SQL statement
-    $sql_product_update = '
-        UPDATE Products SET 
-            Name = ?, 
-            Description = ?, 
-            Ingredients = ?, 
-            Stocks = ?, 
-            Price = ?, 
-            ExpirationDate = ?, 
-            UpdatedAt = NOW() 
-            ' . ($isParentUpdate ? ', Category = ?' : '')  // Parent only
-        . (!$isParentUpdate ? $attribute_columns_products : '')  // Variant only
-        . ' WHERE ProductID = ?';
+     // Build the SQL statement - NOW INCLUDES AUTOMATIC STATUS UPDATE
+     $sql_product_update = '
+     UPDATE Products SET 
+         Name = ?, 
+         Description = ?, 
+         Ingredients = ?, 
+         Stocks = ?, 
+         Price = ?, 
+         ExpirationDate = ?, 
+         Status = ?,  -- AUTO-STATUS UPDATE
+         UpdatedAt = NOW() 
+         ' . ($isParentUpdate ? ', Category = ?' : '')  // Parent only
+     . (!$isParentUpdate ? $attribute_columns_products : '')  // Variant only
+     . ' WHERE ProductID = ?';
 
-    // Build the array of values and types for the prepared statement
-    $values = [
-        $name, $description, $ingredients, $stocks, $price, $expirationDate
-    ];
-    $types = 'sssids';  // Base types (Name, Desc, Ingred, Stocks, Price, ExpDate)
+ // Build the array of values and types for the prepared statement
+ $values = [
+     $name, $description, $ingredients, $stocks, $price, $expirationDate, $newStatus
+ ];
+ $types = 'sssidss';  // Updated types (added 's' for Status)
 
-    if ($isParentUpdate) {
-        $values[] = $category;
-        $types .= 's';
-    } else {
-        // Append Products table variant attributes (HexCode, ShadeOrVariant)
-        $values = array_merge($values, $attribute_values_products);
-        $types .= $attribute_types_products;
-    }
+ if ($isParentUpdate) {
+     $values[] = $category;
+     $types .= 's';
+ } else {
+     // Append Products table variant attributes (HexCode, ShadeOrVariant)
+     $values = array_merge($values, $attribute_values_products);
+     $types .= $attribute_types_products;
+ }
 
-    $values[] = $productID;  // Final value is the WHERE clause ID
-    $types .= 's';
+ $values[] = $productID;  // Final value is the WHERE clause ID
+ $types .= 's';
 
-    // Execute the product update
-    // Execute the product update
-    $stmt = $conn->prepare($sql_product_update);
+ // Execute the product update
+ $stmt = $conn->prepare($sql_product_update);
 
-    // Fix: create references for bind_param()
-    $bindParams = array_merge([$types], $values);
-    $refParams = [];
-    foreach ($bindParams as $key => $value) {
-        $refParams[$key] = &$bindParams[$key];  // make them references
-    }
+ // Fix: create references for bind_param()
+ $bindParams = array_merge([$types], $values);
+ $refParams = [];
+ foreach ($bindParams as $key => $value) {
+     $refParams[$key] = &$bindParams[$key];  // make them references
+ }
 
-    call_user_func_array([$stmt, 'bind_param'], $refParams);
+ call_user_func_array([$stmt, 'bind_param'], $refParams);
 
-    $stmt->execute();
-    $stmt->close();
+ $stmt->execute();
+ $stmt->close();
+
 
     // ----------------------------------------------------------------------
     // --- 1.5. CATEGORY PROPAGATION (Parent Update ONLY) ---------------------
