@@ -1251,12 +1251,12 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
     width: 100%;
     overflow: hidden;
     position: relative;
-    cursor: grab;
+    cursor: default;
     user-select: none;
 }
 
 .products-grid-wrapper:active {
-    cursor: grabbing;
+    cursor: default;
 }
 
 .products-grid {
@@ -3262,7 +3262,7 @@ function dragStart(event) {
     animationID = requestAnimationFrame(animation);
     
     const wrapper = document.getElementById('productsGridWrapper');
-    wrapper.style.cursor = 'grabbing';
+    wrapper.style.cursor = 'default';
 }
 
 function drag(event) {
@@ -3282,7 +3282,7 @@ function dragEnd() {
     cancelAnimationFrame(animationID);
     
     const wrapper = document.getElementById('productsGridWrapper');
-    wrapper.style.cursor = 'grab';
+    wrapper.style.cursor = 'default';
     
     // Calculate how far we've moved
     const movedBy = currentTranslate - prevTranslate;
