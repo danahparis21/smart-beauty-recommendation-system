@@ -2406,19 +2406,6 @@
       let currentCategory = "";
       let filteredProducts = [];
 
-      function handleStatusChange(e) {
-        currentStatus = e.target.value;
-
-        if (currentStatus === "") {
-          // If "All Status" is selected, refresh to standard server pagination
-          fetchAndRenderProducts(1);
-        } else {
-          // For specific status, use client-side filtering (no pagination)
-          renderFilteredProducts();
-        }
-      }
-    
-
       async function deleteProduct(id, isParent) {
         try {
           const response = await fetch("../php/delete_product.php", {
@@ -2627,9 +2614,22 @@
 
         const hexCodeColor = document.getElementById("hexCodeColor");
         const hexCodeText = document.getElementById("hexCodeText");
+
+        function handleStatusChange(e) {
+          currentStatus = e.target.value;
+
+          if (currentStatus === "") {
+            // If "All Status" is selected, refresh to standard server pagination
+            fetchAndRenderProducts(1);
+          } else {
+            // For specific status, use client-side filtering (no pagination)
+            renderFilteredProducts();
+          }
+        }
+
         document
-        .getElementById("statusFilter")
-        .addEventListener("change", handleStatusChange);
+          .getElementById("statusFilter")
+          .addEventListener("change", handleStatusChange);
 
         if (hexCodeColor && hexCodeText) {
           // Sync from color picker to text input
