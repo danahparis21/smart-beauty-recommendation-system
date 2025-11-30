@@ -5258,136 +5258,153 @@
               exportToCSV();
             });
 
-          async function exportToCSV() {
-            const btn = document.getElementById("exportCsvBtn");
-            const originalHtml = btn.innerHTML;
+            async function exportToCSV() {
+  const btn = document.getElementById("exportCsvBtn");
+  const originalHtml = btn.innerHTML;
 
-            // Show loading state
-            btn.innerHTML =
-              '<i class="fas fa-spinner fa-spin"></i> Exporting...';
-            btn.disabled = true;
+  // Show loading state
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+  btn.disabled = true;
 
-            try {
-              // Get current filtered products
-              let productsToExport = allProducts;
+  try {
+    console.log('🚀 Starting export process...');
+    
+    // Get current filtered products
+    let productsToExport = allProducts;
+    console.log('📊 Total products available:', allProducts?.length);
+    console.log('📊 Products to export after basic filter:', productsToExport?.length);
 
-              // Apply current filters
-              if (currentSearch) {
-                productsToExport = productsToExport.filter(
-                  (product) =>
-                    (product.ParentName &&
-                      product.ParentName.toLowerCase().includes(
-                        currentSearch
-                      )) ||
-                    (product.Description &&
-                      product.Description.toLowerCase().includes(
-                        currentSearch
-                      )) ||
-                    (product.Category &&
-                      product.Category.toLowerCase().includes(currentSearch))
-                );
-              }
+    // Apply current filters
+    if (currentSearch) {
+      productsToExport = productsToExport.filter((product) =>
+        (product.ParentName && product.ParentName.toLowerCase().includes(currentSearch)) ||
+        (product.Description && product.Description.toLowerCase().includes(currentSearch)) ||
+        (product.Category && product.Category.toLowerCase().includes(currentSearch))
+      );
+      console.log('🔍 After search filter:', productsToExport.length);
+    }
 
-              if (currentCategory) {
-                productsToExport = productsToExport.filter(
-                  (product) => product.Category === currentCategory
-                );
-              }
+    if (currentCategory) {
+      productsToExport = productsToExport.filter((product) => product.Category === currentCategory);
+      console.log('🏷️ After category filter:', productsToExport.length);
+    }
 
-              if (productsToExport.length === 0) {
-                showModal(
-                  "warning",
-                  "No Data to Export",
-                  "There are no products to export with the current filters."
-                );
-                return;
-              }
+    if (!productsToExport || productsToExport.length === 0) {
+      console.warn('❌ No products to export after filtering');
+      showModal("warning", "No Data to Export", "There are no products to export with the current filters.");
+      return;
+    }
 
-              // Enhanced: Fetch complete variant data for each product
-              const enhancedProducts = await fetchCompleteVariantData(
-                productsToExport
-              );
+    console.log('🔄 Fetching complete variant data...');
+    // Enhanced: Fetch complete variant data for each product
+    const enhancedProducts = await fetchCompleteVariantData(productsToExport);
+    console.log('✅ Enhanced products data received:', enhancedProducts?.length, 'products');
 
-              const csvData = prepareEnhancedCSVData(enhancedProducts);
-              const categoryLabel = currentCategory
-                ? currentCategory.replace(/\s+/g, "_").toLowerCase()
-                : "all";
-              const filename = `products_${categoryLabel}_${
-                new Date().toISOString().split("T")[0]
-              }.csv`;
+    if (!enhancedProducts || enhancedProducts.length === 0) {
+      throw new Error('No enhanced product data received');
+    }
 
-              // Debug: Show sample of CSV data
+    console.log('📝 Preparing CSV data...');
+    const csvData = prepareEnhancedCSVData(enhancedProducts);
+    console.log('✅ CSV data prepared, length:', csvData.length);
 
-              downloadCSV(csvData, filename);
+    const categoryLabel = currentCategory ? currentCategory.replace(/\s+/g, "_").toLowerCase() : "all";
+    const filename = `products_${categoryLabel}_${new Date().toISOString().split("T")[0]}.csv`;
+    
+    console.log('💾 Attempting download...');
+    downloadCSV(csvData, filename);
+    
+    console.log('🎉 Export completed successfully');
+    showModal("success", "Export Successful", `Successfully exported ${productsToExport.length} products to CSV!\n\nFile: ${filename}`);
 
-              showModal(
-                "success",
-                "Export Successful",
-                `Successfully exported ${productsToExport.length} products to CSV!\n\nFile: ${filename}`
-              );
-            } catch (error) {
-              console.error("Export failed:", error);
-              showModal(
-                "error",
-                "Export Failed",
-                "Failed to export products. Please try again."
-              );
-            } finally {
-              // Restore button state
-              btn.innerHTML = originalHtml;
-              btn.disabled = false;
-            }
+  } catch (error) {
+    console.error("❌ Export failed:", error);
+    console.error("🔍 Error details:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    showModal("error", "Export Failed", `Failed to export products. Error: ${error.message}`);
+  } finally {
+    // Restore button state
+    btn.innerHTML = originalHtml;
+    btn.disabled = false;
+  }
+}
+
+async function fetchCompleteVariantData(products) {
+  console.log('🔄 Starting fetchCompleteVariantData with', products?.length, 'products');
+  
+  const enhancedProducts = [];
+  let successfulFetches = 0;
+  let failedFetches = 0;
+  let skippedVariants = 0;
+
+  // Check if the API endpoint is accessible
+  try {
+    const testResponse = await fetch(`../php/fetch_variant_details.php?id=test`);
+    console.log('🌐 API endpoint test response status:', testResponse.status);
+  } catch (error) {
+    console.error('❌ API endpoint not accessible:', error);
+    throw new Error(`API endpoint not accessible: ${error.message}`);
+  }
+
+  for (const parent of products) {
+    console.log(`🔄 Processing parent product: ${parent.ParentName || parent.Name}`);
+    const variants = parent.Variants || [];
+    const enhancedVariants = [];
+
+    console.log(`📦 Parent has ${variants.length} variants`);
+
+    for (const variant of variants) {
+      if (variant.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP") {
+        try {
+          console.log(`🔍 Fetching variant ${variant.ProductID}...`);
+          
+          const response = await fetch(`../php/fetch_variant_details.php?id=${variant.ProductID}`);
+          
+          console.log(`📡 Response status for variant ${variant.ProductID}:`, response.status);
+          
+          if (response.ok) {
+            const completeVariant = await response.json();
+            console.log(`✅ Successfully fetched variant ${variant.ProductID}:`, completeVariant);
+            
+            enhancedVariants.push(completeVariant);
+            successfulFetches++;
+          } else {
+            console.warn(`⚠️ Failed to fetch variant ${variant.ProductID}: HTTP ${response.status}`);
+            // Push the original variant data as fallback
+            enhancedVariants.push(variant);
+            failedFetches++;
           }
+        } catch (error) {
+          console.error(`❌ Error fetching variant ${variant.ProductID}:`, error);
+          // Push the original variant data as fallback
+          enhancedVariants.push(variant);
+          failedFetches++;
+        }
+      } else {
+        console.log(`⏭️ Skipping PARENT_GROUP variant: ${variant.ProductID}`);
+        skippedVariants++;
+      }
+    }
 
-          // Fetch complete variant data with all attributes
-          async function fetchCompleteVariantData(products) {
-            const enhancedProducts = [];
-            let successfulFetches = 0;
-            let failedFetches = 0;
+    enhancedProducts.push({
+      ...parent,
+      Variants: enhancedVariants,
+    });
+  }
 
-            for (const parent of products) {
-              const variants = parent.Variants || [];
-              const enhancedVariants = [];
+  console.log('📊 Fetch summary:', {
+    totalParents: products.length,
+    successfulFetches,
+    failedFetches,
+    skippedVariants,
+    enhancedProducts: enhancedProducts.length
+  });
 
-              for (const variant of variants) {
-                if (variant.ShadeOrVariant?.toUpperCase() !== "PARENT_GROUP") {
-                  try {
-                    // Fetch complete variant details
-                    const response = await fetch(
-                      `../php/fetch_variant_details.php?id=${variant.ProductID}`
-                    );
-
-                    if (response.ok) {
-                      const completeVariant = await response.json();
-
-                      enhancedVariants.push(completeVariant);
-                      successfulFetches++;
-                    } else {
-                      console.warn(
-                        `⚠️ [DEBUG] Failed to fetch variant ${variant.ProductID}: HTTP ${response.status}`
-                      );
-                      enhancedVariants.push(variant);
-                      failedFetches++;
-                    }
-                  } catch (error) {
-                    console.error(
-                      `❌ [DEBUG] Error fetching variant ${variant.ProductID}:`,
-                      error
-                    );
-                    enhancedVariants.push(variant);
-                    failedFetches++;
-                  }
-                }
-              }
-
-              enhancedProducts.push({
-                ...parent,
-                Variants: enhancedVariants,
-              });
-            }
-
-            return enhancedProducts;
-          }
+  return enhancedProducts;
+}
 
           // Enhanced CSV preparation with complete data
           function prepareEnhancedCSVData(products) {
