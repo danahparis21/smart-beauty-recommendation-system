@@ -113,15 +113,21 @@ function addToCart($conn, $userId, &$response)
     if ($quantity < 1)
         $quantity = 1;
 
-    // Validate product existence
-    $productQuery = 'SELECT ProductID, Name, Price, Stocks FROM Products WHERE ProductID = ?';
+    // Validate product existence AND availability
+    $productQuery = "SELECT ProductID, Name, Price, Stocks, Status, ExpirationDate 
+                     FROM Products 
+                     WHERE ProductID = ? 
+                     AND Status IN ('Available', 'Low Stock')
+                     AND Stocks > 0
+                     AND (ExpirationDate IS NULL OR ExpirationDate > CURDATE())";
+    
     $stmt = $conn->prepare($productQuery);
     $stmt->bind_param('s', $productId);
     $stmt->execute();
     $productResult = $stmt->get_result();
 
     if ($productResult->num_rows === 0) {
-        $response['message'] = 'Product not found';
+        $response['message'] = 'Product not available or out of stock';
         return;
     }
 
@@ -132,7 +138,6 @@ function addToCart($conn, $userId, &$response)
         $response['message'] = 'Insufficient stock available';
         return;
     }
-
     // Check if already in cart
     $checkCart = 'SELECT cart_id, quantity FROM cart WHERE user_id = ? AND product_id = ? AND status = "active"';
     $stmt = $conn->prepare($checkCart);
@@ -239,21 +244,33 @@ function updateCartQuantity($conn, $userId, &$response)
         return;
     }
 
-    // Check stock and get product name
-    $stockQuery = 'SELECT Stocks, Name FROM Products WHERE ProductID = ?';
+    // Check stock, product status, and get product name
+    $stockQuery = "SELECT Stocks, Name, Status, ExpirationDate 
+                   FROM Products 
+                   WHERE ProductID = ? 
+                   AND Status IN ('Available', 'Low Stock')
+                   AND (ExpirationDate IS NULL OR ExpirationDate > CURDATE())";
+    
     $stmt = $conn->prepare($stockQuery);
     $stmt->bind_param('s', $productId);
     $stmt->execute();
     $stockResult = $stmt->get_result();
 
     if ($stockResult->num_rows === 0) {
-        $response['message'] = 'Product not found';
+        $response['message'] = 'Product is no longer available';
+        
+        // Remove the unavailable product from cart
+        $deleteQuery = 'DELETE FROM cart WHERE user_id = ? AND product_id = ?';
+        $stmt = $conn->prepare($deleteQuery);
+        $stmt->bind_param('is', $userId, $productId);
+        $stmt->execute();
+        
         return;
     }
 
     $product = $stockResult->fetch_assoc();
     if ($quantity > $product['Stocks']) {
-        $response['message'] = 'Quantity exceeds stock';
+        $response['message'] = 'Quantity exceeds available stock';
         return;
     }
 
@@ -292,6 +309,8 @@ function getCart($conn, $userId, &$response)
             p.Price AS price,
             p.Category AS category,
             p.Stocks AS stock_quantity,
+            p.Status AS product_status,  -- Add product status
+            p.ExpirationDate,  -- Add expiration date for additional checking
             (c.quantity * p.Price) AS subtotal,
             COALESCE(pm_variant.ImagePath, pm_preview.ImagePath) AS image
         FROM cart c
@@ -302,7 +321,11 @@ function getCart($conn, $userId, &$response)
         LEFT JOIN ProductMedia pm_preview 
             ON p.ParentProductID = pm_preview.ParentProductID 
             AND pm_preview.MediaType = 'PREVIEW'
-        WHERE c.user_id = ? AND c.status = 'active'  
+        WHERE c.user_id = ? 
+        AND c.status = 'active'  
+        AND p.Status IN ('Available', 'Low Stock')  -- ONLY show available products
+        AND p.Stocks > 0                           -- Must have stock
+        AND (p.ExpirationDate IS NULL OR p.ExpirationDate > CURDATE())  -- Not expired
         ORDER BY c.added_at DESC
     ";
 
@@ -313,6 +336,7 @@ function getCart($conn, $userId, &$response)
 
     $cartItems = [];
     $totalAmount = 0;
+    $removedItems = [];
 
     while ($row = $result->fetch_assoc()) {
         $row['name'] = cleanProductName($row['name']);
@@ -329,8 +353,23 @@ function getCart($conn, $userId, &$response)
     $response['cartCount'] = count($cartItems);
     $response['totalAmount'] = $totalAmount;
     $response['message'] = $response['message'] ?: 'Cart retrieved successfully';
+    
+    // Optional: Add info about filtered items
+    if (count($cartItems) < getTotalCartItemsCount($conn, $userId)) {
+        $response['info'] = 'Some unavailable items were removed from your cart';
+    }
 }
 
+/**
+ * Helper function to get total cart items count (including unavailable ones)
+ */
+function getTotalCartItemsCount($conn, $userId) {
+    $stmt = $conn->prepare('SELECT COUNT(*) AS count FROM cart WHERE user_id = ? AND status = "active"');
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    return $result['count'];
+}
 /**
  * ✅ ADD THIS NEW FUNCTION - Update cart status
  */
