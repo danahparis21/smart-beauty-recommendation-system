@@ -92,7 +92,7 @@ if ($result->num_rows === 1) {
             <div class="success-icon">✓</div>
             <h1>Email Verified Successfully!</h1>
             <p>' . htmlspecialchars($message) . '</p>
-            <a href="' . ($autoLogin ? '/user/html/home.html' : '/user/html/login.html') . '" class="btn">' . ($autoLogin ? 'Go to Dashboard' : 'Go to Login') . '</a>
+            <a href="' . ($autoLogin ? '/user/html/home.html' : '/user/html/login.html') . '" class="btn">' . ($autoLogin ? 'Go to the Store' : 'Go to Login') . '</a>
         </div>
     </body>
     </html>';
@@ -184,7 +184,7 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
                 <h1>Email Verified Successfully!</h1>
                 <p>Welcome to Beauty & Blessed, ' . htmlspecialchars($pendingUser['first_name']) . '! Your account has been activated.</p>
                 <p>You have been automatically logged in.</p>
-                <a href="/user/html/home.html" class="btn">Go to Dashboard</a>
+                <a href="/user/html/home.html" class="btn">Go to the Store</a>
             </div>
         </body>
         </html>';
