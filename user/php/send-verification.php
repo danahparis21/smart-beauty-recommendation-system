@@ -1,4 +1,9 @@
 <?php
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../../config/google-config.php';
 // Add PHPMailer
 require_once __DIR__ . '/../../vendor/autoload.php'; // Path to composer autoload
