@@ -203,13 +203,23 @@ def get_rating_quality_badge(product_rating, has_personal_feedback):
 def analyze_attribute_matches(product, user_input):
     matches = {}
     
-    # Skin Type match
-    product_skin_type = str(product.get('skin_type', 'Any')).strip().title()
+    # Skin Type match - FIXED: Properly handle "All" and "Any"
+    product_skin_type = str(product.get('skin_type', '')).strip().title()
     user_skin_type = user_input['Skin_Type'].strip().title()
 
-    # Use the same logic as check_skin_type_match
+    # Normalize product value - treat "All", "Any", "N/A", "" as universal
+    product_skin_type_normalized = product_skin_type
+    if not product_skin_type or product_skin_type in ['All', 'Any', 'None', 'N/A', 'Universal']:
+        product_skin_type_normalized = 'All'  # For display
+    
+    # Normalize user value
+    user_skin_type_normalized = user_skin_type
+    if user_skin_type in ["Don't Care", "Any", "All"]:
+        user_skin_type_normalized = 'Any'  # For display
+    
+    # Check match logic
     skin_type_match = False
-    if (product_skin_type in ['Any', 'All', 'None', 'N/A'] or
+    if (not product_skin_type or product_skin_type in ['All', 'Any', 'None', 'N/A', 'Universal'] or
         user_skin_type in ["Don't Care", "Any"]):
         skin_type_match = True
     else:
@@ -219,17 +229,27 @@ def analyze_attribute_matches(product, user_input):
 
     matches['skin_type'] = {
         'match': skin_type_match,
-        'product_value': product_skin_type if product_skin_type else 'All',
-        'user_value': user_skin_type
+        'product_value': product_skin_type_normalized,
+        'user_value': user_skin_type_normalized
     }
     
-    # Skin Tone match
-    product_skin_tone = str(product.get('skin_tone', 'Any')).strip().title()
+    # Skin Tone match - FIXED: Same logic as skin type
+    product_skin_tone = str(product.get('skin_tone', '')).strip().title()
     user_skin_tone = user_input['Skin_Tone'].strip().title()
     
+    # Normalize product value
+    product_skin_tone_normalized = product_skin_tone
+    if not product_skin_tone or product_skin_tone in ['All', 'Any', 'None', 'N/A', 'Universal']:
+        product_skin_tone_normalized = 'All'
+    
+    # Normalize user value
+    user_skin_tone_normalized = user_skin_tone
+    if user_skin_tone in ["Don't Care", "Any", "All"]:
+        user_skin_tone_normalized = 'Any'
+    
     skin_tone_match = False
-    if (product_skin_tone in ['Any', 'All', 'None', 'N/A'] or
-        user_skin_tone in ["Don't Care", "Any"]): # FIXED: Check for "Don't Care"
+    if (not product_skin_tone or product_skin_tone in ['All', 'Any', 'None', 'N/A', 'Universal'] or
+        user_skin_tone in ["Don't Care", "Any"]):
         skin_tone_match = True
     else:
         product_tones = [tone.strip().title() for tone in product_skin_tone.split(',')]
@@ -237,12 +257,12 @@ def analyze_attribute_matches(product, user_input):
     
     matches['skin_tone'] = {
         'match': skin_tone_match,
-        'product_value': product_skin_tone if product_skin_tone else 'All',
-        'user_value': user_skin_tone
+        'product_value': product_skin_tone_normalized,
+        'user_value': user_skin_tone_normalized
     }
     
-    # Undertone match - FIXED: Handle "Don't Care"
-    product_undertone = str(product.get('undertone', 'Any')).strip().title()
+    # Undertone match - FIXED: Handle "All" and "Any" properly
+    product_undertone = str(product.get('undertone', '')).strip().title()
     user_undertone = user_input['Undertone'].strip().title()
     
     # Map frontend values to backend values
@@ -250,27 +270,38 @@ def analyze_attribute_matches(product, user_input):
         "Not-Sure": "Don't Know",
         "Not Sure": "Don't Know", 
         "Dont Know": "Don't Know",
-        "Dont-Care": "Don't Care"
+        "Dont-Care": "Don't Care",
+        "All": "Any",
+        "Universal": "Any"
     }
+    
+    # Normalize product undertone
+    product_undertone_normalized = undertone_mapping.get(product_undertone, product_undertone)
+    if not product_undertone or product_undertone in ['All', 'Any', 'N/A']:
+        product_undertone_normalized = 'Any'
     
     # Normalize user undertone
     normalized_user_undertone = undertone_mapping.get(user_undertone, user_undertone)
+    user_undertone_normalized = user_undertone
+    if normalized_user_undertone in ["Don't Know", "Don't Care", "Any", "All"]:
+        user_undertone_normalized = 'Any'
     
     is_undertone_match = False
-    if (product_undertone == normalized_user_undertone or 
-        product_undertone in ['Any', 'All', 'N/A'] or
-        normalized_user_undertone in ["Don't Know", "Don't Care", "Not Sure"]):
+    if (not product_undertone or product_undertone_normalized in ['Any', 'All'] or
+        normalized_user_undertone in ["Don't Know", "Don't Care", "Any"]):
         is_undertone_match = True
-    elif product_undertone == 'Neutral' and normalized_user_undertone in ['Cool', 'Warm']:
+    elif product_undertone_normalized == normalized_user_undertone:
+        is_undertone_match = True
+    elif product_undertone_normalized == 'Neutral' and normalized_user_undertone in ['Cool', 'Warm']:
         is_undertone_match = True
         
     matches['undertone'] = {
         'match': is_undertone_match,
-        'product_value': product_undertone if product_undertone else 'Any',
-        'user_value': user_undertone  # Keep original for display
+        'product_value': product_undertone_normalized,
+        'user_value': user_undertone_normalized  # Keep original for display
     }
     
-    # Skin Concerns - FIXED: Proper display logic
+    # Skin Concerns - FIXED: Show "All" when product addresses no specific concerns
     user_concerns = [c.strip().title() for c in user_input['Skin_Concerns']]
     concern_mapping = {
         'Acne': 'acne',
@@ -282,15 +313,16 @@ def analyze_attribute_matches(product, user_input):
     concern_matches = {}
     overall_concern_match = False
 
-    # NEW: Check if it's a lip product
+    # Check if it's a lip or universal product
     product_category = str(product.get('Category', '')).lower()
     is_lip_product = 'lipstick' in product_category or 'lip' in product_category
-
-    # If it's a lip product, show as universal match
-    if is_lip_product:
+    is_body_care = 'body' in product_category  # NEW: Check for body care
+    
+    # If it's a lip or body care product, show as universal match
+    if is_lip_product or is_body_care:  # FIXED: Add body care
         concern_matches['Skin Concerns'] = {
-            'match': True,  # This will show ✓ instead of ✗
-            'product_value': 'Universal',  # This will show instead of "None"
+            'match': True,
+            'product_value': 'Universal',
             'user_value': ', '.join(user_concerns) if user_concerns else 'None'
         }
         overall_concern_match = True
@@ -312,18 +344,23 @@ def analyze_attribute_matches(product, user_input):
                     product_addresses.append(concern)
                     any_concern_matched = True
         
-        # FIXED: Create a single match entry for display
+        # If product doesn't address specific concerns but is for "All"
+        if not product_addresses:
+            product_value = 'All'  # Changed from 'None' to 'All'
+        else:
+            product_value = ', '.join(product_addresses)
+        
         concern_matches['Skin Concerns'] = {
             'match': any_concern_matched,
-            'product_value': ', '.join(product_addresses) if product_addresses else 'None',
+            'product_value': product_value,
             'user_value': ', '.join(user_concerns)
         }
-        overall_concern_match = any_concern_matched
+        overall_concern_match = any_concern_matched or (not product_addresses and not user_concerns)
         
     matches['concerns'] = concern_matches
     matches['concerns_overall_match'] = overall_concern_match
     
-    # Finish preference - FIXED: Handle "Don't Care"
+    # Finish preference - FIXED: Handle display properly
     finish_mapping = {
         'Matte': 'matte',
         'Dewy': 'dewy', 
@@ -337,7 +374,13 @@ def analyze_attribute_matches(product, user_input):
     
     user_preferred_finish = user_input['Preference'].strip().title()
     
-    # If user doesn't care, it's always a match (match=True)
+    # Normalize user preference for display
+    if user_preferred_finish in ["Don't Care", "Any", "All"]:
+        user_preferred_finish_display = 'Any'
+    else:
+        user_preferred_finish_display = user_preferred_finish
+    
+    # If user doesn't care, it's always a match
     if user_preferred_finish in ["Don't Care", "Any"]:
         has_preferred_finish = True
     else:
@@ -345,12 +388,12 @@ def analyze_attribute_matches(product, user_input):
         pref_col = finish_mapping.get(user_pref_title, '')
         has_preferred_finish = pref_col and product.get(pref_col, 0) == 1
     
-    product_finish_text = ', '.join(product_finishes) if product_finishes else 'None'
+    product_finish_text = ', '.join(product_finishes) if product_finishes else 'All'
     
     matches['finish'] = {
         'match': has_preferred_finish,
         'product_value': product_finish_text,
-        'user_value': user_preferred_finish
+        'user_value': user_preferred_finish_display
     }
     
     return matches
