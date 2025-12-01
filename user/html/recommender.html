@@ -3626,6 +3626,127 @@
           right: 20%;
         }
       }
+
+      /* Quiz Privacy Section Styles */
+.quiz-privacy-section {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 182, 193, 0.3);
+}
+
+.privacy-info-card {
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.05), rgba(255, 126, 185, 0.05));
+  border: 1px solid rgba(255, 126, 185, 0.2);
+  border-radius: 15px;
+  padding: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.privacy-info-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.privacy-info-header i {
+  color: var(--primary-pink);
+  font-size: 28px;
+}
+
+.privacy-info-header h4 {
+  margin: 0;
+  color: var(--dark-pink);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.privacy-info-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.privacy-info-point {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.privacy-info-point i {
+  color: var(--primary-pink);
+  font-size: 18px;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.privacy-info-point strong {
+  color: #333;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.privacy-info-point p {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.privacy-info-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 126, 185, 0.1);
+}
+
+.privacy-learn-more-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary-pink);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.privacy-learn-more-btn:hover {
+  background: rgba(255, 126, 185, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .quiz-privacy-section {
+    margin-top: 30px;
+    padding-top: 25px;
+  }
+  
+  .privacy-info-card {
+    padding: 20px;
+  }
+  
+  .privacy-info-points {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .privacy-info-point {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .privacy-info-point i {
+    align-self: center;
+  }
+}
     </style>
   </head>
 
@@ -3770,6 +3891,11 @@
                 </button>
               </div>
             </div>
+          </div>
+          <div class="quiz-privacy-notice">
+            <button class="privacy-info-btn" onclick="showPrivacyNotice()">
+              <i class="fas fa-shield-alt"></i> Privacy Notice
+            </button>
           </div>
         </div>
 
@@ -4401,6 +4527,56 @@
           </div>
         </div>
       </div>
+
+      <div class="quiz-privacy-section">
+        <div class="privacy-info-card">
+          <div class="privacy-info-header">
+            <i class="fas fa-shield-alt"></i>
+            <h4>Your Privacy is Protected</h4>
+          </div>
+          
+          <div class="privacy-info-points">
+            <div class="privacy-info-point">
+              <i class="fas fa-user-check"></i>
+              <div>
+                <strong>Personalized Recommendations</strong>
+                <p>Your preferences help us suggest products that match your unique needs.</p>
+              </div>
+            </div>
+            
+            <div class="privacy-info-point">
+              <i class="fas fa-database"></i>
+              <div>
+                <strong>Safe & Secure</strong>
+                <p>Skin details are stored securely and used only for your product matches.</p>
+              </div>
+            </div>
+            
+            <div class="privacy-info-point">
+              <i class="fas fa-video-slash"></i>
+              <div>
+                <strong>Camera Privacy</strong>
+                <p>Face scan runs locally - we never see or store your camera feed.</p>
+              </div>
+            </div>
+            
+            <div class="privacy-info-point">
+              <i class="fas fa-chart-line"></i>
+              <div>
+                <strong>No Hidden Tracking</strong>
+                <p>We don't share or sell your personal information to third parties.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="privacy-info-footer">
+            <button class="privacy-learn-more-btn" onclick="showPrivacyNotice()">
+              Learn More About Our Privacy Policy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     </main>
 
     <!-- Mobile Navigation -->
@@ -4524,6 +4700,54 @@
     </div>
 
     <script>
+function showPrivacyNotice() {
+  const modal = document.getElementById('privacy-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    
+    // Add blur to appropriate container
+    const container = document.querySelector('.quiz-container') || 
+                      document.querySelector('.photobooth-container');
+    if (container) {
+      container.style.filter = 'blur(3px)';
+      container.style.pointerEvents = 'none';
+    }
+  }
+}
+
+function hidePrivacyNotice() {
+  const modal = document.getElementById('privacy-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    
+    // Remove blur from all possible containers
+    const containers = document.querySelectorAll('.quiz-container, .photobooth-container');
+    containers.forEach(container => {
+      container.style.filter = 'none';
+      container.style.pointerEvents = 'auto';
+    });
+  }
+}
+
+// Make sure this function is also defined
+function acceptPrivacy() {
+  const dontShowAuto = document.getElementById('privacy-dont-show-auto');
+  
+  if (dontShowAuto) {
+    const dontShow = dontShowAuto.checked;
+    
+    localStorage.setItem('privacyAccepted', 'true');
+    if (dontShow) {
+      localStorage.setItem('privacyDontShowAuto', 'true');
+    }
+  } else {
+    // Fallback if checkbox doesn't exist
+    localStorage.setItem('privacyAccepted', 'true');
+  }
+  
+  hidePrivacyNotice();
+}
+
       document.addEventListener("DOMContentLoaded", async function () {
         // Add page protection FIRST
         if (typeof setupPageProtection === "function") {
@@ -4553,6 +4777,33 @@
         updateCartCount();
         initFloatingProduct();
       });
+
+      const understandBtn = document.getElementById('privacy-understand');
+  if (understandBtn) {
+    understandBtn.addEventListener('click', acceptPrivacy);
+  }
+  
+  // Close modal when clicking outside
+  const privacyModal = document.getElementById('privacy-modal');
+  if (privacyModal) {
+    privacyModal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        acceptPrivacy(); // Accept privacy if they click outside
+      }
+    });
+  }
+  
+  // Optional: Show automatically on first visit
+  const privacyAccepted = localStorage.getItem("privacyAccepted");
+  const dontShowAuto = localStorage.getItem("privacyDontShowAuto");
+  
+  if (privacyAccepted !== "true" && dontShowAuto !== "true") {
+    // Show after a short delay on first visit
+    setTimeout(() => {
+      showPrivacyNotice();
+    }, 1000);
+  }
+  
 
       // NEW FUNCTION: Auto-load results for returning users
       async function loadExistingUserResults() {
