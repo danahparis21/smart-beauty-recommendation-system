@@ -210,6 +210,102 @@
         }
       }
 
+      /* Fix for camera video element */
+      #camera-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Changed from default to cover */
+        border-radius: 10px;
+        display: none;
+        position: absolute; /* Add this */
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+
+      /* Ensure the uploaded image also uses absolute positioning */
+      .camera-view img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: none;
+        position: absolute; /* Add this */
+        top: 0;
+        left: 0;
+        z-index: 2;
+      }
+
+      /* Ensure canvas uses absolute positioning */
+      #lipstick-canvas {
+        position: absolute; /* Add this */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
+      }
+
+      /* Update camera-view to have relative positioning */
+      .camera-view {
+        width: 100%;
+        height: 500px;
+        background: linear-gradient(135deg, var(--light-pink), #ffe6f2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative; /* Ensure this is relative */
+      }
+
+      /* MOBILE - Adjust camera video */
+      @media (max-width: 768px) {
+        .camera-view {
+          height: 55vh;
+          min-height: 450px;
+        }
+
+        #camera-video {
+          object-fit: contain; /* Use contain on mobile for better visibility */
+        }
+      }
+
+      /* Make it slightly taller on smaller screens */
+      @media (max-width: 480px) {
+        .camera-view {
+          height: 60vh;
+          min-height: 500px;
+        }
+
+        #camera-video {
+          object-fit: contain;
+        }
+      }
+
+      /* Maximum height for very small screens */
+      @media (max-width: 375px) {
+        .camera-view {
+          height: 65vh;
+          min-height: 550px;
+        }
+
+        #camera-video {
+          object-fit: contain;
+        }
+      }
+
+      /* Ultra small screens */
+      @media (max-width: 320px) {
+        .camera-view {
+          height: 68vh;
+          min-height: 600px;
+        }
+
+        #camera-video {
+          object-fit: contain;
+        }
+      }
+
       .camera-view img {
         width: 100%;
         height: 100%;
@@ -2508,6 +2604,16 @@
           // Hide placeholder and show camera interface
           placeholder.style.display = "none";
 
+          // Hide uploaded image if visible
+          if (uploadedImage.style.display !== "none") {
+            uploadedImage.style.display = "none";
+          }
+
+          // Hide canvas if visible
+          if (canvas.style.display !== "none") {
+            canvas.style.display = "none";
+          }
+
           // Create video element for camera if it doesn't exist
           let video = document.getElementById("camera-video");
           if (!video) {
@@ -2515,32 +2621,46 @@
             video.id = "camera-video";
             video.autoplay = true;
             video.playsinline = true;
-            document.querySelector(".camera-view").appendChild(video);
+            video.setAttribute("webkit-playsinline", "true"); // iOS
+            video.setAttribute("x5-playsinline", "true"); // Android
+            video.style.width = "100%";
+            video.style.height = "100%";
+            video.style.objectFit = "cover";
+            video.style.position = "absolute";
+            video.style.top = "0";
+            video.style.left = "0";
+            video.style.borderRadius = "10px";
+            video.style.zIndex = "1";
+
+            // Add to camera-view at the beginning
+            document.querySelector(".camera-view").prepend(video);
+          } else {
+            video.style.display = "block";
           }
 
-          // Create capture button if it doesn't exist
+          // Create camera controls
           let captureBtn = document.getElementById("capture-btn");
+          let cancelBtn = document.getElementById("cancel-camera");
+
           if (!captureBtn) {
             captureBtn = document.createElement("button");
             captureBtn.id = "capture-btn";
             captureBtn.className = "camera-btn primary";
             captureBtn.innerHTML = '<i class="fas fa-camera"></i> Take Photo';
             captureBtn.style.marginTop = "10px";
+            captureBtn.style.zIndex = "10";
             document.querySelector(".camera-controls").appendChild(captureBtn);
-
             captureBtn.addEventListener("click", capturePhoto);
           }
 
-          // Create cancel button if it doesn't exist
-          let cancelBtn = document.getElementById("cancel-camera");
           if (!cancelBtn) {
             cancelBtn = document.createElement("button");
             cancelBtn.id = "cancel-camera";
             cancelBtn.className = "camera-btn";
             cancelBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
             cancelBtn.style.marginTop = "10px";
+            cancelBtn.style.zIndex = "10";
             document.querySelector(".camera-controls").appendChild(cancelBtn);
-
             cancelBtn.addEventListener("click", stopCamera);
           }
 
@@ -2554,7 +2674,7 @@
           navigator.mediaDevices
             .getUserMedia({
               video: {
-                facingMode: "user", // Use front camera
+                facingMode: "user",
                 width: { ideal: 1280 },
                 height: { ideal: 720 },
               },
@@ -2566,11 +2686,33 @@
               video.style.display = "block";
               isCameraActive = true;
 
-              // Set canvas size to match video
-              video.onloadedmetadata = function () {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+              // Handle mobile orientation
+              const handleOrientation = () => {
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile) {
+                  // On mobile, use contain for better visibility
+                  video.style.objectFit = "contain";
+                  video.style.backgroundColor = "#000"; // Add black background for letterboxing
+                } else {
+                  video.style.objectFit = "cover";
+                  video.style.backgroundColor = "transparent";
+                }
               };
+
+              // Initial call
+              handleOrientation();
+
+              // Listen for orientation changes
+              window.addEventListener("resize", handleOrientation);
+              window.addEventListener("orientationchange", handleOrientation);
+
+              // Store handler for cleanup
+              video._orientationHandler = handleOrientation;
+
+              // Set canvas size to match container, not video
+              const container = document.querySelector(".camera-view");
+              canvas.width = container.clientWidth;
+              canvas.height = container.clientHeight;
             })
             .catch(function (err) {
               console.error("Camera error: ", err);
@@ -2661,6 +2803,16 @@
           if (video) {
             video.style.display = "none";
             video.srcObject = null;
+
+            // Clean up orientation handlers
+            if (video._orientationHandler) {
+              window.removeEventListener("resize", video._orientationHandler);
+              window.removeEventListener(
+                "orientationchange",
+                video._orientationHandler
+              );
+              delete video._orientationHandler;
+            }
           }
 
           // Show original buttons, hide camera controls
@@ -2675,7 +2827,7 @@
           isCameraActive = false;
 
           // If no image is loaded, show placeholder again
-          if (uploadedImage.style.display === "none" && !canvas._displayInfo) {
+          if (uploadedImage.src === "" && !hasProcessedImage) {
             placeholder.style.display = "flex";
           }
         }
