@@ -2724,113 +2724,168 @@
         }
 
         function capturePhoto() {
-          if (!isCameraActive) return;
+  if (!isCameraActive) return;
 
-          const video = document.getElementById("camera-video");
-          const captureCanvas = document.createElement("canvas");
-          const captureCtx = captureCanvas.getContext("2d");
+  const video = document.getElementById("camera-video");
+  const captureCanvas = document.createElement("canvas");
+  const captureCtx = captureCanvas.getContext("2d");
 
-          captureCanvas.width = video.videoWidth;
-          captureCanvas.height = video.videoHeight;
-          captureCtx.drawImage(
-            video,
-            0,
-            0,
-            captureCanvas.width,
-            captureCanvas.height
-          );
+  captureCanvas.width = video.videoWidth;
+  captureCanvas.height = video.videoHeight;
+  captureCtx.drawImage(
+    video,
+    0,
+    0,
+    captureCanvas.width,
+    captureCanvas.height
+  );
 
-          const imageData = captureCanvas.toDataURL("image/png");
-          stopCamera();
+  const imageData = captureCanvas.toDataURL("image/png");
+  stopCamera();
 
-          uploadedImage.onload = function () {
-            const container = uploadedImage.parentElement;
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
+  // FIRST: Show the uploaded image area and hide other elements
+  placeholder.style.display = "none";
+  
+  // Remove the transform scale from mobile CSS temporarily
+  const originalTransform = uploadedImage.style.transform;
+  uploadedImage.style.transform = "none"; // Reset transform for calculation
+  
+  // Make sure the image is visible
+  uploadedImage.style.display = "block";
+  uploadedImage.style.position = "absolute";
+  uploadedImage.style.top = "0";
+  uploadedImage.style.left = "0";
+  uploadedImage.style.width = "100%";
+  uploadedImage.style.height = "100%";
+  uploadedImage.style.objectFit = "contain";
+  uploadedImage.style.zIndex = "2";
 
-            const imgAspectRatio =
-              uploadedImage.naturalWidth / uploadedImage.naturalHeight;
-            const containerAspectRatio = containerWidth / containerHeight;
+  // Create a new Image object to load and process
+  const tempImage = new Image();
+  tempImage.onload = function() {
+    // Calculate proper display dimensions
+    const container = uploadedImage.parentElement;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
 
-            let displayedWidth, displayedHeight, offsetX, offsetY;
+    const imgAspectRatio = tempImage.naturalWidth / tempImage.naturalHeight;
+    const containerAspectRatio = containerWidth / containerHeight;
 
-            if (imgAspectRatio > containerAspectRatio) {
-              displayedWidth = containerWidth;
-              displayedHeight = containerWidth / imgAspectRatio;
-              offsetX = 0;
-              offsetY = (containerHeight - displayedHeight) / 2;
-            } else {
-              displayedHeight = containerHeight;
-              displayedWidth = containerHeight * imgAspectRatio;
-              offsetX = (containerWidth - displayedWidth) / 2;
-              offsetY = 0;
-            }
+    let displayedWidth, displayedHeight, offsetX, offsetY;
 
-            canvas.width = containerWidth;
-            canvas.height = containerHeight;
+    if (imgAspectRatio > containerAspectRatio) {
+      // Image is wider than container
+      displayedWidth = containerWidth;
+      displayedHeight = containerWidth / imgAspectRatio;
+      offsetX = 0;
+      offsetY = (containerHeight - displayedHeight) / 2;
+    } else {
+      // Image is taller than container
+      displayedHeight = containerHeight;
+      displayedWidth = containerHeight * imgAspectRatio;
+      offsetX = (containerWidth - displayedWidth) / 2;
+      offsetY = 0;
+    }
 
-            canvas._displayInfo = {
-              displayedWidth,
-              displayedHeight,
-              offsetX,
-              offsetY,
-              imgAspectRatio,
-              containerWidth,
-              containerHeight,
-            };
+    // Set the actual uploaded image src
+    uploadedImage.src = imageData;
+    
+    // Wait for uploadedImage to load
+    uploadedImage.onload = function() {
+      // Set canvas dimensions
+      canvas.width = containerWidth;
+      canvas.height = containerHeight;
+      canvas.style.display = "block";
+      canvas.style.position = "absolute";
+      canvas.style.top = "0";
+      canvas.style.left = "0";
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      canvas.style.zIndex = "3";
 
-            uploadedImage.style.display = "none";
-            placeholder.style.display = "none";
+      // Store display info on canvas
+      canvas._displayInfo = {
+        displayedWidth,
+        displayedHeight,
+        offsetX,
+        offsetY,
+        imgAspectRatio,
+        containerWidth,
+        containerHeight,
+        naturalWidth: tempImage.naturalWidth,
+        naturalHeight: tempImage.naturalHeight
+      };
 
-            processImageWithFaceMesh(uploadedImage);
+      console.log("📸 Photo captured and displayed:", {
+        containerSize: `${containerWidth}x${containerHeight}`,
+        imageSize: `${tempImage.naturalWidth}x${tempImage.naturalHeight}`,
+        displaySize: `${displayedWidth}x${displayedHeight}`,
+        offset: `${offsetX},${offsetY}`
+      });
 
-            hasProcessedImage = true;
-            currentImageSource = "camera";
-          };
+      // Process with face mesh
+      processImageWithFaceMesh(uploadedImage);
 
-          uploadedImage.src = imageData;
-          localStorage.setItem("lastUploadedImage", imageData);
-        }
+      hasProcessedImage = true;
+      currentImageSource = "camera";
+      
+      // Restore transform if needed for mobile
+      if (window.innerWidth <= 768) {
+        uploadedImage.style.transform = originalTransform;
+      }
+    };
+  };
+  
+  tempImage.onerror = function() {
+    console.error("Failed to load captured image");
+    alert("Failed to process the captured photo. Please try again.");
+    placeholder.style.display = "flex";
+    uploadedImage.style.display = "none";
+  };
+  
+  tempImage.src = imageData;
+  localStorage.setItem("lastUploadedImage", imageData);
+}
 
-        function stopCamera() {
-          if (cameraStream) {
-            cameraStream.getTracks().forEach((track) => track.stop());
-            cameraStream = null;
-          }
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach((track) => track.stop());
+    cameraStream = null;
+  }
 
-          // Hide video element
-          const video = document.getElementById("camera-video");
-          if (video) {
-            video.style.display = "none";
-            video.srcObject = null;
+  // Hide video element
+  const video = document.getElementById("camera-video");
+  if (video) {
+    video.style.display = "none";
+    video.srcObject = null;
 
-            // Clean up orientation handlers
-            if (video._orientationHandler) {
-              window.removeEventListener("resize", video._orientationHandler);
-              window.removeEventListener(
-                "orientationchange",
-                video._orientationHandler
-              );
-              delete video._orientationHandler;
-            }
-          }
+    // Clean up orientation handlers
+    if (video._orientationHandler) {
+      window.removeEventListener("resize", video._orientationHandler);
+      window.removeEventListener(
+        "orientationchange",
+        video._orientationHandler
+      );
+      delete video._orientationHandler;
+    }
+  }
 
-          // Show original buttons, hide camera controls
-          uploadBtn.style.display = "flex";
-          cameraBtn.style.display = "flex";
+  // Show original buttons, hide camera controls
+  uploadBtn.style.display = "flex";
+  cameraBtn.style.display = "flex";
 
-          const captureBtn = document.getElementById("capture-btn");
-          const cancelBtn = document.getElementById("cancel-camera");
-          if (captureBtn) captureBtn.style.display = "none";
-          if (cancelBtn) cancelBtn.style.display = "none";
+  const captureBtn = document.getElementById("capture-btn");
+  const cancelBtn = document.getElementById("cancel-camera");
+  if (captureBtn) captureBtn.style.display = "none";
+  if (cancelBtn) cancelBtn.style.display = "none";
 
-          isCameraActive = false;
+  isCameraActive = false;
 
-          // If no image is loaded, show placeholder again
-          if (uploadedImage.src === "" && !hasProcessedImage) {
-            placeholder.style.display = "flex";
-          }
-        }
+  // Only show placeholder if there's no image at all
+  if (!hasProcessedImage && (!uploadedImage.src || uploadedImage.src === "")) {
+    placeholder.style.display = "flex";
+  }
+}
 
         // Initialize FaceMesh
         function initializeFaceMesh() {
