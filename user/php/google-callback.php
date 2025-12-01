@@ -506,57 +506,167 @@ if ($result->num_rows > 0) {
         exit();
     }
 
-    // === SIGNUP FLOW: Create new user ===
-    $role = 'customer';
-    $emailVerified = 0;
-    $verificationToken = bin2hex(random_bytes(32));
+   // === SIGNUP FLOW: Create new user ===
+$role = 'customer';
+$emailVerified = 0;
+$verificationToken = bin2hex(random_bytes(32));
 
-    // Insert new user (unverified)
-    $insert = $conn->prepare('INSERT INTO users (username, first_name, last_name, Email, Role, email_verified, google_id, verification_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    $insert->bind_param('sssssiss', $username, $firstName, $lastName, $email, $role, $emailVerified, $googleId, $verificationToken);
-
-    if (!$insert->execute()) {
-        echo '<script>alert("Database error during signup."); window.location.href="/user/html/signup.html";</script>';
+// Generate a unique username
+$attempts = 0;
+do {
+    if ($attempts > 0) {
+        $username = explode('@', $email)[0] . '_' . substr($googleId, -4) . '_' . $attempts;
+    } else {
+        $username = explode('@', $email)[0] . '_' . substr($googleId, -4);
+    }
+    
+    // Check if username already exists
+    $checkStmt = $conn->prepare('SELECT UserID FROM users WHERE username = ?');
+    $checkStmt->bind_param('s', $username);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    $usernameExists = $checkResult->num_rows > 0;
+    $checkStmt->close();
+    
+    $attempts++;
+    
+    // Prevent infinite loop
+    if ($attempts > 10) {
+        $conn->close();
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Signup Error</title>
+            <style>
+                body { font-family: "Montserrat", Arial, sans-serif; background: linear-gradient(135deg, #ffe6f2, #fff); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(255, 105, 180, 0.25); text-align: center; max-width: 500px; }
+                .error { color: #e74c3c; font-size: 48px; margin-bottom: 20px; }
+                h1 { color: #333; margin-bottom: 20px; }
+                p { color: #666; line-height: 1.6; margin-bottom: 25px; }
+                .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 12px 30px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; text-decoration: none; margin: 5px; }
+                .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="error">⚠️</div>
+                <h1>Unable to Create Account</h1>
+                <p>We encountered an issue generating a unique username. Please try again or contact support.</p>
+                <button class="btn" onclick="window.location.href=\'/user/html/signup.html\'">Try Again</button>
+            </div>
+        </body>
+        </html>';
         exit();
     }
+} while ($usernameExists);
 
-    $insert->close();
+// Insert new user (unverified)
+$insert = $conn->prepare('INSERT INTO users (username, first_name, last_name, Email, Role, email_verified, google_id, verification_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+$insert->bind_param('sssssiss', $username, $firstName, $lastName, $email, $role, $emailVerified, $googleId, $verificationToken);
 
-    // ===== SEND VERIFICATION EMAIL =====
-    $emailSent = sendVerificationEmail($email, $firstName, $verificationToken);
-
-    if (!$emailSent) {
-        echo '<script>alert("Failed to send verification email. Please contact support."); window.location.href="/user/html/signup.html";</script>';
-        exit();
-    }
-
+if (!$insert->execute()) {
+    // If still fails, show user-friendly error
     $conn->close();
+    
+    // Check if it's a duplicate entry error
+    if (strpos($conn->error, 'Duplicate entry') !== false) {
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Account Already Exists</title>
+            <style>
+                body { font-family: "Montserrat", Arial, sans-serif; background: linear-gradient(135deg, #ffe6f2, #fff); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                .container { background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(255, 105, 180, 0.25); text-align: center; max-width: 500px; }
+                .info-icon { color: #3498db; font-size: 60px; margin-bottom: 20px; }
+                h1 { color: #ff69b4; margin-bottom: 20px; font-size: 28px; }
+                p { color: #555; line-height: 1.6; margin: 15px 0; font-size: 16px; }
+                .email { color: #ff69b4; font-weight: bold; font-size: 18px; margin: 20px 0; padding: 10px; background: #ffe6f2; border-radius: 8px; }
+                .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 15px 35px; border: none; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin: 10px; }
+                .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
+                .btn-secondary { background: linear-gradient(135deg, #888, #666); }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="info-icon">👤</div>
+                <h1>Account Already Exists</h1>
+                <p>It looks like an account with this email already exists:</p>
+                <div class="email">' . htmlspecialchars($email) . '</div>
+                <p>Please proceed to login using your existing account.</p>
+                <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Go to Login</button>
+                <button class="btn btn-secondary" onclick="window.location.href=\'/user/html/signup.html\'">Try Different Email</button>
+            </div>
+        </body>
+        </html>';
+    } else {
+        // Other database error
+        error_log("Database insert error: " . $conn->error);
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Signup Error</title>
+            <style>
+                body { font-family: "Montserrat", Arial, sans-serif; background: linear-gradient(135deg, #ffe6f2, #fff); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(255, 105, 180, 0.25); text-align: center; max-width: 500px; }
+                .error { color: #e74c3c; font-size: 48px; margin-bottom: 20px; }
+                h1 { color: #333; margin-bottom: 20px; }
+                p { color: #666; line-height: 1.6; margin-bottom: 25px; }
+                .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 12px 30px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; text-decoration: none; margin: 5px; }
+                .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="error">❌</div>
+                <h1>Something Went Wrong</h1>
+                <p>We encountered an error creating your account. Please try again.</p>
+                <button class="btn" onclick="window.location.href=\'/user/html/signup.html\'">Try Again</button>
+            </div>
+        </body>
+        </html>';
+    }
+    exit();
+}
 
-    echo '<!DOCTYPE html>
-    <html>
-    <head>
-        <title>Verify Your Email</title>
-        <style>
-            body { font-family: "Montserrat", Arial, sans-serif; background: linear-gradient(135deg, #ffe6f2, #fff); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-            .container { background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(255, 105, 180, 0.25); text-align: center; max-width: 500px; }
-            .success-icon { color: #ff69b4; font-size: 80px; margin-bottom: 20px; }
-            h1 { color: #ff69b4; margin-bottom: 20px; font-size: 28px; }
-            p { color: #555; line-height: 1.6; margin: 15px 0; font-size: 16px; }
-            .email { color: #ff69b4; font-weight: bold; font-size: 18px; margin: 20px 0; }
-            .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 15px 35px; border: none; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; }
-            .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="success-icon">📧</div>
-            <h1>Please Verify Your Email</h1>
-            <p>We have sent a verification link to:</p>
-            <div class="email">' . htmlspecialchars($email) . '</div>
-            <p>Click the link in your inbox to activate your account.</p>
-            <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Go to Login</button>
-        </div>
-    </body>
-    </html>';
+   // SUCCESS: Close the insert statement
+   $insert->close();
+
+   // ===== SEND VERIFICATION EMAIL =====
+   $emailSent = sendVerificationEmail($email, $firstName, $verificationToken);
+
+   if (!$emailSent) {
+       $conn->close();
+       echo '<script>alert("Failed to send verification email. Please contact support."); window.location.href="/user/html/signup.html";</script>';
+       exit();
+   }
+
+   $conn->close();
+
+   echo '<!DOCTYPE html>
+   <html>
+   <head>
+       <title>Verify Your Email</title>
+       <style>
+           body { font-family: "Montserrat", Arial, sans-serif; background: linear-gradient(135deg, #ffe6f2, #fff); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+           .container { background: white; padding: 50px 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(255, 105, 180, 0.25); text-align: center; max-width: 500px; }
+           .success-icon { color: #ff69b4; font-size: 80px; margin-bottom: 20px; }
+           h1 { color: #ff69b4; margin-bottom: 20px; font-size: 28px; }
+           p { color: #555; line-height: 1.6; margin: 15px 0; font-size: 16px; }
+           .email { color: #ff69b4; font-weight: bold; font-size: 18px; margin: 20px 0; }
+           .btn { background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; padding: 15px 35px; border: none; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; }
+           .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); }
+       </style>
+   </head>
+   <body>
+       <div class="container">
+           <div class="success-icon">📧</div>
+           <h1>Please Verify Your Email</h1>
+           <p>We have sent a verification link to:</p>
+           <div class="email">' . htmlspecialchars($email) . '</div>
+           <p>Click the link in your inbox to activate your account.</p>
+           <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Go to Login</button>
+       </div>
+   </body>
+   </html>';
 }
 ?>
