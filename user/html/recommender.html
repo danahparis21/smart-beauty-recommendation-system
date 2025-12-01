@@ -3641,7 +3641,6 @@
   z-index: 9999;
   animation: fadeIn 0.3s ease;
 }
-
 .privacy-modal-content {
   background: white;
   border-radius: 15px;
@@ -3652,26 +3651,16 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   animation: slideUp 0.3s ease;
   
-  /* Custom scrollbar - same as try-on page */
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: rgba(255, 182, 193, 0.1);
-    border-radius: 10px;
-    margin: 5px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary-pink), var(--dark-pink));
-    border-radius: 10px;
-    border: 2px solid white;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--dark-pink), #ff1493);
-  }
+  /* HIDE SCROLLBAR - All browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Chrome/Safari/Opera */
+.privacy-modal-content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .privacy-modal-header {
