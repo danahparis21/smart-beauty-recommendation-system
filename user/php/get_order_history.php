@@ -9,25 +9,22 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
-// ==================== IMAGE PATH FIXER ==================== //
-function getPublicImagePath($dbPath)
-{
-    if (empty($dbPath))
-        return 'https://blessence.site/admin/uploads/product_images/no-image.png';
+require_once __DIR__ . '/../../config/google-config.php';
 
-    // Handle old paths with '../'
-    if (strpos($dbPath, '../') === 0) {
-        // Convert ../uploads/... to /admin/uploads/...
-        return str_replace('../', '/admin/', $dbPath);
+function getPublicImagePath($dbPath) {
+    if (empty($dbPath)) return '';
+    
+    // Completely remove any leading ../ or ./ or /
+    $cleanPath = ltrim($dbPath, './');
+    $cleanPath = ltrim($cleanPath, '/');
+    
+    // If it now starts with uploads/, we must prepend admin/ 
+    // because products are actually in admin/uploads/
+    if (strpos($cleanPath, 'uploads/') === 0) {
+        $cleanPath = 'admin/' . $cleanPath;
     }
-
-    // Handle new paths that already start with '/'
-    if (strpos($dbPath, '/') === 0) {
-        return 'https://blessence.site' . $dbPath;
-    }
-
-    // Fallback: add leading slash
-    return 'https://blessence.site/' . $dbPath;
+    
+    return rtrim(BASE_URL, '/') . '/' . ltrim($cleanPath, '/');
 }
 
 function sendResponse($success, $message, $data = [])

@@ -27,7 +27,7 @@ $isLogin = isset($_GET['state']) && $_GET['state'] === 'login';
 
 // Ensure Google returned a code
 if (!isset($_GET['code'])) {
-    $redirectPage = $isLogin ? '/user/html/login.html' : '/user/html/signup.html';
+    $redirectPage = $isLogin ? '../html/login.html' : '../html/signup.html';
     echo '<script>alert("Google authentication failed."); window.location.href="' . $redirectPage . '";</script>';
     exit();
 }
@@ -52,6 +52,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($tokenData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
@@ -65,13 +66,13 @@ $tokenInfo = json_decode($response, true);
 // Check for JSON decode errors
 if (json_last_error() !== JSON_ERROR_NONE) {
     error_log("JSON Decode Error: " . json_last_error_msg());
-    $redirectPage = $isLogin ? '/user/html/login.html' : '/user/html/signup.html';
+    $redirectPage = $isLogin ? '../html/login.html' : '../html/signup.html';
     echo '<script>alert("Invalid response from Google."); window.location.href="' . $redirectPage . '";</script>';
     exit();
 }
 
 if (!isset($tokenInfo['access_token'])) {
-    $redirectPage = $isLogin ? '/user/html/login.html' : '/user/html/signup.html';
+    $redirectPage = $isLogin ? '../html/login.html' : '../html/signup.html';
     echo '<script>alert("Failed to get access token."); window.location.href="' . $redirectPage . '";</script>';
     exit();
 }
@@ -84,6 +85,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Authorization: Bearer ' . $tokenInfo['access_token'],
     'Accept: application/json'
 ]);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 $userInfoResponse = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
@@ -97,13 +99,13 @@ $userInfo = json_decode($userInfoResponse, true);
 // Check for JSON decode errors
 if (json_last_error() !== JSON_ERROR_NONE) {
     error_log("JSON Decode Error on UserInfo: " . json_last_error_msg());
-    $redirectPage = $isLogin ? '/user/html/login.html' : '/user/html/signup.html';
+    $redirectPage = $isLogin ? '../html/login.html' : '../html/signup.html';
     echo '<script>alert("Failed to decode user information."); window.location.href="' . $redirectPage . '";</script>';
     exit();
 }
 
 if (!isset($userInfo['email'])) {
-    $redirectPage = $isLogin ? '/user/html/login.html' : '/user/html/signup.html';
+    $redirectPage = $isLogin ? '../html/login.html' : '../html/signup.html';
     echo '<script>alert("Failed to get user information."); window.location.href="' . $redirectPage . '";</script>';
     exit();
 }
@@ -118,7 +120,7 @@ $username = explode('@', $email)[0] . '_' . substr($googleId, -4);
 // ===== CHECK IF USER EXISTS =====
 $stmt = $conn->prepare('SELECT UserID, username, first_name, last_name, Role, email_verified, google_id, verification_token FROM users WHERE Email = ?');
 if (!$stmt) {
-    $redirectPage = $isLogin ? '/user/html/login.html' : '/user/html/signup.html';
+    $redirectPage = $isLogin ? '../html/login.html' : '../html/signup.html';
     echo '<script>alert("Database error."); window.location.href="' . $redirectPage . '";</script>';
     exit();
 }
@@ -166,7 +168,7 @@ if ($result->num_rows > 0) {
                 <button class="btn" id="resendBtn" onclick="resendVerification()">
                     📧 Resend Verification Email
                 </button>
-                <button class="btn btn-secondary" onclick="window.location.href=\'/user/html/login.html\'">
+                <button class="btn btn-secondary" onclick="window.location.href=\'../html/login.html\'">
                     Back to Login
                 </button>
                 
@@ -222,7 +224,7 @@ if ($result->num_rows > 0) {
                     document.getElementById("errorMsg").style.display = "none";
                     
                     try {
-                        const resendUrl = "/user/php/resend-verification-ajax.php";
+                        const resendUrl = "resend-verification-ajax.php";
                         
                         console.log("Sending request to:", resendUrl);
                         console.log("Email:", userEmail);
@@ -255,6 +257,21 @@ if ($result->num_rows > 0) {
                         if (result.success) {
                             document.getElementById("successMsg").style.display = "block";
                             
+                            // Show verification link in DEV_MODE
+                            if (result.verification_link) {
+                                // Extract the token from the verification_link or use it relatively
+                                const tokenMatch = result.verification_link.match(/token=([^&]+)/);
+                                const token = tokenMatch ? tokenMatch[1] : "";
+                                const relativeVerifyUrl = `verify-email.php?token=${token}`;
+                                
+                                const linkBox = document.createElement("div");
+                                linkBox.className = "email-display";
+                                linkBox.style.background = "#e6f7ff";
+                                linkBox.style.color = "#0050b3";
+                                linkBox.innerHTML = `<strong>DEV MODE:</strong> <a href="${relativeVerifyUrl}" style="color: #0050b3; word-break: break-all; font-weight: bold; text-decoration: underline;">Click here to verify your account right now</a>`;
+                                document.getElementById("successMsg").after(linkBox);
+                            }
+
                             // Start 10-second cooldown
                             const cooldownEndTime = Date.now() + (10 * 1000);
                             localStorage.setItem("resendCooldownEnd_" + userEmail, cooldownEndTime);
@@ -300,8 +317,8 @@ if ($result->num_rows > 0) {
                     <div class="error">❌</div>
                     <h1>Account Not Found</h1>
                     <p>No Google account found with email <strong>' . htmlspecialchars($email) . '</strong>. Please sign up first.</p>
-                    <button class="btn" onclick="window.location.href=\'/user/html/signup.html\'">Sign Up</button>
-                    <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Back to Login</button>
+                    <button class="btn" onclick="window.location.href=\'../html/signup.html\'">Sign Up</button>
+                    <button class="btn" onclick="window.location.href=\'../html/login.html\'">Back to Login</button>
                 </div>
             </body>
             </html>';
@@ -328,7 +345,7 @@ if ($result->num_rows > 0) {
     $conn->close();
 
     // Redirect based on role with welcome screen
-    $redirectUrl = ($user['Role'] === 'admin') ? '../../admin/html/admin.html' : '/user/html/home.html';
+    $redirectUrl = ($user['Role'] === 'admin') ? '../../admin/html/admin.html' : '../html/home.html';
     
     // Clear any previous output
     if (ob_get_level()) ob_end_clean();
@@ -498,8 +515,8 @@ if ($result->num_rows > 0) {
                 <div class="error">❌</div>
                 <h1>Account Not Found</h1>
                 <p>No account found with email <strong>' . htmlspecialchars($email) . '</strong>. Please sign up first.</p>
-                <button class="btn" onclick="window.location.href=\'/user/html/signup.html\'">Sign Up</button>
-                <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Back to Login</button>
+                <button class="btn" onclick="window.location.href=\'../html/signup.html\'">Sign Up</button>
+                <button class="btn" onclick="window.location.href=\'../html/login.html\'">Back to Login</button>
             </div>
         </body>
         </html>';
@@ -552,7 +569,7 @@ do {
                 <div class="error">⚠️</div>
                 <h1>Unable to Create Account</h1>
                 <p>We encountered an issue generating a unique username. Please try again or contact support.</p>
-                <button class="btn" onclick="window.location.href=\'/user/html/signup.html\'">Try Again</button>
+                <button class="btn" onclick="window.location.href=\'../html/signup.html\'">Try Again</button>
             </div>
         </body>
         </html>';
@@ -593,8 +610,8 @@ if (!$insert->execute()) {
                 <p>It looks like an account with this email already exists:</p>
                 <div class="email">' . htmlspecialchars($email) . '</div>
                 <p>Please proceed to login using your existing account.</p>
-                <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Go to Login</button>
-                <button class="btn btn-secondary" onclick="window.location.href=\'/user/html/signup.html\'">Try Different Email</button>
+                <button class="btn" onclick="window.location.href=\'../html/login.html\'">Go to Login</button>
+                <button class="btn btn-secondary" onclick="window.location.href=\'../html/signup.html\'">Try Different Email</button>
             </div>
         </body>
         </html>';
@@ -620,7 +637,7 @@ if (!$insert->execute()) {
                 <div class="error">❌</div>
                 <h1>Something Went Wrong</h1>
                 <p>We encountered an error creating your account. Please try again.</p>
-                <button class="btn" onclick="window.location.href=\'/user/html/signup.html\'">Try Again</button>
+                <button class="btn" onclick="window.location.href=\'../html/signup.html\'">Try Again</button>
             </div>
         </body>
         </html>';
@@ -636,7 +653,7 @@ if (!$insert->execute()) {
 
    if (!$emailSent) {
        $conn->close();
-       echo '<script>alert("Failed to send verification email. Please contact support."); window.location.href="/user/html/signup.html";</script>';
+       echo '<script>alert("Failed to send verification email. Please contact support."); window.location.href="../html/signup.html";</script>';
        exit();
    }
 
@@ -664,7 +681,7 @@ if (!$insert->execute()) {
            <p>We have sent a verification link to:</p>
            <div class="email">' . htmlspecialchars($email) . '</div>
            <p>Click the link in your inbox to activate your account.</p>
-           <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Go to Login</button>
+           <button class="btn" onclick="window.location.href=\'../html/login.html\'">Go to Login</button>
        </div>
    </body>
    </html>';

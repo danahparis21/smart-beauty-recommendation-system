@@ -8,7 +8,7 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 
 function sendVerificationEmail($email, $token, $firstName) {
-    $verification_link = "http://" . $_SERVER['HTTP_HOST'] . "/user/php/verify-email.php?token=" . $token;
+    $verification_link = "http://" . $_SERVER['HTTP_HOST'] . "./verify-email.php?token=" . $token;
     
     $subject = "Verify Your Email - Beauty & Blessed";
     

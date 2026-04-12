@@ -81,7 +81,11 @@ $emailSent = sendVerificationEmail($email, $user['first_name'], $token);
 
 if ($emailSent) {
     $conn->close();
-    jsonSuccess('Verification email sent successfully.');
+    $extra = [];
+    if (defined('DEV_MODE') && DEV_MODE === true && isset($_SESSION['verification_link'])) {
+        $extra['verification_link'] = $_SESSION['verification_link'];
+    }
+    jsonSuccess('Verification email sent successfully.', $extra);
 } else {
     $conn->close();
     jsonError('Failed to send verification email. Check server logs.');

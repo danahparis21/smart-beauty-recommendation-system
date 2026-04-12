@@ -14,6 +14,7 @@ ini_set('display_errors', 0);
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
+    require_once __DIR__ . '/../../config/google-config.php';
     require_once __DIR__ . '/../../config/db.php';
 }
 
@@ -24,10 +25,21 @@ try {
         throw new Exception('Connection failed: ' . $conn->connect_error);
     }
 
-    function getPublicImagePath($dbPath) {
+    function getPublicImagePath($dbPath)
+    {
         if (empty($dbPath)) return '';
-        $filename = basename($dbPath);
-        return '/admin/uploads/product_images/' . $filename;
+        
+        // Completely remove any leading ../ or ./ or /
+        $cleanPath = ltrim($dbPath, './');
+        $cleanPath = ltrim($cleanPath, '/');
+        
+        // If it now starts with uploads/, we must prepend admin/ 
+        // because products are actually in admin/uploads/
+        if (strpos($cleanPath, 'uploads/') === 0) {
+            $cleanPath = 'admin/' . $cleanPath;
+        }
+        
+        return rtrim(BASE_URL, '/') . '/' . ltrim($cleanPath, '/');
     }
 
     function processProducts($result, $user_id) {

@@ -991,7 +991,7 @@
     </div>
 
     <div class="signup-link">
-      Doesn't have an account? <a href="/user/html/signup.html">Sign Up</a>
+      Doesn't have an account? <a href="signup.html">Sign Up</a>
     </div>
   </div>
 
@@ -1096,7 +1096,7 @@
                   const redirectUrl =
                     data.role === "admin"
                       ? "../../admin/html/admin.html"
-                      : "/user/html/home.html";
+                      : "home.html";
 
             
                       
@@ -1112,7 +1112,7 @@
                           "Error: Page not found. Contact administrator."
                         );
                         // Fallback to a known working page
-                        window.location.href = "/user/html/home.html";
+                        window.location.href = "home.html";
                       }
                     })
                     .catch((error) => {
@@ -1237,7 +1237,7 @@
     const forgotPasswordLink = document.querySelector('.forgot-password');
     forgotPasswordLink.addEventListener('click', function (e) {
       e.preventDefault();
-      window.location.href = '/user/html/forgot-password.html';
+      window.location.href = './forgot-password.html';
     });
   </script>
   <div id="toast" class="toast"></div>

@@ -22,6 +22,7 @@ try {
     if (getenv('DOCKER_ENV') === 'true') {
         require_once __DIR__ . '/../../config/db_docker.php';
     } else {
+        require_once __DIR__ . '/../../config/google-config.php';
         require_once __DIR__ . '/../../config/db.php';
     }
 
@@ -55,22 +56,19 @@ try {
 
     function getPublicImagePath($dbPath)
     {
-        if (empty($dbPath))
-            return '';
-
-        // Handle old paths with '../'
-        if (strpos($dbPath, '../') === 0) {
-            // Convert ../uploads/... to /admin/uploads/...
-            return str_replace('../', '/admin/', $dbPath);
+        if (empty($dbPath)) return '';
+        
+        // Completely remove any leading ../ or ./ or /
+        $cleanPath = ltrim($dbPath, './');
+        $cleanPath = ltrim($cleanPath, '/');
+        
+        // If it now starts with uploads/, we must prepend admin/ 
+        // because products are actually in admin/uploads/
+        if (strpos($cleanPath, 'uploads/') === 0) {
+            $cleanPath = 'admin/' . $cleanPath;
         }
-
-        // Handle new paths that already start with '/'
-        if (strpos($dbPath, '/') === 0) {
-            return $dbPath;
-        }
-
-        // Fallback: add leading slash
-        return '/' . $dbPath;
+        
+        return rtrim(BASE_URL, '/') . '/' . ltrim($cleanPath, '/');
     }
 
     // Clean product name function

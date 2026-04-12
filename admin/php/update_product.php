@@ -300,8 +300,11 @@ try {
         $conn->close();
 }
 
-function handleFileUpload($fileInputName, $targetDir = '/var/www/html/uploads/product_images/')
+function handleFileUpload($fileInputName, $targetDir = null)
 {
+    if ($targetDir === null) {
+        $targetDir = __DIR__ . '/../uploads/product_images/';
+    }
     if (!isset($_FILES[$fileInputName]) || $_FILES[$fileInputName]['error'] !== UPLOAD_ERR_OK) {
         return null;
     }
@@ -345,7 +348,7 @@ function handle_media_update($conn, $productID, $isParent)
     error_log('=== MEDIA UPDATE DEBUG ===');
     error_log("ProductID: $productID, IsParent: " . ($isParent ? 'YES' : 'NO'));
 
-    $targetDir = '/var/www/html/uploads/product_images/';  // FIXED: Absolute server path
+    $targetDir = __DIR__ . '/../uploads/product_images/';  // FIXED: Absolute server path
     $parentID = $isParent ? $productID : getParentIDFromVariant($conn, $productID);
     $variantID = $isParent ? null : $productID;
 
@@ -364,7 +367,7 @@ function handle_media_update($conn, $productID, $isParent)
         $physical_delete_paths = [];
         while ($row = $result->fetch_assoc()) {
             // Construct the correct absolute path
-            $fileToDelete = '/var/www/html/uploads/product_images/' . basename($row['ImagePath']);
+            $fileToDelete = __DIR__ . '/../uploads/product_images/' . basename($row['ImagePath']);
             error_log('Marking for deletion: ' . $fileToDelete);
             $physical_delete_paths[] = $fileToDelete;
         }
@@ -389,7 +392,7 @@ function handle_media_update($conn, $productID, $isParent)
             // Fetch and Delete OLD File
             $oldPath = getOldImagePath($conn, $parentID, 'PREVIEW', true);
             if ($oldPath) {
-                deleteOldFile('/var/www/html/uploads/product_images/' . basename($oldPath));
+                deleteOldFile(__DIR__ . '/../uploads/product_images/' . basename($oldPath));
             }
 
             // Upsert with corrected web path
@@ -418,7 +421,7 @@ function handle_media_update($conn, $productID, $isParent)
             // Fetch and Delete OLD File
             $oldPath = getOldImagePath($conn, $variantID, 'VARIANT', false);
             if ($oldPath) {
-                deleteOldFile('/var/www/html/uploads/product_images/' . basename($oldPath));
+                deleteOldFile(__DIR__ . '/../uploads/product_images/' . basename($oldPath));
             }
 
             // Upsert with corrected web path

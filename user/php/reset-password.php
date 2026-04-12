@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../config/google-config.php';
 
 // Check if token is provided
 if (!isset($_GET['token']) && !isset($_POST['token'])) {
-    die('<script>alert("Invalid reset link."); window.location.href="/user/html/login.html";</script>');
+    die('<script>alert("Invalid reset link."); window.location.href="../html/login.html";</script>');
 }
 
 $token = $_GET['token'] ?? $_POST['token'];
@@ -111,7 +111,7 @@ if ($result->num_rows === 0) {
             <div class="error"><i class="fas fa-exclamation-triangle"></i></div>
             <h1>Invalid Reset Link</h1>
             <p>This password reset link is invalid or has already been used.</p>
-            <a href="/user/html/forgot-password.html" class="btn">Request New Link</a>
+            <a href="../html/forgot-password.html" class="btn">Request New Link</a>
         </div>
     </body>
     </html>';
@@ -145,7 +145,7 @@ if (time() > $user['reset_token_expiry']) {
             <div class="warning"><i class="fas fa-clock"></i></div>
             <h1>Link Expired</h1>
             <p>This password reset link has expired. For your security, reset links are only valid for 1 hour.</p>
-            <a href="/user/html/forgot-password.html" class="btn">Request New Link</a>
+            <a href="../html/forgot-password.html" class="btn">Request New Link</a>
         </div>
     </body>
     </html>';
@@ -762,7 +762,7 @@ if (time() > $user['reset_token_expiry']) {
                 if (data.success) {
                     showToast('Password reset successfully!');
                     setTimeout(() => {
-                        window.location.href = '/user/html/login.html';
+                        window.location.href = '../html/login.html';
                     }, 2000);
                 } else {
                     showToast(data.message || 'Failed to reset password');

@@ -60,7 +60,7 @@ function returnSuccessPage($email, $firstName) {
             <div class="email">' . htmlspecialchars($email) . '</div>
             <p>Please check your inbox and click the verification link to complete your registration.</p>
             <p class="note">Make sure to check your spam folder if you don\'t see the email.<br>The verification link does not expire.</p>
-            <button class="btn" onclick="window.location.href=\'/user/html/login.html\'">Go to Login</button>
+            <button class="btn" onclick="window.location.href=\'../html/login.html\'">Go to Login</button>
         </div>
     </body>
     </html>';

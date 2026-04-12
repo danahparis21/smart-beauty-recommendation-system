@@ -40,7 +40,7 @@ function redirectBasedOnRole($role) {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
             return [
                 'redirect' => true,
-                'redirectUrl' => '/admin/html/admin.html'
+                'redirectUrl' => '../../admin/html/admin.html'
             ];
         } else {
             // Direct browser redirect

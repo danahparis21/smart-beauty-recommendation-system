@@ -11,7 +11,8 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 
 // Include activity logger
-require_once __DIR__ . '/activity_logger.php';
+require_once __DIR__ . '/../../config/activity_logger.php';
+require_once __DIR__ . '/../../config/google-config.php';
 $conn->query("SET time_zone = '+08:00'");
 // Initialize response
 $response = [
@@ -79,22 +80,19 @@ $conn->close();
 // Add this function near the top, after the cleanProductName function
 function getPublicImagePath($dbPath)
 {
-    if (empty($dbPath))
-        return '';
-
-    // Handle old paths with '../'
-    if (strpos($dbPath, '../') === 0) {
-        // Convert ../uploads/... to /admin/uploads/...
-        return str_replace('../', '/admin/', $dbPath);
+    if (empty($dbPath)) return '';
+    
+    // Completely remove any leading ../ or ./ or /
+    $cleanPath = ltrim($dbPath, './');
+    $cleanPath = ltrim($cleanPath, '/');
+    
+    // If it now starts with uploads/, we must prepend admin/ 
+    // because products are actually in admin/uploads/
+    if (strpos($cleanPath, 'uploads/') === 0) {
+        $cleanPath = 'admin/' . $cleanPath;
     }
-
-    // Handle new paths that already start with '/'
-    if (strpos($dbPath, '/') === 0) {
-        return $dbPath;
-    }
-
-    // Fallback: add leading slash
-    return '/' . $dbPath;
+    
+    return rtrim(BASE_URL, '/') . '/' . ltrim($cleanPath, '/');
 }
 
 /**
@@ -342,7 +340,7 @@ function getCart($conn, $userId, &$response)
         $row['name'] = cleanProductName($row['name']);
         $row['image'] = !empty($row['image'])
             ? getPublicImagePath($row['image'])
-            : '/admin/uploads/product_images/no-image.png';
+            : '../../admin/uploads/product_images/no-image.png';
 
         $cartItems[] = $row;
         $totalAmount += $row['subtotal'];

@@ -132,7 +132,7 @@ error_log("Attributes collected - SkinType: $skinType, SkinTone: $skinTone, Unde
 $productRating = 0;
 
 // --- IMAGE UPLOAD---
-$targetDir = '/var/www/html/uploads/product_images/';
+$targetDir = __DIR__ . '/../uploads/product_images/';
 $webPath = '/uploads/product_images/'; // Path for database
 $variantImagePath = handleFileUpload('variantImage', $targetDir);
 $previewImagePath = handleFileUpload('previewImage', $targetDir);

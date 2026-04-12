@@ -13,8 +13,13 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
 function sendVerificationEmail($email, $firstName, $token) {
-    // Use single verification endpoint for both manual and Google signups
-    $verificationLink = BASE_URL . "/user/php/verify-email.php?token=" . $token;
+    // Determine the base URL dynamically if BASE_URL is not set or potentially wrong
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    
+    // If BASE_URL is available and looks valid, use it. Otherwise, construct from environment.
+    $currentBase = defined('BASE_URL') && !empty(BASE_URL) ? BASE_URL : "$protocol://$host/smart-beauty-recommendation-system";
+    $verificationLink = rtrim($currentBase, '/') . "./verify-email.php?token=" . $token;
     
     // ===== DEVELOPMENT MODE - Show link instead of sending email =====
     if (defined('DEV_MODE') && DEV_MODE === true) {
@@ -34,8 +39,15 @@ function sendVerificationEmail($email, $firstName, $token) {
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USERNAME;
         $mail->Password   = SMTP_PASSWORD;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = SMTP_PORT;
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
         
         // Recipients
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
@@ -121,8 +133,15 @@ function sendPasswordResetEmail($email, $firstName, $resetLink) {
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USERNAME;
         $mail->Password   = SMTP_PASSWORD;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = SMTP_PORT;
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
         
         // Recipients
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);

@@ -10,33 +10,22 @@ if (getenv('DOCKER_ENV') === 'true') {
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+require_once __DIR__ . '/../../config/google-config.php';
+
 function getPublicImagePath($dbPath) {
-    if (empty($dbPath)) {
-        return '';
+    if (empty($dbPath)) return '';
+    
+    // Completely remove any leading ../ or ./ or /
+    $cleanPath = ltrim($dbPath, './');
+    $cleanPath = ltrim($cleanPath, '/');
+    
+    // If it now starts with uploads/, we must prepend admin/ 
+    // because products are actually in admin/uploads/
+    if (strpos($cleanPath, 'uploads/') === 0) {
+        $cleanPath = 'admin/' . $cleanPath;
     }
     
-    // If it's already the correct admin path, return as-is
-    if (strpos($dbPath, '/admin/uploads/product_images/') === 0) {
-        return $dbPath;
-    }
-    
-    // If it's a user path, convert to admin path
-    if (strpos($dbPath, '/user/uploads/product_images/') === 0) {
-        return str_replace('/user/uploads/product_images/', '/admin/uploads/product_images/', $dbPath);
-    }
-    
-    // Handle old paths with '../'
-    if (strpos($dbPath, '../') === 0) {
-        return str_replace('../', '/admin/', $dbPath);
-    }
-    
-    // If it starts with any other slash, assume it's already a public path
-    if (strpos($dbPath, '/') === 0) {
-        return $dbPath;
-    }
-    
-    // For everything else (just filenames), add the correct path
-    return '/admin/uploads/product_images/' . $dbPath;
+    return rtrim(BASE_URL, '/') . '/' . ltrim($cleanPath, '/');
 }
 
 // Get user preferences from POST

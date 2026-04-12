@@ -2470,36 +2470,36 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
        <!-- Slide 1 -->
        <div class="hero-slide active">
             <picture>
-                <source media="(max-width: 768px)" srcset="/uploads/index_images/foundations.webp">
-                <source media="(min-width: 769px)" srcset="/uploads/index_images/foundations-desktop.webp">
-                <img src="/uploads/index_images/foundations-desktop.webp" alt="Beauty Foundations">
+                <source media="(max-width: 768px)" srcset="uploads/index_images/foundations.webp">
+                <source media="(min-width: 769px)" srcset="uploads/index_images/foundations-desktop.webp">
+                <img src="uploads/index_images/foundations-desktop.webp" alt="Beauty Foundations">
             </picture>
         </div>
         
         <!-- Slide 2 -->
         <div class="hero-slide">
             <picture>
-                <source media="(max-width: 768px)" srcset="/uploads/index_images/lipstick.webp">
-                <source media="(min-width: 769px)" srcset="/uploads/index_images/lipstick-desktop.webp">
-                <img src="/uploads/index_images/lipstick-desktop.webp" alt="Lipsticks Collection">
+                <source media="(max-width: 768px)" srcset="uploads/index_images/lipstick.webp">
+                <source media="(min-width: 769px)" srcset="uploads/index_images/lipstick-desktop.webp">
+                <img src="uploads/index_images/lipstick-desktop.webp" alt="Lipsticks Collection">
             </picture>
         </div>
         
         <!-- Slide 3 -->
         <div class="hero-slide">
             <picture>
-                <source media="(max-width: 768px)" srcset="/uploads/index_images/skincare.webp">
-                <source media="(min-width: 769px)" srcset="/uploads/index_images/skincare-desktop.webp">
-                <img src="/uploads/index_images/skincare-desktop.webp" alt="Skincare Products">
+                <source media="(max-width: 768px)" srcset="uploads/index_images/skincare.webp">
+                <source media="(min-width: 769px)" srcset="uploads/index_images/skincare-desktop.webp">
+                <img src="uploads/index_images/skincare-desktop.webp" alt="Skincare Products">
             </picture>
         </div>
         
         <!-- Slide 4 -->
         <div class="hero-slide">
             <picture>
-                <source media="(max-width: 768px)" srcset="/uploads/index_images/store.webp">
-                <source media="(min-width: 769px)" srcset="/uploads/index_images/store-desktop.webp">
-                <img src="/uploads/index_images/store-desktop.webp" alt="Beauty & Blessed Store">
+                <source media="(max-width: 768px)" srcset="uploads/index_images/store.webp">
+                <source media="(min-width: 769px)" srcset="uploads/index_images/store-desktop.webp">
+                <img src="uploads/index_images/store-desktop.webp" alt="Beauty & Blessed Store">
             </picture>
         </div>
     </div>
@@ -2596,16 +2596,16 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
                     <!-- Store Images Carousel -->
                     <div class="store-carousel" id="storeCarousel">
                         <div class="store-slide active">
-                            <img src="/uploads/index_images/store_info1.webp" alt="Beauty & Blessed Store">
+                            <img src="uploads/index_images/store_info1.webp" alt="Beauty & Blessed Store">
                         </div>
                         <div class="store-slide">
-                            <img src="/uploads/index_images/store_info2.webp" alt="Store Products">
+                            <img src="uploads/index_images/store_info2.webp" alt="Store Products">
                         </div>
                         <div class="store-slide">
-                            <img src="/uploads/index_images/store_info3.webp" alt="Store Interior">
+                            <img src="uploads/index_images/store_info3.webp" alt="Store Interior">
                         </div>
                         <div class="store-slide">
-                            <img src="/uploads/index_images/store_info4.webp" alt="Customer Experience">
+                            <img src="uploads/index_images/store_info4.webp" alt="Customer Experience">
                         </div>
                     </div>
                 <div class="image-decor decor-3"></div>
@@ -2628,7 +2628,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
             <div class="feature-card">
                 <div class="feature-preview-container">
                     <div class="feature-preview">
-                        <img src="/uploads/index_images/smart-quiz.webp" 
+                        <img src="uploads/index_images/smart-quiz.webp" 
                              alt="Smart Beauty Quiz Preview" 
                              class="preview-image">
                     </div>
@@ -2647,7 +2647,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
             <div class="feature-card">
                 <div class="feature-preview-container">
                     <div class="feature-preview">
-                        <img src="/uploads/index_images/try-on.webp" 
+                        <img src="uploads/index_images/try-on.webp" 
                              alt="Virtual Try-On Preview" 
                              class="preview-image">
                     </div>
@@ -2666,7 +2666,7 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
             <div class="feature-card">
                 <div class="feature-preview-container">
                     <div class="feature-preview">
-                        <img src="/uploads/index_images/qrcode.webp" 
+                        <img src="uploads/index_images/qrcode.webp" 
                              alt="QR Code Ordering Preview" 
                              class="preview-image">
                     </div>
@@ -2701,31 +2701,31 @@ $hours = '9:00 AM – 9:00 PM (Closed on Saturdays)';
             <div class="spotlight-track">
                 <!-- All 9 images in the track -->
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client1.webp" alt="Happy Client 1" class="spotlight-image">
+                    <img src="uploads/index_images/client1.webp" alt="Happy Client 1" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client2.webp" alt="Happy Client 2" class="spotlight-image">
+                    <img src="uploads/index_images/client2.webp" alt="Happy Client 2" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client3.webp" alt="Happy Client 3" class="spotlight-image">
+                    <img src="uploads/index_images/client3.webp" alt="Happy Client 3" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client4.webp" alt="Happy Client 4" class="spotlight-image">
+                    <img src="uploads/index_images/client4.webp" alt="Happy Client 4" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client5.webp" alt="Happy Client 5" class="spotlight-image">
+                    <img src="uploads/index_images/client5.webp" alt="Happy Client 5" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client6.webp" alt="Happy Client 6" class="spotlight-image">
+                    <img src="uploads/index_images/client6.webp" alt="Happy Client 6" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client7.webp" alt="Happy Client 7" class="spotlight-image">
+                    <img src="uploads/index_images/client7.webp" alt="Happy Client 7" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client8.webp" alt="Happy Client 8" class="spotlight-image">
+                    <img src="uploads/index_images/client8.webp" alt="Happy Client 8" class="spotlight-image">
                 </div>
                 <div class="spotlight-item">
-                    <img src="/uploads/index_images/client9.webp" alt="Happy Client 9" class="spotlight-image">
+                    <img src="uploads/index_images/client9.webp" alt="Happy Client 9" class="spotlight-image">
                 </div>
             </div>
             
@@ -3073,7 +3073,7 @@ function goToSpotlightSlide(index) {
         container.innerHTML = products.map(product => `
             <div class="product-card">
                 <div class="product-image">
-                    <img src="${product.image || product.previewImage || 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&q=80'}" 
+                    <img src="${(product.image || product.previewImage || "").replace("../../", "") || 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&q=80'}" 
                          alt="${product.name}" 
                          onerror="this.src='https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&q=80'">
                     <button class="wishlist-btn" onclick="toggleWishlist(this, '${product.id}')">
@@ -3188,8 +3188,19 @@ function createProductCardHTML(product) {
     };
 
     const displayName = cleanProductName(product.name);
-    const LOCAL_FALLBACK_IMAGE = "/admin/uploads/product_images/no-image.png";
-    const previewImage = product.previewImage || product.image || LOCAL_FALLBACK_IMAGE;
+    const LOCAL_FALLBACK_IMAGE = "admin/uploads/product_images/no-image.png";
+    let previewImage = product.previewImage || product.image || LOCAL_FALLBACK_IMAGE;
+    
+    // Modern path resolution for the landing page
+    if (previewImage && !previewImage.startsWith('http') && !previewImage.startsWith('//')) {
+        // Remove all leading ../ or /
+        let clean = previewImage.replace(/^(\.\.\/|\.\/|\/)*/, "");
+        // Prepend admin/ if it's an uploads path but missing admin/
+        if (clean.startsWith('uploads/') && !clean.startsWith('admin/')) {
+            clean = 'admin/' + clean;
+        }
+        previewImage = clean;
+    }
 
     const stockAlert = product.stockQuantity && product.stockQuantity <= 5 ? 
         `<div class="stock-alert"> Only ${product.stockQuantity} left!</div>` : "";
@@ -3670,3 +3681,4 @@ function initStoreCarousel() {
 </script>
 </body>
 </html>
+

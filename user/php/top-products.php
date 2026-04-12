@@ -10,6 +10,7 @@ header('Expires: 0');
 if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db_docker.php';
 } else {
+    require_once __DIR__ . '/../../config/google-config.php';
     require_once __DIR__ . '/../../config/db.php';
 }
 
@@ -20,10 +21,19 @@ if ($conn->connect_error) {
 
 function getPublicImagePath($dbPath)
 {
-    if (empty($dbPath))
-        return '';
-    $filename = basename($dbPath);
-    return '/admin/uploads/product_images/' . $filename;
+    if (empty($dbPath)) return '';
+    
+    // Completely remove any leading ../ or ./ or /
+    $cleanPath = ltrim($dbPath, './');
+    $cleanPath = ltrim($cleanPath, '/');
+    
+    // If it now starts with uploads/, we must prepend admin/ 
+    // because products are actually in admin/uploads/
+    if (strpos($cleanPath, 'uploads/') === 0) {
+        $cleanPath = 'admin/' . $cleanPath;
+    }
+    
+    return rtrim(BASE_URL, '/') . '/' . ltrim($cleanPath, '/');
 }
 
 // Get logged-in user ID

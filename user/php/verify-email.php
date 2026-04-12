@@ -14,7 +14,7 @@ if (getenv('DOCKER_ENV') === 'true') {
 require_once __DIR__ . '/activity_logger.php';
 
 if (!isset($_GET['token'])) {
-    die('<script>alert("Invalid verification link."); window.location.href="/user/html/signup.html";</script>');
+    die('<script>alert("Invalid verification link."); window.location.href="../html/signup.html";</script>');
 }
 
 $token = $_GET['token'];
@@ -92,7 +92,7 @@ if ($result->num_rows === 1) {
             <div class="success-icon">✓</div>
             <h1>Email Verified Successfully!</h1>
             <p>' . htmlspecialchars($message) . '</p>
-            <a href="' . ($autoLogin ? '/user/html/home.html' : '/user/html/login.html') . '" class="btn">' . ($autoLogin ? 'Go to the Store' : 'Go to Login') . '</a>
+            <a href="' . ($autoLogin ? '../html/home.html' : '../html/login.html') . '" class="btn">' . ($autoLogin ? 'Go to the Store' : 'Go to Login') . '</a>
         </div>
     </body>
     </html>';
@@ -109,7 +109,7 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
     if (time() - $_SESSION['pending_google_registration']['created_at'] > 86400) {
         unset($_SESSION['pending_google_registration']);
         $conn->close();
-        die('<script>alert("Verification link has expired. Please sign up again."); window.location.href="/user/html/signup.html";</script>');
+        die('<script>alert("Verification link has expired. Please sign up again."); window.location.href="../html/signup.html";</script>');
     }
 
     $pendingUser = $_SESSION['pending_google_registration'];
@@ -124,7 +124,7 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
         $checkStmt->close();
         $conn->close();
         unset($_SESSION['pending_google_registration']);
-        die('<script>alert("Email already registered. Please use a different email."); window.location.href="/user/html/signup.html";</script>');
+        die('<script>alert("Email already registered. Please use a different email."); window.location.href="../html/signup.html";</script>');
     }
     $checkStmt->close();
 
@@ -184,7 +184,7 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
                 <h1>Email Verified Successfully!</h1>
                 <p>Welcome to Beauty & Blessed, ' . htmlspecialchars($pendingUser['first_name']) . '! Your account has been activated.</p>
                 <p>You have been automatically logged in.</p>
-                <a href="/user/html/home.html" class="btn">Go to the Store</a>
+                <a href="../html/home.html" class="btn">Go to the Store</a>
             </div>
         </body>
         </html>';
@@ -198,7 +198,7 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
         $insertStmt->close();
         $conn->close();
         unset($_SESSION['pending_google_registration']);
-        die('<script>alert("Failed to create account. Please try again."); window.location.href="/user/html/signup.html";</script>');
+        die('<script>alert("Failed to create account. Please try again."); window.location.href="../html/signup.html";</script>');
     }
 }
 
@@ -212,6 +212,6 @@ $conn->close();
 
 echo '<script>
     alert("Invalid or expired verification link. Please try signing up again.");
-    window.location.href="/user/html/signup.html";
+    window.location.href="../html/signup.html";
 </script>';
 ?>

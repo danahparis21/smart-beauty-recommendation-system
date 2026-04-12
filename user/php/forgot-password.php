@@ -76,7 +76,7 @@ if (!$stmt->execute()) {
 $stmt->close();
 
 // Send password reset email
-$resetLink = BASE_URL . "/user/php/reset-password.php?token=" . $resetToken;
+$resetLink = BASE_URL . "./reset-password.php?token=" . $resetToken;
 
 // Use the password reset email function
 $emailSent = sendPasswordResetEmail($email, $user['first_name'], $resetLink);
