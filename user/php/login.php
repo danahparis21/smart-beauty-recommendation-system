@@ -114,8 +114,12 @@ if ($result->num_rows === 1) {
             
             // Send Alert & Verification Email
             $details = ['ip' => $userIP, 'userAgent' => $userAgent];
-            sendSuspiciousLoginAlert($user['Email'], $user['first_name'], $details);
-            sendVerificationEmail($user['Email'], $user['first_name'], $verificationToken);
+            $alertSent = sendSuspiciousLoginAlert($user['Email'], $user['first_name'], $details);
+            $verifySent = sendVerificationEmail($user['Email'], $user['first_name'], $verificationToken);
+            
+            if (!$alertSent || !$verifySent) {
+                error_log("Failed to send suspicious login emails to: " . $user['Email']);
+            }
             
             $stmt->close();
             returnJsonResponse(false, 'Suspicious login detected. For your security, a verification link has been sent to your email. Please verify to continue.', ['suspicious' => true], $conn);
