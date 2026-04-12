@@ -137,4 +137,29 @@ function formatRemainingTime($seconds) {
     $secs = $seconds % 60;
     return sprintf("%02d:%02d", $minutes, $secs);
 }
+
+/**
+ * Parses raw User Agent into a readable string
+ */
+function parseUserAgent($userAgent) {
+    $browser = "Unknown Browser";
+    $platform = "Unknown OS";
+
+    // Detect Platform
+    if (preg_match('/windows|win32/i', $userAgent)) $platform = 'Windows';
+    elseif (preg_match('/macintosh|mac os x/i', $userAgent)) $platform = 'macOS';
+    elseif (preg_match('/linux/i', $userAgent)) $platform = 'Linux';
+    elseif (preg_match('/iphone|ipad|ipod/i', $userAgent)) $platform = 'iOS';
+    elseif (preg_match('/android/i', $userAgent)) $platform = 'Android';
+
+    // Detect Browser
+    if (preg_match('/opera|opr/i', $userAgent)) $browser = 'Opera';
+    elseif (preg_match('/edge/i', $userAgent)) $browser = 'Microsoft Edge';
+    elseif (preg_match('/chrome/i', $userAgent)) $browser = 'Google Chrome';
+    elseif (preg_match('/safari/i', $userAgent)) $browser = 'Safari';
+    elseif (preg_match('/firefox/i', $userAgent)) $browser = 'Firefox';
+    elseif (preg_match('/msie|trident/i', $userAgent)) $browser = 'Internet Explorer';
+
+    return "$browser on $platform";
+}
 ?>

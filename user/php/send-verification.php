@@ -7,6 +7,7 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../config/google-config.php';
 // Add PHPMailer
 require_once __DIR__ . '/../../vendor/autoload.php'; // Path to composer autoload
+require_once __DIR__ . '/security_utils.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -256,7 +257,7 @@ function sendSuspiciousLoginAlert($email, $firstName, $details) {
                 <div class='details'>
                     <strong>Time:</strong> " . date('Y-m-d H:i:s') . "<br>
                     <strong>IP Address:</strong> {$details['ip']}<br>
-                    <strong>Browser/Device:</strong> {$details['userAgent']}
+                    <strong>Browser/Device:</strong> " . parseUserAgent($details['userAgent']) . "
                 </div>
                 <p>If this was you, you can ignore this message. If you don't recognize this activity, please reset your password immediately.</p>
                 <div class='footer'>&copy; " . date('Y') . " Beauty & Blessed. All rights reserved.</div>
