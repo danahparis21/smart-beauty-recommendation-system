@@ -10,8 +10,9 @@ if (getenv('DOCKER_ENV') === 'true') {
     require_once __DIR__ . '/../../config/db.php';
 }
 
-// Include activity logger
+// Include activity logger and security utils
 require_once __DIR__ . '/activity_logger.php';
+require_once __DIR__ . '/security_utils.php';
 
 if (!isset($_GET['token'])) {
     die('<script>alert("Invalid verification link."); window.location.href="../html/signup.html";</script>');
@@ -31,13 +32,19 @@ if ($result->num_rows === 1) {
     
     // Check if already verified
     if ($user['email_verified'] == 1) {
-        $message = "Email already verified! You can now login.";
-        $autoLogin = false;
-        
-        // ✅ LOG ALREADY VERIFIED ATTEMPT
+        // Even if already verified, if they used a token, we should treat it as a successful MFA bypass
         $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-        $details = "Attempted to verify already verified email, IP: {$userIP}";
-        logUserActivity($conn, $user['UserID'], 'Email verification attempt', $details);
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+        updateLastLoginDetails($conn, $user['UserID'], $userIP, $userAgent);
+
+        $_SESSION['user_id'] = $user['UserID'];
+        $_SESSION['email'] = $user['Email'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['first_name'] = $user['first_name'];
+        $_SESSION['role'] = $user['Role'];
+
+        $message = "Identity verified successfully! You have been automatically logged in.";
+        $autoLogin = true;
     } else {
         // Mark email as verified
         $updateStmt = $conn->prepare('UPDATE users SET email_verified = 1, verification_token = NULL WHERE UserID = ?');
@@ -46,9 +53,13 @@ if ($result->num_rows === 1) {
         if ($updateStmt->execute()) {
             // ✅ LOG SUCCESSFUL EMAIL VERIFICATION
             $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
             $verificationDetails = "Email verified successfully, IP: {$userIP}";
             logUserActivity($conn, $user['UserID'], 'Email verified', $verificationDetails);
             
+            // Update last login details to clear suspicious state
+            updateLastLoginDetails($conn, $user['UserID'], $userIP, $userAgent);
+
             // Auto-login the user after verification
             $_SESSION['user_id'] = $user['UserID'];
             $_SESSION['email'] = $user['Email'];
@@ -146,9 +157,13 @@ if (isset($_SESSION['pending_google_registration']) && $_SESSION['pending_google
         
         // ✅ LOG GOOGLE ACCOUNT VERIFICATION AND CREATION
         $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
         $googleVerificationDetails = "Google account verified and created, IP: {$userIP}";
         logUserActivity($conn, $userId, 'Google account verified', $googleVerificationDetails);
         
+        // Update last login details
+        updateLastLoginDetails($conn, $userId, $userIP, $userAgent);
+
         // Clear pending registration
         unset($_SESSION['pending_google_registration']);
         

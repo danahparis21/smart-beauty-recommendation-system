@@ -10,6 +10,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
+  <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
   <style>
     * {
       margin: 0;
@@ -940,6 +941,16 @@
         opacity: 0;
       }
     }
+
+    #lock-timer {
+      background: rgba(255, 20, 147, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 20, 147, 0.3);
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--dark-pink);
+    }
   </style>
 </head>
 
@@ -973,11 +984,11 @@
       </div>
 
       <div class="options">
-        <!-- <label class="remember-me">
-            <input type="checkbox" /> Remember me
-          </label> -->
         <a href="#" class="forgot-password">Forgot Password?</a>
       </div>
+
+      <div id="recaptcha-container" style="margin-bottom: 20px; display: flex; justify-content: center;"></div>
+      <div id="lock-timer" style="margin-bottom: 20px; color: #ff1493; text-align: center; font-weight: 600; font-size: 14px; display: none;"></div>
 
       <button type="submit" class="login-btn">Login</button>
     </form>
@@ -996,6 +1007,17 @@
   </div>
 
   <script>
+    // reCAPTCHA Callback
+    function onloadCallback() {
+      fetch('../php/get-security-config.php')
+        .then(res => res.json())
+        .then(config => {
+          window.recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+            'sitekey': config.recaptchaSiteKey
+          });
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
       localStorage.removeItem('userId');
     sessionStorage.clear();
@@ -1059,18 +1081,24 @@
       
         
 
-        // Simple validation
         if (username && password) {
-          // Add loading animation
+          const recaptchaResponse = grecaptcha.getResponse(window.recaptchaWidgetId);
+          if (!recaptchaResponse) {
+            showToast("Please complete the reCAPTCHA.");
+            return;
+          }
+
           const loginBtn = document.querySelector(".login-btn");
           const originalText = loginBtn.textContent;
-          loginBtn.innerHTML =
-            '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+          loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
           loginBtn.disabled = true;
+
+          const formData = new FormData(loginForm);
+          formData.append('recaptcha_token', recaptchaResponse);
 
           fetch("../php/login.php", {
             method: "POST",
-            body: new FormData(loginForm),
+            body: formData,
           })
             .then((res) => res.text()) // <-- temporarily get raw text
             .then((text) => {
@@ -1122,6 +1150,8 @@
                 }, 2000);
               } else {
                 showToast(data.message || "Login failed!");
+                if (data.locked) startLockTimer(data.remaining_time);
+                grecaptcha.reset(window.recaptchaWidgetId);
               }
 
               loginBtn.innerHTML = originalText;
@@ -1137,6 +1167,24 @@
           showToast("Please fill in both Username and Password");
         }
       });
+
+      function startLockTimer(seconds) {
+        const timerDiv = document.getElementById("lock-timer");
+        const loginBtn = document.querySelector(".login-btn");
+        loginBtn.disabled = true;
+        timerDiv.style.display = "block";
+        const interval = setInterval(() => {
+          const minutes = Math.floor(seconds / 60);
+          const secs = seconds % 60;
+          timerDiv.textContent = `Account locked. Try again in ${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+          if (seconds <= 0) {
+            clearInterval(interval);
+            timerDiv.style.display = "none";
+            loginBtn.disabled = false;
+          }
+          seconds--;
+        }, 1000);
+      }
 
       // Reset floating labels
       document.querySelectorAll(".input-field").forEach((field) => {

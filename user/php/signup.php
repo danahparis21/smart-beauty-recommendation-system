@@ -12,7 +12,8 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 
 require_once __DIR__ . '/send-verification.php';
-require_once __DIR__ . '/activity_logger.php'; // Add activity logger
+require_once __DIR__ . '/activity_logger.php'; 
+require_once __DIR__ . '/security_utils.php';
 
 function returnJsonError($message, $conn = null)
 {
@@ -72,6 +73,12 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // reCAPTCHA Validation
+    $recaptchaToken = $_POST['recaptcha_token'] ?? '';
+    if (!validateRecaptcha($recaptchaToken)) {
+        returnJsonError('reCAPTCHA verification failed. Please try again.', $conn);
+    }
+
     $firstName = trim($_POST['firstName'] ?? '');
     $lastName = trim($_POST['lastName'] ?? '');
     $username = trim($_POST['username'] ?? '');

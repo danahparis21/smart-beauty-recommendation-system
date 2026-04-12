@@ -45,6 +45,10 @@ define('SMTP_PASSWORD', getenv('SMTP_PASSWORD'));
 define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL'));
 define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME'));
 
+// reCAPTCHA Configuration
+define('RECAPTCHA_SITE_KEY', getenv('RECAPTCHA_SITE_KEY'));
+define('RECAPTCHA_SECRET_KEY', getenv('RECAPTCHA_SECRET_KEY'));
+
 // Base URL
 define('BASE_URL', getenv('BASE_URL'));
 

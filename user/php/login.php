@@ -16,18 +16,13 @@ if (getenv('DOCKER_ENV') === 'true') {
 }
 
 require_once __DIR__ . '/activity_logger.php';
+require_once __DIR__ . '/security_utils.php';
+require_once __DIR__ . '/send-verification.php';
 
 function returnJsonResponse($success, $message, $data = [], $conn = null) {
-    // Clear any output buffers
     if (ob_get_length()) ob_clean();
-    
-    // Set JSON header
     header('Content-Type: application/json');
-    
-    // Send JSON response
     echo json_encode(array_merge(['success' => $success, 'message' => $message], $data));
-    
-    // Close database connection AFTER sending response
     if ($conn && !$conn->connect_error) {
         $conn->close();
     }
@@ -36,33 +31,33 @@ function returnJsonResponse($success, $message, $data = [], $conn = null) {
 
 function redirectBasedOnRole($role) {
     if ($role === 'admin') {
-        // For AJAX responses, return redirect information
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
             return [
                 'redirect' => true,
                 'redirectUrl' => '../../admin/html/admin.html'
             ];
         } else {
-            // Direct browser redirect
             header('Location: /admin/html/admin.html');
             exit();
         }
     }
-    // Add other role-based redirects here if needed
     return null;
 }
 
-// Check database connection
 if ($conn->connect_error) {
     returnJsonResponse(false, "Database Connection failed: " . $conn->connect_error);
 }
 
-// Check request method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     returnJsonResponse(false, 'Invalid request method.', [], $conn);
 }
 
-// Check if username and password are provided
+// 1. reCAPTCHA Validation
+$recaptchaToken = $_POST['recaptcha_token'] ?? '';
+if (!validateRecaptcha($recaptchaToken)) {
+    returnJsonResponse(false, 'reCAPTCHA verification failed. Please try again.', ['error_type' => 'recaptcha'], $conn);
+}
+
 if (!isset($_POST['username']) || !isset($_POST['password'])) {
     returnJsonResponse(false, 'Please provide both username and password.', [], $conn);
 }
@@ -70,13 +65,20 @@ if (!isset($_POST['username']) || !isset($_POST['password'])) {
 $username = trim($_POST['username'] ?? ''); 
 $password = $_POST['password'] ?? '';
 
-// Basic input validation
 if (empty($username) || empty($password)) {
     returnJsonResponse(false, 'Username and password cannot be empty.', [], $conn);
 }
 
-// Prepare SQL statement
-$stmt = $conn->prepare("SELECT UserID, Password, first_name, Role, Email, email_verified FROM users WHERE username = ?");
+// 2. Check Account Lock
+$lockTime = getAccountLockRemainingTime($conn, $username);
+if ($lockTime > 0) {
+    returnJsonResponse(false, "Account is temporarily locked. Please try again in " . formatRemainingTime($lockTime), [
+        'locked' => true,
+        'remaining_time' => $lockTime
+    ], $conn);
+}
+
+$stmt = $conn->prepare("SELECT UserID, Password, first_name, Role, Email, email_verified, login_attempts FROM users WHERE username = ?");
 if (!$stmt) {
     returnJsonResponse(false, 'Database error (prepare statement).', [], $conn);
 }
@@ -88,16 +90,40 @@ $result = $stmt->get_result();
 if ($result->num_rows === 1) {
     $user = $result->fetch_assoc();
     
-    // Verify password
     if (password_verify($password, $user['Password'])) {
         
-        // Check if email is verified
         if ($user['email_verified'] == 0) {
             $stmt->close();
-            returnJsonResponse(false, 'Please verify your email before logging in. Check your inbox for the verification link.', [], $conn);
+            returnJsonResponse(false, 'Please verify your email before logging in.', [], $conn);
         }
         
-        // Email is verified - proceed with login
+        // 3. Reset Login Attempts on Success
+        resetLoginAttempts($conn, $username);
+        
+        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+        
+        // 4. Detect Suspicious Login
+        if (isSuspiciousLogin($conn, $user['UserID'], $userIP, $userAgent)) {
+            // Suspicious login - trigger OTP
+            $verificationToken = bin2hex(random_bytes(32));
+            $updateTokenStmt = $conn->prepare("UPDATE users SET verification_token = ? WHERE UserID = ?");
+            $updateTokenStmt->bind_param("si", $verificationToken, $user['UserID']);
+            $updateTokenStmt->execute();
+            $updateTokenStmt->close();
+            
+            // Send Alert & Verification Email
+            $details = ['ip' => $userIP, 'userAgent' => $userAgent];
+            sendSuspiciousLoginAlert($user['Email'], $user['first_name'], $details);
+            sendVerificationEmail($user['Email'], $user['first_name'], $verificationToken);
+            
+            $stmt->close();
+            returnJsonResponse(false, 'Suspicious login detected. For your security, a verification link has been sent to your email. Please verify to continue.', ['suspicious' => true], $conn);
+        }
+        
+        // Update last login details
+        updateLastLoginDetails($conn, $user['UserID'], $userIP, $userAgent);
+
         $_SESSION['user_id'] = $user['UserID'];
         $_SESSION['username'] = $username;
         $_SESSION['first_name'] = $user['first_name'];
@@ -106,29 +132,15 @@ if ($result->num_rows === 1) {
         
         $stmt->close();
         
-        // ✅ LOG USER LOGIN - MOVE THIS AFTER SESSION IS SET
-        $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
         $loginDetails = "IP: {$userIP}, Browser: " . substr($userAgent, 0, 100);
+        logUserActivity($conn, $user['UserID'], 'User login', $loginDetails);
         
-        // Log the activity BEFORE sending response
-        $logSuccess = logUserActivity($conn, $user['UserID'], 'User login', $loginDetails);
-        
-        if (!$logSuccess) {
-            error_log("Failed to log user login activity for user ID: " . $user['UserID']);
-        }
-        
-        // Check if user is admin and handle redirect
         $redirectInfo = redirectBasedOnRole($user['Role']);
-        
-        // Success response
         $responseData = [
             'firstName' => $user['first_name'],
             'role' => $user['Role'],
             'email' => $user['Email']
         ];
-        
-        // Add redirect info if applicable
         if ($redirectInfo) {
             $responseData = array_merge($responseData, $redirectInfo);
         }
@@ -136,17 +148,28 @@ if ($result->num_rows === 1) {
         returnJsonResponse(true, 'Login successful!', $responseData, $conn);
         
     } else {
-        // Incorrect password
+        // 5. Increment Login Attempts on Failure
+        $isLocked = recordFailedAttempt($conn, $username);
+        
+        // Fetch updated attempts
+        $stmt_attempts = $conn->prepare("SELECT login_attempts FROM users WHERE username = ?");
+        $stmt_attempts->bind_param("s", $username);
+        $stmt_attempts->execute();
+        $res_attempts = $stmt_attempts->get_result();
+        $u_attempts = $res_attempts->fetch_assoc();
+        $remaining = 5 - ($u_attempts['login_attempts'] ?? 0);
+        
         $stmt->close();
-        returnJsonResponse(false, 'Invalid username or password.', [], $conn);
+        
+        if ($isLocked) {
+           returnJsonResponse(false, 'Too many failed attempts. Account locked for 15 minutes.', ['locked' => true, 'remaining_time' => 900], $conn);
+        } else {
+           returnJsonResponse(false, "Invalid username or password. Remaining attempts: $remaining", ['attempts_left' => $remaining], $conn);
+        }
     }
 } else {
-    // Username not found
     $stmt->close();
     returnJsonResponse(false, 'Invalid username or password.', [], $conn);
 }
-
-// This should never be reached
-$stmt->close();
 returnJsonResponse(false, 'An unexpected error occurred.', [], $conn);
 ?>

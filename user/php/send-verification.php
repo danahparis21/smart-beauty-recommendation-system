@@ -19,7 +19,7 @@ function sendVerificationEmail($email, $firstName, $token) {
     
     // If BASE_URL is available and looks valid, use it. Otherwise, construct from environment.
     $currentBase = defined('BASE_URL') && !empty(BASE_URL) ? BASE_URL : "$protocol://$host/smart-beauty-recommendation-system";
-    $verificationLink = rtrim($currentBase, '/') . "./verify-email.php?token=" . $token;
+    $verificationLink = rtrim($currentBase, '/') . "/user/php/verify-email.php?token=" . $token;
     
     // ===== DEVELOPMENT MODE - Show link instead of sending email =====
     if (defined('DEV_MODE') && DEV_MODE === true) {
@@ -208,6 +208,64 @@ function sendPasswordResetEmail($email, $firstName, $resetLink) {
         $mail->send();
         return true;
         
+    } catch (Exception $e) {
+        error_log("PHPMailer Error: " . $mail->ErrorInfo);
+        return false;
+    }
+}
+function sendSuspiciousLoginAlert($email, $firstName, $details) {
+    if (defined('DEV_MODE') && DEV_MODE === true) {
+        $_SESSION['suspicious_login_alert'] = true;
+        $_SESSION['suspicious_details'] = $details;
+        return true;
+    }
+    
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = SMTP_HOST;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = SMTP_USERNAME;
+        $mail->Password   = SMTP_PASSWORD;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = SMTP_PORT;
+        $mail->SMTPOptions = array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true));
+        
+        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+        $mail->addAddress($email, $firstName);
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'Suspicious Login Detected - Beauty & Blessed';
+        
+        $mail->Body = "
+        <html>
+        <head>
+            <style>
+                body { font-family: 'Montserrat', Arial, sans-serif; background-color: #ffe6f2; padding: 20px; }
+                .container { background-color: #ffffff; border-radius: 15px; padding: 40px; max-width: 600px; margin: 0 auto; box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2); }
+                .header { text-align: center; color: #ff69b4; font-size: 28px; font-weight: 700; margin-bottom: 20px; }
+                .details { background-color: #f9f9f9; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 5px solid #ff69b4; }
+                .footer { text-align: center; color: #888; font-size: 12px; margin-top: 30px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>Security Alert ⚠️</div>
+                <p>Hi <strong>{$firstName}</strong>,</p>
+                <p>We detected a login to your account from a new device or location.</p>
+                <div class='details'>
+                    <strong>Time:</strong> " . date('Y-m-d H:i:s') . "<br>
+                    <strong>IP Address:</strong> {$details['ip']}<br>
+                    <strong>Browser/Device:</strong> {$details['userAgent']}
+                </div>
+                <p>If this was you, you can ignore this message. If you don't recognize this activity, please reset your password immediately.</p>
+                <div class='footer'>&copy; " . date('Y') . " Beauty & Blessed. All rights reserved.</div>
+            </div>
+        </body>
+        </html>";
+        
+        $mail->send();
+        return true;
     } catch (Exception $e) {
         error_log("PHPMailer Error: " . $mail->ErrorInfo);
         return false;
