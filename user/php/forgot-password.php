@@ -62,7 +62,8 @@ $stmt->close();
 
 // Generate password reset token
 $resetToken = bin2hex(random_bytes(32));
-$expiry = time() + PASSWORD_RESET_EXPIRY;
+$expiryTime = defined('PASSWORD_RESET_EXPIRY') && !empty(PASSWORD_RESET_EXPIRY) ? (int)PASSWORD_RESET_EXPIRY : 3600;
+$expiry = time() + $expiryTime;
 
 // Store reset token in database
 $stmt = $conn->prepare('UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE UserID = ?');
@@ -76,7 +77,12 @@ if (!$stmt->execute()) {
 $stmt->close();
 
 // Send password reset email
-$resetLink = BASE_URL . "./reset-password.php?token=" . $resetToken;
+// Determine base URL robustly
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$currentBase = defined('BASE_URL') && !empty(BASE_URL) ? BASE_URL : "$protocol://$host/smart-beauty-recommendation-system";
+
+$resetLink = rtrim($currentBase, '/') . "/user/php/reset-password.php?token=" . $resetToken;
 
 // Use the password reset email function
 $emailSent = sendPasswordResetEmail($email, $user['first_name'], $resetLink);

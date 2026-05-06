@@ -18,17 +18,15 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    $user_id = $_SESSION['user_id'];
+    $user_id = intval($_SESSION['user_id']);
 
     // ✅ FIX: Only count active cart items (not checked_out)
-    $stmt = $conn->prepare('SELECT SUM(quantity) as total FROM cart WHERE user_id = ? AND status = "active"');
-    $stmt->bind_param('i', $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
+    $query = "SELECT SUM(quantity) as total FROM cart WHERE user_id = $user_id AND status = 'active'";
+    $result = $conn->query($query);
+    $row = $result ? $result->fetch_assoc() : ['total' => 0];
 
     $count = $row['total'] ?: 0;
-    echo json_encode(['success' => true, 'count' => $count]);
+    echo json_encode(['success' => true, 'count' => (int)$count]);
 } catch (Exception $e) {
     error_log('Cart count error: ' . $e->getMessage());
     echo json_encode(['success' => false, 'count' => 0, 'error' => $e->getMessage()]);

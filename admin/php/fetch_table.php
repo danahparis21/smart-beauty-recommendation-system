@@ -47,13 +47,13 @@ SELECT
     pm.ImagePath AS MediaImage,
     pm.MediaType
 FROM 
-    Products p
+    products p
 LEFT JOIN 
-    Products p_parent ON p.ParentProductID = p_parent.ProductID
+    products p_parent ON p.ParentProductID = p_parent.ProductID
 LEFT JOIN 
-    ProductAttributes a ON p.ProductID = a.ProductID
+    productattributes a ON p.ProductID = a.ProductID
 LEFT JOIN 
-    ProductMedia pm 
+    productmedia pm 
         ON (pm.VariantProductID = p.ProductID OR pm.ParentProductID = p.ProductID)
 WHERE 
     p.Status != 'Deleted'
@@ -159,7 +159,7 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-$total_query = $conn->query("SELECT COUNT(*) as total FROM Products WHERE Status != 'Deleted'");
+$total_query = $conn->query("SELECT COUNT(*) as total FROM products WHERE Status != 'Deleted'");
 $total_row = $total_query->fetch_assoc();
 $total_count = (int) $total_row['total'];
 

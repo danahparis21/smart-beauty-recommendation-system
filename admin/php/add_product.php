@@ -145,7 +145,7 @@ function insertAttributes($conn, $productID, $skinType, $skinTone, $undertone, $
 {
     error_log("Inserting attributes for product: $productID");
 
-    $stmt = $conn->prepare('INSERT INTO ProductAttributes (ProductID, SkinType, SkinTone, Undertone, Acne, Dryness, DarkSpots, Matte, Dewy, LongLasting) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $conn->prepare('INSERT INTO productattributes (ProductID, SkinType, SkinTone, Undertone, Acne, Dryness, DarkSpots, Matte, Dewy, LongLasting) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
     if (!$stmt) {
         error_log('Attributes prepare failed: ' . $conn->error);
@@ -192,7 +192,7 @@ function getNextProductID($conn, $category)
     $prefix = $prefixMap[$category] ?? 'PROD';
     error_log("Using prefix: $prefix");
 
-    $sql = "SELECT ProductID FROM Products WHERE ProductID LIKE '{$prefix}___' ORDER BY ProductID DESC LIMIT 1";
+    $sql = "SELECT ProductID FROM products WHERE ProductID LIKE '{$prefix}___' ORDER BY ProductID DESC LIMIT 1";
     error_log("SQL: $sql");
 
     $result = $conn->query($sql);
@@ -233,7 +233,7 @@ if ($type === 'new') {
     // Parent ID is unique
     $counter = 1;
     $checkID = $parentProductID;
-    while ($conn->query("SELECT ProductID FROM Products WHERE ProductID = '{$checkID}'")->num_rows > 0) {
+    while ($conn->query("SELECT ProductID FROM products WHERE ProductID = '{$checkID}'")->num_rows > 0) {
         $counter++;
         $checkID = $prefix . str_pad($counter, 2, '0', STR_PAD_LEFT);
         error_log("Parent ID conflict, trying: $checkID");
@@ -246,7 +246,7 @@ if ($type === 'new') {
     $parentName = "Parent Record: $name";
     $desc = "Parent product record for $name shades.";
 
-    $stmt = $conn->prepare("INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating) VALUES (?, ?, ?, NULL, 'PARENT_GROUP', 0.00, ?, 0, NULL, ?, NULL, ?)");
+    $stmt = $conn->prepare("INSERT INTO products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating) VALUES (?, ?, ?, NULL, 'PARENT_GROUP', 0.00, ?, 0, NULL, ?, NULL, ?)");
 
     if (!$stmt) {
         error_log('Parent product prepare failed: ' . $conn->error);
@@ -268,7 +268,7 @@ if ($type === 'new') {
 
     // Insert FIRST VARIANT record
     error_log('Creating variant product...');
-    $stmt = $conn->prepare('INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $conn->prepare('INSERT INTO products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
     if (!$stmt) {
         error_log('Variant product prepare failed: ' . $conn->error);
@@ -287,7 +287,7 @@ if ($type === 'new') {
     // INSERT INTO ProductMedia for Variant-Specific Image
 if ($variantImagePath) {
     error_log('Adding variant image media...');
-    $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
+    $media_stmt = $conn->prepare("INSERT INTO productmedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
     if ($media_stmt) {
         // FIX: Use absolute web path instead of ../ path
         $webVariantPath = '/uploads/product_images/' . basename($variantImagePath);
@@ -305,7 +305,7 @@ if ($variantImagePath) {
     // INSERT INTO ProductMedia for Preview/Hover Image
     if ($previewImagePath) {
         error_log('Adding preview image media...');
-        $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'PREVIEW', 1)");
+        $media_stmt = $conn->prepare("INSERT INTO productmedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'PREVIEW', 1)");
         if ($media_stmt) {
             // FIX: Use absolute web path instead of ../ path
             $webPreviewPath = '/uploads/product_images/' . basename($previewImagePath);
@@ -333,7 +333,7 @@ if ($variantImagePath) {
                 $targetFile = $targetDir . $fileName;
     
                 if (move_uploaded_file($tmp_name, $targetFile)) {
-                    $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'GALLERY', ?)");
+                    $media_stmt = $conn->prepare("INSERT INTO productmedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, NULL, ?, 'GALLERY', ?)");
                     if ($media_stmt) {
                         // FIX: Use absolute web path instead of ../ path
                         $webGalleryPath = '/uploads/product_images/' . basename($targetFile);
@@ -369,7 +369,7 @@ if ($type === 'variant') {
     // Get Parent ID
     $parentProductID = $_POST['parentProductID'];
 
-    $stmt_parent = $conn->prepare('SELECT Category, Name, Description FROM Products WHERE ProductID = ?');
+    $stmt_parent = $conn->prepare('SELECT Category, Name, Description FROM products WHERE ProductID = ?');
     $stmt_parent->bind_param('s', $parentProductID);
     $stmt_parent->execute();
     $result_parent = $stmt_parent->get_result();
@@ -389,7 +389,7 @@ if ($type === 'variant') {
     $variantID = getNextProductID($conn, $category);  // EYLN006
 
     // Insert NEW VARIANT record
-    $stmt = $conn->prepare('INSERT INTO Products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $conn->prepare('INSERT INTO products (ProductID, Name, Category, ParentProductID, ShadeOrVariant, Price, Description, Stocks, ExpirationDate, Ingredients, HexCode, ProductRating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
     $stmt->bind_param('sssssdsisssi', $variantID, $name, $category, $parentProductID, $variantName, $price, $description, $stocks, $expirationDate, $ingredients, $hexCode, $productRating);
 
@@ -399,7 +399,7 @@ if ($type === 'variant') {
     }
 
     if ($variantImagePath) {
-        $media_stmt = $conn->prepare("INSERT INTO ProductMedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
+        $media_stmt = $conn->prepare("INSERT INTO productmedia (ParentProductID, VariantProductID, ImagePath, MediaType, SortOrder) VALUES (?, ?, ?, 'VARIANT', 1)");
         // FIX: Use absolute web path
         $webVariantPath = '/uploads/product_images/' . basename($variantImagePath);
         $media_stmt->bind_param('sss', $parentProductID, $variantID, $webVariantPath);

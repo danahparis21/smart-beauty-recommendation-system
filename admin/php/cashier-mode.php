@@ -55,8 +55,8 @@ class CashierMode
                 p.Stocks,
                 p.Status,
                 COALESCE(pm.ImagePath, '/admin/uploads/product_images/no-image.png') as ImagePath
-            FROM Products p
-            LEFT JOIN ProductMedia pm ON p.ProductID = pm.VariantProductID 
+            FROM products p
+            LEFT JOIN productmedia pm ON p.ProductID = pm.VariantProductID 
                 AND pm.MediaType = 'VARIANT'
             WHERE p.ShadeOrVariant != 'PARENT_GROUP'
             AND p.Status != 'Deleted'
@@ -90,7 +90,7 @@ class CashierMode
             // Format display name
             if ($row['ParentProductID']) {
                 // Get parent name for better display
-                $parentQuery = "SELECT Name FROM Products WHERE ProductID = ?";
+                $parentQuery = "SELECT Name FROM products WHERE ProductID = ?";
                 $stmt = $this->conn->prepare($parentQuery);
                 $stmt->bind_param("s", $row['ParentProductID']);
                 $stmt->execute();
@@ -140,7 +140,7 @@ class CashierMode
                 $productId = $this->conn->real_escape_string($item['product_id']);
                 $quantity = intval($item['quantity']);
                 
-                $stockQuery = "SELECT Stocks, Name FROM Products WHERE ProductID = '$productId'";
+                $stockQuery = "SELECT Stocks, Name FROM products WHERE ProductID = '$productId'";
                 $stockResult = $this->conn->query($stockQuery);
                 
                 if (!$stockResult || $stockResult->num_rows === 0) {
@@ -315,7 +315,7 @@ class CashierMode
     private function updateProductStock($productId, $quantity)
     {
         // Update product stock
-        $updateStockQuery = "UPDATE Products 
+        $updateStockQuery = "UPDATE products 
                            SET Stocks = Stocks - ? 
                            WHERE ProductID = ? AND Stocks >= ?";
         $stmt = $this->conn->prepare($updateStockQuery);
@@ -328,7 +328,7 @@ class CashierMode
         
         // Update product status if stock becomes low or out
         $updateStatusQuery = "
-            UPDATE Products 
+            UPDATE products 
             SET Status = CASE 
                 WHEN Stocks <= 0 THEN 'No Stock'
                 WHEN Stocks <= 5 THEN 'Low Stock' 
@@ -353,7 +353,7 @@ try {
     }
 
     // Test if we can query the products table
-    $testQuery = "SELECT COUNT(*) as count FROM Products WHERE Status IN ('Available', 'Low Stock') AND Stocks > 0 LIMIT 1";
+    $testQuery = "SELECT COUNT(*) as count FROM products WHERE Status IN ('Available', 'Low Stock') AND Stocks > 0 LIMIT 1";
     $testResult = $conn->query($testQuery);
     
     if (!$testResult) {
@@ -389,7 +389,7 @@ try {
 
         case 'test_connection':
             // Simple test endpoint
-            $testQuery = "SELECT COUNT(*) as product_count FROM Products WHERE Status IN ('Available', 'Low Stock') AND Stocks > 0";
+            $testQuery = "SELECT COUNT(*) as product_count FROM products WHERE Status IN ('Available', 'Low Stock') AND Stocks > 0";
             $result = $conn->query($testQuery);
             $row = $result->fetch_assoc();
             

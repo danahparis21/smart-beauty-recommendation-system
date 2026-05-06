@@ -1164,9 +1164,15 @@
       fetch('../php/get-security-config.php')
         .then(res => res.json())
         .then(config => {
-          window.recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
-            'sitekey': config.recaptchaSiteKey
-          });
+          window.devMode = config.devMode;
+          if (config.devMode) {
+            document.getElementById('recaptcha-container').style.display = 'none';
+            console.log("reCAPTCHA skipped (Dev Mode)");
+          } else {
+            window.recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+              'sitekey': config.recaptchaSiteKey
+            });
+          }
         });
     }
 
@@ -1386,10 +1392,13 @@
           isEmailValid && isPasswordMatch
         ) {
           // Check reCAPTCHA
-          const recaptchaResponse = grecaptcha.getResponse(window.recaptchaWidgetId);
-          if (!recaptchaResponse) {
-            showToast("Please complete the reCAPTCHA.");
-            return;
+          let recaptchaResponse = '';
+          if (!window.devMode) {
+            recaptchaResponse = grecaptcha.getResponse(window.recaptchaWidgetId);
+            if (!recaptchaResponse) {
+              showToast("Please complete the reCAPTCHA.");
+              return;
+            }
           }
 
           const signupBtn = document.querySelector(".signup-btn");
@@ -1423,12 +1432,12 @@
                 showToast(data.message);
                 setTimeout(() => { window.location.href = "login.html"; }, 2000);
                 signupForm.reset();
-                grecaptcha.reset(window.recaptchaWidgetId);
+                if (!window.devMode) grecaptcha.reset(window.recaptchaWidgetId);
               } else {
                 showToast(data.message || "Signup failed!");
                 signupBtn.innerHTML = originalText;
                 signupBtn.disabled = false;
-                grecaptcha.reset(window.recaptchaWidgetId);
+                if (!window.devMode) grecaptcha.reset(window.recaptchaWidgetId);
               }
             })
             .catch((err) => {

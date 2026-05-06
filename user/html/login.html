@@ -1012,9 +1012,15 @@
       fetch('../php/get-security-config.php')
         .then(res => res.json())
         .then(config => {
-          window.recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
-            'sitekey': config.recaptchaSiteKey
-          });
+          window.devMode = config.devMode;
+          if (config.devMode) {
+            document.getElementById('recaptcha-container').style.display = 'none';
+            console.log("reCAPTCHA skipped (Dev Mode)");
+          } else {
+            window.recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+              'sitekey': config.recaptchaSiteKey
+            });
+          }
         });
     }
 
@@ -1082,10 +1088,13 @@
         
 
         if (username && password) {
-          const recaptchaResponse = grecaptcha.getResponse(window.recaptchaWidgetId);
-          if (!recaptchaResponse) {
-            showToast("Please complete the reCAPTCHA.");
-            return;
+          let recaptchaResponse = '';
+          if (!window.devMode) {
+            recaptchaResponse = grecaptcha.getResponse(window.recaptchaWidgetId);
+            if (!recaptchaResponse) {
+              showToast("Please complete the reCAPTCHA.");
+              return;
+            }
           }
 
           const loginBtn = document.querySelector(".login-btn");
@@ -1151,7 +1160,7 @@
               } else {
                 showToast(data.message || "Login failed!");
                 if (data.locked) startLockTimer(data.remaining_time);
-                grecaptcha.reset(window.recaptchaWidgetId);
+                if (!window.devMode) grecaptcha.reset(window.recaptchaWidgetId);
               }
 
               loginBtn.innerHTML = originalText;

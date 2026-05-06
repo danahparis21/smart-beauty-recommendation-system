@@ -38,8 +38,8 @@ try {
         a.Matte,
         a.Dewy,
         a.LongLasting
-    FROM Products p
-    LEFT JOIN ProductAttributes a ON p.ProductID = a.ProductID
+    FROM products p
+    LEFT JOIN productattributes a ON p.ProductID = a.ProductID
     WHERE p.ParentProductID = ? 
     AND p.ProductID != p.ParentProductID
     LIMIT 1';

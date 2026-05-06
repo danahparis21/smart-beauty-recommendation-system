@@ -11,7 +11,7 @@ if (getenv('DOCKER_ENV') === 'true') {
 try {
     // Fetch parent products with Name and Category
     $sql = "SELECT ProductID, Name, Category 
-            FROM Products 
+            FROM products 
             WHERE ShadeOrVariant = 'PARENT_GROUP'
             ORDER BY Name ASC";
 

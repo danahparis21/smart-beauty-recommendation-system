@@ -40,11 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($isParent) {
         // 🔴 Mark parent and all its variants as Deleted
-        $sql = "UPDATE Products SET Status = 'Deleted' 
+        $sql = "UPDATE products SET Status = 'Deleted' 
                 WHERE ProductID = ? OR ParentProductID = ?";
     } else {
         // 🔴 Mark only the variant as Deleted
-        $sql = "UPDATE Products SET Status = 'Deleted' WHERE ProductID = ?";
+        $sql = "UPDATE products SET Status = 'Deleted' WHERE ProductID = ?";
     }
 
     $stmt = $conn->prepare($sql);

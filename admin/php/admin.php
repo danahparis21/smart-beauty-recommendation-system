@@ -236,7 +236,7 @@ class AdminDashboard
 
     public function getBestSellingProducts()
     {
-        $query = "SELECT p.Name AS product_name, p.Category, SUM(oi.quantity) AS total_sold, COUNT(DISTINCT o.order_id) AS total_orders FROM orderitems oi INNER JOIN orders o ON oi.order_id = o.order_id INNER JOIN Products p ON oi.product_id = p.ProductID WHERE o.status = 'completed' GROUP BY p.ProductID, p.Name, p.Category HAVING total_sold > 0 ORDER BY total_sold DESC LIMIT 5";
+        $query = "SELECT p.Name AS product_name, p.Category, SUM(oi.quantity) AS total_sold, COUNT(DISTINCT o.order_id) AS total_orders FROM orderitems oi INNER JOIN orders o ON oi.order_id = o.order_id INNER JOIN products p ON oi.product_id = p.ProductID WHERE o.status = 'completed' GROUP BY p.ProductID, p.Name, p.Category HAVING total_sold > 0 ORDER BY total_sold DESC LIMIT 5";
         $result = $this->conn->query($query);
         $products = [];
         while ($row = $result->fetch_assoc()) {
@@ -339,7 +339,7 @@ class AdminDashboard
         $dateFilter = $this->getDateFilterForPeriod($period);
         $query = "SELECT p.Category, SUM(oi.quantity) as total_items_sold 
                   FROM orderitems oi 
-                  JOIN Products p ON oi.product_id = p.ProductID 
+                  JOIN products p ON oi.product_id = p.ProductID 
                   JOIN orders o ON oi.order_id = o.order_id 
                   WHERE o.status = 'completed' AND $dateFilter 
                   GROUP BY p.Category 
@@ -395,7 +395,7 @@ class AdminDashboard
 
     // 1. Critical Stock Alert
     $criticalStockQuery = "SELECT Name, Stocks 
-                           FROM Products 
+                           FROM products 
                            WHERE Stocks <= 5 
                            AND Status = 'Available' 
                            AND ParentProductID IS NULL 
@@ -444,7 +444,7 @@ class AdminDashboard
     // 3. Top Performing Category - FIXED: Simplified query
     $catQuery = "SELECT p.Category, SUM(oi.quantity * p.Price) as total_revenue
                  FROM orderitems oi 
-                 JOIN Products p ON oi.product_id=p.ProductID 
+                 JOIN products p ON oi.product_id=p.ProductID 
                  JOIN orders o ON oi.order_id=o.order_id 
                  WHERE o.status='completed' AND $dateFilter 
                  GROUP BY p.Category 
@@ -460,7 +460,7 @@ class AdminDashboard
     // 4. Expiring Products Alert
     $expQuery = "SELECT COUNT(*) as cnt,
                         SUM(CASE WHEN ExpirationDate <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as critical_count
-                 FROM Products 
+                 FROM products 
                  WHERE ExpirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY) 
                  AND Status='Available'";
     $expRes = $this->conn->query($expQuery);
@@ -522,7 +522,7 @@ class AdminDashboard
     $bestProductQuery = "SELECT p.Name, SUM(oi.quantity) as total_sold, 
                                 SUM(oi.quantity * p.Price) as total_revenue
                          FROM orderitems oi 
-                         JOIN Products p ON oi.product_id = p.ProductID 
+                         JOIN products p ON oi.product_id = p.ProductID 
                          JOIN orders o ON oi.order_id = o.order_id 
                          WHERE o.status = 'completed' AND $dateFilter
                          GROUP BY p.ProductID, p.Name 
@@ -660,7 +660,7 @@ class AdminDashboard
     public function getExpiringProductsDates()
 {
     $query = "SELECT ProductID, Name, Category, Stocks, ExpirationDate 
-              FROM Products 
+              FROM products 
               WHERE ExpirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 60 DAY) 
               AND Status = 'Available'
               ORDER BY ExpirationDate ASC";
@@ -777,7 +777,7 @@ private function getProductPerformanceData($period)
                 SUM(oi.quantity) as total_sold,
                 SUM(oi.quantity * p.Price) as total_revenue,
                 COUNT(DISTINCT o.order_id) as order_count
-              FROM Products p
+              FROM products p
               LEFT JOIN orderitems oi ON p.ProductID = oi.product_id
               LEFT JOIN orders o ON oi.order_id = o.order_id AND o.status = 'completed'
               WHERE ($dateFilter OR o.order_id IS NULL)

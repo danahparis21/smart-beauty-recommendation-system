@@ -34,7 +34,7 @@ try {
             Price, 
             Category, 
             ExpirationDate 
-        FROM Products 
+        FROM products 
         WHERE ProductID = ? AND ParentProductID IS NULL 
         LIMIT 1';
 
@@ -49,7 +49,7 @@ try {
     if (!$product) {
         http_response_code(404);
         // Check if the ID belongs to a variant instead of a parent
-        $check_variant = $conn->query("SELECT ProductID FROM Products WHERE ProductID = '{$productID}' AND ParentProductID IS NOT NULL LIMIT 1")->fetch_assoc();
+        $check_variant = $conn->query("SELECT ProductID FROM products WHERE ProductID = '{$productID}' AND ParentProductID IS NOT NULL LIMIT 1")->fetch_assoc();
 
         if ($check_variant) {
             die(json_encode(['error' => 'This ID belongs to a variant. Use the separate variant edit handler.']));
@@ -62,7 +62,7 @@ try {
 SELECT 
     ImagePath, 
     MediaType 
-FROM ProductMedia 
+FROM productmedia 
 WHERE ParentProductID = ? AND MediaType IN ('PREVIEW', 'GALLERY')
 ORDER BY FIELD(MediaType, 'PREVIEW', 'GALLERY'), SortOrder ASC";  // Use FIELD() to prioritize PREVIEW
 

@@ -5,6 +5,11 @@ require_once __DIR__ . '/../../config/google-config.php';
  * Validates reCAPTCHA token
  */
 function validateRecaptcha($token) {
+    // Skip reCAPTCHA validation in development mode
+    if (defined('DEV_MODE') && DEV_MODE === true) {
+        return true;
+    }
+
     if (empty($token)) return false;
     
     $secret = RECAPTCHA_SECRET_KEY;

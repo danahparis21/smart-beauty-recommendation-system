@@ -21,7 +21,7 @@ if (!$conn || $conn->connect_error) {
     exit;
 }
 
-$sql = "SELECT ProductID, Name, Category, Description FROM Products WHERE ShadeOrVariant = 'PARENT_GROUP'";
+$sql = "SELECT ProductID, Name, Category, Description FROM products WHERE ShadeOrVariant = 'PARENT_GROUP'";
 
 $result = $conn->query($sql);
 

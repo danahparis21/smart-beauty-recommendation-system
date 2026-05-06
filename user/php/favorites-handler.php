@@ -88,7 +88,7 @@ try {
         $product_id = (string) $product_id;
 
         // 1. Get the parent product ID (if it exists) and product name for logging
-        $stmtParent = $conn->prepare('SELECT ParentProductID, Name FROM Products WHERE ProductID=?');
+        $stmtParent = $conn->prepare('SELECT ParentProductID, Name FROM products WHERE ProductID=?');
         $stmtParent->bind_param('s', $product_id);
         $stmtParent->execute();
         $resParent = $stmtParent->get_result();
@@ -111,7 +111,7 @@ try {
             $stmtDelete = $conn->prepare('
             DELETE f 
             FROM favorites f
-            JOIN Products p ON f.product_id = p.ProductID
+            JOIN products p ON f.product_id = p.ProductID
             WHERE f.user_id = ? 
             AND (p.ProductID = ? OR p.ParentProductID = ?)
         ');
@@ -186,22 +186,22 @@ try {
         1 AS liked  -- All these are favorites by definition
     FROM 
         favorites f
-    JOIN Products p ON (
+    JOIN products p ON (
         f.product_id = p.ProductID 
         OR f.product_id = p.ParentProductID
         OR (p.ParentProductID IS NOT NULL AND f.product_id = p.ParentProductID)
     )
-    LEFT JOIN ProductMedia pm_v 
+    LEFT JOIN productmedia pm_v 
         ON pm_v.VariantProductID = p.ProductID 
         AND pm_v.MediaType = 'VARIANT'
         AND pm_v.ImagePath IS NOT NULL
         AND pm_v.ImagePath != ''
-    LEFT JOIN ProductMedia pm_p 
+    LEFT JOIN productmedia pm_p 
         ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
         AND pm_p.MediaType = 'PREVIEW'
         AND pm_p.ImagePath IS NOT NULL
         AND pm_p.ImagePath != ''
-    LEFT JOIN Products parent 
+    LEFT JOIN products parent 
         ON p.ParentProductID = parent.ProductID
     WHERE 
         f.user_id = ?
@@ -277,7 +277,7 @@ try {
             // Only create parent if it has at least one available variant
             if (!isset($groupedProducts[$parentKey])) {
                 // Fetch the actual parent product details for the name
-                $parentSql = 'SELECT Name, Category FROM Products WHERE ProductID = ?';
+                $parentSql = 'SELECT Name, Category FROM products WHERE ProductID = ?';
                 $parentStmt = $conn->prepare($parentSql);
                 $parentStmt->bind_param('s', $parentKey);
                 $parentStmt->execute();

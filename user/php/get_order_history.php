@@ -61,11 +61,11 @@ try {
             COALESCE(pm_variant.ImagePath, pm_preview.ImagePath) AS product_image
         FROM orders o
         LEFT JOIN orderitems oi ON o.order_id = oi.order_id
-        LEFT JOIN Products p ON oi.product_id = p.ProductID
-        LEFT JOIN ProductMedia pm_variant 
+        LEFT JOIN products p ON oi.product_id = p.ProductID
+        LEFT JOIN productmedia pm_variant 
             ON p.ProductID = pm_variant.VariantProductID 
             AND pm_variant.MediaType = 'VARIANT'
-        LEFT JOIN ProductMedia pm_preview 
+        LEFT JOIN productmedia pm_preview 
             ON p.ParentProductID = pm_preview.ParentProductID 
             AND pm_preview.MediaType = 'PREVIEW'
         WHERE o.user_id = ?

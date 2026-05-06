@@ -47,9 +47,9 @@ try {
         a.Matte,
         a.Dewy,
         a.LongLasting
-    FROM Products p
-    LEFT JOIN ProductAttributes a ON p.ProductID = a.ProductID
-    LEFT JOIN Products parent ON p.ParentProductID = parent.ProductID 
+    FROM products p
+    LEFT JOIN productattributes a ON p.ProductID = a.ProductID
+    LEFT JOIN products parent ON p.ParentProductID = parent.ProductID 
     WHERE p.ProductID = ? AND p.ParentProductID IS NOT NULL 
     LIMIT 1';
 
@@ -69,7 +69,7 @@ try {
     $sql_media = "
         SELECT 
             ImagePath
-        FROM ProductMedia 
+        FROM productmedia 
         WHERE VariantProductID = ? AND MediaType = 'VARIANT'
         ORDER BY SortOrder ASC
         LIMIT 1";
