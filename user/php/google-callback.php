@@ -3,11 +3,21 @@
 ob_start();
 session_start();
 
+// DEBUG LOGGING
+$debugFile = __DIR__ . '/debug_callback.log';
+file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Started callback\n", FILE_APPEND);
+
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Ensure we're outputting HTML, not JSON
 header('Content-Type: text/html; charset=UTF-8');
 
 // Load configuration
 require_once __DIR__ . '/../../config/google-config.php';
+file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Loaded google-config\n", FILE_APPEND);
 
 // Load database configuration
 if (getenv('DOCKER_ENV') === 'true') {
@@ -15,9 +25,11 @@ if (getenv('DOCKER_ENV') === 'true') {
 } else {
     require_once __DIR__ . '/../../config/db.php';
 }
+file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Loaded db.php\n", FILE_APPEND);
 
 // Load email verification function
 require_once __DIR__ . '/send-verification.php';
+file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Loaded send-verification.php\n", FILE_APPEND);
 
 // Define DEV_MODE if not already defined
 if (!defined('DEV_MODE')) define('DEV_MODE', true);
@@ -53,9 +65,12 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($tokenData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
+
+file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Token request finished with code $httpCode\n", FILE_APPEND);
 
 // Debug log
 error_log("Token Response Code: " . $httpCode);
@@ -86,6 +101,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Accept: application/json'
 ]);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 $userInfoResponse = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
@@ -118,7 +134,8 @@ $lastName = $userInfo['family_name'] ?? '';
 $username = explode('@', $email)[0] . '_' . substr($googleId, -4);
 
 // ===== CHECK IF USER EXISTS =====
-$stmt = $conn->prepare('SELECT UserID, username, first_name, last_name, Role, email_verified, google_id, verification_token FROM users WHERE Email = ?');
+$stmt = $conn->prepare('SELECT UserID, username, first_name, last_name, `Role`, email_verified, google_id, verification_token FROM users WHERE Email = ?');
+file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Prepared SELECT query\n", FILE_APPEND);
 if (!$stmt) {
     $redirectPage = $isLogin ? '../html/login.html' : '../html/signup.html';
     echo '<script>alert("Database error."); window.location.href="' . $redirectPage . '";</script>';
@@ -126,11 +143,24 @@ if (!$stmt) {
 }
 $stmt->bind_param('s', $email);
 $stmt->execute();
-$result = $stmt->get_result();
+$stmt->store_result();
 
-if ($result->num_rows > 0) {
+if ($stmt->num_rows > 0) {
     // ===== USER EXISTS =====
-    $user = $result->fetch_assoc();
+    $stmt->bind_result($uID, $uName, $fName, $lName, $uRole, $uVerified, $uGoogleId, $uToken);
+    $stmt->fetch();
+    
+    // Create a user array to maintain compatibility with existing code
+    $user = [
+        'UserID' => $uID,
+        'username' => $uName,
+        'first_name' => $fName,
+        'last_name' => $lName,
+        'Role' => $uRole,
+        'email_verified' => $uVerified,
+        'google_id' => $uGoogleId,
+        'verification_token' => $uToken
+    ];
 
     // Check if email is verified
     if ($user['email_verified'] == 0) {
@@ -328,9 +358,13 @@ if ($result->num_rows > 0) {
         // === SIGNUP FLOW: User exists, ensure google_id is set ===
         if (empty($user['google_id'])) {
             $updateStmt = $conn->prepare('UPDATE users SET google_id = ? WHERE UserID = ?');
-            $updateStmt->bind_param('si', $googleId, $user['UserID']);
-            $updateStmt->execute();
-            $updateStmt->close();
+            if ($updateStmt) {
+                $updateStmt->bind_param('si', $googleId, $user['UserID']);
+                $updateStmt->execute();
+                $updateStmt->close();
+            } else {
+                error_log("Failed to prepare updateStmt: " . $conn->error);
+            }
         }
     }
 
@@ -491,6 +525,7 @@ if ($result->num_rows > 0) {
 
 } else {
     // ===== NEW USER - ONLY ALLOWED DURING SIGNUP FLOW =====
+    file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Entering signup flow for new user\n", FILE_APPEND);
     $stmt->close();
 
     if ($isLogin) {
@@ -541,8 +576,8 @@ do {
     $checkStmt = $conn->prepare('SELECT UserID FROM users WHERE username = ?');
     $checkStmt->bind_param('s', $username);
     $checkStmt->execute();
-    $checkResult = $checkStmt->get_result();
-    $usernameExists = $checkResult->num_rows > 0;
+    $checkStmt->store_result();
+    $usernameExists = $checkStmt->num_rows > 0;
     $checkStmt->close();
     
     $attempts++;
@@ -578,7 +613,16 @@ do {
 } while ($usernameExists);
 
 // Insert new user (unverified)
-$insert = $conn->prepare('INSERT INTO users (username, first_name, last_name, Email, Role, email_verified, google_id, verification_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Preparing INSERT query\n", FILE_APPEND);
+$insert = $conn->prepare('INSERT INTO users (username, first_name, last_name, Email, `Role`, email_verified, google_id, verification_token) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+
+if (!$insert) {
+    error_log("Database prepare error for signup: " . $conn->error);
+    $conn->close();
+    echo '<!DOCTYPE html><html><body><h1>Something Went Wrong</h1><p>Database error during account creation. Please contact support.</p></body></html>';
+    exit();
+}
+
 $insert->bind_param('sssssiss', $username, $firstName, $lastName, $email, $role, $emailVerified, $googleId, $verificationToken);
 
 if (!$insert->execute()) {
@@ -649,7 +693,9 @@ if (!$insert->execute()) {
    $insert->close();
 
    // ===== SEND VERIFICATION EMAIL =====
+   file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Sending verification email to $email\n", FILE_APPEND);
    $emailSent = sendVerificationEmail($email, $firstName, $verificationToken);
+   file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Email sent result: " . ($emailSent ? 'SUCCESS' : 'FAILED') . "\n", FILE_APPEND);
 
    if (!$emailSent) {
        $conn->close();

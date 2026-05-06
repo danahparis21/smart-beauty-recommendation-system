@@ -12,7 +12,7 @@ header('Content-Type: application/json');
 
 try {
     $updateStmt = $conn->prepare("
-        UPDATE Products p
+        UPDATE products p
         SET 
             p.ProductRating = COALESCE(
                 (SELECT ROUND(AVG(r.stars), 1) FROM ratings r WHERE r.product_id = p.ProductID AND r.stars > 0),

@@ -59,14 +59,14 @@ $sql = '
         parent.ProductRating AS parent_rating,
         ' . ($user_id ? 'IF(f.favorite_id IS NOT NULL, 1, 0) AS liked' : '0 AS liked') . "
     FROM 
-        Products p
-    LEFT JOIN ProductMedia pm_v 
+        products p
+    LEFT JOIN productmedia pm_v 
         ON pm_v.VariantProductID = p.ProductID 
         AND pm_v.MediaType = 'VARIANT'
-    LEFT JOIN ProductMedia pm_p 
+    LEFT JOIN productmedia pm_p 
         ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
         AND pm_p.MediaType = 'PREVIEW'
-    LEFT JOIN Products parent 
+    LEFT JOIN products parent 
         ON p.ParentProductID = parent.ProductID
     " . ($user_id ? 'LEFT JOIN favorites f 
         ON (f.product_id = p.ProductID OR f.product_id = COALESCE(p.ParentProductID, p.ProductID))
@@ -152,7 +152,7 @@ while ($row = $result->fetch_assoc()) {
         // Only create parent if it has at least one available variant
         if (!isset($groupedProducts[$parentKey])) {
             // Fetch the actual parent product details for the name
-            $parentSql = 'SELECT Name, Category FROM Products WHERE ProductID = ?';
+            $parentSql = 'SELECT Name, Category FROM products WHERE ProductID = ?';
             $parentStmt = $conn->prepare($parentSql);
             $parentStmt->bind_param('s', $parentKey);
             $parentStmt->execute();

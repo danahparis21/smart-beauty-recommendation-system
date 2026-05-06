@@ -39,9 +39,9 @@ try {
         p.ParentProductID,
         parent.Name as ParentName,
         pm_variant.ImagePath as variant_image
-    FROM Products p
-    LEFT JOIN Products parent ON p.ParentProductID = parent.ProductID
-    LEFT JOIN ProductMedia pm_variant ON p.ProductID = pm_variant.VariantProductID AND pm_variant.MediaType = 'VARIANT'
+    FROM products p
+    LEFT JOIN products parent ON p.ParentProductID = parent.ProductID
+    LEFT JOIN productmedia pm_variant ON p.ProductID = pm_variant.VariantProductID AND pm_variant.MediaType = 'VARIANT'
     WHERE p.Category = 'Lipstick' 
     AND p.ShadeOrVariant IS NOT NULL
     AND p.ShadeOrVariant != 'PARENT_GROUP'

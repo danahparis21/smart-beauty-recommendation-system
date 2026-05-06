@@ -177,15 +177,15 @@ try {
             COUNT(oi.order_item_id) AS order_count,
             " . ($user_id ? "MAX(IF(f.favorite_id IS NOT NULL, 1, 0)) AS liked" : "0 AS liked") . "
         FROM 
-            Products p
+            products p
         LEFT JOIN orderitems oi ON oi.product_id = p.ProductID
-        LEFT JOIN ProductMedia pm_v 
+        LEFT JOIN productmedia pm_v 
             ON pm_v.VariantProductID = p.ProductID 
             AND pm_v.MediaType = 'VARIANT'
-        LEFT JOIN ProductMedia pm_p 
+        LEFT JOIN productmedia pm_p 
             ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
             AND pm_p.MediaType = 'PREVIEW'
-        LEFT JOIN Products parent 
+        LEFT JOIN products parent 
             ON p.ParentProductID = parent.ProductID
         " . ($user_id ? "LEFT JOIN favorites f 
             ON (f.product_id = p.ProductID OR f.product_id = COALESCE(p.ParentProductID, p.ProductID))
@@ -244,14 +244,14 @@ try {
                 0 AS order_count,
                 " . ($user_id ? "MAX(IF(f.favorite_id IS NOT NULL, 1, 0)) AS liked" : "0 AS liked") . "
             FROM 
-                Products p
-            LEFT JOIN ProductMedia pm_v 
+                products p
+            LEFT JOIN productmedia pm_v 
                 ON pm_v.VariantProductID = p.ProductID 
                 AND pm_v.MediaType = 'VARIANT'
-            LEFT JOIN ProductMedia pm_p 
+            LEFT JOIN productmedia pm_p 
                 ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
                 AND pm_p.MediaType = 'PREVIEW'
-            LEFT JOIN Products parent 
+            LEFT JOIN products parent 
                 ON p.ParentProductID = parent.ProductID
             " . ($user_id ? "LEFT JOIN favorites f 
                 ON (f.product_id = p.ProductID OR f.product_id = COALESCE(p.ParentProductID, p.ProductID))
@@ -327,14 +327,14 @@ try {
                 0 AS order_count,
                 " . ($user_id ? "MAX(IF(f.favorite_id IS NOT NULL, 1, 0)) AS liked" : "0 AS liked") . "
             FROM 
-                Products p
-            LEFT JOIN ProductMedia pm_v 
+                products p
+            LEFT JOIN productmedia pm_v 
                 ON pm_v.VariantProductID = p.ProductID 
                 AND pm_v.MediaType = 'VARIANT'
-            LEFT JOIN ProductMedia pm_p 
+            LEFT JOIN productmedia pm_p 
                 ON pm_p.ParentProductID = COALESCE(p.ParentProductID, p.ProductID)
                 AND pm_p.MediaType = 'PREVIEW'
-            LEFT JOIN Products parent 
+            LEFT JOIN products parent 
                 ON p.ParentProductID = parent.ProductID
             " . ($user_id ? "LEFT JOIN favorites f 
                 ON (f.product_id = p.ProductID OR f.product_id = COALESCE(p.ParentProductID, p.ProductID))

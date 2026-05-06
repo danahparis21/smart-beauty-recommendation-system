@@ -55,7 +55,7 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 if ($action === 'get_stats') {
     try {
         // Count all products (including variants)
-        $sqlTotal = "SELECT COUNT(*) as total FROM Products WHERE Status != 'Deleted'";
+        $sqlTotal = "SELECT COUNT(*) as total FROM products WHERE Status != 'Deleted'";
         $resultTotal = $conn->query($sqlTotal);
         if (!$resultTotal) {
             throw new Exception('Total products query failed: ' . $conn->error);
@@ -63,7 +63,7 @@ if ($action === 'get_stats') {
         $totalProducts = $resultTotal->fetch_assoc()['total'];
         
         // Count available products
-        $sqlAvailable = "SELECT COUNT(*) as available FROM Products WHERE Status = 'Available' AND Stocks > 0 AND (ExpirationDate IS NULL OR ExpirationDate > CURDATE())";
+        $sqlAvailable = "SELECT COUNT(*) as available FROM products WHERE Status = 'Available' AND Stocks > 0 AND (ExpirationDate IS NULL OR ExpirationDate > CURDATE())";
         $resultAvailable = $conn->query($sqlAvailable);
         if (!$resultAvailable) {
             throw new Exception('Available products query failed: ' . $conn->error);
@@ -71,7 +71,7 @@ if ($action === 'get_stats') {
         $availableProducts = $resultAvailable->fetch_assoc()['available'];
         
         // Count low stock products
-        $sqlLowStock = "SELECT COUNT(*) as low_stock FROM Products WHERE Status = 'Low Stock' OR (Stocks > 0 AND Stocks < 5)";
+        $sqlLowStock = "SELECT COUNT(*) as low_stock FROM products WHERE Status = 'Low Stock' OR (Stocks > 0 AND Stocks < 5)";
         $resultLowStock = $conn->query($sqlLowStock);
         if (!$resultLowStock) {
             throw new Exception('Low stock products query failed: ' . $conn->error);
@@ -79,7 +79,7 @@ if ($action === 'get_stats') {
         $lowStockProducts = $resultLowStock->fetch_assoc()['low_stock'];
         
         // Count expired products
-        $sqlExpired = "SELECT COUNT(*) as expired FROM Products WHERE ExpirationDate IS NOT NULL AND ExpirationDate <= CURDATE() AND Status != 'Deleted'";
+        $sqlExpired = "SELECT COUNT(*) as expired FROM products WHERE ExpirationDate IS NOT NULL AND ExpirationDate <= CURDATE() AND Status != 'Deleted'";
         $resultExpired = $conn->query($sqlExpired);
         if (!$resultExpired) {
             throw new Exception('Expired products query failed: ' . $conn->error);
@@ -87,7 +87,7 @@ if ($action === 'get_stats') {
         $expiredProducts = $resultExpired->fetch_assoc()['expired'];
         
         // Count no stock products
-        $sqlNoStock = "SELECT COUNT(*) as no_stock FROM Products WHERE Status = 'No Stock' OR Stocks = 0";
+        $sqlNoStock = "SELECT COUNT(*) as no_stock FROM products WHERE Status = 'No Stock' OR Stocks = 0";
         $resultNoStock = $conn->query($sqlNoStock);
         if (!$resultNoStock) {
             throw new Exception('No stock products query failed: ' . $conn->error);

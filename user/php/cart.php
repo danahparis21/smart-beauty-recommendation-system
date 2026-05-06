@@ -113,7 +113,7 @@ function addToCart($conn, $userId, &$response)
 
     // Validate product existence AND availability
     $productQuery = "SELECT ProductID, Name, Price, Stocks, Status, ExpirationDate 
-                     FROM Products 
+                     FROM products 
                      WHERE ProductID = ? 
                      AND Status IN ('Available', 'Low Stock')
                      AND Stocks > 0
@@ -197,7 +197,7 @@ function removeFromCart($conn, $userId, &$response)
     }
 
     // Get product name before deleting for logging
-    $productQuery = 'SELECT Name FROM Products WHERE ProductID = ?';
+    $productQuery = 'SELECT Name FROM products WHERE ProductID = ?';
     $stmt = $conn->prepare($productQuery);
     $stmt->bind_param('s', $productId);
     $stmt->execute();
@@ -244,7 +244,7 @@ function updateCartQuantity($conn, $userId, &$response)
 
     // Check stock, product status, and get product name
     $stockQuery = "SELECT Stocks, Name, Status, ExpirationDate 
-                   FROM Products 
+                   FROM products 
                    WHERE ProductID = ? 
                    AND Status IN ('Available', 'Low Stock')
                    AND (ExpirationDate IS NULL OR ExpirationDate > CURDATE())";
@@ -312,11 +312,11 @@ function getCart($conn, $userId, &$response)
             (c.quantity * p.Price) AS subtotal,
             COALESCE(pm_variant.ImagePath, pm_preview.ImagePath) AS image
         FROM cart c
-        INNER JOIN Products p ON c.product_id = p.ProductID
-        LEFT JOIN ProductMedia pm_variant 
+        INNER JOIN products p ON c.product_id = p.ProductID
+        LEFT JOIN productmedia pm_variant 
             ON p.ProductID = pm_variant.VariantProductID 
             AND pm_variant.MediaType = 'VARIANT'
-        LEFT JOIN ProductMedia pm_preview 
+        LEFT JOIN productmedia pm_preview 
             ON p.ParentProductID = pm_preview.ParentProductID 
             AND pm_preview.MediaType = 'PREVIEW'
         WHERE c.user_id = ? 

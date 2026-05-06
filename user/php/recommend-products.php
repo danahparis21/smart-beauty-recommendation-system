@@ -267,17 +267,17 @@ function enhanceRecommendations($recommendations, $conn, $user_id)
             p.ParentProductID,
             p.ExpirationDate,
             COALESCE(
-                (SELECT pm.ImagePath FROM ProductMedia pm 
+                (SELECT pm.ImagePath FROM productmedia pm 
                  WHERE pm.VariantProductID = p.ProductID AND pm.MediaType = 'VARIANT' 
                  LIMIT 1),
-                (SELECT pm.ImagePath FROM ProductMedia pm 
+                (SELECT pm.ImagePath FROM productmedia pm 
                  WHERE pm.ParentProductID = p.ProductID AND pm.MediaType = 'PREVIEW' 
                  LIMIT 1),
-                (SELECT pm.ImagePath FROM ProductMedia pm 
+                (SELECT pm.ImagePath FROM productmedia pm 
                  WHERE pm.ParentProductID = COALESCE(p.ParentProductID, p.ProductID) AND pm.MediaType = 'PREVIEW' 
                  LIMIT 1)
             ) as image
-        FROM Products p
+        FROM products p
         WHERE p.ProductID IN ($placeholders)
         AND p.Status IN ('Available', 'Low Stock')  -- ONLY available products
         AND p.Stocks > 0                           -- Must have stock
@@ -358,18 +358,18 @@ function getFallbackRecommendations($conn, $input, $user_id)
             p.Status,
             p.ExpirationDate,
             COALESCE(
-                (SELECT pm.ImagePath FROM ProductMedia pm 
+                (SELECT pm.ImagePath FROM productmedia pm 
                  WHERE pm.VariantProductID = p.ProductID AND pm.MediaType = 'VARIANT' 
                  LIMIT 1),
-                (SELECT pm.ImagePath FROM ProductMedia pm 
+                (SELECT pm.ImagePath FROM productmedia pm 
                  WHERE pm.ParentProductID = p.ProductID AND pm.MediaType = 'PREVIEW' 
                  LIMIT 1),
-                (SELECT pm.ImagePath FROM ProductMedia pm 
+                (SELECT pm.ImagePath FROM productmedia pm 
                  WHERE pm.ParentProductID = COALESCE(p.ParentProductID, p.ProductID) AND pm.MediaType = 'PREVIEW' 
                  LIMIT 1)
             ) as image
-        FROM Products p
-        LEFT JOIN ProductAttributes pa ON p.ProductID = pa.ProductID
+        FROM products p
+        LEFT JOIN productattributes pa ON p.ProductID = pa.ProductID
         WHERE pa.ProductID IS NOT NULL
         AND p.Status IN ('Available', 'Low Stock')  -- ONLY available
         AND p.Stocks > 0                           -- Must have stock

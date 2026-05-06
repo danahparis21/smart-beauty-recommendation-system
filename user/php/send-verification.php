@@ -13,6 +13,16 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
+// Manual fallback if autoloader doesn't load PHPMailer (common in some hosting environments)
+if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+    $phpMailerPath = __DIR__ . '/../../vendor/phpmailer/phpmailer/src/';
+    if (file_exists($phpMailerPath . 'PHPMailer.php')) {
+        require_once $phpMailerPath . 'PHPMailer.php';
+        require_once $phpMailerPath . 'Exception.php';
+        require_once $phpMailerPath . 'SMTP.php';
+    }
+}
+
 function sendVerificationEmail($email, $firstName, $token) {
     // Determine the base URL dynamically if BASE_URL is not set or potentially wrong
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
@@ -31,6 +41,10 @@ function sendVerificationEmail($email, $firstName, $token) {
     }
     
     // ===== PRODUCTION MODE - Use PHPMailer =====
+    if (!class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+        error_log("PHPMailer Error: PHPMailer class not found. Please re-upload the vendor folder.");
+        return false;
+    }
     $mail = new PHPMailer(true);
     
     try {

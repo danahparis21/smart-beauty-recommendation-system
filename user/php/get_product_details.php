@@ -77,7 +77,7 @@ try {
             Stocks,
             HexCode,
             Status
-        FROM Products 
+        FROM products 
         WHERE ProductID = ?
     ';
 
@@ -101,7 +101,7 @@ try {
     // Check if there are ANY available variants for this parent
     $availableVariantsSql = "
         SELECT COUNT(*) as available_count 
-        FROM Products 
+        FROM products 
         WHERE ParentProductID = ? 
             AND Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
             AND Stocks > 0
@@ -160,25 +160,25 @@ try {
             pm_gallery.ImagePath as gallery_image,
             pm_variant.ImagePath as variant_image
             
-        FROM Products p
+        FROM products p
         
         -- Get preview image (for parent)
-        LEFT JOIN ProductMedia pm_preview 
+        LEFT JOIN productmedia pm_preview 
             ON pm_preview.ParentProductID = p.ProductID 
             AND pm_preview.MediaType = 'PREVIEW'
         
         -- Get gallery images
-        LEFT JOIN ProductMedia pm_gallery 
+        LEFT JOIN productmedia pm_gallery 
             ON pm_gallery.ParentProductID = p.ProductID 
             AND pm_gallery.MediaType = 'GALLERY'
         
         -- Get variant images
-        LEFT JOIN ProductMedia pm_variant 
+        LEFT JOIN productmedia pm_variant 
             ON pm_variant.VariantProductID = p.ProductID 
             AND pm_variant.MediaType = 'VARIANT'
         
         -- Get product attributes (for variants)
-        LEFT JOIN ProductAttributes pa 
+        LEFT JOIN productattributes pa 
             ON pa.ProductID = p.ProductID
         
         WHERE (p.ProductID = ? OR p.ParentProductID = ?)
@@ -278,7 +278,7 @@ if (!$parentProduct && !empty($variants)) {
     // Fetch the actual parent product details
     $parentSql = "
         SELECT Name, Category 
-        FROM Products 
+        FROM products 
         WHERE ProductID = ?
     ";
     $parentStmt = $conn->prepare($parentSql);
@@ -370,7 +370,7 @@ if (!$parentProduct && !empty($variants)) {
         // Get all product IDs that belong to this parent (including the parent itself) - WITH STATUS FILTER
         $productIdsSql = "
             SELECT ProductID 
-            FROM Products 
+            FROM products 
             WHERE (ParentProductID = ? OR ProductID = ?)
                 AND Status NOT IN ('No Stock', 'Expired', 'Deleted', 'Disabled')
                 AND Stocks > 0
@@ -406,7 +406,7 @@ if (!$parentProduct && !empty($variants)) {
                     p.HexCode
                 FROM ratings r
                 LEFT JOIN users u ON r.user_id = u.UserID
-                LEFT JOIN Products p ON r.product_id = p.ProductID
+                LEFT JOIN products p ON r.product_id = p.ProductID
                 WHERE r.product_id IN ($placeholders)
                 ORDER BY r.created_at DESC
                 LIMIT 50
