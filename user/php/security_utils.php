@@ -115,10 +115,15 @@ function isSuspiciousLogin($conn, $userId, $currentIp, $currentUserAgent) {
     
     if (!$user) return false;
     
-    // If it's the first login ever, it's not "suspicious" in the sense of comparing, but we might want to record it
+    // If no previous login data exists (first login or cleared data),
+    // it's NOT suspicious — just let login proceed so the IP/device gets saved.
     if (empty($user['last_login_ip'])) return false;
     
-    if ($user['last_login_ip'] !== $currentIp || $user['last_login_device'] !== $currentUserAgent) {
+    // Compare using the parsed device string (short & stable, avoids VARCHAR truncation issues)
+    $currentParsedDevice = parseUserAgent($currentUserAgent);
+    
+    // Suspicious only when there IS saved data but it doesn't match current session
+    if ($user['last_login_ip'] !== $currentIp || $user['last_login_device'] !== $currentParsedDevice) {
         return true;
     }
     
@@ -127,11 +132,23 @@ function isSuspiciousLogin($conn, $userId, $currentIp, $currentUserAgent) {
 
 /**
  * Updates last login details
+ * Stores parsed device string (e.g. "Google Chrome on Windows") instead of
+ * the full raw User-Agent to avoid VARCHAR length truncation mismatches.
  */
 function updateLastLoginDetails($conn, $userId, $ip, $userAgent) {
+    $parsedDevice = parseUserAgent($userAgent);
     $stmt = $conn->prepare("UPDATE users SET last_login_ip = ?, last_login_device = ? WHERE UserID = ?");
-    $stmt->bind_param("ssi", $ip, $userAgent, $userId);
-    $stmt->execute();
+    if (!$stmt) {
+        error_log("[updateLastLoginDetails] Prepare failed: " . $conn->error . " | UserID: $userId");
+        return;
+    }
+    $stmt->bind_param("ssi", $ip, $parsedDevice, $userId);
+    if (!$stmt->execute()) {
+        error_log("[updateLastLoginDetails] Execute failed: " . $stmt->error . " | UserID: $userId | IP: $ip | Device: $parsedDevice");
+    } else {
+        error_log("[updateLastLoginDetails] SUCCESS | UserID: $userId | IP: $ip | Device: $parsedDevice");
+    }
+    $stmt->close();
 }
 
 /**

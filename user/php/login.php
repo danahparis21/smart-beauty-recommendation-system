@@ -103,29 +103,17 @@ if ($result->num_rows === 1) {
         $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
         
-        // 4. Detect Suspicious Login
+        // 4. Detect Suspicious Login — notify via email but still allow login
         if (isSuspiciousLogin($conn, $user['UserID'], $userIP, $userAgent)) {
-            // Suspicious login - trigger OTP
-            $verificationToken = bin2hex(random_bytes(32));
-            $updateTokenStmt = $conn->prepare("UPDATE users SET verification_token = ? WHERE UserID = ?");
-            $updateTokenStmt->bind_param("si", $verificationToken, $user['UserID']);
-            $updateTokenStmt->execute();
-            $updateTokenStmt->close();
-            
-            // Send Alert & Verification Email
+            // Send alert email in the background (non-blocking)
             $details = ['ip' => $userIP, 'userAgent' => $userAgent];
             $alertSent = sendSuspiciousLoginAlert($user['Email'], $user['first_name'], $details);
-            $verifySent = sendVerificationEmail($user['Email'], $user['first_name'], $verificationToken);
-            
-            if (!$alertSent || !$verifySent) {
-                error_log("Failed to send suspicious login emails to: " . $user['Email']);
+            if (!$alertSent) {
+                error_log("Failed to send suspicious login alert to: " . $user['Email']);
             }
-            
-            $stmt->close();
-            returnJsonResponse(false, 'Suspicious login detected. For your security, a verification link has been sent to your email. Please verify to continue.', ['suspicious' => true], $conn);
         }
         
-        // Update last login details
+        // Always update IP/device on every successful login
         updateLastLoginDetails($conn, $user['UserID'], $userIP, $userAgent);
 
         $_SESSION['user_id'] = $user['UserID'];

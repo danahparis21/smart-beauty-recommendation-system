@@ -29,10 +29,10 @@ file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Loaded db.php\n", F
 
 // Load email verification function
 require_once __DIR__ . '/send-verification.php';
+require_once __DIR__ . '/security_utils.php';
 file_put_contents($debugFile, "[" . date('Y-m-d H:i:s') . "] Loaded send-verification.php\n", FILE_APPEND);
 
-// Define DEV_MODE if not already defined
-if (!defined('DEV_MODE')) define('DEV_MODE', true);
+// Do NOT override DEV_MODE here — it is already set from .env via google-config.php
 
 // Determine if this is login or signup based on the 'state' parameter
 $isLogin = isset($_GET['state']) && $_GET['state'] === 'login';
@@ -367,6 +367,20 @@ if ($stmt->num_rows > 0) {
             }
         }
     }
+
+    // Detect suspicious login (new IP or device) — send alert email but still allow login
+    $userIP    = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+    if (isSuspiciousLogin($conn, $user['UserID'], $userIP, $userAgent)) {
+        $details   = ['ip' => $userIP, 'userAgent' => $userAgent];
+        $alertSent = sendSuspiciousLoginAlert($email, $user['first_name'], $details);
+        if (!$alertSent) {
+            error_log("[Google Login] Failed to send suspicious login alert to: $email");
+        }
+    }
+
+    // Always update last login IP/device on successful Google login
+    updateLastLoginDetails($conn, $user['UserID'], $userIP, $userAgent);
 
     // Log user in
     $_SESSION['user_id'] = $user['UserID'];
