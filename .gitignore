@@ -10,3 +10,13 @@ scratch/
 .vscode/
 *.swp
 *.bak
+
+# macOS metadata files
+.DS_Store
+.DS_Store?
+._*
+*/._*
+**/._*
+.Spotlight-V100
+.Trashes
+
